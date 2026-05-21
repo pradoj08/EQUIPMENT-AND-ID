@@ -167,6 +167,55 @@ select option{background:var(--surface)}
 .equip-del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:3px;transition:color .15s}
 .equip-del-btn:hover{color:var(--danger)}
 .down-count-badge{font-size:10px;padding:1px 7px;border-radius:10px;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+
+.eq-auth-panel{
+  margin:10px 24px 0;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:rgba(30,35,51,.72);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.eq-auth-panel input{
+  width:180px;
+  max-width:100%;
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:5px;
+  padding:7px 10px;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text);
+  outline:none;
+}
+.eq-auth-panel input:focus{border-color:var(--accent)}
+.eq-auth-btn{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:5px;
+  cursor:pointer;
+  border:1px solid var(--accent);
+  background:rgba(74,158,255,.12);
+  color:#9ec8ff;
+}
+.eq-auth-secondary{
+  border-color:var(--border2);
+  background:transparent;
+  color:var(--muted);
+}
+.eq-auth-status{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  margin-left:auto;
+}
+
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -262,6 +311,15 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
   </button></div>
 </div>
+
+<div class="eq-auth-panel" id="eq-auth-panel">
+  <input id="eq-email" type="email" placeholder="Supabase email" />
+  <input id="eq-password" type="password" placeholder="Password" />
+  <button class="eq-auth-btn" onclick="signInEq()">Sign In</button>
+  <button class="eq-auth-btn eq-auth-secondary" onclick="signOutEq()">Sign Out</button>
+  <span id="eq-auth-status" class="eq-auth-status">Signed out</span>
+</div>
+
 <div id="equip-banner"></div>
 <div id="equip-content" style="padding-bottom:24px;"></div>
 </div><!-- end page-equipment -->
@@ -648,11 +706,63 @@ var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
 var equipment=[];
+var eqSession=null;
+var eqAuthInitDone=false;
+
+async function updateEqAuthStatus(){
+  var st=document.getElementById('eq-auth-status');
+  if(st){
+    st.textContent = eqSession && eqSession.user && eqSession.user.email
+      ? ('Signed in: ' + eqSession.user.email)
+      : 'Signed out';
+  }
+  var addBtn=document.querySelector('#page-equipment button[onclick="openAddUnitModal()"]');
+  if(addBtn) addBtn.disabled = !eqSession;
+}
+
+async function refreshEqSession(){
+  try{
+    var res=await supabaseClient.auth.getSession();
+    eqSession=res && res.data ? res.data.session : null;
+  }catch(e){
+    console.error(e);
+    eqSession=null;
+  }
+  await updateEqAuthStatus();
+}
+async function signInEq(){
+  var email=(document.getElementById('eq-email')||{}).value?.trim() || '';
+  var password=(document.getElementById('eq-password')||{}).value || '';
+  if(!email || !password){
+    alert('Enter your Supabase email and password.');
+    return;
+  }
+  var result=await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+  if(result.error){
+    alert(result.error.message);
+    return;
+  }
+  eqSession=result.data.session || null;
+  await updateEqAuthStatus();
+  await loadEquipment();
+  renderEquipment();
+}
+async function signOutEq(){
+  await supabaseClient.auth.signOut();
+  eqSession=null;
+  await updateEqAuthStatus();
+  equipment=[];
+  renderEquipment();
+}
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 
 async function loadEquipment(){
+  if(!eqSession){
+    equipment = [];
+    return;
+  }
   try{
     const { data, error } = await supabaseClient
       .from('equipment')
@@ -684,6 +794,10 @@ async function loadEquipment(){
 }
 
 async function saveEquipment(){
+  if(!eqSession){
+    alert('Please sign in first.');
+    return;
+  }
   try{
     for(const e of equipment){
       await supabaseClient
