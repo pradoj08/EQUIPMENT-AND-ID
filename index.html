@@ -172,6 +172,14 @@ select option{background:var(--surface)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 <style id="table-scale"></style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
 </head>
 <body>
 
@@ -643,11 +651,62 @@ var equipment=[];
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
-function loadEquipment(){
-  try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
-  equipment = Array.isArray(equipment) ? equipment : [];
+
+async function loadEquipment(){
+  try{
+    const { data, error } = await supabaseClient
+      .from('equipment')
+      .select('*')
+      .order('updated_at', { ascending: true });
+
+    if(error){
+      console.error('Supabase load error:', error);
+      equipment = [];
+      return;
+    }
+
+    equipment = (data || []).map(function(row){
+      return {
+        id: row.id,
+        type: row.type || 'Hostler',
+        unit: row.unit || '',
+        name: row.name || '',
+        tabletAssigned: row.tablet_assigned || '',
+        status: row.status || 'operational',
+        notes: row.notes || ''
+      };
+    });
+
+  }catch(e){
+    console.error(e);
+    equipment = [];
+  }
 }
-function saveEquipment(){localStorage.setItem(EQ_KEY,JSON.stringify(equipment));showSaveToast();}
+
+async function saveEquipment(){
+  try{
+    for(const e of equipment){
+      await supabaseClient
+        .from('equipment')
+        .upsert({
+          id: e.id,
+          type: e.type,
+          unit: e.unit,
+          name: e.name,
+          tablet_assigned: e.tabletAssigned,
+          status: e.status,
+          notes: e.notes
+        });
+    }
+
+    showSaveToast();
+
+  }catch(err){
+    console.error('Save failed:', err);
+    alert('Supabase save failed. Check console.');
+  }
+}
+
 
 function seedEquipment(){
   equipment=[];
@@ -759,6 +818,7 @@ function renderEquipment(){
 load();
 ensureEmployeeRoster();
 render();
+loadEquipment().then(renderEquipment);
 loadEquipment();
 
 document.addEventListener('click',function(e){
