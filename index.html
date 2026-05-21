@@ -182,6 +182,17 @@ select option{background:var(--surface)}
   text-transform:uppercase;
 }
 
+
+.equip-auth-shell{padding:18px 24px 0}
+.equip-auth-card{border:1px solid rgba(74,158,255,.25);background:linear-gradient(135deg,#101522,#0c101a);border-radius:12px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.equip-auth-title{font-family:var(--mono);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.equip-auth-sub{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.equip-auth-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.equip-auth-row input{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none}
+.equip-auth-row input:focus{border-color:var(--accent)}
+.equip-auth-note{margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.equip-auth-status{font-family:var(--mono);font-size:11px;letter-spacing:.7px;color:var(--muted);margin-top:10px}
+
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -269,6 +280,7 @@ select option{background:var(--surface)}
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
   </button></div>
 </div>
+<div id="equip-auth" class="equip-auth-shell"></div>
 <div id="equip-banner"></div>
 <div id="equip-content" style="padding-bottom:24px;"></div>
 </div><!-- end page-equipment -->
@@ -331,6 +343,8 @@ select option{background:var(--surface)}
 <div id="save-toast">
   <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Saved
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 // ── EMPLOYEE DATA ──
@@ -643,30 +657,178 @@ function switchPage(p){
   if(p==='equipment') renderEquipment();
 }
 
+
 // ── EQUIPMENT ──
+const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 var EQ_KEY='eit_eq_v1';
 var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
-var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
 var equipment=[];
+var currentUser=null;
+var authNotice='';
 
-try{
-  localStorage.setItem(EQ_KEY, JSON.stringify([]));
-}catch(e){}
-
-
-function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-
-function loadEquipment(){
-  try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
-  // Leave saved records exactly as they are; do not auto-seed or auto-fill defaults.
-  equipment = Array.isArray(equipment) ? equipment : [];
+async function initSupabaseSession(){
+  const { data } = await supabase.auth.getSession();
+  currentUser = data && data.session ? data.session.user : null;
+  updateEquipAuthUI();
 }
-function saveEquipment(){localStorage.setItem(EQ_KEY,JSON.stringify(equipment));showSaveToast();}
+
+function normalizeEquipmentRow(e){
+  return {
+    id: e.id,
+    type: e.type || 'Hostler',
+    unit: e.unit || '',
+    name: e.name || '',
+    tabletAssigned: e.tablet_assigned || '',
+    status: e.status || 'operational',
+    notes: e.notes || ''
+  };
+}
+
+function updateEquipAuthUI(message){
+  if(message) authNotice = message;
+  var el = document.getElementById('equip-auth');
+  if(!el) return;
+
+  if(currentUser){
+    el.innerHTML =
+      '<div class="equip-auth-card">'
+        +'<div class="equip-auth-title">Signed in</div>'
+        +'<div class="equip-auth-sub">Shared equipment sync is live for '+(currentUser.email || 'your account')+'.</div>'
+        +'<div class="equip-auth-status">'+(authNotice || 'Your changes save to Supabase automatically.')+'</div>'
+        +'<div style="margin-top:12px;display:flex;gap:10px;align-items:center;">'
+          +'<button class="btn btn-ghost" id="equip-signout-btn" type="button">Sign Out</button>'
+        +'</div>'
+      +'</div>';
+    var outBtn = document.getElementById('equip-signout-btn');
+    if(outBtn) outBtn.onclick = signOutEquipment;
+  } else {
+    el.innerHTML =
+      '<div class="equip-auth-card">'
+        +'<div class="equip-auth-title">Sign in to sync equipment</div>'
+        +'<div class="equip-auth-sub">Enter your email and Supabase will send a magic link. After sign-in, everybody using this app can share the same live equipment table.</div>'
+        +'<div class="equip-auth-row">'
+          +'<input id="equip-email" type="email" placeholder="coworker@company.com" autocomplete="email">'
+          +'<button class="btn btn-primary" id="equip-login-btn" type="button">Send Login Link</button>'
+        +'</div>'
+        +'<div class="equip-auth-note">Uses the authenticated Supabase policies you already created.</div>'
+        +'<div class="equip-auth-status">'+(authNotice || 'Not signed in.')+'</div>'
+      +'</div>';
+    var btn = document.getElementById('equip-login-btn');
+    if(btn) btn.onclick = signInEquipment;
+  }
+}
+
+async function signInEquipment(){
+  var input = document.getElementById('equip-email');
+  var email = input ? input.value.trim() : '';
+  if(!email){
+    updateEquipAuthUI('Enter an email address first.');
+    return;
+  }
+  authNotice = 'Sending sign-in link...';
+  updateEquipAuthUI();
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: email,
+    options: {
+      emailRedirectTo: window.location.href
+    }
+  });
+
+  if(error){
+    console.error(error);
+    updateEquipAuthUI('Sign-in failed: ' + error.message);
+    return;
+  }
+
+  updateEquipAuthUI('Check your email for the sign-in link.');
+}
+
+async function signOutEquipment(){
+  const { error } = await supabase.auth.signOut();
+  if(error){
+    console.error(error);
+    updateEquipAuthUI('Sign-out failed: ' + error.message);
+    return;
+  }
+  currentUser = null;
+  equipment = [];
+  authNotice = 'Signed out.';
+  updateEquipAuthUI();
+  renderEquipment();
+}
+
+supabase.auth.onAuthStateChange(function(event, session){
+  currentUser = session ? session.user : null;
+  authNotice = event === 'SIGNED_IN' ? 'Signed in successfully.' : (event === 'SIGNED_OUT' ? 'Signed out.' : authNotice);
+  updateEquipAuthUI();
+  if(currentUser){
+    loadEquipment().then(function(){ renderEquipment(); });
+  } else {
+    equipment = [];
+    renderEquipment();
+  }
+});
+
+async function loadEquipment(){
+  if(!currentUser){
+    equipment = [];
+    updateEquipAuthUI();
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('equipment')
+    .select('*')
+    .order('updated_at', { ascending: true });
+
+  if(error){
+    console.error(error);
+    equipment = [];
+    updateEquipAuthUI('Could not load equipment: ' + error.message);
+    return;
+  }
+
+  equipment = Array.isArray(data) ? data.map(normalizeEquipmentRow) : [];
+  updateEquipAuthUI('Loaded ' + equipment.length + ' equipment records.');
+}
+
+async function saveEquipment(){
+  if(!currentUser) return;
+
+  const payload = equipment.map(function(e){
+    return {
+      id: e.id,
+      type: e.type,
+      unit: e.unit,
+      name: e.name || '',
+      tablet_assigned: e.tabletAssigned || '',
+      status: e.status || 'operational',
+      notes: e.notes || '',
+      updated_at: new Date().toISOString()
+    };
+  });
+
+  const { error } = await supabase
+    .from('equipment')
+    .upsert(payload, { onConflict: 'id' });
+
+  if(error){
+    console.error(error);
+    updateEquipAuthUI('Save failed: ' + error.message);
+    return;
+  }
+
+  showSaveToast();
+  updateEquipAuthUI('Saved.');
+}
 
 function seedEquipment(){
-  equipment=[];
-  localStorage.setItem(EQ_KEY, JSON.stringify([]));
+  equipment = [];
 }
 
 function updateEqStatus(id,val){
@@ -685,45 +847,61 @@ function updateEqName(id,val){
   e.name=val;
   saveEquipment();
 }
+
 function updateEqTablet(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(!e) return;
   e.tabletAssigned=val;
   saveEquipment();
 }
-function updateEqNotes(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.notes=val;saveEquipment();}}
-function deleteEquipment(id){
+
+function updateEqNotes(id,val){
+  var e=equipment.find(function(x){return x.id===id;});
+  if(e){e.notes=val;saveEquipment();}
+}
+
+async function deleteEquipment(id){
   if(!id) return;
   if(!confirm('Remove this unit?')) return;
+
+  const { error } = await supabase.from('equipment').delete().eq('id', id);
+  if(error){
+    console.error(error);
+    updateEquipAuthUI('Delete failed: ' + error.message);
+    return;
+  }
+
   equipment = equipment.filter(function(e){ return e.id !== id; });
+  renderEquipment();
+  updateEquipAuthUI('Deleted.');
+}
+
+function addSpecificEquip(type){
+  var n=equipment.filter(function(e){return e.type===type;}).length;
+  equipment.push({id:eqUid(),type:type,unit:String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
   saveEquipment();
   renderEquipment();
 }
-function addSpecificEquip(type){
-  var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
-  var unit=pre+'-'+String(n+1).padStart(2,'0');
-  equipment.push({id:eqUid(),type:type,unit:String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
-  saveEquipment();renderEquipment();
+
+function openAddUnitModal(){
+  if(!currentUser){ updateEquipAuthUI('Sign in first to add equipment.'); return; }
+  document.getElementById('add-unit-modal').style.display='flex';
 }
-function openAddUnitModal(){document.getElementById('add-unit-modal').style.display='flex';}
 function closeAddUnitModal(){document.getElementById('add-unit-modal').style.display='none';}
-function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)addSpecificEquip(t);closeAddUnitModal();}
-
-
-function renderTabletCell(val){
-  var tablet=(val||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-  return tablet.trim()
-    ? '<input class="tablet-input" type="text" value="'+tablet+'" placeholder="Tablet assigned">'
-    : '<div class="tablet-missing">⚠ Missing</div><input class="tablet-input" type="text" value="" placeholder="Tablet assigned" data-eid="""" style="margin-top:6px;">';
+function confirmAddUnit(){
+  if(!currentUser){ updateEquipAuthUI('Sign in first to add equipment.'); return; }
+  var t=document.getElementById('add-unit-type').value;
+  if(t)addSpecificEquip(t);
+  closeAddUnitModal();
 }
 
 function eqRowHtml(e,idx){
   var sc={operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'}[e.status]||'';
   var notes=(e.notes||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-  var name=(e.name||e.unit||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  var name=(e.name||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
   var tablet=(e.tabletAssigned||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
   return '<tr>'
-    +'<td style="text-align:center;"><span class="equip-id">'+e.unit+'</span></td>'
+    +'<td style="text-align:center;"><span class="equip-id">'+String(idx+1).padStart(2,'0')+'</span></td>'
     +'<td style="text-align:center;"><input class="name-input" type="text" value="'+name+'" placeholder="Equipment name" data-eid="'+e.id+'"></td>'
     +'<td style="text-align:center;"><select id="sel-'+e.id+'" class="status-select '+sc+'" data-eid="'+e.id+'">'
     +'<option value="operational"'+(e.status==='operational'?' selected':'')+'>Operational</option>'
@@ -744,6 +922,10 @@ function eqRowHtml(e,idx){
 function renderEquipBanner(){
   var banner=document.getElementById('equip-banner');
   if(!banner) return;
+  if(!currentUser){
+    banner.innerHTML='';
+    return;
+  }
   var down=equipment.filter(function(e){return e.status==='down';});
   var maint=equipment.filter(function(e){return e.status==='maintenance';});
   var html='';
@@ -762,6 +944,12 @@ function renderEquipment(){
   renderEquipBanner();
   var container=document.getElementById('equip-content');
   if(!container) return;
+
+  if(!currentUser){
+    container.innerHTML = '<div style="padding:18px 24px 28px;"><div class="equip-auth-card"><div class="equip-auth-title">Equipment sync is locked</div><div class="equip-auth-sub">Sign in above to view and edit the shared equipment table. Once signed in, updates will save to Supabase for everyone.</div></div></div>';
+    return;
+  }
+
   var html='';
   EQ_TYPES.forEach(function(type){
     var units=equipment.filter(function(e){return e.type===type;});
@@ -792,14 +980,22 @@ function renderEquipment(){
       deleteEquipment(this.dataset.eid);
     });
   });
-  container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){btn.addEventListener('click',function(){addSpecificEquip(this.dataset.type);});});
+  container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){
+    btn.addEventListener('click',function(){addSpecificEquip(this.dataset.type);});
+  });
 }
 
 // ── INIT ──
 load();
 render();
-loadEquipment();
 
+(async function(){
+  await initSupabaseSession();
+  if(currentUser){
+    await loadEquipment();
+  }
+  renderEquipment();
+})();
 document.addEventListener('click',function(e){
   var btn=e.target.closest('.equip-del-btn');
   if(btn){
