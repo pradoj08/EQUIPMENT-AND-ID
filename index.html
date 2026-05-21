@@ -143,56 +143,30 @@ select option{background:var(--surface)}
 .equip-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;table-layout:fixed}
 .equip-table th{text-align:center;padding:7px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);font-weight:500}
 .equip-table td{text-align:center;padding:7px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.equip-table th:nth-child(4),.equip-table td:nth-child(4){text-align:center}
-.equip-table th:nth-child(4){width:16%}
-.equip-table td:nth-child(4){padding-left:8px;padding-right:8px}
 .equip-table tr:hover td{background:var(--surface2)}
 .equip-id{color:var(--text);font-weight:500}
 .status-select{background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;cursor:pointer;width:140px}
-.equip-table .name-input,.equip-table .tablet-input,.equip-table .notes-input{width:100%;text-align:center}
 .status-select:focus{border-color:var(--accent)}
 .status-op{color:#6ee7b7;border-color:rgba(16,185,129,.4)!important;background:rgba(16,185,129,.08)!important}
 .status-down{color:#fca5a5;border-color:rgba(239,68,68,.4)!important;background:rgba(239,68,68,.08)!important}
 .status-maint{color:#fcd34d;border-color:rgba(245,158,11,.4)!important;background:rgba(245,158,11,.08)!important}
 .status-stand{color:#a5b4fc;border-color:rgba(129,140,248,.4)!important;background:rgba(129,140,248,.08)!important}
-.notes-input,.name-input,.tablet-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--muted);outline:none;width:100%;transition:all .15s}
-.notes-input:hover,.name-input:hover,.tablet-input:hover{border-color:var(--border2);color:var(--text)}
-.notes-input:focus,.name-input:focus,.tablet-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
-.name-input{color:var(--text);font-weight:500}
-.tablet-input{text-align:center;max-width:180px;margin:0 auto;display:block}
+.notes-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--muted);outline:none;width:100%;transition:all .15s}
+.notes-input:hover{border-color:var(--border2);color:var(--text)}
+.notes-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
+.name-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;transition:all .15s;text-align:center}
+.name-input:hover{border-color:var(--border2);color:var(--text)}
+.name-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
+.tablet-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;transition:all .15s;text-align:center;max-width:180px;margin:0 auto;display:block}
+.tablet-input:hover{border-color:var(--border2);color:var(--text)}
+.tablet-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
+.tablet-missing{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:4px 8px;border-radius:4px;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.12);color:#fca5a5;font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+
 .equip-add-btn{font-family:var(--mono);font-size:11px;letter-spacing:.5px;padding:4px 12px;border-radius:4px;border:1px dashed var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;margin:8px 12px}
 .equip-add-btn:hover{border-color:var(--accent);color:var(--accent)}
 .equip-del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:3px;transition:color .15s}
 .equip-del-btn:hover{color:var(--danger)}
 .down-count-badge{font-size:10px;padding:1px 7px;border-radius:10px;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
-
-.tablet-missing{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-  padding:4px 8px;
-  border-radius:4px;
-  border:1px solid rgba(239,68,68,.35);
-  background:rgba(239,68,68,.12);
-  color:#fca5a5;
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-}
-
-
-.equip-auth-shell{padding:18px 24px 0}
-.equip-auth-card{border:1px solid rgba(74,158,255,.25);background:linear-gradient(135deg,#101522,#0c101a);border-radius:12px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.22)}
-.equip-auth-title{font-family:var(--mono);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.equip-auth-sub{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:12px}
-.equip-auth-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.equip-auth-row input{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none}
-.equip-auth-row input:focus{border-color:var(--accent)}
-.equip-auth-note{margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
-.equip-auth-status{font-family:var(--mono);font-size:11px;letter-spacing:.7px;color:var(--muted);margin-top:10px}
-
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -280,7 +254,6 @@ select option{background:var(--surface)}
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
   </button></div>
 </div>
-<div id="equip-auth" class="equip-auth-shell"></div>
 <div id="equip-banner"></div>
 <div id="equip-content" style="padding-bottom:24px;"></div>
 </div><!-- end page-equipment -->
@@ -343,8 +316,6 @@ select option{background:var(--surface)}
 <div id="save-toast">
   <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Saved
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 // ── EMPLOYEE DATA ──
@@ -657,178 +628,24 @@ function switchPage(p){
   if(p==='equipment') renderEquipment();
 }
 
-
 // ── EQUIPMENT ──
-const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 var EQ_KEY='eit_eq_v1';
 var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
+var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
 var equipment=[];
-var currentUser=null;
-var authNotice='';
 
-async function initSupabaseSession(){
-  const { data } = await supabase.auth.getSession();
-  currentUser = data && data.session ? data.session.user : null;
-  updateEquipAuthUI();
+function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+
+function loadEquipment(){
+  try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
+  equipment = Array.isArray(equipment) ? equipment : [];
 }
-
-function normalizeEquipmentRow(e){
-  return {
-    id: e.id,
-    type: e.type || 'Hostler',
-    unit: e.unit || '',
-    name: e.name || '',
-    tabletAssigned: e.tablet_assigned || '',
-    status: e.status || 'operational',
-    notes: e.notes || ''
-  };
-}
-
-function updateEquipAuthUI(message){
-  if(message) authNotice = message;
-  var el = document.getElementById('equip-auth');
-  if(!el) return;
-
-  if(currentUser){
-    el.innerHTML =
-      '<div class="equip-auth-card">'
-        +'<div class="equip-auth-title">Signed in</div>'
-        +'<div class="equip-auth-sub">Shared equipment sync is live for '+(currentUser.email || 'your account')+'.</div>'
-        +'<div class="equip-auth-status">'+(authNotice || 'Your changes save to Supabase automatically.')+'</div>'
-        +'<div style="margin-top:12px;display:flex;gap:10px;align-items:center;">'
-          +'<button class="btn btn-ghost" id="equip-signout-btn" type="button">Sign Out</button>'
-        +'</div>'
-      +'</div>';
-    var outBtn = document.getElementById('equip-signout-btn');
-    if(outBtn) outBtn.onclick = signOutEquipment;
-  } else {
-    el.innerHTML =
-      '<div class="equip-auth-card">'
-        +'<div class="equip-auth-title">Sign in to sync equipment</div>'
-        +'<div class="equip-auth-sub">Enter your email and Supabase will send a magic link. After sign-in, everybody using this app can share the same live equipment table.</div>'
-        +'<div class="equip-auth-row">'
-          +'<input id="equip-email" type="email" placeholder="coworker@company.com" autocomplete="email">'
-          +'<button class="btn btn-primary" id="equip-login-btn" type="button">Send Login Link</button>'
-        +'</div>'
-        +'<div class="equip-auth-note">Uses the authenticated Supabase policies you already created.</div>'
-        +'<div class="equip-auth-status">'+(authNotice || 'Not signed in.')+'</div>'
-      +'</div>';
-    var btn = document.getElementById('equip-login-btn');
-    if(btn) btn.onclick = signInEquipment;
-  }
-}
-
-async function signInEquipment(){
-  var input = document.getElementById('equip-email');
-  var email = input ? input.value.trim() : '';
-  if(!email){
-    updateEquipAuthUI('Enter an email address first.');
-    return;
-  }
-  authNotice = 'Sending sign-in link...';
-  updateEquipAuthUI();
-
-  const { error } = await supabase.auth.signInWithOtp({
-    email: email,
-    options: {
-      emailRedirectTo: window.location.href
-    }
-  });
-
-  if(error){
-    console.error(error);
-    updateEquipAuthUI('Sign-in failed: ' + error.message);
-    return;
-  }
-
-  updateEquipAuthUI('Check your email for the sign-in link.');
-}
-
-async function signOutEquipment(){
-  const { error } = await supabase.auth.signOut();
-  if(error){
-    console.error(error);
-    updateEquipAuthUI('Sign-out failed: ' + error.message);
-    return;
-  }
-  currentUser = null;
-  equipment = [];
-  authNotice = 'Signed out.';
-  updateEquipAuthUI();
-  renderEquipment();
-}
-
-supabase.auth.onAuthStateChange(function(event, session){
-  currentUser = session ? session.user : null;
-  authNotice = event === 'SIGNED_IN' ? 'Signed in successfully.' : (event === 'SIGNED_OUT' ? 'Signed out.' : authNotice);
-  updateEquipAuthUI();
-  if(currentUser){
-    loadEquipment().then(function(){ renderEquipment(); });
-  } else {
-    equipment = [];
-    renderEquipment();
-  }
-});
-
-async function loadEquipment(){
-  if(!currentUser){
-    equipment = [];
-    updateEquipAuthUI();
-    return;
-  }
-
-  const { data, error } = await supabase
-    .from('equipment')
-    .select('*')
-    .order('updated_at', { ascending: true });
-
-  if(error){
-    console.error(error);
-    equipment = [];
-    updateEquipAuthUI('Could not load equipment: ' + error.message);
-    return;
-  }
-
-  equipment = Array.isArray(data) ? data.map(normalizeEquipmentRow) : [];
-  updateEquipAuthUI('Loaded ' + equipment.length + ' equipment records.');
-}
-
-async function saveEquipment(){
-  if(!currentUser) return;
-
-  const payload = equipment.map(function(e){
-    return {
-      id: e.id,
-      type: e.type,
-      unit: e.unit,
-      name: e.name || '',
-      tablet_assigned: e.tabletAssigned || '',
-      status: e.status || 'operational',
-      notes: e.notes || '',
-      updated_at: new Date().toISOString()
-    };
-  });
-
-  const { error } = await supabase
-    .from('equipment')
-    .upsert(payload, { onConflict: 'id' });
-
-  if(error){
-    console.error(error);
-    updateEquipAuthUI('Save failed: ' + error.message);
-    return;
-  }
-
-  showSaveToast();
-  updateEquipAuthUI('Saved.');
-}
+function saveEquipment(){localStorage.setItem(EQ_KEY,JSON.stringify(equipment));showSaveToast();}
 
 function seedEquipment(){
-  equipment = [];
+  equipment=[];
+  saveEquipment();
 }
 
 function updateEqStatus(id,val){
@@ -840,60 +657,18 @@ function updateEqStatus(id,val){
   if(sel){sel.className='status-select';var m={operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'};if(m[val])sel.classList.add(m[val]);}
   renderEquipBanner();
 }
-
-function updateEqName(id,val){
-  var e=equipment.find(function(x){return x.id===id;});
-  if(!e) return;
-  e.name=val;
-  saveEquipment();
-}
-
-function updateEqTablet(id,val){
-  var e=equipment.find(function(x){return x.id===id;});
-  if(!e) return;
-  e.tabletAssigned=val;
-  saveEquipment();
-}
-
-function updateEqNotes(id,val){
-  var e=equipment.find(function(x){return x.id===id;});
-  if(e){e.notes=val;saveEquipment();}
-}
-
-async function deleteEquipment(id){
-  if(!id) return;
-  if(!confirm('Remove this unit?')) return;
-
-  const { error } = await supabase.from('equipment').delete().eq('id', id);
-  if(error){
-    console.error(error);
-    updateEquipAuthUI('Delete failed: ' + error.message);
-    return;
-  }
-
-  equipment = equipment.filter(function(e){ return e.id !== id; });
-  renderEquipment();
-  updateEquipAuthUI('Deleted.');
-}
-
+function updateEqName(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.name=val;saveEquipment();}}
+function updateEqTablet(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.tabletAssigned=val;saveEquipment();}}
+function updateEqNotes(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.notes=val;saveEquipment();}}
+function deleteEquipment(id){if(!confirm('Remove this unit?'))return;equipment=equipment.filter(function(e){return e.id!==id;});saveEquipment();renderEquipment();}
 function addSpecificEquip(type){
-  var n=equipment.filter(function(e){return e.type===type;}).length;
-  equipment.push({id:eqUid(),type:type,unit:String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
-  saveEquipment();
-  renderEquipment();
+  var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
+  equipment.push({id:eqUid(),type:type,unit:pre+'-'+String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
+  saveEquipment();renderEquipment();
 }
-
-function openAddUnitModal(){
-  if(!currentUser){ updateEquipAuthUI('Sign in first to add equipment.'); return; }
-  document.getElementById('add-unit-modal').style.display='flex';
-}
+function openAddUnitModal(){document.getElementById('add-unit-modal').style.display='flex';}
 function closeAddUnitModal(){document.getElementById('add-unit-modal').style.display='none';}
-function confirmAddUnit(){
-  if(!currentUser){ updateEquipAuthUI('Sign in first to add equipment.'); return; }
-  var t=document.getElementById('add-unit-type').value;
-  if(t)addSpecificEquip(t);
-  closeAddUnitModal();
-}
+function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)addSpecificEquip(t);closeAddUnitModal();}
 
 function eqRowHtml(e,idx){
   var sc={operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'}[e.status]||'';
@@ -922,10 +697,6 @@ function eqRowHtml(e,idx){
 function renderEquipBanner(){
   var banner=document.getElementById('equip-banner');
   if(!banner) return;
-  if(!currentUser){
-    banner.innerHTML='';
-    return;
-  }
   var down=equipment.filter(function(e){return e.status==='down';});
   var maint=equipment.filter(function(e){return e.status==='maintenance';});
   var html='';
@@ -944,12 +715,6 @@ function renderEquipment(){
   renderEquipBanner();
   var container=document.getElementById('equip-content');
   if(!container) return;
-
-  if(!currentUser){
-    container.innerHTML = '<div style="padding:18px 24px 28px;"><div class="equip-auth-card"><div class="equip-auth-title">Equipment sync is locked</div><div class="equip-auth-sub">Sign in above to view and edit the shared equipment table. Once signed in, updates will save to Supabase for everyone.</div></div></div>';
-    return;
-  }
-
   var html='';
   EQ_TYPES.forEach(function(type){
     var units=equipment.filter(function(e){return e.type===type;});
@@ -965,37 +730,30 @@ function renderEquipment(){
       +'<table class="equip-table"><thead><tr>'
       +'<th style="width:10%;text-align:center;">Equipment Count</th><th style="width:18%;text-align:center;">Equipment Name</th><th style="width:16%;text-align:center;">Status</th><th style="width:16%;text-align:center;">Tablet Assigned</th><th style="width:30%;text-align:center;">Notes</th><th style="width:8%;text-align:center;"></th>'
       +'</tr></thead><tbody>'
-      +units.map(eqRowHtml).join('')
+      +units.map(function(e,idx){return eqRowHtml(e,idx);}).join('')
       +'</tbody></table></div>';
   });
   container.innerHTML=html;
   container.querySelectorAll('select[data-eid]').forEach(function(sel){sel.addEventListener('change',function(){updateEqStatus(this.dataset.eid,this.value);});});
   container.querySelectorAll('input.name-input[data-eid]').forEach(function(inp){inp.addEventListener('change',function(){updateEqName(this.dataset.eid,this.value);});});
-  container.querySelectorAll('input.tablet-input[data-eid]').forEach(function(inp){inp.addEventListener('change',function(){updateEqTablet(this.dataset.eid,this.value);});});
+  container.querySelectorAll('input.tablet-input[data-eid]').forEach(function(inp){inp.addEventListener('input',function(){
+    updateEqTablet(this.dataset.eid,this.value);
+    var cell=this.closest('td'); if(!cell) return;
+    var value=this.value.trim();
+    var flag=cell.querySelector('.tablet-missing');
+    if(value){ if(flag) flag.remove(); this.style.marginTop=''; }
+    else { if(!flag){ var d=document.createElement('div'); d.className='tablet-missing'; d.textContent='⚠ Missing'; cell.insertBefore(d,this); } this.style.marginTop='6px'; }
+  });});
   container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){inp.addEventListener('change',function(){updateEqNotes(this.dataset.eid,this.value);});});
-  container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){
-    btn.addEventListener('click',function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      deleteEquipment(this.dataset.eid);
-    });
-  });
-  container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){
-    btn.addEventListener('click',function(){addSpecificEquip(this.dataset.type);});
-  });
+  container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();deleteEquipment(this.dataset.eid);});});
+  container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){btn.addEventListener('click',function(){addSpecificEquip(this.dataset.type);});});
 }
 
 // ── INIT ──
 load();
 render();
+loadEquipment();
 
-(async function(){
-  await initSupabaseSession();
-  if(currentUser){
-    await loadEquipment();
-  }
-  renderEquipment();
-})();
 document.addEventListener('click',function(e){
   var btn=e.target.closest('.equip-del-btn');
   if(btn){
@@ -1005,28 +763,24 @@ document.addEventListener('click',function(e){
   }
 }, true);
 
-
-document.addEventListener('input', function(e){
+document.addEventListener('input',function(e){
   if(!e.target.classList.contains('tablet-input')) return;
-
-  var input = e.target;
-  var cell = input.closest('td');
+  var input=e.target;
+  var cell=input.closest('td');
   if(!cell) return;
-
-  var value = input.value.trim();
-  var existingFlag = cell.querySelector('.tablet-missing');
-
+  var value=input.value.trim();
+  var flag=cell.querySelector('.tablet-missing');
   if(value){
-    if(existingFlag) existingFlag.remove();
-    input.style.marginTop = '0px';
-  } else {
-    if(!existingFlag){
-      var flag = document.createElement('div');
-      flag.className = 'tablet-missing';
-      flag.textContent = '⚠ Missing';
-      cell.insertBefore(flag, input);
+    if(flag) flag.remove();
+    input.style.marginTop='';
+  }else{
+    if(!flag){
+      var d=document.createElement('div');
+      d.className='tablet-missing';
+      d.textContent='⚠ Missing';
+      cell.insertBefore(d,input);
     }
-    input.style.marginTop = '6px';
+    input.style.marginTop='6px';
   }
 });
 
