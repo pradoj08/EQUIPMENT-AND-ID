@@ -256,6 +256,14 @@ select option{background:var(--surface)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 <style id="table-scale"></style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://jfgmjoejlcttgnzplbte.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
 </head>
 <body>
 
@@ -438,6 +446,7 @@ function showSaveToast(){
 function save(){
   pushHistory();
   localStorage.setItem(STORAGE_KEY,JSON.stringify(employees));
+  queueSharedSave();
   showSaveToast();
 }
 
@@ -719,13 +728,78 @@ var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
 var equipment=[];
 
+var SHARED_STATE_ID='global_state';
+var sharedSaveTimer=null;
+var sharedStateLoaded=false;
+
+async function loadSharedState(){
+  try{
+    const { data, error } = await supabaseClient
+      .from('app_state')
+      .select('data')
+      .eq('id', SHARED_STATE_ID)
+      .maybeSingle();
+
+    if(error){
+      console.error('Supabase load error:', error);
+      return false;
+    }
+
+    if(data && data.data){
+      const payload = data.data || {};
+      if(Array.isArray(payload.employees)) employees = payload.employees;
+      if(Array.isArray(payload.equipment)) equipment = payload.equipment;
+    } else {
+      // First run: seed employees if needed and create an empty shared state row.
+      if(!Array.isArray(employees) || !employees.length) seedData();
+      if(!Array.isArray(equipment)) equipment = [];
+      await saveSharedState();
+    }
+
+    sharedStateLoaded = true;
+    return true;
+  }catch(err){
+    console.error(err);
+    return false;
+  }
+}
+
+async function saveSharedState(){
+  try{
+    const payload = {
+      id: SHARED_STATE_ID,
+      data: { employees: employees, equipment: equipment },
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabaseClient
+      .from('app_state')
+      .upsert(payload, { onConflict: 'id' });
+
+    if(error) console.error('Supabase save error:', error);
+  }catch(err){
+    console.error(err);
+  }
+}
+
+function queueSharedSave(){
+  clearTimeout(sharedSaveTimer);
+  sharedSaveTimer = setTimeout(function(){
+    saveSharedState();
+  }, 250);
+}
+
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 function loadEquipment(){
   try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
   equipment = Array.isArray(equipment) ? equipment : [];
 }
-function saveEquipment(){localStorage.setItem(EQ_KEY,JSON.stringify(equipment));showSaveToast();}
+function saveEquipment(){
+  localStorage.setItem(EQ_KEY,JSON.stringify(equipment));
+  queueSharedSave();
+  showSaveToast();
+}
 
 function seedEquipment(){
   equipment=[];
@@ -837,6 +911,10 @@ function renderEquipment(){
 load();
 render();
 loadEquipment();
+loadSharedState().then(function(){
+  render();
+  renderEquipment();
+});
 
 document.addEventListener('click',function(e){
   var btn=e.target.closest('.equip-del-btn');
@@ -870,7 +948,7 @@ document.addEventListener('input',function(e){
 
 </script>
 
-<div class="eq-login-overlay" id="eq-login-overlay">
+<div class="eq-login-overlay" id="eq-login-overlay" style="display:none;">
   <div class="eq-login-modal">
     <div class="eq-login-title">Equipment Access</div>
     <div class="eq-login-sub">Sign in to access and save live equipment updates.</div>
