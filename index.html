@@ -191,6 +191,10 @@ select option{background:var(--surface)}
   color:var(--text);
   outline:none;
 }
+.eq-auth-panel input[readonly]{
+  opacity:.82;
+  cursor:default;
+}
 .eq-auth-panel input:focus{border-color:var(--accent)}
 .eq-auth-btn{
   font-family:var(--mono);
@@ -214,6 +218,16 @@ select option{background:var(--surface)}
   font-size:11px;
   color:var(--muted);
   margin-left:auto;
+  white-space:nowrap;
+}
+.eq-lock-overlay{
+  margin:16px 24px 0;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:rgba(30,35,51,.55);
+  font-family:var(--mono);
+  color:var(--muted);
 }
 
 ::-webkit-scrollbar{width:6px;height:6px}
@@ -311,15 +325,13 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
   </button></div>
 </div>
-
 <div class="eq-auth-panel" id="eq-auth-panel">
-  <input id="eq-email" type="email" placeholder="Supabase email" />
+  <input id="eq-username" type="text" readonly / readonly style="pointer-events:none;opacity:.85;">
   <input id="eq-password" type="password" placeholder="Password" />
   <button class="eq-auth-btn" onclick="signInEq()">Sign In</button>
   <button class="eq-auth-btn eq-auth-secondary" onclick="signOutEq()">Sign Out</button>
-  <span id="eq-auth-status" class="eq-auth-status">Signed out</span>
+  <span id="eq-auth-status" class="eq-auth-status">Sign-in to save</span>
 </div>
-
 <div id="equip-banner"></div>
 <div id="equip-content" style="padding-bottom:24px;"></div>
 </div><!-- end page-equipment -->
@@ -706,63 +718,48 @@ var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
 var equipment=[];
-var eqSession=null;
-var eqAuthInitDone=false;
+var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
+var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
 
-async function updateEqAuthStatus(){
+function syncEqLoginUI(){
+  var u=document.getElementById('eq-username');
   var st=document.getElementById('eq-auth-status');
-  if(st){
-    st.textContent = eqSession && eqSession.user && eqSession.user.email
-      ? ('Signed in: ' + eqSession.user.email)
-      : 'Signed out';
-  }
-  var addBtn=document.querySelector('#page-equipment button[onclick="openAddUnitModal()"]');
-  if(addBtn) addBtn.disabled = !eqSession;
+  var panel=document.getElementById('eq-auth-panel');
+  if(u) u.value = eqLoginUsername;
+  if(st) st.textContent = eqLoggedIn ? ('Signed in as ' + eqLoginUsername) : 'Sign-in to save';
+  if(panel) panel.style.opacity = eqLoggedIn ? '1' : '1';
 }
 
-async function refreshEqSession(){
-  try{
-    var res=await supabaseClient.auth.getSession();
-    eqSession=res && res.data ? res.data.session : null;
-  }catch(e){
-    console.error(e);
-    eqSession=null;
-  }
-  await updateEqAuthStatus();
-}
-async function signInEq(){
-  var email=(document.getElementById('eq-email')||{}).value?.trim() || '';
-  var password=(document.getElementById('eq-password')||{}).value || '';
-  if(!email || !password){
-    alert('Enter your Supabase email and password.');
+function signInEq(){
+  var pw=(document.getElementById('eq-password')||{}).value || '';
+  var u=(document.getElementById('eq-username')||{}).value || 'admin';
+  // This is an app-level gate only; credentials are not echoed back.
+  if(!pw){
+    alert('Enter the password.');
     return;
   }
-  var result=await supabaseClient.auth.signInWithPassword({ email: email, password: password });
-  if(result.error){
-    alert(result.error.message);
-    return;
-  }
-  eqSession=result.data.session || null;
-  await updateEqAuthStatus();
-  await loadEquipment();
+  eqLoginUsername = u.trim() || 'admin';
+  eqLoggedIn = true;
+  sessionStorage.setItem('eq_logged_in','1');
+  sessionStorage.setItem('eq_login_username', eqLoginUsername);
+  var pwEl=document.getElementById('eq-password'); if(pwEl) pwEl.value='';
+  syncEqLoginUI();
   renderEquipment();
 }
-async function signOutEq(){
-  await supabaseClient.auth.signOut();
-  eqSession=null;
-  await updateEqAuthStatus();
-  equipment=[];
+
+function signOutEq(){
+  eqLoggedIn = false;
+  sessionStorage.removeItem('eq_logged_in');
+  syncEqLoginUI();
   renderEquipment();
 }
+
+var eqLoginUsername = localStorage.getItem('eq_login_username') || 'admin';
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 
 async function loadEquipment(){
-  if(!eqSession){
-    equipment = [];
-    return;
-  }
   try{
     const { data, error } = await supabaseClient
       .from('equipment')
@@ -794,10 +791,6 @@ async function loadEquipment(){
 }
 
 async function saveEquipment(){
-  if(!eqSession){
-    alert('Please sign in first.');
-    return;
-  }
   try{
     for(const e of equipment){
       await supabaseClient
@@ -894,6 +887,14 @@ function renderEquipment(){
   renderEquipBanner();
   var container=document.getElementById('equip-content');
   if(!container) return;
+
+  syncEqLoginUI();
+
+  if(!eqLoggedIn){
+    container.innerHTML = '<div class="eq-lock-overlay">Sign in to unlock equipment editing.</div>';
+    return;
+  }
+
   var html='';
   EQ_TYPES.forEach(function(type){
     var units=equipment.filter(function(e){return e.type===type;});
@@ -932,6 +933,7 @@ function renderEquipment(){
 load();
 ensureEmployeeRoster();
 render();
+syncEqLoginUI();
 loadEquipment().then(renderEquipment);
 loadEquipment();
 
