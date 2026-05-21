@@ -168,66 +168,87 @@ select option{background:var(--surface)}
 .equip-del-btn:hover{color:var(--danger)}
 .down-count-badge{font-size:10px;padding:1px 7px;border-radius:10px;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
 
-.eq-auth-panel{
-  margin:10px 24px 0;
-  padding:10px 12px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:rgba(30,35,51,.72);
+.eq-login-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,15,.92);
+  backdrop-filter:blur(8px);
+  z-index:99999;
   display:flex;
   align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
+  justify-content:center;
 }
-.eq-auth-panel input{
-  width:180px;
-  max-width:100%;
-  background:var(--bg);
-  border:1px solid var(--border2);
-  border-radius:5px;
-  padding:7px 10px;
+.eq-login-modal{
+  width:420px;
+  max-width:92vw;
+  border:1px solid rgba(74,158,255,.35);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(11,18,32,.98));
+  box-shadow:0 24px 80px rgba(0,0,0,.55);
+  padding:28px;
+}
+.eq-login-title{
+  font-family:var(--mono);
+  font-size:22px;
+  letter-spacing:1px;
+  color:var(--text);
+  margin-bottom:8px;
+}
+.eq-login-sub{
   font-family:var(--mono);
   font-size:12px;
+  color:var(--muted);
+  margin-bottom:18px;
+  line-height:1.5;
+}
+.eq-login-user,
+.eq-login-pass{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:var(--mono);
+  font-size:13px;
   color:var(--text);
   outline:none;
+  margin-bottom:10px;
 }
-.eq-auth-panel input[readonly]{
-  opacity:.82;
-  cursor:default;
+.eq-login-user[readonly]{
+  pointer-events:none;
+  opacity:.9;
 }
-.eq-auth-panel input:focus{border-color:var(--accent)}
-.eq-auth-btn{
+.eq-login-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.eq-login-btn{
+  flex:1;
+  border:none;
+  border-radius:10px;
+  padding:12px 14px;
   font-family:var(--mono);
-  font-size:11px;
-  letter-spacing:.5px;
+  font-size:12px;
   text-transform:uppercase;
-  padding:6px 12px;
-  border-radius:5px;
+  letter-spacing:.8px;
   cursor:pointer;
   border:1px solid var(--accent);
   background:rgba(74,158,255,.12);
-  color:#9ec8ff;
+  color:#cfe3ff;
 }
-.eq-auth-secondary{
-  border-color:var(--border2);
-  background:transparent;
-  color:var(--muted);
-}
-.eq-auth-status{
+.eq-login-status{
+  margin-top:10px;
   font-family:var(--mono);
   font-size:11px;
   color:var(--muted);
-  margin-left:auto;
-  white-space:nowrap;
 }
-.eq-lock-overlay{
-  margin:16px 24px 0;
-  padding:18px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:rgba(30,35,51,.55);
+.eq-login-error{
+  display:none;
+  margin-top:10px;
+  color:#fca5a5;
   font-family:var(--mono);
-  color:var(--muted);
+  font-size:12px;
 }
 
 ::-webkit-scrollbar{width:6px;height:6px}
@@ -235,14 +256,6 @@ select option{background:var(--surface)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 <style id="table-scale"></style>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-</script>
-
 </head>
 <body>
 
@@ -324,13 +337,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   <div><button onclick="openAddUnitModal()" style="font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid #4a9eff;background:rgba(74,158,255,.12);color:#4a9eff;display:flex;align-items:center;gap:6px;">
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
   </button></div>
-</div>
-<div class="eq-auth-panel" id="eq-auth-panel">
-  <input id="eq-username" type="text" readonly / readonly style="pointer-events:none;opacity:.85;">
-  <input id="eq-password" type="password" placeholder="Password" />
-  <button class="eq-auth-btn" onclick="signInEq()">Sign In</button>
-  <button class="eq-auth-btn eq-auth-secondary" onclick="signOutEq()">Sign Out</button>
-  <span id="eq-auth-status" class="eq-auth-status">Sign-in to save</span>
 </div>
 <div id="equip-banner"></div>
 <div id="equip-content" style="padding-bottom:24px;"></div>
@@ -433,12 +439,6 @@ function save(){
   pushHistory();
   localStorage.setItem(STORAGE_KEY,JSON.stringify(employees));
   showSaveToast();
-}
-
-function ensureEmployeeRoster(){
-  if(!Array.isArray(employees) || !employees.length){
-    seedData();
-  }
 }
 
 function seedData(){
@@ -718,102 +718,14 @@ var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
 var equipment=[];
-var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
-var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
-
-function syncEqLoginUI(){
-  var u=document.getElementById('eq-username');
-  var st=document.getElementById('eq-auth-status');
-  var panel=document.getElementById('eq-auth-panel');
-  if(u) u.value = eqLoginUsername;
-  if(st) st.textContent = eqLoggedIn ? ('Signed in as ' + eqLoginUsername) : 'Sign-in to save';
-  if(panel) panel.style.opacity = eqLoggedIn ? '1' : '1';
-}
-
-function signInEq(){
-  var pw=(document.getElementById('eq-password')||{}).value || '';
-  var u=(document.getElementById('eq-username')||{}).value || 'admin';
-  // This is an app-level gate only; credentials are not echoed back.
-  if(!pw){
-    alert('Enter the password.');
-    return;
-  }
-  eqLoginUsername = u.trim() || 'admin';
-  eqLoggedIn = true;
-  sessionStorage.setItem('eq_logged_in','1');
-  sessionStorage.setItem('eq_login_username', eqLoginUsername);
-  var pwEl=document.getElementById('eq-password'); if(pwEl) pwEl.value='';
-  syncEqLoginUI();
-  renderEquipment();
-}
-
-function signOutEq(){
-  eqLoggedIn = false;
-  sessionStorage.removeItem('eq_logged_in');
-  syncEqLoginUI();
-  renderEquipment();
-}
-
-var eqLoginUsername = localStorage.getItem('eq_login_username') || 'admin';
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
-
-async function loadEquipment(){
-  try{
-    const { data, error } = await supabaseClient
-      .from('equipment')
-      .select('*')
-      .order('updated_at', { ascending: true });
-
-    if(error){
-      console.error('Supabase load error:', error);
-      equipment = [];
-      return;
-    }
-
-    equipment = (data || []).map(function(row){
-      return {
-        id: row.id,
-        type: row.type || 'Hostler',
-        unit: row.unit || '',
-        name: row.name || '',
-        tabletAssigned: row.tablet_assigned || '',
-        status: row.status || 'operational',
-        notes: row.notes || ''
-      };
-    });
-
-  }catch(e){
-    console.error(e);
-    equipment = [];
-  }
+function loadEquipment(){
+  try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
+  equipment = Array.isArray(equipment) ? equipment : [];
 }
-
-async function saveEquipment(){
-  try{
-    for(const e of equipment){
-      await supabaseClient
-        .from('equipment')
-        .upsert({
-          id: e.id,
-          type: e.type,
-          unit: e.unit,
-          name: e.name,
-          tablet_assigned: e.tabletAssigned,
-          status: e.status,
-          notes: e.notes
-        });
-    }
-
-    showSaveToast();
-
-  }catch(err){
-    console.error('Save failed:', err);
-    alert('Supabase save failed. Check console.');
-  }
-}
-
+function saveEquipment(){localStorage.setItem(EQ_KEY,JSON.stringify(equipment));showSaveToast();}
 
 function seedEquipment(){
   equipment=[];
@@ -887,14 +799,6 @@ function renderEquipment(){
   renderEquipBanner();
   var container=document.getElementById('equip-content');
   if(!container) return;
-
-  syncEqLoginUI();
-
-  if(!eqLoggedIn){
-    container.innerHTML = '<div class="eq-lock-overlay">Sign in to unlock equipment editing.</div>';
-    return;
-  }
-
   var html='';
   EQ_TYPES.forEach(function(type){
     var units=equipment.filter(function(e){return e.type===type;});
@@ -931,10 +835,7 @@ function renderEquipment(){
 
 // ── INIT ──
 load();
-ensureEmployeeRoster();
 render();
-syncEqLoginUI();
-loadEquipment().then(renderEquipment);
 loadEquipment();
 
 document.addEventListener('click',function(e){
@@ -968,5 +869,60 @@ document.addEventListener('input',function(e){
 });
 
 </script>
+
+<div class="eq-login-overlay" id="eq-login-overlay">
+  <div class="eq-login-modal">
+    <div class="eq-login-title">Equipment Access</div>
+    <div class="eq-login-sub">Sign in to access and save live equipment updates.</div>
+    <input class="eq-login-user" type="text" value="CONGLOBAL" readonly>
+    <input id="eq-login-pass" class="eq-login-pass" type="password" placeholder="Enter password">
+    <div class="eq-login-actions">
+      <button class="eq-login-btn" onclick="eqAttemptLogin()">Sign In</button>
+    </div>
+    <div class="eq-login-status" id="eq-login-status">Locked</div>
+    <div class="eq-login-error" id="eq-login-error">Invalid password</div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  const LOGIN_KEY = 'eq_app_logged_in';
+  const LOGIN_PASS = 'admin';
+
+  function showGate(show){
+    const gate = document.getElementById('eq-login-overlay');
+    if(gate) gate.style.display = show ? 'flex' : 'none';
+    const status = document.getElementById('eq-login-status');
+    if(status) status.textContent = show ? 'Locked' : 'Unlocked';
+  }
+
+  window.eqAttemptLogin = function(){
+    const pass = document.getElementById('eq-login-pass');
+    const err = document.getElementById('eq-login-error');
+    if(!pass) return;
+    if(pass.value === LOGIN_PASS){
+      localStorage.setItem(LOGIN_KEY, 'true');
+      if(err) err.style.display = 'none';
+      showGate(false);
+    }else{
+      if(err) err.style.display = 'block';
+      pass.value = '';
+    }
+  };
+
+  window.addEventListener('load', function(){
+    const ok = localStorage.getItem(LOGIN_KEY) === 'true';
+    showGate(!ok);
+    const pass = document.getElementById('eq-login-pass');
+    if(pass){
+      pass.addEventListener('keydown', function(e){
+        if(e.key === 'Enter') window.eqAttemptLogin();
+      });
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
