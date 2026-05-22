@@ -251,6 +251,93 @@ select option{background:var(--surface)}
   font-size:12px;
 }
 
+
+.app-login-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,15,.92);
+  backdrop-filter:blur(8px);
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.app-login-card{
+  width:420px;
+  max-width:92vw;
+  border:1px solid rgba(74,158,255,.35);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(11,18,32,.98));
+  box-shadow:0 24px 80px rgba(0,0,0,.55);
+  padding:28px;
+}
+.app-login-title{
+  font-family:var(--mono);
+  font-size:22px;
+  letter-spacing:1px;
+  color:var(--text);
+  margin-bottom:8px;
+}
+.app-login-sub{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:18px;
+  line-height:1.5;
+}
+.app-login-user,
+.app-login-pass{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:var(--mono);
+  font-size:13px;
+  color:var(--text);
+  outline:none;
+  margin-bottom:10px;
+}
+.app-login-user[readonly]{
+  pointer-events:none;
+  opacity:.9;
+}
+.app-login-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.app-login-btn{
+  flex:1;
+  border:none;
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:var(--mono);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  cursor:pointer;
+  border:1px solid var(--accent);
+  background:rgba(74,158,255,.12);
+  color:#cfe3ff;
+}
+.app-login-error{
+  display:none;
+  margin-top:10px;
+  color:#fca5a5;
+  font-family:var(--mono);
+  font-size:12px;
+}
+.app-login-status{
+  margin-top:10px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+}
+body.app-locked{
+  overflow:hidden;
+}
+
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -411,9 +498,8 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 <script>
 // ── EMPLOYEE DATA ──
-var STORAGE_KEY = 'eit_v1';
-var HISTORY_KEY = 'eit_hist_v1';
 var employees = [];
+var empHistory = [];
 var currentTab = 'all';
 var editId = null;
 var needsAttnVisible = true;
@@ -421,18 +507,9 @@ var _toastTimer;
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
-function load(){
-  try{ employees=JSON.parse(localStorage.getItem(STORAGE_KEY))||[]; }catch(e){ employees=[]; }
-  if(!employees.length) seedData();
-}
-
 function pushHistory(){
-  try{
-    var hist=JSON.parse(localStorage.getItem(HISTORY_KEY))||[];
-    hist.unshift({ts:Date.now(),data:JSON.stringify(employees)});
-    if(hist.length>10) hist=hist.slice(0,10);
-    localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));
-  }catch(e){}
+  empHistory.unshift({ts:Date.now(),data:JSON.stringify(employees)});
+  if(empHistory.length>10) empHistory=empHistory.slice(0,10);
 }
 
 function showSaveToast(){
@@ -445,7 +522,6 @@ function showSaveToast(){
 
 function save(){
   pushHistory();
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(employees));
   queueSharedSave();
   showSaveToast();
 }
@@ -683,7 +759,7 @@ function exportCSV(){
 
 // ── REVERT ──
 function openRevertModal(){
-  var hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
+  var hist=empHistory;
   var list=document.getElementById('revert-list');
   if(!hist.length){list.innerHTML='<p style="font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;padding:24px;">No history yet.</p>';}
   else{
@@ -698,7 +774,7 @@ function openRevertModal(){
   document.getElementById('revert-modal-bg').classList.add('open');
 }
 function restoreSnapshot(i){
-  var hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
+  var hist=empHistory;
   if(!hist[i]) return;
   if(!confirm('Restore to this saved state?')) return;
   employees=JSON.parse(hist[i].data);
@@ -722,7 +798,6 @@ function switchPage(p){
 }
 
 // ── EQUIPMENT ──
-var EQ_KEY='eit_eq_v1';
 var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
@@ -741,7 +816,11 @@ async function loadSharedState(){
       .maybeSingle();
 
     if(error){
-      console.error('Supabase load error:', error);
+      console.error('Supabase load error — code:', error.code, '| message:', error.message, '| details:', error.details, '| hint:', error.hint);
+      // Fall back to seed data so the app is usable even if Supabase is unreachable
+      if(!Array.isArray(employees) || !employees.length) seedData();
+      if(!Array.isArray(equipment)) equipment = [];
+      render(); renderEquipment();
       return false;
     }
 
@@ -759,7 +838,10 @@ async function loadSharedState(){
     sharedStateLoaded = true;
     return true;
   }catch(err){
-    console.error(err);
+    console.error('Supabase load exception:', err && err.message ? err.message : err);
+    if(!Array.isArray(employees) || !employees.length) seedData();
+    if(!Array.isArray(equipment)) equipment = [];
+    render(); renderEquipment();
     return false;
   }
 }
@@ -776,9 +858,9 @@ async function saveSharedState(){
       .from('app_state')
       .upsert(payload, { onConflict: 'id' });
 
-    if(error) console.error('Supabase save error:', error);
+    if(error) console.error('Supabase save error — code:', error.code, '| message:', error.message, '| hint:', error.hint);
   }catch(err){
-    console.error(err);
+    console.error('Supabase save exception:', err && err.message ? err.message : err);
   }
 }
 
@@ -792,11 +874,9 @@ function queueSharedSave(){
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 function loadEquipment(){
-  try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
   equipment = Array.isArray(equipment) ? equipment : [];
 }
 function saveEquipment(){
-  localStorage.setItem(EQ_KEY,JSON.stringify(equipment));
   queueSharedSave();
   showSaveToast();
 }
@@ -908,9 +988,6 @@ function renderEquipment(){
 }
 
 // ── INIT ──
-load();
-render();
-loadEquipment();
 loadSharedState().then(function(){
   render();
   renderEquipment();
@@ -965,8 +1042,8 @@ document.addEventListener('input',function(e){
 
 <script>
 (function(){
-  const LOGIN_KEY = 'eq_app_logged_in';
   const LOGIN_PASS = 'admin';
+  var _eqLoggedIn = false;
 
   function showGate(show){
     const gate = document.getElementById('eq-login-overlay');
@@ -980,7 +1057,7 @@ document.addEventListener('input',function(e){
     const err = document.getElementById('eq-login-error');
     if(!pass) return;
     if(pass.value === LOGIN_PASS){
-      localStorage.setItem(LOGIN_KEY, 'true');
+      _eqLoggedIn = true;
       if(err) err.style.display = 'none';
       showGate(false);
     }else{
@@ -990,8 +1067,7 @@ document.addEventListener('input',function(e){
   };
 
   window.addEventListener('load', function(){
-    const ok = localStorage.getItem(LOGIN_KEY) === 'true';
-    showGate(!ok);
+    showGate(true);
     const pass = document.getElementById('eq-login-pass');
     if(pass){
       pass.addEventListener('keydown', function(e){
@@ -1002,5 +1078,46 @@ document.addEventListener('input',function(e){
 })();
 </script>
 
+<script>
+const APP_LOGIN_PASSWORD = 'admin';
+var _appLoggedIn = false;
+
+function showAppGate(show){
+  var gate=document.getElementById('app-login-overlay');
+  if(gate) gate.style.display = show ? 'flex' : 'none';
+  document.body.classList.toggle('app-locked', show);
+  var status=document.getElementById('app-login-status');
+  if(status) status.textContent = show ? 'Locked' : 'Unlocked';
+}
+
+function appAttemptLogin(){
+  var pass=document.getElementById('app-login-pass');
+  var err=document.getElementById('app-login-error');
+  if(!pass) return;
+  if(pass.value===APP_LOGIN_PASSWORD){
+    _appLoggedIn = true;
+    if(err) err.style.display='none';
+    showAppGate(false);
+    loadSharedState().then(function(){
+      render();
+      renderEquipment();
+    });
+  }else{
+    if(err) err.style.display='block';
+    pass.value='';
+  }
+}
+
+window.addEventListener('load', function(){
+  showAppGate(true);
+  var pass=document.getElementById('app-login-pass');
+  if(pass){
+    pass.addEventListener('keydown', function(e){
+      if(e.key==='Enter') appAttemptLogin();
+    });
+  }
+});
+
+</script>
 </body>
 </html>
