@@ -2075,6 +2075,233 @@ setInterval(function(){
   }
 }
 </style>
+
+
+<style id="equipment-layout-refactor-final">
+/* EQUIPMENT TABLE FINAL REFLOW — readable desktop, clean card layout on phone/tablet */
+#equipment-page .equip-section{
+  overflow:hidden !important;
+}
+#equipment-page .roster-table-wrap,
+#equipment-page .table-wrap{
+  overflow-x:auto !important;
+}
+#equipment-page .equip-table{
+  width:100% !important;
+  min-width:0 !important;
+  table-layout:fixed !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  background:#0b0f18 !important;
+}
+#equipment-page .equip-table th,
+#equipment-page .equip-table td{
+  vertical-align:middle !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  overflow-wrap:anywhere !important;
+}
+#equipment-page .equip-table th:nth-child(1),
+#equipment-page .equip-table td:nth-child(1){width:58px !important;text-align:center !important;}
+#equipment-page .equip-table th:nth-child(2),
+#equipment-page .equip-table td:nth-child(2){width:15% !important;}
+#equipment-page .equip-table th:nth-child(3),
+#equipment-page .equip-table td:nth-child(3){width:128px !important;}
+#equipment-page .equip-table th:nth-child(4),
+#equipment-page .equip-table td:nth-child(4){width:170px !important;}
+#equipment-page .equip-table th:nth-child(5),
+#equipment-page .equip-table td:nth-child(5){width:142px !important;}
+#equipment-page .equip-table th:nth-child(6),
+#equipment-page .equip-table td:nth-child(6){width:auto !important;min-width:320px !important;}
+#equipment-page .equip-table th:nth-child(7),
+#equipment-page .equip-table td:nth-child(7){width:54px !important;text-align:center !important;}
+#equipment-page .equip-table .name-input,
+#equipment-page .equip-table .tablet-input,
+#equipment-page .equip-table .notes-input,
+#equipment-page .equip-table select{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  min-height:40px !important;
+  height:auto !important;
+  line-height:1.35 !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+#equipment-page .equip-table .tablet-input{
+  white-space:nowrap !important;
+  overflow-x:auto !important;
+  padding-right:12px !important;
+}
+#equipment-page .equip-table .notes-input{
+  min-height:42px !important;
+  background:#080d17 !important;
+  border:1px solid rgba(148,163,184,.38) !important;
+  color:#f8fafc !important;
+}
+#equipment-page .equip-table tr:has(.eq-status-select.status-maint) td,
+#equipment-page .equip-table tr:has(select.status-maint) td,
+#equipment-page .equip-table tr.eq-row-maintenance td,
+#equipment-page .equip-table tr.eq-maint-row td{
+  background:linear-gradient(180deg,rgba(245,158,11,.28),rgba(92,58,9,.24)) !important;
+  color:#fff7ed !important;
+  border-top:1px solid rgba(251,191,36,.36) !important;
+  border-bottom:1px solid rgba(251,191,36,.30) !important;
+}
+#equipment-page .equip-table tr:has(.eq-status-select.status-maint) .notes-input,
+#equipment-page .equip-table tr:has(select.status-maint) .notes-input,
+#equipment-page .equip-table tr.eq-row-maintenance .notes-input,
+#equipment-page .equip-table tr.eq-maint-row .notes-input{
+  background:rgba(46,31,9,.82) !important;
+  border-color:rgba(251,191,36,.58) !important;
+  color:#fff7ed !important;
+}
+
+/* Phone / narrow tablet: stop forcing spreadsheet columns. Each equipment unit becomes one aligned card. */
+@media (max-width: 1100px){
+  #equipment-page .equip-page-wrap{
+    padding:12px 10px 34px !important;
+    overflow-x:hidden !important;
+  }
+  #equipment-page .equip-section{
+    border-radius:14px !important;
+    margin-bottom:16px !important;
+  }
+  #equipment-page .equip-section-title{
+    padding:12px !important;
+  }
+  #equipment-page .eq-section-add-btn{
+    margin-left:0 !important;
+    width:100% !important;
+    justify-content:center !important;
+  }
+  #equipment-page .equip-table,
+  #equipment-page .equip-table thead,
+  #equipment-page .equip-table tbody,
+  #equipment-page .equip-table tr,
+  #equipment-page .equip-table th,
+  #equipment-page .equip-table td{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+  #equipment-page .equip-table{
+    background:transparent !important;
+    table-layout:auto !important;
+  }
+  #equipment-page .equip-table thead{
+    display:none !important;
+  }
+  #equipment-page .equip-table tbody{
+    padding:10px !important;
+    background:#0b0f18 !important;
+  }
+  #equipment-page .equip-table tr{
+    display:grid !important;
+    grid-template-columns:70px 1fr !important;
+    gap:8px 10px !important;
+    margin:0 0 12px !important;
+    padding:12px !important;
+    border-radius:16px !important;
+    border:1px solid rgba(148,163,184,.24) !important;
+    border-left:4px solid var(--row-accent,#4a9eff) !important;
+    background:linear-gradient(180deg,#151c2b,#0f1521) !important;
+    box-shadow:0 10px 24px rgba(0,0,0,.24) !important;
+  }
+  #equipment-page .equip-table tr:last-child{margin-bottom:0 !important;}
+  #equipment-page .equip-table td{
+    display:grid !important;
+    grid-template-columns:92px minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:10px !important;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    color:#eef2ff !important;
+  }
+  #equipment-page .equip-table td:nth-child(1){
+    grid-column:1 / 2 !important;
+    grid-row:1 / 3 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  #equipment-page .equip-table td:nth-child(2){grid-column:2 / 3 !important;grid-template-columns:0 minmax(0,1fr) !important;}
+  #equipment-page .equip-table td:nth-child(3),
+  #equipment-page .equip-table td:nth-child(4),
+  #equipment-page .equip-table td:nth-child(5),
+  #equipment-page .equip-table td:nth-child(6),
+  #equipment-page .equip-table td:nth-child(7){grid-column:1 / -1 !important;}
+  #equipment-page .equip-table td:nth-child(2)::before{content:'' !important;display:none !important;}
+  #equipment-page .equip-table td:nth-child(3)::before{content:'Status' !important;}
+  #equipment-page .equip-table td:nth-child(4)::before{content:'Tablet' !important;}
+  #equipment-page .equip-table td:nth-child(5)::before{content:'Charged' !important;}
+  #equipment-page .equip-table td:nth-child(6)::before{content:'Notes' !important;}
+  #equipment-page .equip-table td:nth-child(7)::before{content:'' !important;display:none !important;}
+  #equipment-page .equip-table td::before{
+    font-family:var(--mono) !important;
+    font-size:9px !important;
+    letter-spacing:1.3px !important;
+    text-transform:uppercase !important;
+    color:#94a3b8 !important;
+    white-space:nowrap !important;
+  }
+  #equipment-page .eq-num{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:46px !important;
+    height:46px !important;
+    border-radius:14px !important;
+    background:rgba(74,158,255,.16) !important;
+    border:1px solid rgba(74,158,255,.35) !important;
+    color:#bfdbfe !important;
+    font-size:16px !important;
+    font-weight:900 !important;
+  }
+  #equipment-page .equip-table .name-input{
+    font-size:15px !important;
+    font-weight:800 !important;
+    min-height:46px !important;
+  }
+  #equipment-page .equip-table .notes-input{
+    min-height:62px !important;
+    padding:12px !important;
+  }
+  #equipment-page .equip-table select,
+  #equipment-page .equip-table .tablet-input{
+    min-height:42px !important;
+  }
+  #equipment-page .equip-del-btn{
+    width:100% !important;
+    min-height:38px !important;
+    border:1px solid rgba(239,68,68,.30) !important;
+    background:rgba(239,68,68,.08) !important;
+    color:#fca5a5 !important;
+    border-radius:10px !important;
+  }
+  #equipment-page .equip-table tr:has(.eq-status-select.status-maint),
+  #equipment-page .equip-table tr:has(select.status-maint),
+  #equipment-page .equip-table tr.eq-row-maintenance,
+  #equipment-page .equip-table tr.eq-maint-row{
+    background:linear-gradient(180deg,rgba(180,113,8,.44),rgba(74,48,11,.38)) !important;
+    border-color:rgba(251,191,36,.62) !important;
+    border-left-color:#f59e0b !important;
+  }
+  #equipment-page .equip-table tr:has(.eq-status-select.status-maint) td,
+  #equipment-page .equip-table tr:has(select.status-maint) td,
+  #equipment-page .equip-table tr.eq-row-maintenance td,
+  #equipment-page .equip-table tr.eq-maint-row td{
+    background:transparent !important;
+    border:0 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
