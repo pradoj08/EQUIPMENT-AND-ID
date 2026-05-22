@@ -1560,6 +1560,151 @@ setInterval(function(){
   #equipment-page .equip-table td:nth-child(4){display:table-cell !important;}
 }
 </style>
+
+
+<style id="mobile-equipment-notes-card-fix">
+/* MOBILE EQUIPMENT NOTES FIX
+   On phones, the equipment table becomes stacked cards so the Notes field cannot
+   blow past the header/table or create sideways visual errors. Desktop remains unchanged. */
+@media (max-width: 768px){
+  #equipment-page .equip-page-wrap{
+    overflow-x:hidden !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+
+  #equipment-page .equip-section{
+    overflow:hidden !important;
+    border-radius:14px !important;
+  }
+
+  #equipment-page .equip-table{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    table-layout:auto !important;
+    background:transparent !important;
+  }
+
+  #equipment-page .equip-table thead{
+    display:none !important;
+  }
+
+  #equipment-page .equip-table tbody{
+    display:block !important;
+    width:100% !important;
+  }
+
+  #equipment-page .equip-table tr{
+    display:grid !important;
+    grid-template-columns:56px 1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    margin:10px 10px 12px !important;
+    padding:10px !important;
+    border:1px solid rgba(148,163,184,.22) !important;
+    border-radius:14px !important;
+    background:#0f1724 !important;
+    box-shadow:0 8px 18px rgba(0,0,0,.22) !important;
+  }
+
+  #equipment-page .equip-table tr.eq-row-maintenance,
+  #equipment-page .equip-table tr:has(.eq-status-select.status-maint){
+    background:linear-gradient(180deg,rgba(245,158,11,.24),rgba(62,42,9,.30)) !important;
+    border-color:rgba(251,191,36,.45) !important;
+  }
+
+  #equipment-page .equip-table td{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:5px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    padding:0 !important;
+    border:none !important;
+    background:transparent !important;
+    overflow:hidden !important;
+    white-space:normal !important;
+  }
+
+  #equipment-page .equip-table td::before{
+    font-family:var(--mono) !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    letter-spacing:1.2px !important;
+    text-transform:uppercase !important;
+    color:#94a3b8 !important;
+    content:'';
+  }
+
+  #equipment-page .equip-table td:nth-child(1){
+    grid-row:1 / span 2 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:12px !important;
+    background:#111c2e !important;
+    min-height:72px !important;
+  }
+  #equipment-page .equip-table td:nth-child(1)::before{content:'Count' !important;}
+  #equipment-page .equip-table td:nth-child(2)::before{content:'Unit' !important;}
+  #equipment-page .equip-table td:nth-child(3)::before{content:'Status' !important;}
+  #equipment-page .equip-table td:nth-child(4)::before{content:'Tablet' !important;}
+  #equipment-page .equip-table td:nth-child(5)::before{content:'Charged' !important;}
+  #equipment-page .equip-table td:nth-child(6)::before{content:'Notes' !important;}
+  #equipment-page .equip-table td:nth-child(7)::before{content:'Action' !important;}
+
+  #equipment-page .equip-table td:nth-child(n+3){
+    grid-column:1 / -1 !important;
+  }
+
+  #equipment-page .equip-table .name-input,
+  #equipment-page .equip-table .tablet-input,
+  #equipment-page .equip-table .notes-input,
+  #equipment-page .equip-table select{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    font-size:12px !important;
+    line-height:1.35 !important;
+    padding:9px 10px !important;
+    border-radius:9px !important;
+  }
+
+  #equipment-page .equip-table .notes-input{
+    min-height:44px !important;
+    white-space:normal !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+    overflow-wrap:anywhere !important;
+    background:#08111f !important;
+  }
+
+  #equipment-page .equip-table .tablet-input{
+    white-space:nowrap !important;
+    overflow:visible !important;
+    padding-right:14px !important;
+  }
+
+  #equipment-page .equip-table .eq-row-extra{
+    width:100% !important;
+    max-width:100% !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  #equipment-page .equip-del-btn{
+    width:100% !important;
+    min-height:36px !important;
+    border:1px solid rgba(239,68,68,.24) !important;
+    background:rgba(239,68,68,.08) !important;
+    color:#fca5a5 !important;
+    border-radius:9px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
