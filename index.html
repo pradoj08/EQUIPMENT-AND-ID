@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+add a option to toggle from table to car mode where the table value turn into cards<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16,11 +16,192 @@
 }
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;font-size:14px}
 /* PAGE NAV */
-.page-nav{background:#0b0e14;border-bottom:1px solid var(--border);display:flex;padding:0 24px}
-.page-nav-btn{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px}
+.page-nav{background:#0b0e14;border-bottom:1px solid var(--border);display:flex;align-items:stretch;padding:0 16px 0 20px;gap:0;justify-content:space-between}
+.page-nav-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.page-nav-right{display:flex;align-items:stretch;flex-shrink:0}
+.page-nav-btn{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 18px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
 .page-nav-btn:hover{color:var(--text)}
 .page-nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.global-size-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px 0 2px;
+  margin-right:2px;
+  border-right:1px solid rgba(42,48,69,.8);
+}
+.global-size-wrap .size-letter{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  line-height:1;
+}
+.global-size-wrap input[type="range"]{
+  width:96px;
+  accent-color:var(--accent);
+  cursor:pointer;
+}
+.global-size-value{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  min-width:32px;
+  text-align:right;
+}
+
+/* INLINE AUTH */
+.nav-auth-form{display:flex;align-items:center;gap:7px}
+.nav-auth-form input[type="text"]{width:110px;background:#0f1117;border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--muted);outline:none;}
+.nav-auth-form input[type="password"]{width:130px;background:#0f1117;border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border-color .15s;}
+.nav-auth-form input[type="password"]:focus{border-color:var(--accent)}
+.nav-auth-btn{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:4px 11px;border-radius:4px;cursor:pointer;border:1px solid var(--accent);background:rgba(74,158,255,.12);color:#9ec8ff;white-space:nowrap;transition:all .15s;}
+.nav-auth-btn:hover{background:rgba(74,158,255,.22)}
+.nav-signout-btn{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:4px 11px;border-radius:4px;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);white-space:nowrap;transition:all .15s;}
+.nav-signout-btn:hover{border-color:#ef4444;color:#f87171}
+.nav-auth-status{font-family:var(--mono);font-size:11px;color:#6ee7b7;white-space:nowrap;}
 .page{display:none}.page.active{display:block}
+
+body{
+  --app-scale:1;
+}
+.page,
+.modal-bg{
+  zoom: var(--app-scale);
+}
+.page-nav{
+  zoom:1 !important;
+  position:sticky;
+  top:0;
+  z-index:500;
+}
+
+
+.roster-page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.roster-btn{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  border:1px solid var(--border2);
+  background:rgba(30,35,51,.85);
+  color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  transition:all .15s;
+}
+.roster-btn:hover{border-color:var(--accent);color:#fff;background:rgba(74,158,255,.12)}
+.roster-btn.primary{border-color:rgba(74,158,255,.55);background:rgba(74,158,255,.12);color:#cfe4ff}
+.roster-btn.primary:hover{background:rgba(74,158,255,.2)}
+.roster-btn.active{border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.12);color:#d1fae5}
+.audits-wrap{padding:18px 24px 40px;display:flex;flex-direction:column;gap:18px}
+.roster-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.roster-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.roster-summary-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.roster-summary-value{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+.roster-summary-sub{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.roster-summary-audit{border-top:2px solid rgba(74,158,255,.5)}
+.roster-summary-train{border-top:2px solid rgba(16,185,129,.5)}
+.roster-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.roster-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.roster-section-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.roster-section-title strong{color:var(--text);font-size:12px;letter-spacing:1.2px}
+.roster-counts{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.roster-filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.roster-filter-btn{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid var(--border2);
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+}
+.roster-filter-btn:hover{border-color:var(--accent);color:var(--text)}
+.roster-filter-btn.active{border-color:rgba(74,158,255,.55);background:rgba(74,158,255,.12);color:#cfe4ff}
+.roster-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;background:var(--bg)}
+.roster-table{width:100%;border-collapse:collapse;font-family:var(--mono);table-layout:fixed}
+.roster-table th{
+  text-align:left;
+  padding:10px 12px;
+  font-size:9px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:var(--surface2);
+  border-bottom:1px solid var(--border2);
+}
+.roster-table td{
+  padding:11px 12px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+  font-size:12px;
+}
+.roster-table tr:hover td{background:rgba(255,255,255,.03)}
+.roster-table tr:last-child td{border-bottom:none}
+.roster-name{color:var(--text);font-weight:600;font-size:13px}
+.roster-muted{color:var(--muted)}
+.roster-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  border:1px solid;
+  white-space:nowrap;
+}
+.roster-pill-day{background:rgba(245,158,11,.12);color:#fcd34d;border-color:rgba(245,158,11,.3)}
+.roster-pill-night{background:rgba(129,140,248,.12);color:#a5b4fc;border-color:rgba(129,140,248,.3)}
+.roster-pill-other{background:rgba(148,163,184,.12);color:#cbd5e1;border-color:rgba(148,163,184,.28)}
+.roster-pill-match{background:rgba(16,185,129,.12);color:#6ee7b7;border-color:rgba(16,185,129,.3)}
+.roster-pill-unmatch{background:rgba(239,68,68,.12);color:#fca5a5;border-color:rgba(239,68,68,.3)}
+.roster-action-btn{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:4px 8px;
+  border-radius:5px;
+  border:1px solid var(--border2);
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+}
+.roster-action-btn:hover{border-color:var(--accent);color:var(--text)}
+.roster-empty{padding:24px;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.roster-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.roster-paste-card{display:flex;flex-direction:column;gap:8px}
+.roster-paste-card label{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.roster-paste-card textarea{
+  width:100%;
+  min-height:320px;
+  resize:vertical;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  padding:10px 12px;
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:1.55;
+  outline:none;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.roster-paste-card textarea:focus{border-color:var(--accent)}
+@media (max-width: 900px){
+  .roster-modal-grid{grid-template-columns:1fr}
+}
+
 /* HEADER */
 .header{background:var(--surface);border-bottom:2px solid var(--accent2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
 .header-title{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
@@ -84,9 +265,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 /* TABLE */
 .table-wrap{padding:0 24px 24px;overflow-x:auto}
 table{table-layout:fixed;width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:12px}
-table th:nth-child(1){width:3%}table th:nth-child(2){width:19%}table th:nth-child(3){width:11%}
-table th:nth-child(4){width:11%}table th:nth-child(5){width:9%}table th:nth-child(6){width:11%}
-table th:nth-child(7){width:14%}table th:nth-child(8){width:7%}
+table th:nth-child(1){width:22%}table th:nth-child(2){width:13%}
+table th:nth-child(3){width:13%}table th:nth-child(4){width:10%}table th:nth-child(5){width:13%}
+table th:nth-child(6){width:16%}table th:nth-child(7){width:8%}
 td{overflow:hidden}
 th{text-align:left;padding:8px 12px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);font-weight:500;white-space:nowrap}
 td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
@@ -136,31 +317,375 @@ select option{background:var(--surface)}
 /* SAVE TOAST */
 #save-toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--surface);border:1px solid rgba(34,197,94,.4);border-left:3px solid var(--success);border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:11px;color:var(--success);display:flex;align-items:center;gap:7px;letter-spacing:.5px;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
 #save-toast.show{opacity:1;transform:translateY(0)}
-/* EQUIPMENT */
-.equip-section{padding:16px 24px 0}
-.equip-section-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 0 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;margin-bottom:0}
-.etitle-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.equip-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;table-layout:fixed}
-.equip-table th{text-align:center;padding:7px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);font-weight:500}
-.equip-table td{text-align:center;padding:7px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.equip-table tr:hover td{background:var(--surface2)}
-.equip-id{color:var(--text);font-weight:500}
-.status-select{background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;cursor:pointer;width:140px}
-.status-select:focus{border-color:var(--accent)}
+/* EQUIPMENT — table layout */
+.equip-page-wrap{padding:24px 28px 36px;max-width:1550px;margin:0 auto;width:100%}
+.equip-section{margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.equip-section-title{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:0;background:rgba(255,255,255,.01)}
+.etitle-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.etitle-name{color:var(--text);font-size:13px;letter-spacing:1.5px;font-weight:600}
+.etitle-count{color:var(--muted);font-size:10px;margin-left:2px}
+.down-count-badge{font-size:10px;padding:3px 9px;border-radius:999px;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.maint-count-badge{font-size:10px;padding:3px 9px;border-radius:999px;background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.eq-section-add-btn{font-family:var(--mono);font-size:10px;letter-spacing:.5px;padding:6px 12px;border-radius:6px;border:1px dashed var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;margin-left:auto}
+.eq-section-add-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* eq table */
+.equip-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;table-layout:fixed}
+.equip-table th{text-align:left;padding:13px 14px;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);font-weight:600;background:rgba(30,35,51,.9)}
+.equip-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.equip-table tr:last-child td{border-bottom:none}
+.equip-table tbody tr:hover td{background:rgba(255,255,255,.04)}
+/* left accent stripe per type */
+.equip-table td:first-child{border-left:3px solid var(--row-accent, var(--border))}
+.equip-table th:first-child{border-left:3px solid transparent}
+/* unit # cell */
+.eq-num{font-family:var(--mono);font-size:12px;color:var(--muted);width:42px;text-align:center}
+/* name input */
+.name-input{background:transparent;border:1px solid transparent;border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:13px;color:var(--text);outline:none;width:100%;transition:all .15s}
+.name-input:hover{border-color:var(--border2);background:rgba(255,255,255,.02)}
+.name-input:focus{border-color:var(--accent);background:var(--surface2);box-shadow:0 0 0 2px rgba(74,158,255,.12)}
+/* status select */
+.eq-status-select{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.5px;padding:8px 10px;border-radius:6px;border:1px solid;cursor:pointer;outline:none;transition:all .15s;appearance:none;-webkit-appearance:none;text-align:center;width:100%}
+.eq-status-select option{background:var(--surface);color:var(--text)}
+.eq-status-select.status-op{color:#6ee7b7;border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.08)}
+.eq-status-select.status-down{color:#fca5a5;border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+.eq-status-select.status-maint{color:#fcd34d;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+.eq-status-select.status-stand{color:#a5b4fc;border-color:rgba(129,140,248,.4);background:rgba(129,140,248,.08)}
+/* tablet */
+.tablet-input{background:transparent;border:1px solid transparent;border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;width:100%;transition:all .15s}
+.tablet-input:hover{border-color:var(--border2);background:rgba(255,255,255,.02)}
+.tablet-input:focus{border-color:var(--accent);background:var(--surface2);box-shadow:0 0 0 2px rgba(74,158,255,.12)}
+.tablet-missing{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.1);color:#fca5a5;font-size:10px;letter-spacing:.5px;font-weight:600}
+/* notes */
+.notes-input{background:transparent;border:1px solid transparent;border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:12px;color:var(--muted);outline:none;width:100%;transition:all .15s}
+.notes-input:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,.02)}
+.notes-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text);box-shadow:0 0 0 2px rgba(74,158,255,.12)}
+/* del btn */
+.equip-del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px 8px;border-radius:6px;font-family:var(--mono);transition:all .15s}
+.equip-del-btn:hover{color:var(--danger);background:rgba(239,68,68,.08)}
+/* lock */
+.eq-lock-overlay{margin:24px;padding:24px;border:1px solid var(--border);border-radius:8px;background:rgba(30,35,51,.55);font-family:var(--mono);color:var(--muted);text-align:center}
+/* keep old refs */
 .status-op{color:#6ee7b7;border-color:rgba(16,185,129,.4)!important;background:rgba(16,185,129,.08)!important}
 .status-down{color:#fca5a5;border-color:rgba(239,68,68,.4)!important;background:rgba(239,68,68,.08)!important}
 .status-maint{color:#fcd34d;border-color:rgba(245,158,11,.4)!important;background:rgba(245,158,11,.08)!important}
 .status-stand{color:#a5b4fc;border-color:rgba(129,140,248,.4)!important;background:rgba(129,140,248,.08)!important}
-.notes-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--muted);outline:none;width:100%;transition:all .15s}
-.notes-input:hover{border-color:var(--border2);color:var(--text)}
-.notes-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
-.name-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;transition:all .15s;text-align:center}
-.name-input:hover{border-color:var(--border2);color:var(--text)}
-.name-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
-.tablet-input{background:transparent;border:1px solid transparent;border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;width:100%;transition:all .15s;text-align:center;max-width:180px;margin:0 auto;display:block}
-.tablet-input:hover{border-color:var(--border2);color:var(--text)}
-.tablet-input:focus{border-color:var(--accent);background:var(--surface2);color:var(--text)}
-.tablet-missing{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:4px 8px;border-radius:4px;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.12);color:#fca5a5;font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+.eq-row-extra{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;min-width:0}
+.eq-status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px;white-space:nowrap;border:1px solid transparent}
+.eq-status-badge-ok{background:rgba(16,185,129,.12);color:#6ee7b7;border-color:rgba(16,185,129,.28)}
+.eq-status-badge-warn{background:rgba(245,158,11,.12);color:#fcd34d;border-color:rgba(245,158,11,.28)}
+.eq-status-badge-bad{background:rgba(239,68,68,.12);color:#fca5a5;border-color:rgba(239,68,68,.28)}
+.eq-status-date{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px;white-space:nowrap;color:#cbd5e1;background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.22)}
+.eq-age-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.6px;white-space:nowrap;border:1px solid transparent}
+.eq-age-fresh{background:rgba(34,197,94,.10);color:#86efac;border-color:rgba(34,197,94,.22)}
+.eq-age-warn{background:rgba(245,158,11,.14);color:#fcd34d;border-color:rgba(245,158,11,.26)}
+.eq-age-orange{background:rgba(249,115,22,.14);color:#fdba74;border-color:rgba(249,115,22,.26)}
+.eq-age-critical{background:rgba(239,68,68,.16);color:#fca5a5;border-color:rgba(239,68,68,.30)}
+
+
+/* EQUIPMENT SMART NOTES ENFORCEMENT */
+.equipment-attention{
+  margin:16px 24px 0;
+  padding:14px 16px 16px;
+  background:linear-gradient(180deg, rgba(24,28,38,.98), rgba(18,22,31,.98));
+  border:1px solid rgba(239,68,68,.22);
+  border-radius:14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.20);
+}
+.equipment-attention-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.equipment-attention-title{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.equipment-attention-title strong{
+  display:block;
+  color:var(--text);
+  font-size:13px;
+  letter-spacing:1.2px;
+  margin-top:2px;
+}
+.equipment-attention-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.equipment-attention-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;
+}
+.equipment-attention-item{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(239,68,68,.20);
+  background:rgba(239,68,68,.06);
+}
+.equipment-attention-meta{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.equipment-attention-name{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text);
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.equipment-attention-reason{
+  font-family:var(--mono);
+  font-size:10px;
+  color:#fca5a5;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+}
+.eq-note-alert{
+  animation:eqPulse 1.3s infinite;
+  border-color:rgba(239,68,68,.45) !important;
+  background:rgba(239,68,68,.12) !important;
+  color:#fca5a5 !important;
+}
+.eq-note-alert::before{
+  content:'⚠';
+  margin-right:6px;
+}
+
+/* SHIFT READINESS DASHBOARD */
+.shift-readiness-dashboard{
+  margin:16px 24px 0;
+  padding:16px 18px 18px;
+  background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(14,20,31,.98));
+  border:1px solid rgba(74,158,255,.20);
+  border-radius:14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.22);
+}
+.shift-readiness-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.shift-readiness-title{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.shift-readiness-title strong{
+  display:block;
+  color:var(--text);
+  font-size:13px;
+  letter-spacing:1.4px;
+  margin-top:2px;
+}
+.shift-readiness-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.shift-readiness-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.shift-status-good{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.30);color:#6ee7b7;}
+.shift-status-watch{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.30);color:#fcd34d;}
+.shift-status-short{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.30);color:#fca5a5;}
+.shift-status-neutral{background:rgba(74,158,255,.12);border-color:rgba(74,158,255,.30);color:#9ec8ff;}
+.shift-readiness-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:10px;
+}
+.shift-kpi{
+  background:linear-gradient(180deg, rgba(30,35,51,.95), rgba(21,26,38,.95));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 14px;
+  position:relative;
+  overflow:hidden;
+  min-height:88px;
+}
+.shift-kpi::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--kpi-accent, var(--accent));
+}
+.shift-kpi-label{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:8px;
+  line-height:1.4;
+}
+.shift-kpi-value{
+  font-family:var(--mono);
+  font-size:28px;
+  font-weight:700;
+  line-height:1;
+  color:var(--text);
+}
+.shift-kpi-value small{
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+  margin-left:4px;
+}
+.shift-kpi-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:8px;
+  line-height:1.4;
+}
+.shift-kpi.good{--kpi-accent:#22c55e;}
+.shift-kpi.watch{--kpi-accent:#f59e0b;}
+.shift-kpi.short{--kpi-accent:#ef4444;}
+.shift-kpi.info{--kpi-accent:#4a9eff;}
+.shift-kpi.warn{--kpi-accent:#f59e0b;}
+.shift-kpi.neutral{--kpi-accent:#64748b;}
+.shift-kpi .trend{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+.shift-kpi .trend.good{color:#6ee7b7;}
+.shift-kpi .trend.watch{color:#fcd34d;}
+.shift-kpi .trend.short{color:#fca5a5;}
+.shift-kpi .trend.neutral{color:#9ec8ff;}
+@media (max-width: 640px){
+  .shift-readiness-dashboard{margin:12px 12px 0;}
+}
+
+/* STAFFING WIDGET */
+.staffing-widget{margin:16px 24px 0;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;gap:14px}
+.staffing-toggle-btn{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  border:1px solid var(--border2);
+  background:rgba(30,35,51,.9);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  gap:7px;
+  white-space:nowrap;
+  transition:all .15s;
+}
+.staffing-toggle-btn:hover{
+  border-color:var(--accent);
+  color:#fff;
+  background:rgba(74,158,255,.12);
+}
+.staffing-toggle-btn.active{
+  border-color:rgba(16,185,129,.45);
+  background:rgba(16,185,129,.12);
+  color:#d1fae5;
+}
+.staffing-names-hidden .staffing-names{
+  display:none !important;
+}
+.staffing-names-hidden .staffing-summary-line{
+  margin-bottom:0;
+}
+.equipment-kpi-ok{border-color:rgba(16,185,129,.35)!important;background:rgba(16,185,129,.12)!important;color:#d1fae5!important}
+.equipment-kpi-warn{border-color:rgba(245,158,11,.35)!important;background:rgba(245,158,11,.12)!important;color:#fcd34d!important}
+.equipment-kpi-bad{border-color:rgba(239,68,68,.35)!important;background:rgba(239,68,68,.12)!important;color:#fca5a5!important}
+
+.staffing-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.staffing-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.staffing-day-label{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
+.staffing-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.staffing-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.staffing-card-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.staffing-card-val{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1}
+.staffing-card-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+.sval-day{color:var(--day)}.sval-night{color:var(--night)}.sval-hostler{color:var(--accent)}
+.staffing-verdict{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:500;flex-wrap:wrap}
+.verdict-ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+.verdict-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);color:#fcd34d}
+.verdict-bad{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.verdict-icon{font-size:16px;flex-shrink:0}
+.staffing-names{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+.staffing-names-col{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+.staffing-col-title{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.staffing-name-item{font-family:var(--mono);font-size:11px;color:var(--text);padding:3px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.staffing-name-item:last-child{border-bottom:none}
+.sname-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+@media(max-width:640px){.staffing-names{grid-template-columns:1fr}.staffing-widget{margin:12px 12px 0}}
+.staffing-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.staffing-mini{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.staffing-mini-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.staffing-mini-val{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1}
+.staffing-mini-day{border-left:3px solid var(--day)}
+.staffing-mini-night{border-left:3px solid var(--night)}
+.staffing-mini-hostler{border-left:3px solid var(--accent)}
+.staffing-mini-active{border-left:3px solid var(--success)}
+.staffing-mini-note{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px}
+.staffing-mini-inline{display:flex;flex-direction:column;gap:2px}
+.staffing-summary-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.staffing-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);background:var(--bg);white-space:nowrap}
+.staffing-chip strong{color:var(--text);font-weight:600}
+.staffing-chip-day{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.08);color:#fcd34d}
+.staffing-chip-night{border-color:rgba(129,140,248,.25);background:rgba(129,140,248,.08);color:#a5b4fc}
+.staffing-chip-active{border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.08);color:#6ee7b7}
+.staffing-chip-hostler{border-color:rgba(74,158,255,.25);background:rgba(74,158,255,.08);color:#9ec8ff}
+.staffing-names{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+.staffing-names-col{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.staffing-col-title{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.staffing-name-item{font-family:var(--mono);font-size:11px;color:var(--text);padding:2px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.staffing-name-item:last-child{border-bottom:none}
+.sname-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+@media(max-width:640px){
+  .staffing-strip{grid-template-columns:1fr}
+  .staffing-names{grid-template-columns:1fr}
+  .staffing-widget{margin:12px 12px 0}
+}
+
 
 .equip-add-btn{font-family:var(--mono);font-size:11px;letter-spacing:.5px;padding:4px 12px;border-radius:4px;border:1px dashed var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;margin:8px 12px}
 .equip-add-btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -298,62 +823,56 @@ select option{background:var(--surface)}
   display:none;
 }
 
-::-webkit-scrollbar{width:6px;height:6px}
+/* AUDITS & TRAINING PAGE */
+.audits-wrap{padding:20px 24px 40px;display:flex;flex-direction:column;gap:28px}
+.audit-section-header{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 0 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.audit-section-header-title{color:var(--text);font-size:12px;letter-spacing:1.5px}
+/* month picker */
+.audit-month-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.audit-month-select{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;cursor:pointer;transition:border-color .15s}
+.audit-month-select:focus{border-color:var(--accent)}
+.audit-progress-bar{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;flex:1;min-width:120px}
+.audit-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .4s ease}
+.audit-progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+/* training table */
+.training-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+.training-table th{text-align:left;padding:8px 12px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);background:var(--surface2);font-weight:500}
+.training-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.training-table tr:last-child td{border-bottom:none}
+.training-table tbody tr:hover td{background:rgba(255,255,255,.02)}
+.training-table td:first-child{border-left:3px solid var(--shift-color,var(--border))}
+.training-table th:first-child{border-left:3px solid transparent}
+.shift-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.shift-tag-day{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.shift-tag-night{background:rgba(129,140,248,.15);color:#a5b4fc;border:1px solid rgba(129,140,248,.3)}
+.shift-tag-gate{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+/* training topics checkboxes */
+.topic-check-wrap{display:flex;flex-direction:column;gap:3px}
+.topic-check{display:flex;align-items:center;gap:6px;cursor:pointer}
+.topic-check input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;cursor:pointer;flex-shrink:0}
+.topic-check-label{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.topic-check input:checked+.topic-check-label{color:var(--success)}
+/* complete badge */
+.complete-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px}
+.complete-badge.done{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.complete-badge.partial{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.complete-badge.none{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+/* audit checklist */
+.audit-checklist{display:flex;flex-direction:column;gap:6px}
+.audit-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;transition:border-color .15s}
+.audit-item:hover{border-color:var(--border2)}
+.audit-item input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:1px}
+.audit-item-text{font-family:var(--mono);font-size:12px;color:var(--text);flex:1;line-height:1.5}
+.audit-item-text.checked-text{color:var(--muted);text-decoration:line-through}
+.audit-item-date{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;margin-left:auto;padding-left:12px}
+.add-audit-row{display:flex;gap:8px;margin-top:8px}
+.add-audit-input{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:7px 10px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;transition:border-color .15s}
+.add-audit-input:focus{border-color:var(--accent)}
+.add-audit-btn{font-family:var(--mono);font-size:11px;padding:7px 14px;border-radius:5px;cursor:pointer;border:1px solid var(--accent);background:rgba(74,158,255,.12);color:#9ec8ff;white-space:nowrap;transition:all .15s}
+.add-audit-btn:hover{background:rgba(74,158,255,.22)}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-.app-auth-bar{
-  margin:6px 24px 0;
-  padding:6px 12px;
-  border:1px solid var(--border);
-  border-radius:6px;
-  background:rgba(30,35,51,.72);
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.app-auth-bar input{
-  width:150px;
-  max-width:100%;
-  background:var(--bg);
-  border:1px solid var(--border2);
-  border-radius:5px;
-  padding:5px 8px;
-  font-family:var(--mono);
-  font-size:11px;
-  color:var(--text);
-  outline:none;
-}
-.app-auth-bar input[readonly]{
-  opacity:.82;
-  cursor:default;
-}
-.app-auth-bar input:focus{border-color:var(--accent)}
-.app-auth-bar .eq-auth-btn{
-  font-family:var(--mono);
-  font-size:11px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-  padding:6px 12px;
-  border-radius:5px;
-  cursor:pointer;
-  border:1px solid var(--accent);
-  background:rgba(74,158,255,.12);
-  color:#9ec8ff;
-}
-.app-auth-bar .eq-auth-secondary{
-  border-color:var(--border2);
-  background:transparent;
-  color:var(--muted);
-}
-.app-auth-bar .eq-auth-status{
-  font-family:var(--mono);
-  font-size:11px;
-  color:var(--muted);
-  margin-left:auto;
-  white-space:nowrap;
-}
 #eq-login-overlay{display:none !important;}
 @media (max-width: 640px){
   .app-auth-bar{margin:8px 12px 0; gap:6px}
@@ -473,6 +992,51 @@ textarea{
   .bchip{
     max-width:100%;
   }
+}
+
+
+/* LIVE EQUIPMENT ESCALATION */
+.eq-aging-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.5px;
+  white-space:nowrap;
+}
+
+.eq-aging-good{
+  background:rgba(34,197,94,.12);
+  color:#86efac;
+  border:1px solid rgba(34,197,94,.35);
+}
+
+.eq-aging-warn{
+  background:rgba(245,158,11,.12);
+  color:#fcd34d;
+  border:1px solid rgba(245,158,11,.35);
+}
+
+.eq-aging-orange{
+  background:rgba(249,115,22,.14);
+  color:#fdba74;
+  border:1px solid rgba(249,115,22,.35);
+}
+
+.eq-aging-critical{
+  background:rgba(239,68,68,.14);
+  color:#fca5a5;
+  border:1px solid rgba(239,68,68,.4);
+  animation:eqPulse 1.5s infinite;
+}
+
+@keyframes eqPulse{
+  0%,100%{opacity:1}
+  50%{opacity:.65}
 }
 
 </style>
@@ -680,6 +1244,16 @@ window.addEventListener('load',function(){
   }
 });
 
+setInterval(function(){
+  if(document.hidden) return;
+  var equipPage = document.getElementById('page-equipment');
+  if(equipPage && equipPage.classList.contains('active')){
+    refreshEquipmentAgingDisplay();
+    renderShiftReadinessDashboard();
+    updateEquipmentStatusMeta();
+  }
+}, 60000);
+
 </script>
 
 </head>
@@ -687,25 +1261,36 @@ window.addEventListener('load',function(){
 
 <!-- PAGE NAV -->
 <div class="page-nav">
-  <button class="page-nav-btn active" id="nav-employees" onclick="switchPage('employees')">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    Employee Roster
-  </button>
-  <button class="page-nav-btn" id="nav-equipment" onclick="switchPage('equipment')">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-    Equipment Status
-  </button>
-</div>
-
-<div class="app-auth-bar" id="eq-auth-panel">
-  <div id="auth-signin-form" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <input id="eq-username" type="text" value="CONGLOBAL" readonly>
-    <input id="eq-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')signInEq()">
-    <button class="eq-auth-btn" onclick="signInEq()">Sign In</button>
+  <div class="page-nav-left" id="eq-auth-panel">
+    <div id="auth-signin-form" style="display:flex;align-items:center;gap:7px;" class="nav-auth-form">
+      <input id="eq-username" type="text" value="CONGLOBAL" readonly>
+      <input id="eq-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')signInEq()">
+      <button class="nav-auth-btn" onclick="signInEq()">Sign In</button>
+    </div>
+    <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
+      <span id="eq-auth-status" class="nav-auth-status"></span>
+      <button class="nav-signout-btn" onclick="signOutEq()">Sign Out</button>
+    </div>
   </div>
-  <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
-    <span id="eq-auth-status" class="eq-auth-status" style="color:#6ee7b7;"></span>
-    <button class="eq-auth-btn eq-auth-secondary" onclick="signOutEq()">Sign Out</button>
+  <div class="page-nav-right">
+    <div class="global-size-wrap" title="Resize the app">
+      <span class="size-letter">A</span>
+      <input type="range" id="global-size-slider" min="85" max="130" value="100" step="1" oninput="setGlobalScale(this.value)">
+      <span class="size-letter" style="font-size:13px;">A</span>
+      <span class="global-size-value" id="global-size-value">100%</span>
+    </div>
+    <button class="page-nav-btn active" id="nav-employees" onclick="switchPage('employees')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Employee Roster
+    </button>
+    <button class="page-nav-btn" id="nav-equipment" onclick="switchPage('equipment')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Equipment Status
+    </button>
+    <button class="page-nav-btn" id="nav-audits" onclick="switchPage('audits')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Audits &amp; Training
+    </button>
   </div>
 </div>
 
@@ -744,11 +1329,6 @@ window.addEventListener('load',function(){
     <input type="text" id="search-input" placeholder="Search name, ID, phone..." oninput="render()">
   </div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:7px;padding:0 4px;">
-      <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">A</span>
-      <input type="range" id="font-slider" min="10" max="18" value="12" step="1" style="width:80px;accent-color:var(--accent);cursor:pointer;" oninput="setFontSize(this.value)">
-      <span style="font-family:var(--mono);font-size:13px;color:var(--muted);">A</span>
-    </div>
     <button class="btn btn-ghost" onclick="openRevertModal()">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.9"/></svg>Revert
     </button>
@@ -762,7 +1342,7 @@ window.addEventListener('load',function(){
 </div>
 <div class="table-wrap">
   <table><thead><tr>
-    <th>Status</th><th>Name</th><th>Employee ID</th><th>UP ID</th><th>Shift</th><th>Days Off</th><th>Phone</th><th>Actions</th>
+    <th>Name</th><th>Employee ID</th><th>UP ID</th><th>Shift</th><th>Days Off</th><th>Phone</th><th>Actions</th>
   </tr></thead><tbody id="emp-table"></tbody></table>
   <div id="no-data" class="no-data" style="display:none;">No employees found.</div>
 </div>
@@ -771,15 +1351,118 @@ window.addEventListener('load',function(){
 <!-- PAGE: EQUIPMENT -->
 <div class="page" id="page-equipment">
 <div class="header">
-  <div><div class="header-title">Equipment Status</div><div class="header-sub">Live Equipment Tracking &amp; Status Board</div></div>
-  <div><button onclick="openAddUnitModal()" style="font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid #4a9eff;background:rgba(74,158,255,.12);color:#4a9eff;display:flex;align-items:center;gap:6px;">
-    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
-  </button></div>
+  <div>
+    <div class="header-title">Equipment Status</div>
+    <div class="header-sub">Live Equipment Tracking &amp; Status Board</div>
+    <div id="equipment-updated" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">Last updated: —</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <div id="equipment-kpi" style="display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--border2);border-radius:999px;background:rgba(30,35,51,.8);font-family:var(--mono);font-size:10px;color:var(--muted);">
+      <span class="pulse" id="equipment-kpi-dot" style="background:#4a9eff;"></span>
+      <span id="equipment-kpi-label">Coverage: —</span>
+    </div>
+    <button id="staffing-toggle-btn" class="staffing-toggle-btn" onclick="toggleStaffingNames()">
+      <span class="pulse" style="background:#4a9eff;"></span>Hide Employee Readout
+    </button>
+    <button onclick="openAddUnitModal()" style="font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid #4a9eff;background:rgba(74,158,255,.12);color:#4a9eff;display:flex;align-items:center;gap:6px;">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
+    </button>
+  </div>
 </div>
+<div id="shift-readiness-dashboard" class="shift-readiness-dashboard"></div>
+<div id="equipment-attention" class="equipment-attention"></div>
 <div id="equip-banner"></div>
-<div id="equip-content" style="padding-bottom:24px;"></div>
+<div class="staffing-widget" id="staffing-widget"></div>
+<div id="equip-content" style="padding-bottom:28px;"></div>
 </div><!-- end page-equipment -->
 
+
+<!-- PAGE: AUDITS & TRAINING -->
+<div class="page" id="page-audits">
+  <div class="header">
+    <div>
+      <div class="header-title">Audits &amp; Monthly Training</div>
+      <div class="header-sub">Paste names, sort by shift, and filter the results.</div>
+      <div id="roster-updated" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">Last updated: —</div>
+    </div>
+    <div class="roster-page-actions">
+      <button class="roster-btn primary" onclick="openRosterModal()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/><path d="M9 4v16"/></svg>
+        Paste Names
+      </button>
+      <button class="roster-btn" onclick="resetRosterData()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="audits-wrap">
+    <div class="roster-overview">
+      <div class="roster-summary-card roster-summary-audit">
+        <div class="roster-summary-title">Audit List</div>
+        <div class="roster-summary-value" id="audit-total-count">0</div>
+        <div class="roster-summary-sub" id="audit-shift-summary">Day 0 · Night 0 · Other 0</div>
+      </div>
+      <div class="roster-summary-card roster-summary-train">
+        <div class="roster-summary-title">Monthly Trainings</div>
+        <div class="roster-summary-value" id="train-total-count">0</div>
+        <div class="roster-summary-sub" id="train-shift-summary">Day 0 · Night 0 · Other 0</div>
+      </div>
+    </div>
+
+    <div class="roster-section">
+      <div class="roster-section-head">
+        <div class="roster-section-title">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <strong>Who Needs Audits</strong>
+        </div>
+        <div class="roster-counts" id="audit-count-label">0 names</div>
+      </div>
+      <div class="roster-filter-row" id="audit-filter-row"></div>
+      <div class="roster-table-wrap" id="audit-table-wrap"></div>
+    </div>
+
+    <div class="roster-section">
+      <div class="roster-section-head">
+        <div class="roster-section-title">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <strong>Monthly Trainings</strong>
+        </div>
+        <div class="roster-counts" id="train-count-label">0 names</div>
+      </div>
+      <div class="roster-filter-row" id="train-filter-row"></div>
+      <div class="roster-table-wrap" id="train-table-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROSTER IMPORT MODAL -->
+<div class="modal-bg" id="roster-modal-bg" onclick="if(event.target===this)closeRosterModal()">
+  <div class="modal" style="width:980px;max-width:96vw;">
+    <div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <span>Paste Audit and Training Names</span>
+      <button onclick="closeRosterModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">&#x2715;</button>
+    </div>
+    <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:14px;">
+      Paste one name per line. The import will match employees and split them into Day, Night, or Other.
+    </p>
+    <div class="roster-modal-grid">
+      <div class="roster-paste-card">
+        <label for="audit-paste">Audit Names</label>
+        <textarea id="audit-paste" placeholder="Paste audit names here, one per line."></textarea>
+      </div>
+      <div class="roster-paste-card">
+        <label for="train-paste">Monthly Training Names</label>
+        <textarea id="train-paste" placeholder="Paste monthly training names here, one per line."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="clearRosterModalInputs()">Clear</button>
+      <button class="btn btn-primary" onclick="importRosterLists()">Import Names</button>
+    </div>
+  </div>
+</div>
 <!-- EMPLOYEE MODAL -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -1149,7 +1832,6 @@ function render(){
       ?'<span class="emp-id">'+e.upId+'</span>'
       :'<span style="font-size:10px;font-family:var(--mono);background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.45);color:#fca5a5;border-radius:4px;padding:2px 7px;cursor:pointer;" data-eid="'+e.id+'" class="missing-upid">MISSING</span>';
     return '<tr>'
-      +'<td>'+statusDotEl(e.status)+'</td>'
       +'<td><div class="emp-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+e.first+' '+e.last+'</div></td>'
       +'<td><span class="emp-id" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">'+(e.empId||'—')+'</span></td>'
       +'<td>'+upCell+'</td>'
@@ -1240,9 +1922,33 @@ function restoreSnapshot(i){
 function closeRevertModal(){var m=document.getElementById('revert-modal-bg');if(m)m.classList.remove('open');}
 
 // ── FONT SIZE ──
-function setFontSize(val){
-  var v=parseInt(val),r=v/12;
-  document.getElementById('table-scale').textContent='table td,table th{font-size:'+v+'px!important}.emp-name{font-size:'+Math.round(v*1.08)+'px!important}.emp-id,.days-off,.phone-cell{font-size:'+Math.max(9,v-1)+'px!important}.shift-badge{font-size:'+Math.max(9,v-2)+'px!important}td{padding:'+Math.round(4+r*6)+'px '+Math.round(6+r*6)+'px!important}';
+var APP_SCALE_KEY = 'eit_app_scale_v1';
+
+function setGlobalScale(val){
+  var v = parseInt(val, 10);
+  if(!v || v < 85) v = 85;
+  if(v > 130) v = 130;
+  var scale = v / 100;
+  document.documentElement.style.setProperty('--app-scale', String(scale));
+  document.querySelectorAll('.page, .modal-bg').forEach(function(el){
+    el.style.zoom = String(scale);
+  });
+  try{ localStorage.setItem(APP_SCALE_KEY, String(v)); }catch(e){}
+  var readout = document.getElementById('global-size-value');
+  if(readout) readout.textContent = v + '%';
+  var slider = document.getElementById('global-size-slider');
+  if(slider && slider.value !== String(v)) slider.value = String(v);
+}
+
+function initGlobalScale(){
+  var saved = 100;
+  try{
+    var raw = localStorage.getItem(APP_SCALE_KEY);
+    if(raw) saved = parseInt(raw, 10) || 100;
+  }catch(e){}
+  var slider = document.getElementById('global-size-slider');
+  if(slider) slider.value = String(saved);
+  setGlobalScale(saved);
 }
 
 // ── PAGE SWITCHING ──
@@ -1251,7 +1957,8 @@ function switchPage(p){
   document.querySelectorAll('.page-nav-btn').forEach(function(el){el.classList.remove('active');});
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('nav-'+p).classList.add('active');
-  if(p==='equipment') renderEquipment();
+  if(p==='equipment'){ renderEquipment(); updateEquipmentStatusMeta(); }
+  if(p==='audits') initAuditsPage();
 }
 
 // ── EQUIPMENT ──
@@ -1267,16 +1974,13 @@ function syncEqLoginUI(){
   var signinForm=document.getElementById('auth-signin-form');
   var signedIn=document.getElementById('auth-signed-in');
   var st=document.getElementById('eq-auth-status');
-  var panel=document.getElementById('eq-auth-panel');
   if(eqLoggedIn){
     if(signinForm) signinForm.style.display='none';
     if(signedIn){ signedIn.style.display='flex'; }
     if(st) st.textContent='\u2713 Signed in as '+eqLoginUsername;
-    if(panel){ panel.style.padding='6px 12px'; }
   } else {
     if(signinForm) signinForm.style.display='flex';
     if(signedIn) signedIn.style.display='none';
-    if(panel){ panel.style.padding='10px 12px'; }
   }
 }
 
@@ -1309,6 +2013,8 @@ async function signInEq(){
   await loadEquipment();
   render();
   renderEquipment();
+  updateEquipmentStatusMeta();
+  refreshEquipmentAgingDisplay();
 }
 
 async function signOutEq(){
@@ -1329,6 +2035,7 @@ function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36)
 async function loadEquipment(){
   if(!eqLoggedIn){
     equipment = [];
+    updateEquipmentStatusMeta();
     return;
   }
   try{
@@ -1340,6 +2047,7 @@ async function loadEquipment(){
     if(error){
       console.error('Supabase load error:', error);
       equipment = [];
+      updateEquipmentStatusMeta();
       return;
     }
 
@@ -1351,13 +2059,18 @@ async function loadEquipment(){
         name: row.name || '',
         tabletAssigned: row.tablet_assigned || '',
         status: row.status || 'operational',
-        notes: row.notes || ''
+        notes: row.notes || '',
+        updated_at: row.updated_at || null,
+        status_changed_at: (row.status_changed_at || null) || ((row.status && row.status !== 'operational' && row.updated_at) ? row.updated_at : null),
+        status_changed_day: row.status_changed_day || null
       };
     });
+    updateEquipmentStatusMeta();
 
   }catch(e){
     console.error(e);
     equipment = [];
+    updateEquipmentStatusMeta();
   }
 }
 
@@ -1365,6 +2078,8 @@ async function saveEquipment(){
   if(!eqLoggedIn) return;
   try{
     for(const e of equipment){
+      var stamp = new Date().toISOString();
+      e.updated_at = stamp;
       await supabaseClient
         .from('equipment')
         .upsert({
@@ -1375,11 +2090,14 @@ async function saveEquipment(){
           tablet_assigned: e.tabletAssigned,
           status: e.status,
           notes: e.notes,
-          updated_at: new Date().toISOString()
+          updated_at: stamp,
+          status_changed_at: e.status_changed_at || null,
+          status_changed_day: e.status_changed_day || null
         });
     }
 
     showSaveToast();
+    updateEquipmentStatusMeta();
 
   }catch(err){
     console.error('Save failed:', err);
@@ -1396,15 +2114,48 @@ function seedEquipment(){
 function updateEqStatus(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(!e) return;
+  var prev = e.status;
   e.status=val;
+
+  if(prev==='operational' && val!=='operational'){
+    e.status_changed_at = new Date().toISOString();
+    e.status_changed_day = new Date().toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' });
+  }
+  if(val==='operational'){
+    e.status_changed_at = null;
+    e.status_changed_day = null;
+  }
+
   saveEquipment();
-  var sel=document.getElementById('sel-'+id);
-  if(sel){sel.className='status-select';var m={operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'};if(m[val])sel.classList.add(m[val]);}
-  renderEquipBanner();
+  renderEquipment();
 }
-function updateEqName(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.name=val;saveEquipment();}}
-function updateEqTablet(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.tabletAssigned=val;saveEquipment();}}
-function updateEqNotes(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.notes=val;saveEquipment();}}
+
+function updateEqName(id,val){
+  var e=equipment.find(function(x){return x.id===id;});
+  if(e){
+    e.name=val;
+    saveEquipment();
+    renderEquipment();
+  }
+}
+
+function updateEqTablet(id,val){
+  var e=equipment.find(function(x){return x.id===id;});
+  if(e){
+    e.tabletAssigned=val;
+    saveEquipment();
+    renderEquipment();
+  }
+}
+
+function updateEqNotes(id,val){
+  var e=equipment.find(function(x){return x.id===id;});
+  if(e){
+    e.notes=val;
+    saveEquipment();
+    renderEquipment();
+  }
+}
 async function deleteEquipment(id){
   if(!confirm('Remove this unit?')) return;
 
@@ -1433,29 +2184,52 @@ function openAddUnitModal(){document.getElementById('add-unit-modal').style.disp
 function closeAddUnitModal(){document.getElementById('add-unit-modal').style.display='none';}
 function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)addSpecificEquip(t);closeAddUnitModal();}
 
-function eqRowHtml(e,idx){
-  var sc={operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'}[e.status]||'';
-  var notes=(e.notes||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-  var name=(e.name||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-  var tablet=(e.tabletAssigned||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+function eqStatusClass(s){return {operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'}[s]||'status-op';}
+function eqStatusLabel(s){return {operational:'Operational',down:'Down',maintenance:'Maintenance',standby:'Standby'}[s]||s;}
+
+
+function eqRowHtml(e, idx){
+  var sc = eqStatusClass(e.status);
+  var notes = (e.notes||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  var name  = (e.name||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  var tablet = (e.tabletAssigned||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  var tabletCell = tablet.trim()
+    ? '<input class="tablet-input" type="text" value="'+tablet+'" placeholder="Tablet ID" data-eid="'+e.id+'">'
+    : '<span class="tablet-missing">⚠ Missing</span><input class="tablet-input" type="text" value="" placeholder="Tablet ID" data-eid="'+e.id+'" style="margin-left:6px;width:auto;">';
+
+  var statusBadge = '';
+  if(e.status === 'operational'){
+    statusBadge = '<span class="eq-status-badge eq-status-badge-ok">Operational</span>';
+  }else{
+    var dayStamp = formatStatusChangedDay(e.status_changed_at);
+    var ageMeta = getEquipmentAgeMeta(e);
+    var statusText = (e.status === 'down' ? 'Down' : (e.status === 'maintenance' ? 'Maintenance' : 'Standby'));
+    statusBadge = '<span class="eq-status-badge eq-status-badge-bad">'+statusText+'</span>'
+      + (ageMeta ? '<span class="eq-age-pill eq-age-'+ageMeta.severity+'" data-equipment-age="1" data-age-start="'+(e.status_changed_at || e.updated_at || '')+'" data-age-kind="'+statusText.toLowerCase()+'">'+ageMeta.label+'</span>' : '')
+      + (dayStamp ? '<span class="eq-status-date" title="Left operational on '+dayStamp+'">'+dayStamp+'</span>' : '');
+  }
+
+  var needsAttention = (!String(e.notes || '').trim() && e.status !== 'operational');
+  var notesBadge = notesMissing(e)
+    ? '<span class="eq-status-badge eq-status-badge-warn'+(needsAttention ? ' eq-note-alert' : '')+'">'+(needsAttention ? 'Needs notes' : 'Notes missing')+'</span>'
+    : '<span class="eq-status-badge eq-status-badge-ok">Notes set</span>';
+
   return '<tr>'
-    +'<td style="text-align:center;"><span class="equip-id">'+String(idx+1).padStart(2,'0')+'</span></td>'
-    +'<td style="text-align:center;"><input class="name-input" type="text" value="'+name+'" placeholder="Equipment name" data-eid="'+e.id+'"></td>'
-    +'<td style="text-align:center;"><select id="sel-'+e.id+'" class="status-select '+sc+'" data-eid="'+e.id+'">'
+    +'<td class="eq-num">'+(idx+1)+'</td>'
+    +'<td><input class="name-input" type="text" value="'+name+'" placeholder="Name / ID" data-eid="'+e.id+'"></td>'
+    +'<td><select class="eq-status-select '+sc+'" id="sel-'+e.id+'" data-eid="'+e.id+'">'
     +'<option value="operational"'+(e.status==='operational'?' selected':'')+'>Operational</option>'
     +'<option value="down"'+(e.status==='down'?' selected':'')+'>Down</option>'
     +'<option value="maintenance"'+(e.status==='maintenance'?' selected':'')+'>Maintenance</option>'
     +'<option value="standby"'+(e.status==='standby'?' selected':'')+'>Standby</option>'
-    +'</select></td>'
-    +'<td style="text-align:center;">'
-    +(tablet.trim()
-      ? '<input class="tablet-input" type="text" value="'+tablet+'" placeholder="Tablet assigned" data-eid="'+e.id+'">'
-      : '<div class="tablet-missing">⚠ Missing</div><input class="tablet-input" type="text" value="" placeholder="Tablet assigned" data-eid="'+e.id+'" style="margin-top:6px;">')
-    +'</td>'
-    +'<td style="text-align:center;"><input class="notes-input" type="text" value="'+notes+'" placeholder="Add notes..." data-eid="'+e.id+'"></td>'
-    +'<td style="text-align:center;"><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">&#x2715;</button></td>'
+    +'</select>'
+    +'<div class="eq-row-extra">'+statusBadge+'</div></td>'
+    +'<td>'+tabletCell+'</td>'
+    +'<td><input class="notes-input'+(needsAttention ? ' eq-note-alert' : '')+'" wrap="soft" type="text" value="'+notes+'" placeholder="Notes..." data-eid="'+e.id+'"><div class="eq-row-extra">'+notesBadge+'</div></td>'
+    +'<td style="text-align:center;"><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></td>'
     +'</tr>';
 }
+
 
 function renderEquipBanner(){
   var banner=document.getElementById('equip-banner');
@@ -1464,11 +2238,11 @@ function renderEquipBanner(){
   var maint=equipment.filter(function(e){return e.status==='maintenance';});
   var html='';
   if(down.length){
-    var chips=down.map(function(e){var col=EQ_COLORS[e.type]||'#888';return '<span class="bchip" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;"></span>'+e.unit+'</span>';}).join('');
+    var chips=down.map(function(e){var col=EQ_COLORS[e.type]||'#888';return '<span class="bchip" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;margin-right:3px;"></span>'+(e.name||e.unit)+'</span>';}).join('');
     html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Units Down</div><div class="banner-chips">'+chips+'</div></div>';
   }
   if(maint.length){
-    var chips2=maint.map(function(e){var col=EQ_COLORS[e.type]||'#888';return '<span class="bchip" style="background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;"></span>'+e.unit+'</span>';}).join('');
+    var chips2=maint.map(function(e){var col=EQ_COLORS[e.type]||'#888';return '<span class="bchip" style="background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;margin-right:3px;"></span>'+(e.name||e.unit)+'</span>';}).join('');
     html+='<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>In Maintenance</div><div class="banner-chips">'+chips2+'</div></div>';
   }
   banner.innerHTML=html;
@@ -1476,72 +2250,881 @@ function renderEquipBanner(){
 
 function renderEquipment(){
   renderEquipBanner();
-  var container=document.getElementById('equip-content');
+  renderStaffingWidget();
+  updateEquipmentStatusMeta();
+  var container = document.getElementById('equip-content');
   if(!container) return;
-
   syncEqLoginUI();
-
   if(!eqLoggedIn){
-    container.innerHTML = '<div class="eq-lock-overlay">Sign in above to unlock equipment editing.</div>';
+    container.innerHTML = '<div class="eq-lock-overlay">Sign in to unlock equipment editing.</div>';
+    return;
+  }
+  var html = '<div class="equip-page-wrap">';
+  EQ_TYPES.forEach(function(type){
+    var units = equipment.filter(function(e){ return e.type===type; });
+    if(!units.length) return;
+    var col = EQ_COLORS[type] || '#888';
+    var downCount  = units.filter(function(e){ return e.status==='down'; }).length;
+    var maintCount = units.filter(function(e){ return e.status==='maintenance'; }).length;
+    html += '<div class="equip-section">'
+      +'<div class="equip-section-title">'
+      +'<span class="etitle-dot" style="background:'+col+';box-shadow:0 0 6px '+col+'66;"></span>'
+      +'<span class="etitle-name">'+type+'s</span>'
+      +'<span class="etitle-count">'+units.length+' unit'+(units.length!==1?'s':'')+'</span>'
+      +(downCount  ? '<span class="down-count-badge">'+downCount+' down</span>' : '')
+      +(maintCount ? '<span class="maint-count-badge">'+maintCount+' in maintenance</span>' : '')
+      +'<button class="eq-section-add-btn eq-section-add" data-type="'+type+'">+ Add '+type+'</button>'
+      +'</div>'
+      +'<table class="equip-table" style="--row-accent:'+col+'">'
+      +'<thead><tr>'
+      +'<th style="width:48px;text-align:center;">#</th>'
+      +'<th style="width:24%;">Name</th>'
+      +'<th style="width:16%;">Status</th>'
+      +'<th style="width:18%;">Tablet</th>'
+      +'<th style="width:34%;">Notes</th>'
+      +'<th style="width:48px;text-align:center;"></th>'
+      +'</tr></thead>'
+      +'<tbody>'
+      + units.map(function(e,idx){ return eqRowHtml(e,idx); }).join('')
+      +'</tbody></table></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+  renderEquipmentAttention();
+
+  container.querySelectorAll('select.eq-status-select[data-eid]').forEach(function(sel){
+    sel.addEventListener('change', function(){
+      var val = this.value;
+      this.className = 'eq-status-select '+eqStatusClass(val);
+      updateEqStatus(this.dataset.eid, val);
+    });
+  });
+  container.querySelectorAll('input.name-input[data-eid]').forEach(function(inp){ inp.addEventListener('change', function(){ updateEqName(this.dataset.eid, this.value); }); });
+  container.querySelectorAll('input.tablet-input[data-eid]').forEach(function(inp){ inp.addEventListener('input', function(){
+    updateEqTablet(this.dataset.eid, this.value);
+    var td = this.closest('td'); if(!td) return;
+    var flag = td.querySelector('.tablet-missing');
+    if(this.value.trim()){ if(flag) flag.remove(); }
+    else if(!flag){ var d=document.createElement('span'); d.className='tablet-missing'; d.textContent='⚠ Missing'; td.insertBefore(d,this); }
+  }); });
+  container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){ inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); }); });
+  container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){ btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); deleteEquipment(this.dataset.eid); }); });
+  container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){ btn.addEventListener('click', function(){ addSpecificEquip(this.dataset.type); }); });
+}
+
+function refreshEquipmentAgingDisplay(){
+  document.querySelectorAll('[data-equipment-age="1"]').forEach(function(el){
+    var start = el.getAttribute('data-age-start');
+    if(!start) return;
+    try{
+      var ts = new Date(start);
+      if(isNaN(ts.getTime())) return;
+      var ms = Date.now() - ts.getTime();
+      if(ms < 0) ms = 0;
+      var hours = ms / 3600000;
+      var mins = Math.max(1, Math.floor(ms / 60000));
+      var days = Math.floor(hours / 24);
+      var remHours = Math.floor(hours % 24);
+      var duration = '';
+      if(days > 0){
+        duration = days + 'd' + (remHours ? ' ' + remHours + 'h' : '');
+      }else if(hours >= 1){
+        duration = Math.floor(hours) + 'h';
+      }else{
+        duration = mins + 'm';
+      }
+      var kind = (el.getAttribute('data-age-kind') || 'down').toLowerCase();
+      var prefix = kind === 'maintenance' ? 'Maintenance ' : (kind === 'standby' ? 'Standby ' : 'Down ');
+      el.textContent = prefix + duration;
+
+      var severity = 'fresh';
+      if(hours >= 48) severity = 'critical';
+      else if(hours >= 24) severity = 'orange';
+      else if(hours >= 12) severity = 'warn';
+      el.className = 'eq-age-pill eq-age-' + severity;
+    }catch(err){}
+  });
+}
+
+// ── WEEKLY SCHEDULE ──
+var WEEKLY_SCHEDULE = {
+  1: { // Monday
+    day:   ['Demetrius Towler','Dante Citizen','Ramon Nava','Tran Tyler','Dorrean Gardner','Nelson Romero','Mikey Dever','Armando Castruita','James Brown','Dexter Stewart','Henry Thomas','Jose Herrera'],
+    night: ['Brandy Brown','Aaron Mejia','Derrell Bookman','Charles McDaniel','Jason Tingle','Marco Contrerras','Robert Benavides','Ernest Urtado','Messiah Johnson','Rufus Gilder II','Chimeniem Echendu','Jose Delgado']
+  },
+  2: { // Tuesday
+    day:   ['Keyston Player','Makia Hickman','Demetrius Towler','Dante Citizen','Ramon Nava','Tran Tyler','Armando Castruita','James Brown','Dexter Stewart','Henry Thomas','Jose Herrera'],
+    night: ['Timothy Carruthers','Brandy Brown','Aaron Mejia','Derrell Bookman','Alexander Hopkins','Charles McDaniel','Jason Tingle','Marco Contrerras','Robert Benavides','Chimeniem Echendu','Jose Delgado']
+  },
+  3: { // Wednesday
+    day:   ['Keyston Player','Makia Hickman','Demetrius Towler','Dante Citizen','Alton Branford','Dacoyea Frazer','Ramon Nava','Myles Wanza','Dorrean Gardner','Tran Tyler','James Brown','Dexter Stewart','Henry Thomas'],
+    night: ['Timothy Carruthers','Victor Caceres Virula','Aweri Keme Jr.','Kevin Hosey','Aaron Mejia','Derrell Bookman','Alexander Hopkins','Charles McDaniel','Jason Tingle','Marco Contrerras','Messiah Johnson','Jose Delgado']
+  },
+  4: { // Thursday
+    day:   ['Keyston Player','Makia Hickman','Alton Branford','Dacoyea Frazer','Myles Wanza','Ramon Nava','Dorrean Gardner','Nelson Romero','Mikey Dever','Dexter Stewart','Henry Thomas','Jose Herrera'],
+    night: ['Timothy Carruthers','Victor Caceres Virula','Aweri Keme Jr.','Kevin Hosey','Alexander Hopkins','Charles McDaniel','Jason Tingle','Marco Contrerras','Robert Benavides','Ernest Urtado','Rufus Gilder II','Jose Delgado']
+  },
+  5: { // Friday
+    day:   ['Keyston Player','Makia Hickman','Alton Branford','Dacoyea Frazer','Myles Wanza','Ramon Nava','Dorrean Gardner','Nelson Romero','Mikey Dever','Armando Castruita','Dexter Stewart','Henry Thomas','Jose Herrera'],
+    night: ['Timothy Carruthers','Victor Caceres Virula','Aweri Keme Jr.','Kevin Hosey','Brandy Brown','Alexander Hopkins','Jason Tingle','Marco Contrerras','Robert Benavides','Ernest Urtado','Messiah Johnson','Chimeniem Echendu','Jose Delgado']
+  },
+  6: { // Saturday
+    day:   ['Keyston Player','Makia Hickman','Demetrius Towler','Dante Citizen','Alton Branford','Dacoyea Frazer','Myles Wanza','Tran Tyler','Nelson Romero','Mikey Dever','Dorrean Gardner','Armando Castruita','James Brown'],
+    night: ['Timothy Carruthers','Victor Caceres Virula','Aweri Keme Jr.','Kevin Hosey','Brandy Brown','Aaron Mejia','Alexander Hopkins','Derrell Bookman','Robert Benavides','Ernest Urtado','Messiah Johnson','Rufus Gilder II','Chimeniem Echendu']
+  },
+  0: { // Sunday
+    day:   ['Demetrius Towler','Dante Citizen','Alton Branford','Dacoyea Frazer','Myles Wanza','Tran Tyler','Dorrean Gardner','Nelson Romero','Mikey Dever','Armando Castruita','James Brown'],
+    night: ['Victor Caceres Virula','Aweri Keme Jr.','Kevin Hosey','Brandy Brown','Aaron Mejia','Derrell Bookman','Charles McDaniel','Ernest Urtado','Messiah Johnson','Rufus Gilder II','Chimeniem Echendu','Jose Delgado']
+  }
+};
+
+var DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+
+var staffingNamesHidden = localStorage.getItem('staffing_names_hidden');
+if(staffingNamesHidden === null){ staffingNamesHidden = true; }
+else{ staffingNamesHidden = staffingNamesHidden === 'true'; }
+function applyStaffingNamesHidden(){
+  var wrap=document.getElementById('staffing-widget');
+  var btn=document.getElementById('staffing-toggle-btn');
+  if(wrap){
+    wrap.classList.toggle('staffing-names-hidden', staffingNamesHidden);
+  }
+  if(btn){
+    btn.innerHTML = staffingNamesHidden
+      ? '<span class="pulse" style="background:#22c55e;"></span>Show Employee Readout'
+      : '<span class="pulse" style="background:#4a9eff;"></span>Hide Employee Readout';
+    btn.classList.toggle('active', staffingNamesHidden);
+  }
+  try{ localStorage.setItem('staffing_names_hidden', staffingNamesHidden ? 'true' : 'false'); }catch(e){}
+}
+function toggleStaffingNames(){
+  staffingNamesHidden = !staffingNamesHidden;
+  applyStaffingNamesHidden();
+  renderStaffingWidget();
+}
+
+
+function getCurrentShiftCoverageState(){
+  var now = new Date();
+  var isDay = now.getHours() >= 6 && now.getHours() < 18;
+  var sched = WEEKLY_SCHEDULE[now.getDay()] || {day:[],night:[]};
+  var currentCount = isDay ? sched.day.length : sched.night.length;
+  var needed = Math.max(0, currentCount - 2);
+  var hostlers = equipment.filter(function(e){
+    return e.type === 'Hostler' && e.status === 'operational';
+  }).length;
+  var shortage = needed - hostlers;
+  return {
+    isDay: isDay,
+    currentCount: currentCount,
+    needed: needed,
+    hostlers: hostlers,
+    shortage: shortage > 0 ? shortage : 0,
+    enough: shortage <= 0
+  };
+}
+
+function formatEquipmentUpdated(){
+  var stamps = equipment.map(function(e){ return e.updated_at || null; }).filter(Boolean).sort();
+  if(!stamps.length) return 'Last updated: —';
+  try{
+    var d = new Date(stamps[stamps.length - 1]);
+    if(isNaN(d.getTime())) return 'Last updated: —';
+    return 'Last updated: ' + d.toLocaleString([], { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+  }catch(e){
+    return 'Last updated: —';
+  }
+}
+
+
+function formatStatusChangedDay(value){
+  if(!value) return '';
+  try{
+    var d = new Date(value);
+    if(isNaN(d.getTime())) return '';
+    return d.toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' });
+  }catch(e){
+    return '';
+  }
+}
+
+function formatDowntimeLabel(value){
+  if(!value) return '';
+  try{
+    var d = new Date(value);
+    if(isNaN(d.getTime())) return '';
+    var ms = Date.now() - d.getTime();
+    if(ms < 0) ms = 0;
+    var totalMinutes = Math.floor(ms / 60000);
+    var hours = Math.floor(totalMinutes / 60);
+    var days = Math.floor(hours / 24);
+    var remHours = hours % 24;
+    if(days > 0){
+      return days + 'd' + (remHours ? ' ' + remHours + 'h' : '');
+    }
+    if(hours > 0){
+      return hours + 'h';
+    }
+    return Math.max(1, totalMinutes) + 'm';
+  }catch(e){
+    return '';
+  }
+}
+
+function getEquipmentAgeMeta(e){
+  if(!e || e.status === 'operational') return null;
+  var start = e.status_changed_at || e.updated_at;
+  if(!start) return null;
+  try{
+    var ts = new Date(start);
+    if(isNaN(ts.getTime())) return null;
+    var hours = (Date.now() - ts.getTime()) / 3600000;
+    var severity = 'fresh';
+    if(hours >= 48) severity = 'critical';
+    else if(hours >= 24) severity = 'orange';
+    else if(hours >= 12) severity = 'warn';
+    var kind = (e.status === 'maintenance' ? 'Maintenance' : (e.status === 'standby' ? 'Standby' : 'Down'));
+    return {
+      label: kind + ' ' + formatDowntimeLabel(start),
+      severity: severity,
+      start: start
+    };
+  }catch(err){
+    return null;
+  }
+}
+
+function notesMissing(e){
+  return !String(e.notes || '').trim();
+}
+
+function needsAttentionUnit(e){
+  return e.status !== 'operational' && notesMissing(e);
+}
+
+function renderEquipmentAttention(){
+  var wrap = document.getElementById('equipment-attention');
+  if(!wrap) return;
+
+  var list = equipment.filter(function(e){ return needsAttentionUnit(e); });
+  var statusText = list.length ? (list.length + ' unit' + (list.length !== 1 ? 's' : '') + ' need attention') : 'No smart-note issues';
+
+  var html = ''
+    + '<div class="equipment-attention-head">'
+      + '<div>'
+        + '<div class="equipment-attention-title">'
+          + '<strong>Needs Attention</strong>'
+          + '<div class="equipment-attention-sub">Non-operational units with empty notes are escalated here automatically.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="shift-readiness-status ' + (list.length ? 'shift-status-watch' : 'shift-status-good') + '">' + statusText + '</div>'
+    + '</div>';
+
+  if(!list.length){
+    html += '<div class="equipment-attention-list"><div class="equipment-attention-item"><div class="equipment-attention-meta"><div class="equipment-attention-name">All down / maintenance units are documented</div><div class="equipment-attention-reason">Good operational discipline</div></div></div></div>';
+  }else{
+    html += '<div class="equipment-attention-list">' + list.map(function(e){
+      var label = (e.name && String(e.name).trim()) ? e.name : e.unit;
+      var reason = eqStatusLabel(e.status) + ' · notes missing';
+      return '<div class="equipment-attention-item">'
+        + '<div class="equipment-attention-meta">'
+          + '<div class="equipment-attention-name">' + label + '</div>'
+          + '<div class="equipment-attention-reason">' + reason + '</div>'
+        + '</div>'
+        + '<span class="eq-status-badge eq-status-badge-warn eq-note-alert">Needs notes</span>'
+      + '</div>';
+    }).join('') + '</div>';
+  }
+
+  wrap.innerHTML = html;
+}
+
+function updateEquipmentStatusMeta(){
+  var stamp=document.getElementById('equipment-updated');
+  if(stamp) stamp.textContent = formatEquipmentUpdated();
+
+  var state = getCurrentShiftCoverageState();
+  var kpi=document.getElementById('equipment-kpi');
+  var label=document.getElementById('equipment-kpi-label');
+  var dot=document.getElementById('equipment-kpi-dot');
+  if(label){
+    if(!equipment.length){
+      label.textContent = 'Coverage: —';
+    }else if(state.enough){
+      label.textContent = 'Coverage: enough';
+    }else{
+      label.textContent = 'Coverage: short by ' + state.shortage;
+    }
+  }
+  if(kpi){
+    kpi.classList.remove('equipment-kpi-ok','equipment-kpi-warn','equipment-kpi-bad');
+    kpi.classList.add(state.enough ? 'equipment-kpi-ok' : (state.shortage <= 1 ? 'equipment-kpi-warn' : 'equipment-kpi-bad'));
+  }
+  if(dot){
+    dot.style.background = state.enough ? '#22c55e' : (state.shortage <= 1 ? '#f59e0b' : '#ef4444');
+  }
+  renderShiftReadinessDashboard();
+  renderEquipmentAttention();
+}
+
+function getShiftReadinessSnapshot(){
+  var now = new Date();
+  var dow = now.getDay();
+  var hour = now.getHours();
+  var isDay = hour >= 6 && hour < 18;
+  var sched = WEEKLY_SCHEDULE[dow] || {day:[],night:[]};
+  var currentShiftCount = isDay ? sched.day.length : sched.night.length;
+  var requiredHostlers = Math.max(0, currentShiftCount - 2);
+  var operationalHostlers = equipment.filter(function(e){
+    return e.type === 'Hostler' && e.status === 'operational';
+  }).length;
+  var diff = operationalHostlers - requiredHostlers;
+  var downUnits = equipment.filter(function(e){ return e.status === 'down'; }).length;
+  var missingNotes = equipment.filter(function(e){ return notesMissing(e); }).length;
+  var longTermDown = equipment.filter(function(e){
+    if(e.status !== 'down' || !e.status_changed_at) return false;
+    var ts = new Date(e.status_changed_at);
+    if(isNaN(ts.getTime())) return false;
+    return (now.getTime() - ts.getTime()) > (24 * 60 * 60 * 1000);
+  }).length;
+  var coverageStatus = 'GOOD';
+  if(requiredHostlers === 0){
+    coverageStatus = 'NO DATA';
+  }else if(diff < 0){
+    coverageStatus = Math.abs(diff) > 1 ? 'SHORT' : 'WATCH';
+  }
+  return {
+    isDay: isDay,
+    currentShiftLabel: isDay ? 'Day Shift' : 'Night Shift',
+    currentShiftCount: currentShiftCount,
+    requiredHostlers: requiredHostlers,
+    operationalHostlers: operationalHostlers,
+    diff: diff,
+    downUnits: downUnits,
+    missingNotes: missingNotes,
+    longTermDown: longTermDown,
+    coverageStatus: coverageStatus
+  };
+}
+
+function renderShiftReadinessDashboard(){
+  var wrap = document.getElementById('shift-readiness-dashboard');
+  if(!wrap) return;
+
+  var s = getShiftReadinessSnapshot();
+  var diffLabel = s.diff > 0 ? ('+' + s.diff + ' excess') : (s.diff < 0 ? (Math.abs(s.diff) + ' short') : 'Balanced');
+  var statusClass = s.coverageStatus === 'GOOD' ? 'good' : (s.coverageStatus === 'WATCH' ? 'watch' : (s.coverageStatus === 'SHORT' ? 'short' : 'neutral'));
+  var statusText = s.coverageStatus;
+  var shiftLabel = s.currentShiftLabel + ' · ' + s.currentShiftCount + ' employees';
+
+  wrap.innerHTML =
+    '<div class="shift-readiness-head">'
+      +'<div>'
+        +'<div class="shift-readiness-title">Shift Readiness Dashboard<strong>Command Center</strong><div class="shift-readiness-sub">'+shiftLabel+'</div></div>'
+      +'</div>'
+      +'<div class="shift-readiness-status shift-status-'+statusClass+'">Coverage ' + statusText + '</div>'
+    +'</div>'
+    +'<div class="shift-readiness-grid">'
+      +'<div class="shift-kpi good">'
+        +'<div class="shift-kpi-label">Operational Hostlers</div>'
+        +'<div class="shift-kpi-value">'+s.operationalHostlers+'</div>'
+        +'<div class="trend good">Ready for dispatch</div>'
+      +'</div>'
+      +'<div class="shift-kpi info">'
+        +'<div class="shift-kpi-label">Current Shift Employees</div>'
+        +'<div class="shift-kpi-value">'+s.currentShiftCount+'</div>'
+        +'<div class="trend neutral">'+s.currentShiftLabel+'</div>'
+      +'</div>'
+      +'<div class="shift-kpi neutral">'
+        +'<div class="shift-kpi-label">Required Hostlers</div>'
+        +'<div class="shift-kpi-value">'+s.requiredHostlers+'</div>'
+        +'<div class="trend neutral">Minimum coverage target</div>'
+      +'</div>'
+      +'<div class="shift-kpi '+(s.diff >= 0 ? 'good' : 'short')+'">'
+        +'<div class="shift-kpi-label">Shortage / Excess</div>'
+        +'<div class="shift-kpi-value">'+diffLabel+'</div>'
+        +'<div class="trend '+(s.diff >= 0 ? 'good' : 'short')+'">'+(s.diff >= 0 ? 'Cover is healthy' : 'Coverage gap')+'</div>'
+      +'</div>'
+      +'<div class="shift-kpi warn">'
+        +'<div class="shift-kpi-label">Down Units</div>'
+        +'<div class="shift-kpi-value">'+s.downUnits+'</div>'
+        +'<div class="trend watch">Units out of service</div>'
+      +'</div>'
+      +'<div class="shift-kpi warn">'
+        +'<div class="shift-kpi-label">Units Missing Notes</div>'
+        +'<div class="shift-kpi-value">'+s.missingNotes+'</div>'
+        +'<div class="trend watch">Needs documentation</div>'
+      +'</div>'
+      +'<div class="shift-kpi '+(s.longTermDown ? 'short' : 'good')+'">'
+        +'<div class="shift-kpi-label">Down &gt; 24h</div>'
+        +'<div class="shift-kpi-value">'+s.longTermDown+'</div>'
+        +'<div class="trend '+(s.longTermDown ? 'short' : 'good')+'">Long-term downtime</div>'
+      +'</div>'
+    +'</div>';
+}
+
+function renderStaffingWidget(){
+  var wrap = document.getElementById('staffing-widget');
+  if(!wrap) return;
+
+  var now = new Date();
+  var dow = now.getDay();
+  var hour = now.getHours();
+  var isDay = hour >= 6 && hour < 18;
+  var currentShiftLabel = isDay ? 'Day Shift' : 'Night Shift';
+
+  var sched = WEEKLY_SCHEDULE[dow] || {day:[],night:[]};
+  var dayCount = sched.day.length;
+  var nightCount = sched.night.length;
+  var currentShiftCount = isDay ? dayCount : nightCount;
+  var currentShiftNames = isDay ? sched.day : sched.night;
+  var offShiftCount = isDay ? nightCount : dayCount;
+  var offShiftLabel = isDay ? 'Night Shift' : 'Day Shift';
+  var offShiftNames = isDay ? sched.night : sched.day;
+
+  var operationalHostlers = equipment.filter(function(e){
+    return e.type==='Hostler' && e.status==='operational';
+  }).length;
+  var totalHostlers = equipment.filter(function(e){ return e.type==='Hostler'; }).length;
+
+  var neededHostlers = Math.max(0, currentShiftCount - 2);
+  var shortage = neededHostlers - operationalHostlers;
+
+  var verdictClass, verdictIcon, verdictMsg;
+  if(totalHostlers === 0){
+    verdictClass='verdict-warn'; verdictIcon='⚠';
+    verdictMsg='No hostler data yet — add equipment to check coverage.';
+  } else if(shortage <= 0){
+    verdictClass='verdict-ok'; verdictIcon='✓';
+    verdictMsg=operationalHostlers+' operational hostler'+(operationalHostlers!==1?'s':'')+' for '+neededHostlers+' needed.';
+  } else if(shortage === 1){
+    verdictClass='verdict-warn'; verdictIcon='⚠';
+    verdictMsg='Short by 1 hostler — need '+neededHostlers+' for '+currentShiftCount+' employees on '+currentShiftLabel+'.';
+  } else {
+    verdictClass='verdict-bad'; verdictIcon='✕';
+    verdictMsg='Short by '+shortage+' hostlers — need '+neededHostlers+' for '+currentShiftCount+' employees on '+currentShiftLabel+'.';
+  }
+
+  function nameList(names, dotColor){
+    return names.map(function(n){
+      return '<div class="staffing-name-item"><span class="sname-dot" style="background:'+dotColor+';"></span>'+n+'</div>';
+    }).join('');
+  }
+
+  var activeDot = isDay ? '#f59e0b' : '#818cf8';
+  var offDot = isDay ? '#818cf8' : '#f59e0b';
+
+  wrap.innerHTML =
+    '<div class="staffing-header">'
+    +'<span class="staffing-title">Today\'s Staffing & Coverage</span>'
+    +'<span class="staffing-day-label">'+DAY_NAMES[dow]+' · <span style="color:'+(isDay ? 'var(--day)' : 'var(--night)')+'">'+currentShiftLabel+' Active</span></span>'
+    +'</div>'
+    +'<div class="staffing-strip">'
+    +'<div class="staffing-mini staffing-mini-day">'
+      +'<div class="staffing-mini-inline">'
+        +'<div class="staffing-mini-label">Day Shift</div>'
+        +'<div class="staffing-mini-note">Scheduled today</div>'
+      +'</div>'
+      +'<div class="staffing-mini-val" style="color:var(--day)">'+dayCount+'</div>'
+    +'</div>'
+    +'<div class="staffing-mini staffing-mini-night">'
+      +'<div class="staffing-mini-inline">'
+        +'<div class="staffing-mini-label">Night Shift</div>'
+        +'<div class="staffing-mini-note">Scheduled today</div>'
+      +'</div>'
+      +'<div class="staffing-mini-val" style="color:var(--night)">'+nightCount+'</div>'
+    +'</div>'
+    +'<div class="staffing-mini staffing-mini-active">'
+      +'<div class="staffing-mini-inline">'
+        +'<div class="staffing-mini-label">Current Shift</div>'
+        +'<div class="staffing-mini-note">'+currentShiftLabel+' employees right now</div>'
+      +'</div>'
+      +'<div class="staffing-mini-val" style="color:var(--success)">'+currentShiftCount+'</div>'
+    +'</div>'
+    +'<div class="staffing-mini staffing-mini-hostler">'
+      +'<div class="staffing-mini-inline">'
+        +'<div class="staffing-mini-label">Hostlers Needed</div>'
+        +'<div class="staffing-mini-note">After crane + unlock reserve</div>'
+      +'</div>'
+      +'<div class="staffing-mini-val" style="color:var(--accent)">'+neededHostlers+'</div>'
+    +'</div>'
+    +'</div>'
+    +'<div class="staffing-summary-line">'
+      +'<span class="staffing-chip staffing-chip-day"><strong>Day</strong> '+dayCount+'</span>'
+      +'<span class="staffing-chip staffing-chip-night"><strong>Night</strong> '+nightCount+'</span>'
+      +'<span class="staffing-chip staffing-chip-active"><strong>Now</strong> '+currentShiftLabel+' · '+currentShiftCount+'</span>'
+      +'<span class="staffing-chip staffing-chip-hostler"><strong>Hostlers</strong> '+operationalHostlers+' / '+neededHostlers+'</span>'
+    +'</div>'
+    +'<div class="staffing-verdict '+verdictClass+'"><span class="verdict-icon">'+verdictIcon+'</span><span>'+verdictMsg+'</span></div>'
+    +'<div class="staffing-names">'
+    +'<div class="staffing-names-col"><div class="staffing-col-title"><span class="sname-dot" style="background:'+activeDot+';"></span>'+currentShiftLabel+' — '+currentShiftCount+' employees</div>'+nameList(currentShiftNames,activeDot)+'</div>'
+    +'<div class="staffing-names-col"><div class="staffing-col-title"><span class="sname-dot" style="background:'+offDot+';"></span>'+offShiftLabel+' — '+offShiftCount+' employees</div>'+nameList(offShiftNames,offDot)+'</div>'
+    +'</div>';
+  applyStaffingNamesHidden();
+}
+
+
+
+
+// ── AUDITS & TRAINING ──
+
+var ROSTER_AUDIT_KEY = 'eit_audit_roster_v3';
+var ROSTER_TRAIN_KEY = 'eit_train_roster_v3';
+var ROSTER_SUPABASE_TABLES = { audits: 'audit_roster_lists', trainings: 'training_roster_lists' };
+var rosterFilters = { audits: 'all', trainings: 'all' };
+var rosterLastUpdated = { audits: null, trainings: null };
+
+function normalizeRosterName(name){
+  return String(name || '')
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function titleCaseName(text){
+  return String(text || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map(function(part){
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    })
+    .join(' ');
+}
+
+function dedupeNames(lines){
+  var seen = {};
+  var out = [];
+  lines.forEach(function(line){
+    var clean = titleCaseName(line);
+    if(!clean) return;
+    var key = normalizeRosterName(clean);
+    if(!key || seen[key]) return;
+    seen[key] = true;
+    out.push(clean);
+  });
+  return out;
+}
+
+function parseNameList(text){
+  return dedupeNames(String(text || '').split(/\n+/).map(function(line){
+    return line.replace(/^\s*[\-\*\u2022\d\.\)\(]+\s*/,'').trim();
+  }));
+}
+
+function bestEmployeeMatch(name){
+  var norm = normalizeRosterName(name);
+  if(!norm || !Array.isArray(employees) || !employees.length) return null;
+
+  var parts = norm.split(' ');
+  var candidates = [];
+
+  employees.forEach(function(e){
+    var first = normalizeRosterName(e.first || '');
+    var last = normalizeRosterName(e.last || '');
+    var full = normalizeRosterName((e.first || '') + ' ' + (e.last || ''));
+    var reverse = normalizeRosterName((e.last || '') + ' ' + (e.first || ''));
+
+    if(norm === full || norm === reverse){
+      candidates.push({ emp: e, score: 100 });
+      return;
+    }
+    if(full && (full.indexOf(norm) !== -1 || norm.indexOf(full) !== -1)){
+      candidates.push({ emp: e, score: 85 });
+      return;
+    }
+    if(parts.length >= 2){
+      if(parts[0] === first && parts[parts.length - 1] === last){
+        candidates.push({ emp: e, score: 90 });
+        return;
+      }
+      if(parts[0] === last && parts[parts.length - 1] === first){
+        candidates.push({ emp: e, score: 90 });
+        return;
+      }
+    }
+    if(first && last && norm.indexOf(first) !== -1 && norm.indexOf(last) !== -1){
+      candidates.push({ emp: e, score: 75 });
+    }
+  });
+
+  if(!candidates.length) return null;
+  candidates.sort(function(a,b){ return b.score - a.score; });
+  return candidates[0].emp;
+}
+
+function bucketFromShift(shift){
+  return shift === 'Day' ? 'Day' : (shift === 'Night' ? 'Night' : 'Other');
+}
+
+function normalizeRosterType(type){
+  return type === 'trainings' ? 'trainings' : 'audits';
+}
+
+function rosterStorageKey(type){
+  return normalizeRosterType(type) === 'trainings' ? ROSTER_TRAIN_KEY : ROSTER_AUDIT_KEY;
+}
+
+function formatRosterTimestamp(value){
+  if(!value) return 'Last updated: —';
+  try{
+    var d = new Date(value);
+    if(isNaN(d.getTime())) return 'Last updated: —';
+    return 'Last updated: ' + d.toLocaleString([], { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+  }catch(e){
+    return 'Last updated: —';
+  }
+}
+
+function emptyRosterPayload(){
+  return { items: [], updated_at: null };
+}
+
+function saveRosterCacheOnly(type, data){
+  try{ localStorage.setItem(rosterStorageKey(type), JSON.stringify(data)); }catch(e){}
+}
+
+function loadRosterList(type){
+  type = normalizeRosterType(type);
+  var fallback = emptyRosterPayload();
+
+  try{
+    var raw = localStorage.getItem(rosterStorageKey(type));
+    var parsed = raw ? JSON.parse(raw) : null;
+    if(parsed && Array.isArray(parsed.items)){
+      fallback.items = parsed.items;
+      fallback.updated_at = parsed.updated_at || null;
+    }
+  }catch(e){}
+
+  return fallback;
+}
+
+async function syncRosterFromSupabase(type){
+  if(!eqLoggedIn || typeof supabaseClient === 'undefined') return null;
+  var table = ROSTER_SUPABASE_TABLES[normalizeRosterType(type)];
+  try{
+    var res = await supabaseClient.from(table).select('*').eq('id', normalizeRosterType(type)).maybeSingle();
+    if(res && !res.error && res.data && Array.isArray(res.data.items)){
+      var payload = { items: res.data.items || [], updated_at: res.data.updated_at || null };
+      saveRosterCacheOnly(type, payload);
+      return payload;
+    }
+  }catch(e){
+    console.warn('Roster sync failed:', e);
+  }
+  return null;
+}
+
+async function saveRosterList(type, data){
+  type = normalizeRosterType(type);
+  data = data || emptyRosterPayload();
+  data.updated_at = new Date().toISOString();
+  saveRosterCacheOnly(type, data);
+  rosterLastUpdated[type] = data.updated_at;
+
+  if(eqLoggedIn && typeof supabaseClient !== 'undefined'){
+    var table = ROSTER_SUPABASE_TABLES[type];
+    try{
+      var res = await supabaseClient.from(table).upsert({
+        id: type,
+        items: data.items || [],
+        updated_at: data.updated_at,
+        updated_by: eqLoginUsername || 'CONGLOBAL'
+      });
+      if(res && res.error) console.error('Roster save error:', res.error);
+    }catch(err){
+      console.error('Roster save failed:', err);
+    }
+  }
+}
+
+function buildRosterItems(names){
+  return names.map(function(name){
+    var emp = bestEmployeeMatch(name);
+    var shift = bucketFromShift(emp ? emp.shift : 'Other');
+    return {
+      id: 'rs_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+      name: titleCaseName(name),
+      shift: shift,
+      matched: !!emp,
+      employee: emp ? (emp.first + ' ' + emp.last) : ''
+    };
+  });
+}
+
+function countsByShift(items){
+  return {
+    all: items.length,
+    Day: items.filter(function(i){ return i.shift === 'Day'; }).length,
+    Night: items.filter(function(i){ return i.shift === 'Night'; }).length,
+    Other: items.filter(function(i){ return i.shift === 'Other'; }).length
+  };
+}
+
+function filterRosterItems(items, filter){
+  if(filter === 'all') return items;
+  return items.filter(function(i){ return i.shift === filter; });
+}
+
+function filterButtons(type){
+  var current = rosterFilters[type];
+  return [
+    ['all','All'],
+    ['Day','Day'],
+    ['Night','Night'],
+    ['Other','Other']
+  ].map(function(pair){
+    var key = pair[0], label = pair[1];
+    return '<button class="roster-filter-btn'+(current===key?' active':'')+'" onclick="setRosterFilter(\''+type+'\',\''+key+'\')">'+label+'</button>';
+  }).join('');
+}
+
+function setRosterFilter(type, filter){
+  rosterFilters[normalizeRosterType(type)] = filter;
+  renderRosterPanels();
+}
+
+function renderRosterTable(type){
+  var key = normalizeRosterType(type);
+  var data = loadRosterList(key);
+  var items = data.items || [];
+  var filtered = filterRosterItems(items, rosterFilters[key]);
+  var wrap = document.getElementById(key === 'audits' ? 'audit-table-wrap' : 'train-table-wrap');
+  var countLabel = document.getElementById(key === 'audits' ? 'audit-count-label' : 'train-count-label');
+  var summaryLabel = document.getElementById(key === 'audits' ? 'audit-shift-summary' : 'train-shift-summary');
+  var totalLabel = document.getElementById(key === 'audits' ? 'audit-total-count' : 'train-total-count');
+  var filtersWrap = document.getElementById(key === 'audits' ? 'audit-filter-row' : 'train-filter-row');
+  var updatedLabel = document.getElementById('roster-updated');
+
+  if(filtersWrap) filtersWrap.innerHTML = filterButtons(key);
+
+  var counts = countsByShift(items);
+  if(totalLabel) totalLabel.textContent = String(counts.all);
+  if(summaryLabel) summaryLabel.textContent = 'Day ' + counts.Day + ' · Night ' + counts.Night + ' · Other ' + counts.Other;
+  if(countLabel) countLabel.textContent = counts.all + ' names';
+  if(updatedLabel){
+    var latest = rosterLastUpdated.audits || rosterLastUpdated.trainings || data.updated_at || null;
+    updatedLabel.textContent = formatRosterTimestamp(latest);
+  }
+
+  if(!wrap) return;
+  if(!items.length){
+    wrap.innerHTML = '<div class="roster-empty">No names yet. Click Paste Names to import a list.</div>';
+    return;
+  }
+  if(!filtered.length){
+    wrap.innerHTML = '<div class="roster-empty">No names match this filter.</div>';
     return;
   }
 
-  var html='';
-  EQ_TYPES.forEach(function(type){
-    var units=equipment.filter(function(e){return e.type===type;});
-    if(!units.length) return;
-    var downCount=units.filter(function(e){return e.status==='down';}).length;
-    var col=EQ_COLORS[type]||'#888';
-    html+='<div class="equip-section">'
-      +'<div class="equip-section-title"><span class="etitle-dot" style="background:'+col+';"></span>'+type+'s'
-      +'<span style="color:var(--muted);font-size:10px;margin-left:4px;">('+units.length+' units)</span>'
-      +(downCount?'<span class="down-count-badge">'+downCount+' down</span>':'')
-      +'<button class="equip-add-btn eq-section-add" data-type="'+type+'" style="margin:0 0 0 auto;padding:2px 10px;font-size:10px;">+ Add '+type+'</button>'
-      +'</div>'
-      +'<table class="equip-table"><thead><tr>'
-      +'<th style="width:10%;text-align:center;">Equipment Count</th><th style="width:18%;text-align:center;">Equipment Name</th><th style="width:16%;text-align:center;">Status</th><th style="width:16%;text-align:center;">Tablet Assigned</th><th style="width:30%;text-align:center;">Notes</th><th style="width:8%;text-align:center;"></th>'
-      +'</tr></thead><tbody>'
-      +units.map(function(e,idx){return eqRowHtml(e,idx);}).join('')
-      +'</tbody></table></div>';
-  });
-  container.innerHTML=html;
-  container.querySelectorAll('select[data-eid]').forEach(function(sel){sel.addEventListener('change',function(){updateEqStatus(this.dataset.eid,this.value);});});
-  container.querySelectorAll('input.name-input[data-eid]').forEach(function(inp){inp.addEventListener('change',function(){updateEqName(this.dataset.eid,this.value);});});
-  container.querySelectorAll('input.tablet-input[data-eid]').forEach(function(inp){inp.addEventListener('input',function(){
-    updateEqTablet(this.dataset.eid,this.value);
-    var cell=this.closest('td'); if(!cell) return;
-    var value=this.value.trim();
-    var flag=cell.querySelector('.tablet-missing');
-    if(value){ if(flag) flag.remove(); this.style.marginTop=''; }
-    else { if(!flag){ var d=document.createElement('div'); d.className='tablet-missing'; d.textContent='⚠ Missing'; cell.insertBefore(d,this); } this.style.marginTop='6px'; }
-  });});
-  container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){inp.addEventListener('change',function(){updateEqNotes(this.dataset.eid,this.value);});});
-  container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();deleteEquipment(this.dataset.eid);});});
-  container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){btn.addEventListener('click',function(){addSpecificEquip(this.dataset.type);});});
+  var rows = filtered.map(function(item){
+    var shiftClass = item.shift === 'Day' ? 'roster-pill-day' : (item.shift === 'Night' ? 'roster-pill-night' : 'roster-pill-other');
+    var matchClass = item.matched ? 'roster-pill-match' : 'roster-pill-unmatch';
+    var matchLabel = item.matched ? (item.employee || 'Matched') : 'Unmatched';
+    return '<tr>'
+      + '<td><span class="roster-name">'+item.name+'</span></td>'
+      + '<td><span class="roster-pill '+shiftClass+'">'+item.shift+'</span></td>'
+      + '<td><span class="roster-pill '+matchClass+'">'+matchLabel+'</span></td>'
+      + '<td><button class="roster-action-btn" onclick="removeRosterItem(\''+key+'\',\''+item.id+'\')">Remove</button></td>'
+      + '</tr>';
+  }).join('');
+
+  wrap.innerHTML = '<table class="roster-table">'
+    + '<thead><tr>'
+    + '<th style="width:44%">Name</th>'
+    + '<th style="width:16%">Shift</th>'
+    + '<th style="width:28%">Match</th>'
+    + '<th style="width:12%">Action</th>'
+    + '</tr></thead>'
+    + '<tbody>' + rows + '</tbody>'
+    + '</table>';
 }
 
-// ── INIT ──
+async function renderRosterPanels(){
+  await syncRosterFromSupabase('audits');
+  await syncRosterFromSupabase('trainings');
+  renderRosterTable('audits');
+  renderRosterTable('trainings');
+}
+
+function openRosterModal(){
+  var bg = document.getElementById('roster-modal-bg');
+  var auditInput = document.getElementById('audit-paste');
+  var trainInput = document.getElementById('train-paste');
+  var auditData = loadRosterList('audits').items || [];
+  var trainData = loadRosterList('trainings').items || [];
+  if(auditInput) auditInput.value = auditData.map(function(i){ return i.name; }).join('\\n');
+  if(trainInput) trainInput.value = trainData.map(function(i){ return i.name; }).join('\\n');
+  if(bg) bg.classList.add('open');
+}
+
+function closeRosterModal(){
+  var bg = document.getElementById('roster-modal-bg');
+  if(bg) bg.classList.remove('open');
+}
+
+function clearRosterModalInputs(){
+  var auditInput = document.getElementById('audit-paste');
+  var trainInput = document.getElementById('train-paste');
+  if(auditInput) auditInput.value = '';
+  if(trainInput) trainInput.value = '';
+}
+
+async function importRosterLists(){
+  var auditInput = document.getElementById('audit-paste');
+  var trainInput = document.getElementById('train-paste');
+  var auditNames = parseNameList(auditInput ? auditInput.value : '');
+  var trainNames = parseNameList(trainInput ? trainInput.value : '');
+
+  await saveRosterList('audits', { items: buildRosterItems(auditNames) });
+  await saveRosterList('trainings', { items: buildRosterItems(trainNames) });
+
+  rosterFilters.audits = 'all';
+  rosterFilters.trainings = 'all';
+
+  closeRosterModal();
+  await renderRosterPanels();
+}
+
+async function removeRosterItem(type, id){
+  var key = normalizeRosterType(type);
+  var data = loadRosterList(key);
+  data.items = (data.items || []).filter(function(item){ return item.id !== id; });
+  await saveRosterList(key, data);
+  await renderRosterPanels();
+}
+
+async function resetRosterData(){
+  await saveRosterList('audits', emptyRosterPayload());
+  await saveRosterList('trainings', emptyRosterPayload());
+  rosterFilters.audits = 'all';
+  rosterFilters.trainings = 'all';
+  await renderRosterPanels();
+}
+
+async function initAuditsPage(){
+  if(!rosterFilters.audits) rosterFilters.audits = 'all';
+  if(!rosterFilters.trainings) rosterFilters.trainings = 'all';
+  await renderRosterPanels();
+}
+
 load();
 syncEqLoginUI();
+initGlobalScale();
 if(eqLoggedIn){
   // Show cached roster instantly while Supabase loads
   loadEmployeesFromCache();
   render();
   loadEmployees().then(function(){ render(); }).catch(function(){ render(); });
-  loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
+  loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
 } else {
   render();
-  loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
+  loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
 }
-
-document.addEventListener('click',function(e){
-  var btn=e.target.closest('.equip-del-btn');
-  if(btn){
-    e.preventDefault();
-    e.stopPropagation();
-    deleteEquipment(btn.dataset.eid);
-  }
-}, true);
 
 document.addEventListener('input',function(e){
   if(!e.target.classList.contains('tablet-input')) return;
@@ -1612,6 +3195,49 @@ window.addEventListener('load',function(){
   }
 });
 
+</script>
+
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+
+  function triggerLiveEquipmentRefresh(){
+    try{
+      if(typeof renderEquipment === 'function'){
+        renderEquipment();
+      }
+      if(typeof renderEquipmentAttention === 'function'){
+        renderEquipmentAttention();
+      }
+      if(typeof updateEquipmentDashboard === 'function'){
+        updateEquipmentDashboard();
+      }
+      if(typeof updateEquipmentKPIs === 'function'){
+        updateEquipmentKPIs();
+      }
+      if(typeof renderEquipmentAlerts === 'function'){
+        renderEquipmentAlerts();
+      }
+    }catch(err){
+      console.log('Live refresh error:', err);
+    }
+  }
+
+  // refresh every 30 seconds automatically
+  setInterval(triggerLiveEquipmentRefresh, 30000);
+
+  // instant refresh after interactions
+  document.body.addEventListener('change', () => {
+    setTimeout(triggerLiveEquipmentRefresh, 10);
+  });
+
+  document.body.addEventListener('input', () => {
+    setTimeout(triggerLiveEquipmentRefresh, 10);
+  });
+
+  // initial run
+  setTimeout(triggerLiveEquipmentRefresh, 250);
+});
 </script>
 
 </body>
