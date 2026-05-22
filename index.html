@@ -338,7 +338,7 @@ select option{background:var(--surface)}
 .equip-table td:first-child{border-left:3px solid var(--row-accent, var(--border))}
 .equip-table th:first-child{border-left:3px solid transparent}
 /* unit # cell */
-.eq-num{font-family:var(--mono);font-size:12px;color:var(--muted);width:42px;text-align:center}
+.eq-num{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:600;white-space:nowrap}
 /* name input */
 .name-input{background:transparent;border:1px solid transparent;border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:13px;color:var(--text);outline:none;width:100%;transition:all .15s}
 .name-input:hover{border-color:var(--border2);background:rgba(255,255,255,.02)}
@@ -1573,7 +1573,7 @@ setInterval(function(){
     <div style="font-family:var(--mono);font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#4a9eff;margin-bottom:16px;">Add Unit</div>
     <label style="font-family:var(--mono);font-size:10px;color:#7a87a8;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">Equipment Type</label>
     <select id="add-unit-type" style="width:100%;background:#0f1117;border:1px solid #3a4460;border-radius:5px;padding:8px 10px;font-family:var(--mono);font-size:12px;color:#e8ecf5;outline:none;margin-bottom:18px;">
-      <option value="Hostler">Hostler</option><option value="Crane">Crane</option><option value="Forklift">Forklift</option><option value="Side-Loader">Side-Loader</option><option value="Ops Truck">Ops Truck</option>
+      <option value="Hostler">Hostler</option><option value="Crane">Crane</option><option value="Forklift">Forklift</option><option value="Side-Loader">Side-Loader</option><option value="Ops Truck">Ops Truck</option><option value="Reach Stacker">Reach Stacker</option><option value="Pick Up">Pick Up</option>
     </select>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
       <button onclick="closeAddUnitModal()" style="font-family:var(--mono);font-size:11px;padding:7px 14px;border-radius:5px;border:1px solid #3a4460;background:transparent;color:#7a87a8;cursor:pointer;">Cancel</button>
@@ -2127,10 +2127,10 @@ function switchPage(p){
 }
 
 // ── EQUIPMENT ──
-var EQ_KEY='eit_eq_v1';
-var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
-var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
-var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
+var EQ_KEY='eit_eq_v3';
+var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck','Reach Stacker','Pick Up'];
+var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff','Reach Stacker':'#e879f9','Pick Up':'#38bdf8'};
+var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT','Reach Stacker':'RS','Pick Up':'PU'};
 var equipment=[];
 var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
@@ -2228,6 +2228,7 @@ async function startEquipmentRealtimeSync(){
   // Fallback for environments where realtime is not available
   equipmentPollTimer = setInterval(async function(){
     if(!eqLoggedIn || equipmentSyncBusy) return;
+    if(typeof navigator !== 'undefined' && !navigator.onLine) return; // skip when offline
     equipmentSyncBusy = true;
     try{
       await loadEquipment();
@@ -2236,7 +2237,7 @@ async function startEquipmentRealtimeSync(){
       renderEquipmentAttention();
       refreshEquipmentAgingDisplay();
     }catch(err){
-      console.error('Equipment poll refresh failed:', err);
+      console.warn('Equipment poll refresh failed (offline?):', err);
     }finally{
       equipmentSyncBusy = false;
     }
@@ -2293,12 +2294,24 @@ var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'CONGLOBAL'
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 
+function loadEquipmentFromCache(){
+  try{
+    var cached = localStorage.getItem(EQ_KEY);
+    if(cached){
+      var parsed = JSON.parse(cached);
+      if(Array.isArray(parsed) && parsed.length){ equipment = parsed; return true; }
+    }
+  }catch(e){}
+  return false;
+}
+
 async function loadEquipment(){
-  if(!eqLoggedIn){
-    equipment = [];
-    updateEquipmentStatusMeta();
-    return;
+  // Always load local data first so the page renders immediately
+  if(!equipment.length){
+    if(!loadEquipmentFromCache()) seedEquipment();
   }
+
+  // Then try Supabase in background — only replace if we actually get data back
   try{
     const { data, error } = await supabaseClient
       .from('equipment')
@@ -2306,19 +2319,19 @@ async function loadEquipment(){
       .order('updated_at', { ascending: true });
 
     if(error){
-      console.error('Supabase load error:', error);
-      equipment = [];
+      console.warn('Supabase equipment load error (using local data):', error.message);
       updateEquipmentStatusMeta();
       return;
     }
 
-    equipment = (data || []).map(function(row){
+    var remote = (data || []).map(function(row){
       return {
         id: row.id,
         type: row.type || 'Hostler',
         unit: row.unit || '',
         name: row.name || '',
         tabletAssigned: row.tablet_assigned || '',
+        staysCharged: row.stays_charged || 'pending',
         status: row.status || 'operational',
         notes: row.notes || '',
         updated_at: row.updated_at || null,
@@ -2326,11 +2339,15 @@ async function loadEquipment(){
         status_changed_day: row.status_changed_day || null
       };
     });
+
+    if(remote.length){
+      equipment = remote;
+      localStorage.setItem(EQ_KEY, JSON.stringify(equipment));
+    }
     updateEquipmentStatusMeta();
 
   }catch(e){
-    console.error(e);
-    equipment = [];
+    console.warn('loadEquipment: using local data:', e.message || e);
     updateEquipmentStatusMeta();
   }
 }
@@ -2338,7 +2355,6 @@ async function loadEquipment(){
 
 async function persistEquipmentAndRefresh(){
   await saveEquipment();
-  await loadEquipment();
   renderEquipment();
   renderEquipmentAttention();
   updateEquipmentStatusMeta();
@@ -2346,8 +2362,13 @@ async function persistEquipmentAndRefresh(){
 }
 
 async function saveEquipment(){
-  if(!eqLoggedIn) return;
+  // Always save locally first — this is the source of truth when offline
+  try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
+  showSaveToast();
+
+  // Try Supabase in background — failure is silent, local data is already safe
   try{
+    if(!supabaseClient) return;
     var stamp = new Date().toISOString();
     var payload = equipment.map(function(e){
       e.updated_at = stamp;
@@ -2357,6 +2378,7 @@ async function saveEquipment(){
         unit: e.unit,
         name: e.name,
         tablet_assigned: e.tabletAssigned,
+        stays_charged: e.staysCharged || 'pending',
         status: e.status,
         notes: e.notes,
         updated_at: stamp,
@@ -2365,46 +2387,76 @@ async function saveEquipment(){
       };
     });
 
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from('equipment')
-      .upsert(payload, { onConflict: 'id' })
-      .select('*');
+      .upsert(payload, { onConflict: 'id' });
 
-    if(error) throw error;
-
-    if(Array.isArray(data) && data.length){
-      equipment = data.map(function(row){
-        return {
-          id: row.id,
-          type: row.type || 'Hostler',
-          unit: row.unit || '',
-          name: row.name || '',
-          tabletAssigned: row.tablet_assigned || '',
-          status: row.status || 'operational',
-          notes: row.notes || '',
-          updated_at: row.updated_at || null,
-          status_changed_at: row.status_changed_at || null,
-          status_changed_day: row.status_changed_day || null
-        };
-      });
-    }
-
-    showSaveToast();
-    await loadEquipment();        // pull back the server truth
-    renderEquipment();
-    renderEquipmentAttention();
-    updateEquipmentStatusMeta();
-    refreshEquipmentAgingDisplay();
+    if(error) console.warn('Supabase equipment sync failed (data saved locally):', error.message);
 
   }catch(err){
-    console.error('Save failed:', err);
-    alert('Supabase save failed. Check console.');
+    console.warn('Supabase equipment sync failed (data saved locally):', err.message || err);
   }
 }
 
 
 function seedEquipment(){
-  equipment=[];
+  // eq(type, equipNum=name, vmu=tablet)
+  function eq(type, equipNum, vmu){
+    var pre = EQ_PREFIX[type] || type.slice(0,2).toUpperCase();
+    var n   = equipment.filter(function(x){ return x.type===type; }).length + 1;
+    return {
+      id: eqUid(),
+      type: type,
+      unit: pre + '-' + String(n).padStart(2,'0'),
+      name: String(equipNum || ''),
+      tabletAssigned: String(vmu || ''),
+      staysCharged: 'pending',
+      status: 'operational',
+      notes: '',
+      status_changed_at: null,
+      status_changed_day: null
+    };
+  }
+  equipment = [];
+  // ── HOSTLERS ──
+  equipment.push(eq('Hostler','112388','25242523023319'));
+  equipment.push(eq('Hostler','324012','25241523023522'));
+  equipment.push(eq('Hostler','115520','25241523023377'));
+  equipment.push(eq('Hostler','114465','25240523020919'));
+  equipment.push(eq('Hostler','324013','25240523020864'));
+  equipment.push(eq('Hostler','104188','25242523023604'));
+  equipment.push(eq('Hostler','112389','25251523020085'));
+  equipment.push(eq('Hostler','113423','25240523020883'));
+  equipment.push(eq('Hostler','324015','25251523020170'));
+  equipment.push(eq('Hostler','115517','25240523020893'));
+  equipment.push(eq('Hostler','118764','25241523023331'));
+  equipment.push(eq('Hostler','111316','25273523020636'));
+  equipment.push(eq('Hostler','426040','25252623023281'));
+  equipment.push(eq('Hostler','117560','25251523020046'));
+  equipment.push(eq('Hostler','113419','25241523023501'));
+  equipment.push(eq('Hostler','121002','25242523023896'));
+  equipment.push(eq('Hostler','324014','25242623023242'));
+  equipment.push(eq('Hostler','426041','25241523023347'));
+  equipment.push(eq('Hostler','426042','25084523020786'));
+  // ── CRANES ──
+  equipment.push(eq('Crane','92502','25241523021175'));
+  equipment.push(eq('Crane','91805','25241523020087'));
+  equipment.push(eq('Crane','91804','25251523020474'));
+  // ── SIDE-LOADERS ──
+  equipment.push(eq('Side-Loader','82103','25126523021322'));
+  // ── REACH STACKERS ──
+  equipment.push(eq('Reach Stacker','72501','25242523023454'));
+  // ── PICK UPS ──
+  equipment.push(eq('Pick Up','2770','25251523020089'));
+  // ── OPS TRUCKS / SPARES ──
+  equipment.push(eq('Ops Truck','Spare','25240523020763'));
+  equipment.push(eq('Ops Truck','Spare','25241523023483'));
+  equipment.push(eq('Ops Truck','Spare','25240523023824'));
+  equipment.push(eq('Ops Truck','Spare','25242523023691'));
+  equipment.push(eq('Ops Truck','for pu','25241523020435'));
+  equipment.push(eq('Ops Truck','for pu','25242523020156'));
+  equipment.push(eq('Ops Truck','Spare','25242623023196'));
+  equipment.push(eq('Ops Truck','Spare','25251523020114'));
   saveEquipment();
 }
 
@@ -2563,13 +2615,13 @@ function eqRowHtml(e, idx){
 
   var needsAttention = (!String(e.notes || '').trim() && e.status !== 'operational');
   var notesBadge = '';
-  if(notesMissing(e)){
-    notesBadge = '<span class="eq-status-badge eq-status-badge-warn'+(needsAttention ? ' eq-note-alert' : '')+'">'+(needsAttention ? 'Needs notes' : 'Notes missing')+'</span>';
+  if(needsAttention){
+    notesBadge = '<span class="eq-status-badge eq-status-badge-warn eq-note-alert">Needs notes</span>';
   }
 
   var rowClass = needsAttention ? ' class="eq-row-needs-notes"' : '';
   return '<tr'+rowClass+'>'
-    +'<td class="eq-num">'+(idx+1)+'</td>'
+    +'<td class="eq-num">'+e.unit+'</td>'
     +'<td><input class="name-input" type="text" value="'+name+'" placeholder="Name / ID" data-eid="'+e.id+'"></td>'
     +'<td><select class="eq-status-select '+sc+'" id="sel-'+e.id+'" data-eid="'+e.id+'">'
     +'<option value="operational"'+(e.status==='operational'?' selected':'')+'>Operational</option>'
@@ -2757,7 +2809,7 @@ function renderEquipment(){
       +'</div>'
       +'<table class="equip-table" style="--row-accent:'+col+'">'
       +'<thead><tr>'
-      +'<th style="width:48px;text-align:center;">#</th>'
+      +'<th style="width:80px;">Unit ID</th>'
       +'<th style="width:20%;">Name</th>'
       +'<th style="width:15%;">Status</th>'
       +'<th style="width:15%;">Tablet</th>'
