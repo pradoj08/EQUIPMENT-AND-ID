@@ -456,6 +456,132 @@ select option{background:var(--surface)}
   letter-spacing:.4px;
   text-transform:uppercase;
 }
+
+.callout-composer{
+  margin:16px 24px 0;
+  padding:14px 16px;
+  border:1px solid rgba(74,158,255,.22);
+  border-radius:14px;
+  background:linear-gradient(180deg, rgba(16,20,30,.98), rgba(11,14,22,.98));
+  box-shadow:0 12px 28px rgba(0,0,0,.2);
+}
+.callout-composer-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.callout-composer-title{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.callout-composer-title strong{
+  display:block;
+  color:var(--text);
+  font-size:13px;
+  letter-spacing:1.2px;
+  margin-top:2px;
+}
+.callout-composer-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.callout-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.callout-row input, .callout-row select{
+  flex:1 1 220px;
+  min-width:0;
+}
+.callout-textarea{
+  width:100%;
+  min-height:82px;
+  resize:vertical;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:10px 12px;
+  font-family:var(--mono);
+  font-size:12px;
+  margin:10px 0;
+}
+.callout-textarea:focus{border-color:var(--accent);outline:none}
+.callout-send{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid rgba(74,158,255,.45);
+  background:rgba(74,158,255,.12);
+  color:#cfe4ff;
+  cursor:pointer;
+}
+.callout-send:hover{background:rgba(74,158,255,.2)}
+.callout-note{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:8px;
+}
+.callout-list{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.callout-item{
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(239,68,68,.18);
+  background:rgba(239,68,68,.06);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.callout-item strong{
+  display:block;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text);
+  margin-bottom:3px;
+}
+.callout-item small{
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.4;
+}
+.callout-pending{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(245,158,11,.35);
+  background:rgba(245,158,11,.12);
+  color:#fcd34d;
+  white-space:nowrap;
+}
+.callout-sent{
+  border-color:rgba(34,197,94,.35);
+  background:rgba(34,197,94,.12);
+  color:#6ee7b7;
+}
 .eq-note-alert{
   animation:eqPulse 1.3s infinite;
   border-color:rgba(239,68,68,.45) !important;
@@ -1175,6 +1301,8 @@ function handlePopupLogin(){
 }
 
 window.addEventListener('load',function(){
+  loadCalloutsLocal();
+  renderCalloutComposer();
   var loggedIn=localStorage.getItem('eq_app_logged_in');
 
   if(loggedIn==='true'){
@@ -1371,6 +1499,7 @@ setInterval(function(){
 </div>
 <div id="shift-readiness-dashboard" class="shift-readiness-dashboard"></div>
 <div id="equipment-attention" class="equipment-attention"></div>
+<div id="callout-composer" class="callout-composer"></div>
 <div id="equip-banner"></div>
 <div class="staffing-widget" id="staffing-widget"></div>
 <div id="equip-content" style="padding-bottom:28px;"></div>
@@ -1969,6 +2098,35 @@ var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck'
 var equipment=[];
 var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
+var calloutQueue = [];
+var calloutSyncBusy = false;
+
+function loadCalloutsLocal(){
+  try{
+    calloutQueue = JSON.parse(localStorage.getItem('eq_callout_queue') || '[]') || [];
+  }catch(e){
+    calloutQueue = [];
+  }
+}
+
+function saveCalloutsLocal(){
+  try{
+    localStorage.setItem('eq_callout_queue', JSON.stringify(calloutQueue));
+  }catch(e){}
+}
+
+function queueCalloutFallback(payload){
+  calloutQueue.unshift({
+    id: 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    created_at: new Date().toISOString(),
+    status: 'pending',
+    source: 'local',
+    ...payload
+  });
+  saveCalloutsLocal();
+  renderCalloutComposer();
+}
+
 
 var equipmentRealtimeChannel = null;
 var equipmentPollTimer = null;
@@ -2148,6 +2306,7 @@ async function persistEquipmentAndRefresh(){
   await loadEquipment();
   renderEquipment();
   renderEquipmentAttention();
+  renderCalloutComposer();
   updateEquipmentStatusMeta();
   refreshEquipmentAgingDisplay();
 }
@@ -2215,7 +2374,7 @@ function seedEquipment(){
   saveEquipment();
 }
 
-function updateEqStatus(id,val){
+async function updateEqStatus(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(!e) return;
   var prev = e.status;
@@ -2231,7 +2390,6 @@ function updateEqStatus(id,val){
   }
 
   await persistEquipmentAndRefresh();
-  renderEquipment();
 }
 
 function updateEqName(id,val){
@@ -2291,15 +2449,15 @@ async function deleteEquipment(id){
   await saveEquipment();
   renderEquipment();
 }
-function addSpecificEquip(type){
+async function addSpecificEquip(type){
   var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
   equipment.push({id:eqUid(),type:type,unit:pre+'-'+String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
-  persistEquipmentAndRefresh();
+  await persistEquipmentAndRefresh();
   renderEquipment();
 }
 function openAddUnitModal(){document.getElementById('add-unit-modal').style.display='flex';}
 function closeAddUnitModal(){document.getElementById('add-unit-modal').style.display='none';}
-function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)addSpecificEquip(t);closeAddUnitModal();}
+async function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)await addSpecificEquip(t);closeAddUnitModal();}
 
 function eqStatusClass(s){return {operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'}[s]||'status-op';}
 function eqStatusLabel(s){return {operational:'Operational',down:'Down',maintenance:'Maintenance',standby:'Standby'}[s]||s;}
@@ -2348,6 +2506,126 @@ function eqRowHtml(e, idx){
 }
 
 
+
+function renderCalloutComposer(){
+  var wrap = document.getElementById('callout-composer');
+  if(!wrap) return;
+
+  var openCallouts = calloutQueue.slice(0, 6);
+  var html = ''
+    + '<div class="callout-composer-head">'
+      + '<div>'
+        + '<div class="callout-composer-title"><strong>Send Callout</strong>'
+        + '<div class="callout-composer-sub">Create an in-app callout. It will try Supabase first and fall back locally if the backend is unavailable.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="callout-pending">' + (calloutQueue.length ? calloutQueue.length + ' pending' : 'Ready') + '</div>'
+    + '</div>'
+    + '<div class="callout-row">'
+      + '<input id="callout-subject" type="text" placeholder="Subject (e.g. Call on hostler / Missing note / Down unit)">'
+      + '<select id="callout-priority">'
+        + '<option value="info">Info</option>'
+        + '<option value="watch">Watch</option>'
+        + '<option value="urgent">Urgent</option>'
+      + '</select>'
+    + '</div>'
+    + '<textarea id="callout-message" class="callout-textarea" placeholder="Type the callout details here..."></textarea>'
+    + '<div class="callout-row">'
+      + '<button class="callout-send" onclick="sendCallout()">Send Callout</button>'
+      + '<button class="callout-send" style="border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.12);color:#fcd34d" onclick="retryPendingCallouts()">Retry Pending</button>'
+    + '</div>'
+    + '<div class="callout-note">If Supabase is offline or blocked, callouts stay in this device’s queue and remain visible in the app.</div>';
+
+  if(openCallouts.length){
+    html += '<div class="callout-list">' + openCallouts.map(function(c){
+      return '<div class="callout-item">'
+        + '<div>'
+          + '<strong>' + escapeHtml(c.subject || 'Callout') + '</strong>'
+          + '<small>' + escapeHtml(c.message || '') + '</small>'
+          + '<small>' + new Date(c.created_at).toLocaleString() + ' · ' + escapeHtml(c.priority || 'info') + '</small>'
+        + '</div>'
+        + '<span class="callout-pending' + (c.status === 'sent' ? ' callout-sent' : '') + '">' + escapeHtml(c.status || 'pending') + '</span>'
+      + '</div>';
+    }).join('') + '</div>';
+  }
+
+  wrap.innerHTML = html;
+}
+
+function escapeHtml(s){
+  return String(s || '').replace(/[&<>"']/g, function(ch){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]);
+  });
+}
+
+async function sendCallout(){
+  var subject = (document.getElementById('callout-subject') || {}).value || '';
+  var priority = (document.getElementById('callout-priority') || {}).value || 'info';
+  var message = (document.getElementById('callout-message') || {}).value || '';
+
+  subject = subject.trim();
+  message = message.trim();
+
+  if(!subject || !message){
+    alert('Add both a subject and message.');
+    return;
+  }
+
+  var payload = {
+    subject: subject,
+    message: message,
+    priority: priority,
+    author: eqLoginUsername || 'unknown'
+  };
+
+  try{
+    // Try to write to Supabase first.
+    if(supabaseClient){
+      const { error } = await supabaseClient.from('callouts').insert([{
+        subject: payload.subject,
+        message: payload.message,
+        priority: payload.priority,
+        author: payload.author,
+        created_at: new Date().toISOString()
+      }]);
+      if(error) throw error;
+      if(document.getElementById('callout-message')) document.getElementById('callout-message').value = '';
+      if(document.getElementById('callout-subject')) document.getElementById('callout-subject').value = '';
+      renderCalloutComposer();
+      return;
+    }
+    throw new Error('No supabase client');
+  }catch(err){
+    console.warn('Supabase callout write failed; using local queue.', err);
+    queueCalloutFallback(payload);
+    if(document.getElementById('callout-message')) document.getElementById('callout-message').value = '';
+    if(document.getElementById('callout-subject')) document.getElementById('callout-subject').value = '';
+    renderCalloutComposer();
+  }
+}
+
+async function retryPendingCallouts(){
+  if(!calloutQueue.length) return;
+  var stillPending = [];
+  for(const c of calloutQueue){
+    if(c.status === 'sent') continue;
+    try{
+      const { error } = await supabaseClient.from('callouts').insert([{
+        subject: c.subject,
+        message: c.message,
+        priority: c.priority,
+        author: c.author || eqLoginUsername || 'unknown',
+        created_at: c.created_at
+      }]);
+      if(error) throw error;
+    }catch(err){
+      stillPending.push(c);
+    }
+  }
+  calloutQueue = stillPending;
+  saveCalloutsLocal();
+  renderCalloutComposer();
+}
 function renderEquipBanner(){
   var banner=document.getElementById('equip-banner');
   if(!banner) return;
