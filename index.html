@@ -2518,21 +2518,30 @@ function updateEqTablet(id,val){
 var notesSaveTimers = {};
 var notesOriginalVal = {}; // value when focus first entered the field
 
-function queueEqNotesSave(id, val){
+function queueEqNotesSave(id, val, immediate){
   var e = equipment.find(function(x){return x.id===id;});
   if(!e) return;
   e.notes = val;
   renderEquipmentAttention();
   updateEquipmentStatusMeta();
 
-  if(notesSaveTimers[id]) clearTimeout(notesSaveTimers[id]);
+  if(notesSaveTimers[id]){
+    clearTimeout(notesSaveTimers[id]);
+    delete notesSaveTimers[id];
+  }
+
+  if(immediate){
+    saveEquipment();
+    return;
+  }
+
   notesSaveTimers[id] = setTimeout(function(){
     saveEquipment().finally(function(){ delete notesSaveTimers[id]; });
   }, 350);
 }
 
-function updateEqNotes(id,val){
-  queueEqNotesSave(id,val);
+function updateEqNotes(id,val,immediate){
+  queueEqNotesSave(id,val,immediate===true);
 }
 
 // Log note changes on blur — captures original on focus, logs on blur if changed
@@ -2851,9 +2860,9 @@ function renderEquipment(){
   }); });
   container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){
     inp.addEventListener('focus', function(){ this.setAttribute('data-has-focus','1'); });
-    inp.addEventListener('input', function(){ updateEqNotes(this.dataset.eid, this.value); });
-    inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value); });
-    inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); });
+    inp.addEventListener('input', function(){ updateEqNotes(this.dataset.eid, this.value, false); });
+    inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value, true); });
+    inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value, true); });
   });
   container.querySelectorAll('select.charged-select[data-eid]').forEach(function(sel){
     sel.addEventListener('change', function(){
