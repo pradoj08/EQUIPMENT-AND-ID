@@ -1970,6 +1970,10 @@ var equipment=[];
 var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
 
+var equipmentRealtimeChannel = null;
+var equipmentPollTimer = null;
+var equipmentSyncBusy = false;
+
 function syncEqLoginUI(){
   var signinForm=document.getElementById('auth-signin-form');
   var signedIn=document.getElementById('auth-signed-in');
@@ -1982,6 +1986,68 @@ function syncEqLoginUI(){
     if(signinForm) signinForm.style.display='flex';
     if(signedIn) signedIn.style.display='none';
   }
+}
+
+
+
+function stopEquipmentRealtimeSync(){
+  try{
+    if(equipmentRealtimeChannel && supabaseClient && typeof supabaseClient.removeChannel === 'function'){
+      supabaseClient.removeChannel(equipmentRealtimeChannel);
+    }
+  }catch(err){}
+  equipmentRealtimeChannel = null;
+
+  if(equipmentPollTimer){
+    clearInterval(equipmentPollTimer);
+    equipmentPollTimer = null;
+  }
+}
+
+async function startEquipmentRealtimeSync(){
+  if(!eqLoggedIn) return;
+  if(equipmentRealtimeChannel || equipmentPollTimer) return;
+
+  try{
+    equipmentRealtimeChannel = supabaseClient
+      .channel('equipment-live-sync')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'equipment' },
+        async function(){
+          if(!eqLoggedIn || equipmentSyncBusy) return;
+          equipmentSyncBusy = true;
+          try{
+            await loadEquipment();
+            renderEquipment();
+            updateEquipmentStatusMeta();
+            renderEquipmentAttention();
+            refreshEquipmentAgingDisplay();
+          }finally{
+            equipmentSyncBusy = false;
+          }
+        }
+      )
+      .subscribe();
+  }catch(err){
+    console.error('Realtime equipment sync unavailable:', err);
+  }
+
+  // Fallback for environments where realtime is not available
+  equipmentPollTimer = setInterval(async function(){
+    if(!eqLoggedIn || equipmentSyncBusy) return;
+    equipmentSyncBusy = true;
+    try{
+      await loadEquipment();
+      renderEquipment();
+      updateEquipmentStatusMeta();
+      renderEquipmentAttention();
+      refreshEquipmentAgingDisplay();
+    }catch(err){
+      console.error('Equipment poll refresh failed:', err);
+    }finally{
+      equipmentSyncBusy = false;
+    }
+  }, 15000);
 }
 
 async function signInEq(){
@@ -2011,6 +2077,7 @@ async function signInEq(){
   syncEqLoginUI();
   await loadEmployees();
   await loadEquipment();
+  await startEquipmentRealtimeSync();
   render();
   renderEquipment();
   updateEquipmentStatusMeta();
@@ -2020,6 +2087,7 @@ async function signInEq(){
 async function signOutEq(){
   eqLoggedIn = false;
   sessionStorage.removeItem('eq_logged_in');
+  stopEquipmentRealtimeSync();
   syncEqLoginUI();
   employees = [];
   equipment = [];
@@ -2098,6 +2166,7 @@ async function saveEquipment(){
 
     showSaveToast();
     updateEquipmentStatusMeta();
+    renderEquipmentAttention();
 
   }catch(err){
     console.error('Save failed:', err);
@@ -2148,14 +2217,24 @@ function updateEqTablet(id,val){
   }
 }
 
-function updateEqNotes(id,val){
-  var e=equipment.find(function(x){return x.id===id;});
-  if(e){
-    e.notes=val;
+var notesSaveTimers = {};
+
+function queueEqNotesSave(id, val){
+  var e = equipment.find(function(x){return x.id===id;});
+  if(!e) return;
+  e.notes = val;
+  renderEquipmentAttention();
+  updateEquipmentStatusMeta();
+
+  if(notesSaveTimers[id]) clearTimeout(notesSaveTimers[id]);
+  notesSaveTimers[id] = setTimeout(function(){
     saveEquipment();
-    renderEquipmentAttention();
-    updateEquipmentStatusMeta();
-  }
+    delete notesSaveTimers[id];
+  }, 350);
+}
+
+function updateEqNotes(id,val){
+  queueEqNotesSave(id,val);
 }
 async function deleteEquipment(id){
   if(!confirm('Remove this unit?')) return;
@@ -2311,6 +2390,7 @@ function renderEquipment(){
   }); });
   container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){
     inp.addEventListener('focus', function(){ this.setAttribute('data-has-focus','1'); });
+    inp.addEventListener('input', function(){ updateEqNotes(this.dataset.eid, this.value); });
     inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value); });
     inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); });
   });
