@@ -136,7 +136,6 @@ select option{background:var(--surface)}
 /* SAVE TOAST */
 #save-toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--surface);border:1px solid rgba(34,197,94,.4);border-left:3px solid var(--success);border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:11px;color:var(--success);display:flex;align-items:center;gap:7px;letter-spacing:.5px;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
 #save-toast.show{opacity:1;transform:translateY(0)}
-#save-toast.error{border-color:rgba(239,68,68,.4);border-left-color:var(--danger);color:#f87171;}
 /* EQUIPMENT */
 .equip-section{padding:16px 24px 0}
 .equip-section-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 0 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;margin-bottom:0}
@@ -499,8 +498,9 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 <script>
 // ── EMPLOYEE DATA ──
+var STORAGE_KEY = 'eit_v1';
+var HISTORY_KEY = 'eit_hist_v1';
 var employees = [];
-var empHistory = [];
 var currentTab = 'all';
 var editId = null;
 var needsAttnVisible = true;
@@ -508,34 +508,35 @@ var _toastTimer;
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
-function pushHistory(){
-  empHistory.unshift({ts:Date.now(),data:JSON.stringify(employees)});
-  if(empHistory.length>10) empHistory=empHistory.slice(0,10);
+function load(){
+  try{ employees=JSON.parse(localStorage.getItem(STORAGE_KEY))||[]; }catch(e){ employees=[]; }
 }
 
-function showSaveToast(ok){
+function pushHistory(){
+  try{
+    var hist=JSON.parse(localStorage.getItem(HISTORY_KEY))||[];
+    hist.unshift({ts:Date.now(),data:JSON.stringify(employees)});
+    if(hist.length>10) hist=hist.slice(0,10);
+    localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));
+  }catch(e){}
+}
+
+function showSaveToast(){
   var t=document.getElementById('save-toast');
   if(!t) return;
-  t.classList.remove('show','error');
-  if(ok===false){
-    t.classList.add('error');
-    t.innerHTML='<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Save failed — check console';
-  } else {
-    t.innerHTML='<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Saved';
-  }
-  void t.offsetWidth;
   t.classList.add('show');
   clearTimeout(_toastTimer);
-  _toastTimer=setTimeout(function(){ t.classList.remove('show'); },2500);
+  _toastTimer=setTimeout(function(){ t.classList.remove('show'); },2000);
 }
 
-async function save(){
+function save(){
   pushHistory();
-  var ok = await saveSharedState();
-  showSaveToast(ok);
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(employees));
+  queueSharedSave();
+  showSaveToast();
 }
 
-function seedData(){
+function seedData(shouldPersist){
   employees=[
     {id:uid(),first:'Wanda',     last:'Myles',      empId:'168580',upId:'',       shift:'Day',  phone:'(832) 630-8241',daysOff:'Mon/Tues',  status:'active'},
     {id:uid(),first:'Branford',  last:'Alton',      empId:'167117',upId:'',       shift:'Day',  phone:'(832) 427-0830',daysOff:'Mon/Tues',  status:'active'},
@@ -581,6 +582,10 @@ function seedData(){
     {id:uid(),first:'Watson',    last:'Gregory',    empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
     {id:uid(),first:'Cabral',    last:'Kane',       empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sun/Mon/Tue',status:'active'}
   ];
+  if(shouldPersist===false){
+    try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(employees)); }catch(e){}
+    return;
+  }
   save();
 }
 
@@ -768,7 +773,7 @@ function exportCSV(){
 
 // ── REVERT ──
 function openRevertModal(){
-  var hist=empHistory;
+  var hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
   var list=document.getElementById('revert-list');
   if(!hist.length){list.innerHTML='<p style="font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;padding:24px;">No history yet.</p>';}
   else{
@@ -783,7 +788,7 @@ function openRevertModal(){
   document.getElementById('revert-modal-bg').classList.add('open');
 }
 function restoreSnapshot(i){
-  var hist=empHistory;
+  var hist=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
   if(!hist[i]) return;
   if(!confirm('Restore to this saved state?')) return;
   employees=JSON.parse(hist[i].data);
@@ -807,6 +812,7 @@ function switchPage(p){
 }
 
 // ── EQUIPMENT ──
+var EQ_KEY='eit_eq_v1';
 var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT'};
@@ -815,6 +821,7 @@ var equipment=[];
 var SHARED_STATE_ID='global_state';
 var sharedSaveTimer=null;
 var sharedStateLoaded=false;
+var sharedSavePending=false;
 
 async function loadSharedState(){
   try{
@@ -825,32 +832,40 @@ async function loadSharedState(){
       .maybeSingle();
 
     if(error){
-      console.error('Supabase load error — code:', error.code, '| message:', error.message, '| details:', error.details, '| hint:', error.hint);
-      // Fall back to seed data so the app is usable even if Supabase is unreachable
-      if(!Array.isArray(employees) || !employees.length) seedData();
-      if(!Array.isArray(equipment)) equipment = [];
-      render(); renderEquipment();
+      console.error('Supabase load error:', error);
       return false;
     }
 
-    if(data && data.data){
-      const payload = data.data || {};
-      if(Array.isArray(payload.employees)) employees = payload.employees;
-      if(Array.isArray(payload.equipment)) equipment = payload.equipment;
-    } else {
-      // First run: seed employees if needed and create an empty shared state row.
-      if(!Array.isArray(employees) || !employees.length) seedData();
-      if(!Array.isArray(equipment)) equipment = [];
+    const payload = (data && data.data) ? data.data : {};
+
+    // Restore the roster if the shared record has data; otherwise seed once.
+    if(Array.isArray(payload.employees) && payload.employees.length){
+      employees = payload.employees;
+    }else{
+      seedData(false);
+    }
+
+    if(Array.isArray(payload.equipment)){
+      equipment = payload.equipment;
+    }else{
+      equipment = [];
+    }
+
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(employees));
+      localStorage.setItem(EQ_KEY, JSON.stringify(equipment));
+    }catch(e){}
+
+    // If the shared row did not exist or was empty, write the seeded names back.
+    if(!(Array.isArray(payload.employees) && payload.employees.length) || !Array.isArray(payload.equipment)){
       await saveSharedState();
     }
 
     sharedStateLoaded = true;
+    flushSharedSave();
     return true;
   }catch(err){
-    console.error('Supabase load exception:', err && err.message ? err.message : err);
-    if(!Array.isArray(employees) || !employees.length) seedData();
-    if(!Array.isArray(equipment)) equipment = [];
-    render(); renderEquipment();
+    console.error(err);
     return false;
   }
 }
@@ -859,33 +874,51 @@ async function saveSharedState(){
   try{
     const payload = {
       id: SHARED_STATE_ID,
-      data: { employees: employees, equipment: equipment }
+      data: { employees: employees, equipment: equipment },
+      updated_at: new Date().toISOString()
     };
 
     const { error } = await supabaseClient
       .from('app_state')
       .upsert(payload, { onConflict: 'id' });
 
-    if(error){
-      console.error('Supabase save error — code:', error.code, '| message:', error.message, '| hint:', error.hint);
-      return false;
-    }
-    return true;
+    if(error) console.error('Supabase save error:', error);
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(employees));
+      localStorage.setItem(EQ_KEY, JSON.stringify(equipment));
+    }catch(e){}
   }catch(err){
-    console.error('Supabase save exception:', err && err.message ? err.message : err);
-    return false;
+    console.error(err);
   }
 }
 
+function queueSharedSave(){
+  if(!sharedStateLoaded){
+    sharedSavePending = true;
+    return;
+  }
+  clearTimeout(sharedSaveTimer);
+  sharedSaveTimer = setTimeout(function(){
+    saveSharedState();
+  }, 250);
+}
+
+function flushSharedSave(){
+  if(!sharedSavePending) return;
+  sharedSavePending = false;
+  queueSharedSave();
+}
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 function loadEquipment(){
+  try{equipment=JSON.parse(localStorage.getItem(EQ_KEY))||[];}catch(e){equipment=[];}
   equipment = Array.isArray(equipment) ? equipment : [];
 }
-async function saveEquipment(){
-  var ok = await saveSharedState();
-  showSaveToast(ok);
+function saveEquipment(){
+  localStorage.setItem(EQ_KEY,JSON.stringify(equipment));
+  queueSharedSave();
+  showSaveToast();
 }
 
 function seedEquipment(){
@@ -995,7 +1028,16 @@ function renderEquipment(){
 }
 
 // ── INIT ──
-loadSharedState().then(function(){
+load();
+loadEquipment();
+render();
+renderEquipment();
+
+loadSharedState().then(function(ok){
+  if(!ok && !employees.length){
+    seedData(false);
+    try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(employees)); }catch(e){}
+  }
   render();
   renderEquipment();
 });
@@ -1049,8 +1091,8 @@ document.addEventListener('input',function(e){
 
 <script>
 (function(){
+  const LOGIN_KEY = 'eq_app_logged_in';
   const LOGIN_PASS = 'admin';
-  var _eqLoggedIn = false;
 
   function showGate(show){
     const gate = document.getElementById('eq-login-overlay');
@@ -1064,7 +1106,7 @@ document.addEventListener('input',function(e){
     const err = document.getElementById('eq-login-error');
     if(!pass) return;
     if(pass.value === LOGIN_PASS){
-      _eqLoggedIn = true;
+      localStorage.setItem(LOGIN_KEY, 'true');
       if(err) err.style.display = 'none';
       showGate(false);
     }else{
@@ -1074,7 +1116,8 @@ document.addEventListener('input',function(e){
   };
 
   window.addEventListener('load', function(){
-    showGate(true);
+    const ok = localStorage.getItem(LOGIN_KEY) === 'true';
+    showGate(!ok);
     const pass = document.getElementById('eq-login-pass');
     if(pass){
       pass.addEventListener('keydown', function(e){
@@ -1086,8 +1129,9 @@ document.addEventListener('input',function(e){
 </script>
 
 <script>
+
+const APP_LOGIN_KEY = 'conglobal_app_logged_in';
 const APP_LOGIN_PASSWORD = 'admin';
-var _appLoggedIn = false;
 
 function showAppGate(show){
   var gate=document.getElementById('app-login-overlay');
@@ -1102,7 +1146,7 @@ function appAttemptLogin(){
   var err=document.getElementById('app-login-error');
   if(!pass) return;
   if(pass.value===APP_LOGIN_PASSWORD){
-    _appLoggedIn = true;
+    localStorage.setItem(APP_LOGIN_KEY,'true');
     if(err) err.style.display='none';
     showAppGate(false);
     loadSharedState().then(function(){
@@ -1116,7 +1160,8 @@ function appAttemptLogin(){
 }
 
 window.addEventListener('load', function(){
-  showAppGate(true);
+  var ok = localStorage.getItem(APP_LOGIN_KEY) === 'true';
+  showAppGate(!ok);
   var pass=document.getElementById('app-login-pass');
   if(pass){
     pass.addEventListener('keydown', function(e){
