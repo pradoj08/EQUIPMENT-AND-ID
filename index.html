@@ -1691,24 +1691,106 @@ var _toastTimer;
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
+function normalizeEmployeeRecord(e){
+  e = e || {};
+  var first = String(e.first || '').trim();
+  var last  = String(e.last || '').trim();
+  var full = (first + ' ' + last).replace(/\s+/g,' ').trim().toLowerCase();
+  var fixes = {
+    'bradford alton':['Alton','Branford'],
+    'branford alton':['Alton','Branford'],
+    'frazer dacoyea':['Dacoyea','Frazer'],
+    'gardner dorrean':['Dorrean','Gardner'],
+    'dever mikey':['Mikey','Dever'],
+    'castruita armando':['Armando','Castruita'],
+    'citizen dante':['Dante','Citizen'],
+    'towler demeatrius':['Demeatrius','Towler'],
+    'brown james':['James','Brown'],
+    'nava ramon':['Ramon','Nava'],
+    'stewart dexter':['Dexter','Stewart'],
+    'thomas henry':['Henry','Thomas'],
+    'hickman makia':['Makia','Hickman'],
+    'player keyston':['Keyston','Player'],
+    'hosey kevin':['Kevin','Hosey'],
+    'caceres victor':['Victor','Caceres Virula'],
+    'aweri keme jr.':['Aweri','Keme Jr.'],
+    'gilder rufus':['Rufus','Gilder II'],
+    'urtado ernest':['Ernest','Urtado'],
+    'johnson messiah':['Messiah','Johnson'],
+    'echendu chimeniem':['Chimeniem','Echendu'],
+    'benavides robert':['Robert','Benavides'],
+    'bookman derrell':['Derrell','Bookman'],
+    'mejia aaron':['Aaron','Mejia'],
+    'delgado jose':['Jose','Delgado'],
+    'contrerras marco':['Marco','Contrerras'],
+    'tingle jason':['Jason','Tingle'],
+    'carruthers timothy':['Timothy','Carruthers'],
+    'wanda myles':['Myles','Wanza']
+  };
+  if(fixes[full]){ first = fixes[full][0]; last = fixes[full][1]; }
+  return Object.assign({}, e, {
+    id: e.id || e.empId || e.employee_id || uid(),
+    first: first,
+    last: last,
+    empId: String(e.empId || '').trim(),
+    upId: String(e.upId || '').trim(),
+    shift: e.shift || 'Day',
+    phone: String(e.phone || '').trim(),
+    daysOff: String(e.daysOff || '').trim(),
+    status: e.status || 'active'
+  });
+}
+
+function normalizeEmployeeRoster(){
+  if(!Array.isArray(employees)) employees = [];
+  var seen = {};
+  employees = employees.map(normalizeEmployeeRecord).filter(function(e){
+    var key = (e.empId || (e.first+'|'+e.last+'|'+e.shift)).toLowerCase();
+    if(seen[key]) return false;
+    seen[key] = true;
+    return e.first || e.last || e.empId;
+  });
+}
+
+
 function load(){
   employees=[];
 }
 
 var EMP_CACHE_KEY = 'eit_emp_cache_v1';
 
+
+function rosterLooksBroken(){
+  if(!Array.isArray(employees) || employees.length < 25) return true;
+  var names = employees.map(function(e){ return ((e.first||'')+' '+(e.last||'')).replace(/\s+/g,' ').trim().toLowerCase(); });
+  var nameText = names.join('|');
+  if(/\b(employee|placeholder|test user|generic)\b/i.test(nameText)) return true;
+  if(nameText.indexOf('keyston player') === -1) return true;
+  if(nameText.indexOf('timothy carruthers') === -1) return true;
+  if(nameText.indexOf('makia hickman') === -1) return true;
+  return false;
+}
+
+function restoreActualEmployeeRoster(reason){
+  console.warn('Restoring actual employee roster:', reason || 'roster validation failed');
+  seedData();
+  try{ saveEmployeesToCache(); }catch(e){}
+  try{ saveEmployees(); }catch(e){}
+}
+
 function loadEmployeesFromCache(){
   try{
     var cached = localStorage.getItem(EMP_CACHE_KEY);
     if(cached){
       var parsed = JSON.parse(cached);
-      if(Array.isArray(parsed) && parsed.length){ employees = parsed; return true; }
+      if(Array.isArray(parsed) && parsed.length){ employees = parsed; normalizeEmployeeRoster(); if(rosterLooksBroken()) return false; return true; }
     }
   }catch(e){}
   return false;
 }
 
 function saveEmployeesToCache(){
+  normalizeEmployeeRoster();
   try{ localStorage.setItem(EMP_CACHE_KEY, JSON.stringify(employees)); }catch(e){}
 }
 
@@ -1805,8 +1887,8 @@ async function loadEmployees(){
     }
 
     employees = (data || []).map(function(row){
-      return {
-        id: row.id,
+      return normalizeEmployeeRecord({
+        id: row.id || row.employee_id || uid(),
         first: row.first_name || '',
         last: row.last_name || '',
         empId: row.employee_id || '',
@@ -1815,11 +1897,13 @@ async function loadEmployees(){
         phone: row.phone || '',
         daysOff: row.days_off || '',
         status: row.status || 'active'
-      };
+      });
     });
+    normalizeEmployeeRoster();
 
-    if(!employees.length){
-      if(!loadEmployeesFromCache()) seedData();
+    if(!employees.length || rosterLooksBroken()){
+      restoreActualEmployeeRoster('Supabase returned missing/generic employee roster');
+      return;
     } else {
       saveEmployeesToCache();
     }
@@ -1895,60 +1979,60 @@ function save(){
 }
 
 function ensureEmployeeRoster(){
-  if(eqLoggedIn && (!Array.isArray(employees) || !employees.length)){
-    seedData();
+  if(eqLoggedIn && (!Array.isArray(employees) || !employees.length || rosterLooksBroken())){
+    restoreActualEmployeeRoster('employee roster missing or invalid');
   }
 }
 
 function seedData(){
   employees=[
-    {id:uid(),first:'Wanda',     last:'Myles',      empId:'168580',upId:'',       shift:'Day',  phone:'(832) 630-8241',daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Branford',  last:'Alton',      empId:'167117',upId:'',       shift:'Day',  phone:'(832) 427-0830',daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Frazer',    last:'Dacoyea',    empId:'168704',upId:'',       shift:'Day',  phone:'(281) 939-2023',daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Gardner',   last:'Dorrean',    empId:'163242',upId:'',       shift:'Day',  phone:'(832) 729-2315',daysOff:'Tues/Wed',  status:'active'},
-    {id:uid(),first:'Nelson',    last:'Romero',     empId:'169075',upId:'',       shift:'Day',  phone:'(832) 347-9574',daysOff:'Tues/Wed',  status:'active'},
-    {id:uid(),first:'Dever',     last:'Mikey',      empId:'169664',upId:'',       shift:'Day',  phone:'(281) 303-1936',daysOff:'Tues/Wed',  status:'active'},
-    {id:uid(),first:'Castruita', last:'Armando',    empId:'168889',upId:'',       shift:'Day',  phone:'(281) 509-3676',daysOff:'Wed/Thurs', status:'active'},
-    {id:uid(),first:'Citizen',   last:'Dante',      empId:'168606',upId:'',       shift:'Day',  phone:'(346) 902-0075',daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Towler',    last:'Demeatrius', empId:'167546',upId:'',       shift:'Day',  phone:'(850) 483-7542',daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Brown',     last:'James',      empId:'19268', upId:'',       shift:'Day',  phone:'(281) 832-4695',daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Tran',      last:'Tyler',      empId:'167510',upId:'',       shift:'Day',  phone:'(832) 942-9995',daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Nava',      last:'Ramon',      empId:'21374', upId:'xipg893',shift:'Day',  phone:'(832) 455-4750',daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Herrera',   last:'Jose',       empId:'17095', upId:'xipg892',shift:'Day',  phone:'(832) 878-0384',daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Stewart',   last:'Dexter',     empId:'16155', upId:'xipa713',shift:'Day',  phone:'(936) 314-6713',daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Thomas',    last:'Henry',      empId:'16253', upId:'xipj383',shift:'Day',  phone:'(346) 255-3081',daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Hickman',   last:'Makia',      empId:'168057',upId:'xipj384',shift:'Day',  phone:'(870) 571-7427',daysOff:'Sun/Mon',   status:'active'},
-    {id:uid(),first:'Player',    last:'Keyston',    empId:'20372', upId:'xipz341',shift:'Day',  phone:'(908) 305-4905',daysOff:'Sun/Mon',   status:'active'},
-    {id:uid(),first:'Hosey',     last:'Kevin',      empId:'166353',upId:'xipj381',shift:'Night',phone:'(832) 551-9125',daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Caceres',   last:'Victor',     empId:'167522',upId:'',       shift:'Night',phone:'(909) 968-5277',daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Aweri',     last:'Keme Jr.',   empId:'169284',upId:'',       shift:'Night',phone:'(281) 254-9741',daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Gilder',    last:'Rufus',      empId:'169270',upId:'',       shift:'Night',phone:'(713) 231-8832',daysOff:'Tues/Wed',  status:'active'},
-    {id:uid(),first:'Urtado',    last:'Ernest',     empId:'168890',upId:'xpij622',shift:'Night',phone:'(346) 839-5707',daysOff:'Tues/Wed',  status:'active'},
-    {id:uid(),first:'Johnson',   last:'Messiah',    empId:'169663',upId:'',       shift:'Night',phone:'(832) 206-3320',daysOff:'Tues/Thurs',status:'active'},
-    {id:uid(),first:'Brown',     last:'Brandon',    empId:'161383',upId:'xcnt529',shift:'Night',phone:'(225) 325-9773',daysOff:'Wed/Thurs', status:'active'},
-    {id:uid(),first:'Echendu',   last:'Chimeniem',  empId:'167702',upId:'',       shift:'Night',phone:'(832) 909-5906',daysOff:'Wed/Thurs', status:'active'},
-    {id:uid(),first:'Benavides', last:'Robert',     empId:'16149', upId:'xipg123',shift:'Night',phone:'(281) 223-6564',daysOff:'Wed/Sun',   status:'active'},
-    {id:uid(),first:'Bookman',   last:'Derrell',    empId:'167484',upId:'xipj022',shift:'Night',phone:'(281) 594-1727',daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Mejia',     last:'Aaron',      empId:'167271',upId:'xipj025',shift:'Night',phone:'(281) 928-2822',daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Delgado',   last:'Jose',       empId:'156896',upId:'xcno886',shift:'Night',phone:'(323) 271-9186',daysOff:'Fri/Sat',   status:'active'},
-    {id:uid(),first:'McDaniel',  last:'Charles',    empId:'21110', upId:'xipj621',shift:'Night',phone:'(313) 598-2784',daysOff:'Fri/Sat',   status:'active'},
-    {id:uid(),first:'Contrerras',last:'Marco',      empId:'19373', upId:'xipj023',shift:'Night',phone:'(713) 240-1178',daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Tingle',    last:'Jason',      empId:'17481', upId:'xcnt011',shift:'Night',phone:'(832) 599-5837',daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Hopkins',   last:'Alexander',  empId:'167857',upId:'xipj624',shift:'Night',phone:'(832) 454-9230',daysOff:'Sun/Mon',   status:'active'},
-    {id:uid(),first:'Carruthers',last:'Timothy',    empId:'162497',upId:'xiph925',shift:'Night',phone:'(281) 761-5461',daysOff:'Sun/Mon',   status:'active'},
-    {id:uid(),first:'Pratt',     last:'Rama',       empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Alexander', last:'Bryce',      empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Thurs/Fri', status:'active'},
-    {id:uid(),first:'Hunt',      last:'Naomi',      empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Thurs/Fri/Sat',status:'active'},
-    {id:uid(),first:'Douglas',   last:'Jarade',     empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Gariet',    last:'Tavares',    empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Mon/Tues',  status:'active'},
-    {id:uid(),first:'Johnson',   last:'Connie',     empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Warren',    last:'Candace',    empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Watson',    last:'Gregory',    empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
-    {id:uid(),first:'Cabral',    last:'Kane',       empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sun/Mon/Tue',status:'active'}
+    {id:uid(),first:'Myles',     last:'Wanza',           empId:'168580',upId:'',       shift:'Day',  phone:'(832) 630-8241',daysOff:'Mon/Tues',  status:'active'},
+    {id:uid(),first:'Alton',     last:'Branford',        empId:'167117',upId:'',       shift:'Day',  phone:'(832) 427-0830',daysOff:'Mon/Tues',  status:'active'},
+    {id:uid(),first:'Dacoyea',   last:'Frazer',          empId:'168704',upId:'',       shift:'Day',  phone:'(281) 939-2023',daysOff:'Mon/Tues',  status:'active'},
+    {id:uid(),first:'Dorrean',   last:'Gardner',         empId:'163242',upId:'',       shift:'Day',  phone:'(832) 729-2315',daysOff:'Tues/Wed',  status:'active'},
+    {id:uid(),first:'Nelson',    last:'Romero',          empId:'169075',upId:'',       shift:'Day',  phone:'(832) 347-9574',daysOff:'Tues/Wed',  status:'active'},
+    {id:uid(),first:'Mikey',     last:'Dever',           empId:'169664',upId:'',       shift:'Day',  phone:'(281) 303-1936',daysOff:'Tues/Wed',  status:'active'},
+    {id:uid(),first:'Armando',   last:'Castruita',       empId:'168889',upId:'',       shift:'Day',  phone:'(281) 509-3676',daysOff:'Wed/Thurs', status:'active'},
+    {id:uid(),first:'Dante',     last:'Citizen',         empId:'168606',upId:'',       shift:'Day',  phone:'(346) 902-0075',daysOff:'Thurs/Fri', status:'active'},
+    {id:uid(),first:'Demeatrius',last:'Towler',          empId:'167546',upId:'',       shift:'Day',  phone:'(850) 483-7542',daysOff:'Thurs/Fri', status:'active'},
+    {id:uid(),first:'James',     last:'Brown',           empId:'19268', upId:'',       shift:'Day',  phone:'(281) 832-4695',daysOff:'Thurs/Fri', status:'active'},
+    {id:uid(),first:'Tran',      last:'Tyler',           empId:'167510',upId:'',       shift:'Day',  phone:'(832) 942-9995',daysOff:'Thurs/Fri', status:'active'},
+    {id:uid(),first:'Ramon',     last:'Nava',            empId:'21374', upId:'xipg893',shift:'Day',  phone:'(832) 455-4750',daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Jose',      last:'Herrera',         empId:'17095', upId:'xipg892',shift:'Day',  phone:'(832) 878-0384',daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Dexter',    last:'Stewart',         empId:'16155', upId:'xipa713',shift:'Day',  phone:'(936) 314-6713',daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Henry',     last:'Thomas',          empId:'16253', upId:'xipj383',shift:'Day',  phone:'(346) 255-3081',daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Makia',     last:'Hickman',         empId:'168057',upId:'xipj384',shift:'Day',  phone:'(870) 571-7427',daysOff:'Sun/Mon',   status:'active'},
+    {id:uid(),first:'Keyston',   last:'Player',          empId:'20372', upId:'xipz341',shift:'Day',  phone:'(908) 305-4905',daysOff:'Sun/Mon',   status:'active'},
+    {id:uid(),first:'Kevin',     last:'Hosey',           empId:'166353',upId:'xipj381',shift:'Night',phone:'(832) 551-9125',daysOff:'Mon/Tues',  status:'active'},
+    {id:uid(),first:'Victor',    last:'Caceres Virula',  empId:'167522',upId:'',       shift:'Night',phone:'(909) 968-5277',daysOff:'Mon/Tues',status:'active'},
+    {id:uid(),first:'Aweri',     last:'Keme Jr.',        empId:'169284',upId:'',       shift:'Night',phone:'(281) 254-9741',daysOff:'Mon/Tues',status:'active'},
+    {id:uid(),first:'Rufus',     last:'Gilder II',       empId:'169270',upId:'',       shift:'Night',phone:'(713) 231-8832',daysOff:'Tues/Wed',status:'active'},
+    {id:uid(),first:'Ernest',    last:'Urtado',          empId:'168890',upId:'xpij622',shift:'Night',phone:'(346) 839-5707',daysOff:'Tues/Wed', status:'active'},
+    {id:uid(),first:'Messiah',   last:'Johnson',         empId:'169663',upId:'',       shift:'Night',phone:'(832) 206-3320',daysOff:'Tues/Thurs',status:'active'},
+    {id:uid(),first:'Brandy',    last:'Brown',           empId:'161383',upId:'xcnt529',shift:'Night',phone:'(225) 325-9773',daysOff:'Wed/Thurs',status:'active'},
+    {id:uid(),first:'Chimeniem', last:'Echendu',         empId:'167702',upId:'',       shift:'Night',phone:'(832) 909-5906',daysOff:'Wed/Thurs',status:'active'},
+    {id:uid(),first:'Robert',    last:'Benavides',       empId:'16149', upId:'xipg123',shift:'Night',phone:'(281) 223-6564',daysOff:'Wed/Sun', status:'active'},
+    {id:uid(),first:'Derrell',   last:'Bookman',         empId:'167484',upId:'xipj022',shift:'Night',phone:'(281) 594-1727',daysOff:'Thurs/Fri',status:'active'},
+    {id:uid(),first:'Aaron',     last:'Mejia',           empId:'167271',upId:'xipj025',shift:'Night',phone:'(281) 928-2822',daysOff:'Thurs/Fri',status:'active'},
+    {id:uid(),first:'Jose',      last:'Delgado',         empId:'156896',upId:'xcno886',shift:'Night',phone:'(323) 271-9186',daysOff:'Fri/Sat', status:'active'},
+    {id:uid(),first:'Charles',   last:'McDaniel',        empId:'21110', upId:'xipj621',shift:'Night',phone:'(313) 598-2784',daysOff:'Fri/Sat', status:'active'},
+    {id:uid(),first:'Marco',     last:'Contrerras',      empId:'19373', upId:'xipj023',shift:'Night',phone:'(713) 240-1178',daysOff:'Sat/Sun', status:'active'},
+    {id:uid(),first:'Jason',     last:'Tingle',          empId:'17481', upId:'xcnt011',shift:'Night',phone:'(832) 599-5837',daysOff:'Sat/Sun', status:'active'},
+    {id:uid(),first:'Alexander', last:'Hopkins',         empId:'167857',upId:'xipj624',shift:'Night',phone:'(832) 454-9230',daysOff:'Sun/Mon', status:'active'},
+    {id:uid(),first:'Timothy',   last:'Carruthers',      empId:'162497',upId:'xiph925',shift:'Night',phone:'(281) 761-5461',daysOff:'Sun/Mon', status:'active'},
+    {id:uid(),first:'Rama',      last:'Pratt',           empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Thurs/Fri', status:'active'},
+    {id:uid(),first:'Bryce',     last:'Alexander',       empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Thurs/Fri', status:'active'},
+    {id:uid(),first:'Naomi',     last:'Hunt',            empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Thurs/Fri/Sat',status:'active'},
+    {id:uid(),first:'Jarade',    last:'Douglas',         empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Tavares',   last:'Gariet',          empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Mon/Tues',  status:'active'},
+    {id:uid(),first:'Connie',    last:'Johnson',         empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Candace',   last:'Warren',          empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Gregory',   last:'Watson',          empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sat/Sun',   status:'active'},
+    {id:uid(),first:'Kane',      last:'Cabral',          empId:'',      upId:'',       shift:'Gate', phone:'',              daysOff:'Sun/Mon/Tue',status:'active'}
   ];
+  normalizeEmployeeRoster();
   save();
 }
-
 // ── DAY ALIASES ──
 var DAY_ALIASES={sun:0,sunday:0,mon:1,monday:1,tue:2,tues:2,tuesday:2,wed:3,wednesday:3,thu:4,thur:4,thurs:4,thursday:4,fri:5,friday:5,sat:6,saturday:6};
 
@@ -1974,7 +2058,7 @@ function getFiltered(){
     if(currentTab==='all') matchTab=true;
     else if(currentTab==='today') matchTab=!isOffToday(e)&&e.status!=='off';
     else matchTab=e.shift===currentTab;
-    var matchQ=!q||[e.first,e.last,e.empId,e.upId||'',e.phone].some(function(v){return v.toLowerCase().includes(q);});
+    var matchQ=!q||[e.first,e.last,e.empId,e.upId||'',e.phone].some(function(v){return String(v||'').toLowerCase().includes(q);});
     return matchTab&&matchQ;
   });
 }
@@ -2056,6 +2140,7 @@ function toggleNeedsAttention(){
 }
 
 function render(){
+  normalizeEmployeeRoster();
   var list=getFiltered();
   var tbody=document.getElementById('emp-table');
   var noData=document.getElementById('no-data');
@@ -2215,7 +2300,7 @@ function switchPage(p){
 
 // ── EQUIPMENT ──
 var EQ_KEY='eit_eq_v4';
-var EQ_IMPORT_VERSION='equipment_import_2026_05_22_exact_photo_v2';
+var EQ_IMPORT_VERSION='equipment_import_2026_05_22_exact_photo_v3_force_restore';
 var EQ_TYPES=['Hostler','Crane','Reach stacker','Ford pick up','Side loader'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8','Reach stacker':'#e879f9','Ford pick up':'#38bdf8','Side loader':'#f97316',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff','Reach Stacker':'#e879f9','Pick Up':'#38bdf8'};
 var EQ_PREFIX={Hostler:'H',Crane:'C','Reach stacker':'RS','Ford pick up':'PU','Side loader':'SL',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT','Reach Stacker':'RS','Pick Up':'PU'};
@@ -2591,7 +2676,6 @@ async function saveEquipment(){
     console.warn('Supabase equipment sync failed (data saved locally):', err.message || err);
   }
 }
-
 
 
 function buildImportedEquipmentList(){
@@ -3876,7 +3960,7 @@ if(eqLoggedIn){
   loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
 } else {
   render();
-  loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
+  applyImportedEquipmentListOnce().then(function(){ return loadEquipment(); }).then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
 }
 
 document.addEventListener('input',function(e){
@@ -4069,5 +4153,87 @@ window.addEventListener('DOMContentLoaded',function(){
   }
 });
 </script>
+
+
+<script>
+/* FINAL LOGIN PATCH — full-screen login unlocks both overlay + app data gate without calling the old inline auth alert. */
+(function(){
+  window.APP_LOGIN_PASSWORD = window.APP_LOGIN_PASSWORD || 'admin';
+
+  window.isAppUnlocked = function(){
+    try{
+      return sessionStorage.getItem('eq_app_logged_in') === 'true' || sessionStorage.getItem('eq_logged_in') === '1';
+    }catch(e){
+      return false;
+    }
+  };
+
+  window.unlockApplication = function(){
+    try{
+      sessionStorage.setItem('eq_app_logged_in','true');
+      sessionStorage.setItem('eq_logged_in','1');
+      sessionStorage.setItem('eq_login_username','CONGLOBAL');
+    }catch(e){}
+
+    if(typeof window.eqLoggedIn !== 'undefined') window.eqLoggedIn = true;
+    if(typeof window.eqLoginUsername !== 'undefined') window.eqLoginUsername = 'CONGLOBAL';
+
+    var overlay=document.getElementById('eq-login-overlay');
+    if(overlay) overlay.style.display='none';
+
+    var authBar=document.getElementById('auth-bar');
+    if(authBar) authBar.style.display='none';
+
+    var pass=document.getElementById('eq-popup-password');
+    if(pass) pass.value='';
+
+    if(typeof syncEqLoginUI === 'function') syncEqLoginUI();
+  };
+
+  window.handlePopupLogin = async function(){
+    var input=document.getElementById('eq-popup-password');
+    var error=document.getElementById('eq-login-error');
+    if(!input) return;
+
+    if(input.value !== window.APP_LOGIN_PASSWORD){
+      if(error) error.style.display='block';
+      input.value='';
+      input.focus();
+      return;
+    }
+
+    if(error) error.style.display='none';
+    window.unlockApplication();
+
+    /* Do NOT call signInEq(); it reads the hidden top-bar password and throws the bad pop-up. */
+    try{
+      if(typeof loadEmployees === 'function') await loadEmployees();
+      if(typeof loadEquipment === 'function') await loadEquipment();
+      if(typeof render === 'function') render();
+      if(typeof renderEquipment === 'function') renderEquipment();
+      if(typeof renderAuditsPage === 'function') renderAuditsPage();
+      if(typeof startEquipmentRealtimeSync === 'function') await startEquipmentRealtimeSync();
+    }catch(err){
+      console.warn('Post-login refresh failed:', err);
+    }
+  };
+
+  window.addEventListener('DOMContentLoaded',function(){
+    var overlay=document.getElementById('eq-login-overlay');
+    if(window.isAppUnlocked()) window.unlockApplication();
+    else if(overlay) overlay.style.display='flex';
+
+    var input=document.getElementById('eq-popup-password');
+    if(input && !input.dataset.finalLoginPatched){
+      input.dataset.finalLoginPatched='1';
+      input.addEventListener('keydown',function(e){
+        if(e.key==='Enter') window.handlePopupLogin();
+      });
+      if(!window.isAppUnlocked()) setTimeout(function(){ input.focus(); },100);
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
