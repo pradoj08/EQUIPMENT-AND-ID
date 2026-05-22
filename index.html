@@ -301,11 +301,32 @@ select option{background:var(--surface)}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+@media (max-width: 640px){
+  #callout-banner,#equip-banner{padding:6px 12px 0;gap:8px}
+  .banner-row{flex-direction:column;min-height:auto}
+  .banner-label{min-width:unset;width:100%;padding:8px 10px;border-right:none;border-bottom:1px solid rgba(255,255,255,.08);font-size:10px;justify-content:center}
+  .banner-chips{padding:8px 10px;max-height:150px;overflow-y:auto}
+  .bchip{font-size:10px;padding:3px 7px}
+  .banner-row-attn,.banner-row-callout,.banner-row-waiting{border-radius:8px}
+  .banner-label-attn,.banner-label-callout,.banner-label-waiting{border-right:none}
+  .banner-row-attn .banner-chips{max-height:180px}
+  .banner-row-attn .banner-label{background:rgba(239,68,68,.16)}
+}
+
 </style>
 <style id="table-scale"></style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 window.APP_LOGIN_PASSWORD = "admin";
+
+function isAppUnlocked(){
+  try{
+    return localStorage.getItem('eq_app_logged_in') === 'true';
+  }catch(e){
+    return false;
+  }
+}
 
 function unlockApplication(){
   localStorage.setItem('eq_app_logged_in','true');
@@ -351,6 +372,14 @@ const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 window.APP_LOGIN_PASSWORD = "admin";
+
+function isAppUnlocked(){
+  try{
+    return localStorage.getItem('eq_app_logged_in') === 'true';
+  }catch(e){
+    return false;
+  }
+}
 
 function unlockApplication(){
   localStorage.setItem('eq_app_logged_in','true');
@@ -980,7 +1009,25 @@ function updateEqStatus(id,val){
 function updateEqName(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.name=val;saveEquipment();}}
 function updateEqTablet(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.tabletAssigned=val;saveEquipment();}}
 function updateEqNotes(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.notes=val;saveEquipment();}}
-function deleteEquipment(id){if(!confirm('Remove this unit?'))return;equipment=equipment.filter(function(e){return e.id!==id;});saveEquipment();renderEquipment();}
+async function deleteEquipment(id){
+  if(!confirm('Remove this unit?')) return;
+
+  equipment = equipment.filter(function(e){ return e.id !== id; });
+
+  try{
+    const { error } = await supabaseClient
+      .from('equipment')
+      .delete()
+      .eq('id', id);
+
+    if(error) console.error('Supabase delete error:', error);
+  }catch(err){
+    console.error('Delete failed:', err);
+  }
+
+  saveEquipment();
+  renderEquipment();
+}
 function addSpecificEquip(type){
   var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
   equipment.push({id:eqUid(),type:type,unit:pre+'-'+String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
@@ -1081,9 +1128,8 @@ function renderEquipment(){
 load();
 ensureEmployeeRoster();
 render();
-syncEqLoginUI();
-loadEquipment().then(renderEquipment);
-loadEquipment();
+try{ if(typeof syncEqLoginUI === 'function') syncEqLoginUI(); }catch(e){}
+loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
 
 document.addEventListener('click',function(e){
   var btn=e.target.closest('.equip-del-btn');
@@ -1117,6 +1163,14 @@ document.addEventListener('input',function(e){
 
 
 window.APP_LOGIN_PASSWORD = "admin";
+
+function isAppUnlocked(){
+  try{
+    return localStorage.getItem('eq_app_logged_in') === 'true';
+  }catch(e){
+    return false;
+  }
+}
 
 function unlockApplication(){
   localStorage.setItem('eq_app_logged_in','true');
