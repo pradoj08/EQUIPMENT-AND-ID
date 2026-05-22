@@ -318,9 +318,9 @@ select option{background:var(--surface)}
 #save-toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--surface);border:1px solid rgba(34,197,94,.4);border-left:3px solid var(--success);border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:11px;color:var(--success);display:flex;align-items:center;gap:7px;letter-spacing:.5px;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
 #save-toast.show{opacity:1;transform:translateY(0)}
 /* EQUIPMENT — table layout */
-.equip-page-wrap{padding:24px 28px 36px;max-width:1550px;margin:0 auto;width:100%}
-.equip-section{margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-.equip-section-title{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:0;background:rgba(255,255,255,.01)}
+.equip-page-wrap{padding:16px 0 36px;width:100%}
+.equip-section{margin:0 0 16px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden}
+.equip-section-title{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:0;background:rgba(255,255,255,.01)}
 .etitle-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
 .etitle-name{color:var(--text);font-size:13px;letter-spacing:1.5px;font-weight:600}
 .etitle-count{color:var(--muted);font-size:10px;margin-left:2px}
@@ -330,8 +330,8 @@ select option{background:var(--surface)}
 .eq-section-add-btn:hover{border-color:var(--accent);color:var(--accent)}
 /* eq table */
 .equip-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;table-layout:fixed}
-.equip-table th{text-align:left;padding:13px 14px;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);font-weight:600;background:rgba(30,35,51,.9)}
-.equip-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.equip-table th{text-align:left;padding:13px 16px;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border2);font-weight:600;background:rgba(30,35,51,.9)}
+.equip-table td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
 .equip-table tr:last-child td{border-bottom:none}
 .equip-table tbody tr:hover td{background:rgba(255,255,255,.04)}
 /* left accent stripe per type */
@@ -457,131 +457,17 @@ select option{background:var(--surface)}
   text-transform:uppercase;
 }
 
-.callout-composer{
-  margin:16px 24px 0;
-  padding:14px 16px;
-  border:1px solid rgba(74,158,255,.22);
-  border-radius:14px;
-  background:linear-gradient(180deg, rgba(16,20,30,.98), rgba(11,14,22,.98));
-  box-shadow:0 12px 28px rgba(0,0,0,.2);
+.charged-select{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.3px;
+  padding:5px 8px;border-radius:5px;border:1px solid;cursor:pointer;outline:none;
+  appearance:none;-webkit-appearance:none;text-align:center;width:100%;background:var(--bg);
+  transition:all .15s;
 }
-.callout-composer-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
-}
-.callout-composer-title{
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--muted);
-}
-.callout-composer-title strong{
-  display:block;
-  color:var(--text);
-  font-size:13px;
-  letter-spacing:1.2px;
-  margin-top:2px;
-}
-.callout-composer-sub{
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--muted);
-  margin-top:4px;
-}
-.callout-row{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.callout-row input, .callout-row select{
-  flex:1 1 220px;
-  min-width:0;
-}
-.callout-textarea{
-  width:100%;
-  min-height:82px;
-  resize:vertical;
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--border2);
-  border-radius:10px;
-  padding:10px 12px;
-  font-family:var(--mono);
-  font-size:12px;
-  margin:10px 0;
-}
-.callout-textarea:focus{border-color:var(--accent);outline:none}
-.callout-send{
-  font-family:var(--mono);
-  font-size:11px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-  padding:8px 14px;
-  border-radius:8px;
-  border:1px solid rgba(74,158,255,.45);
-  background:rgba(74,158,255,.12);
-  color:#cfe4ff;
-  cursor:pointer;
-}
-.callout-send:hover{background:rgba(74,158,255,.2)}
-.callout-note{
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--muted);
-  margin-top:8px;
-}
-.callout-list{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.callout-item{
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid rgba(239,68,68,.18);
-  background:rgba(239,68,68,.06);
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-}
-.callout-item strong{
-  display:block;
-  font-family:var(--mono);
-  font-size:12px;
-  color:var(--text);
-  margin-bottom:3px;
-}
-.callout-item small{
-  display:block;
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--muted);
-  line-height:1.4;
-}
-.callout-pending{
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-  padding:4px 8px;
-  border-radius:999px;
-  border:1px solid rgba(245,158,11,.35);
-  background:rgba(245,158,11,.12);
-  color:#fcd34d;
-  white-space:nowrap;
-}
-.callout-sent{
-  border-color:rgba(34,197,94,.35);
-  background:rgba(34,197,94,.12);
-  color:#6ee7b7;
-}
+.charged-select option{background:var(--surface);color:var(--text)}
+.charged-yes    {color:#6ee7b7;border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.1)!important}
+.charged-no     {color:#fca5a5;border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.1)!important;animation:eqPulse 1.3s infinite}
+.charged-pending{color:#fcd34d;border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)!important}
+
 .eq-note-alert{
   animation:eqPulse 1.3s infinite;
   border-color:rgba(239,68,68,.45) !important;
@@ -591,6 +477,18 @@ select option{background:var(--surface)}
 .eq-note-alert::before{
   content:'⚠';
   margin-right:6px;
+}
+/* Whole-row flash when unit is down/maint and has no notes */
+tr.eq-row-needs-notes {
+  animation: rowNotesPulse 1.3s infinite;
+  position: relative;
+}
+tr.eq-row-needs-notes td:first-child {
+  border-left: 3px solid rgba(239,68,68,.7);
+}
+@keyframes rowNotesPulse {
+  0%,100% { background: rgba(239,68,68,.07); }
+  50%      { background: rgba(239,68,68,.18); }
 }
 
 /* SHIFT READINESS DASHBOARD */
@@ -1165,6 +1063,42 @@ textarea{
   50%{opacity:.65}
 }
 
+
+/* ── ACTIVITY FEED ── */
+.af-day-group{margin-bottom:24px}
+.af-day-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 0 8px;border-bottom:1px solid var(--border);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.af-day-label span{color:var(--text);font-size:11px}
+.af-entry{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:7px;margin-bottom:5px;border:1px solid var(--border);background:var(--surface);transition:background .12s}
+.af-entry:hover{background:var(--surface2)}
+.af-icon{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px}
+.af-icon-employee{background:rgba(74,158,255,.15);color:var(--accent)}
+.af-icon-equipment{background:rgba(16,185,129,.15);color:var(--gate)}
+.af-icon-status{background:rgba(239,68,68,.15);color:#fca5a5}
+.af-icon-system{background:rgba(129,140,248,.15);color:var(--night)}
+.af-icon-notes{background:rgba(245,158,11,.15);color:var(--day)}
+.af-body{flex:1;min-width:0}
+.af-msg{font-family:var(--mono);font-size:12px;color:var(--text);line-height:1.5}
+.af-msg strong{color:#fff}
+.af-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
+.af-time{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0;padding-top:3px}
+.af-tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;vertical-align:middle}
+.af-tag-employee{background:rgba(74,158,255,.18);color:#93c5fd}
+.af-tag-equipment{background:rgba(16,185,129,.18);color:#6ee7b7}
+.af-tag-status{background:rgba(239,68,68,.18);color:#fca5a5}
+.af-tag-system{background:rgba(129,140,248,.18);color:#a5b4fc}
+.af-tag-notes{background:rgba(245,158,11,.18);color:#fcd34d}
+.af-pill{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:3px;font-size:10px;font-weight:600}
+.af-pill-down{background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.af-pill-maint{background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.af-pill-stand{background:rgba(129,140,248,.18);color:#a5b4fc;border:1px solid rgba(129,140,248,.3)}
+.af-pill-op{background:rgba(16,185,129,.18);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+.af-empty{text-align:center;padding:60px 24px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+@media(max-width:480px){
+  #activity-feed-wrap{padding:10px 12px 40px}
+  .af-entry{padding:8px 10px;gap:8px}
+  .af-icon{width:24px;height:24px;font-size:11px}
+  .af-msg{font-size:11px}
+}
 </style>
 <style id="table-scale">
 html,body{
@@ -1302,7 +1236,6 @@ function handlePopupLogin(){
 
 window.addEventListener('load',function(){
   loadCalloutsLocal();
-  renderCalloutComposer();
   var loggedIn=localStorage.getItem('eq_app_logged_in');
 
   if(loggedIn==='true'){
@@ -1419,6 +1352,11 @@ setInterval(function(){
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Audits &amp; Training
     </button>
+    <button class="page-nav-btn" id="nav-activity" onclick="switchPage('activity')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Activity Feed
+      <span id="activity-badge" style="display:none;font-size:9px;background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-family:var(--mono);font-weight:700;line-height:1.4;margin-left:2px;"></span>
+    </button>
   </div>
 </div>
 
@@ -1498,8 +1436,6 @@ setInterval(function(){
   </div>
 </div>
 <div id="shift-readiness-dashboard" class="shift-readiness-dashboard"></div>
-<div id="equipment-attention" class="equipment-attention"></div>
-<div id="callout-composer" class="callout-composer"></div>
 <div id="equip-banner"></div>
 <div class="staffing-widget" id="staffing-widget"></div>
 <div id="equip-content" style="padding-bottom:28px;"></div>
@@ -1655,6 +1591,98 @@ setInterval(function(){
 // ── EMPLOYEE DATA ──
 var STORAGE_KEY = 'eit_v1';
 var HISTORY_KEY = 'eit_hist_v1';
+
+/* ── ACTIVITY LOG ENGINE ── */
+var ACTIVITY_KEY = 'eit_activity_v1';
+var _toastTimer2;
+
+function logActivity(type, msg, sub) {
+  try {
+    var log = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
+    log.unshift({ ts: Date.now(), type: type, msg: msg, sub: sub || '' });
+    if (log.length > 200) log = log.slice(0, 200);
+    localStorage.setItem(ACTIVITY_KEY, JSON.stringify(log));
+    updateActivityBadge();
+    var pg = document.getElementById('page-activity');
+    if (pg && pg.classList.contains('active')) renderActivityFeed();
+  } catch(e) {}
+}
+
+function getActivityLog() {
+  try { return JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function clearActivityLog() {
+  if (!confirm('Clear all activity history?')) return;
+  localStorage.removeItem(ACTIVITY_KEY);
+  updateActivityBadge();
+  renderActivityFeed();
+}
+
+function updateActivityBadge() {
+  var badge = document.getElementById('activity-badge');
+  if (!badge) return;
+  var cutoff = Date.now() - 60 * 60 * 1000;
+  var n = getActivityLog().filter(function(e){ return e.ts > cutoff; }).length;
+  badge.textContent = n || '';
+  badge.style.display = n ? 'inline-flex' : 'none';
+}
+
+function afFmtTime(ts) {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+function afFmtDay(ts) {
+  var d = new Date(ts);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+  if (d >= today) return 'Today';
+  if (d >= yesterday) return 'Yesterday';
+  return d.toLocaleDateString([], { weekday:'long', month:'short', day:'numeric' });
+}
+function afPill(s) {
+  var map = { down:'af-pill-down', maintenance:'af-pill-maint', standby:'af-pill-stand', operational:'af-pill-op' };
+  var labels = { down:'Down', maintenance:'Maintenance', standby:'Standby', operational:'Operational' };
+  return '<span class="af-pill ' + (map[s]||'') + '">' + (labels[s]||s) + '</span>';
+}
+
+var AF_ICONS = { employee:'👤', equipment:'🔧', status:'⚠', notes:'📝', system:'⚙' };
+var AF_ICON_CLS = { employee:'af-icon-employee', equipment:'af-icon-equipment', status:'af-icon-status', notes:'af-icon-notes', system:'af-icon-system' };
+var AF_TAG_CLS  = { employee:'af-tag-employee',  equipment:'af-tag-equipment',  status:'af-tag-status',  notes:'af-tag-notes',  system:'af-tag-system' };
+
+function renderActivityFeed() {
+  var wrap = document.getElementById('activity-feed-wrap');
+  if (!wrap) return;
+  var filter = (document.getElementById('activity-filter') || {}).value || 'all';
+  var log = getActivityLog();
+  if (filter !== 'all') log = log.filter(function(e){ return e.type === filter; });
+  if (!log.length) {
+    wrap.innerHTML = '<div class="af-empty">No activity yet.<br><span style="font-size:11px;">Changes to employees, equipment, and statuses will appear here.</span></div>';
+    return;
+  }
+  var groups = {}, order = [];
+  log.forEach(function(entry) {
+    var day = afFmtDay(entry.ts);
+    if (!groups[day]) { groups[day] = []; order.push(day); }
+    groups[day].push(entry);
+  });
+  var html = '';
+  order.forEach(function(day) {
+    var entries = groups[day];
+    html += '<div class="af-day-group"><div class="af-day-label">' + day + '<span>' + entries.length + ' event' + (entries.length !== 1 ? 's' : '') + '</span></div>';
+    entries.forEach(function(e) {
+      html += '<div class="af-entry">'
+        + '<div class="af-icon ' + (AF_ICON_CLS[e.type]||'af-icon-system') + '">' + (AF_ICONS[e.type]||'⚙') + '</div>'
+        + '<div class="af-body">'
+        + '<div class="af-msg">' + e.msg + '<span class="af-tag ' + (AF_TAG_CLS[e.type]||'af-tag-system') + '">' + e.type + '</span></div>'
+        + (e.sub ? '<div class="af-sub">' + e.sub + '</div>' : '')
+        + '</div>'
+        + '<div class="af-time">' + afFmtTime(e.ts) + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+  });
+  wrap.innerHTML = html;
+}
 var employees = [];
 var currentTab = 'all';
 var editId = null;
@@ -2007,14 +2035,21 @@ function saveEmp(){
   var last=document.getElementById('f-last').value.trim();
   if(!first||!last){alert('First and last name required.');return;}
   var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:document.querySelector('input[name="status"]:checked').value};
-  if(editId){var idx=employees.findIndex(function(x){return x.id===editId;});if(idx>-1)employees[idx]=Object.assign({},employees[idx],data);}
-  else employees.push(Object.assign({id:uid()},data));
+  if(editId){
+    var idx=employees.findIndex(function(x){return x.id===editId;});
+    if(idx>-1){ employees[idx]=Object.assign({},employees[idx],data); logActivity('employee','<strong>'+data.first+' '+data.last+'</strong> updated','Shift: '+data.shift+' · Emp ID: '+(data.empId||'—')); }
+  } else {
+    employees.push(Object.assign({id:uid()},data));
+    logActivity('employee','<strong>'+data.first+' '+data.last+'</strong> added to roster','Shift: '+data.shift+' · Days off: '+(data.daysOff||'—'));
+  }
   save(); render(); closeModal();
 }
 
 function deleteEmp(){
   if(!editId) return;
   if(!confirm('Delete this employee?')) return;
+  var e=employees.find(function(x){return x.id===editId;});
+  if(e) logActivity('employee','<strong>'+e.first+' '+e.last+'</strong> removed from roster','Shift: '+e.shift+' · Emp ID: '+(e.empId||'—'));
   employees=employees.filter(function(x){return x.id!==editId;});
   save(); render(); closeModal();
 }
@@ -2088,6 +2123,7 @@ function switchPage(p){
   document.getElementById('nav-'+p).classList.add('active');
   if(p==='equipment'){ renderEquipment(); updateEquipmentStatusMeta(); }
   if(p==='audits') initAuditsPage();
+  if(p==='activity') renderActivityFeed();
 }
 
 // ── EQUIPMENT ──
@@ -2124,7 +2160,6 @@ function queueCalloutFallback(payload){
     ...payload
   });
   saveCalloutsLocal();
-  renderCalloutComposer();
 }
 
 
@@ -2306,7 +2341,6 @@ async function persistEquipmentAndRefresh(){
   await loadEquipment();
   renderEquipment();
   renderEquipmentAttention();
-  renderCalloutComposer();
   updateEquipmentStatusMeta();
   refreshEquipmentAgingDisplay();
 }
@@ -2389,6 +2423,12 @@ async function updateEqStatus(id,val){
     e.status_changed_day = null;
   }
 
+  var unitLabel = (e.name && e.name.trim()) ? e.unit+' ('+e.name.trim()+')' : e.unit;
+  if(val==='down')         logActivity('status','<strong>'+unitLabel+'</strong> marked '+afPill('down'),e.type+(e.notes?' · '+e.notes:''));
+  else if(val==='maintenance') logActivity('status','<strong>'+unitLabel+'</strong> sent to '+afPill('maintenance'),e.type);
+  else if(val==='standby') logActivity('status','<strong>'+unitLabel+'</strong> set to '+afPill('standby'),e.type);
+  else if(val==='operational'&&prev!=='operational') logActivity('equipment','<strong>'+unitLabel+'</strong> back '+afPill('operational')+' (was '+afPill(prev)+')',e.type);
+
   await persistEquipmentAndRefresh();
 }
 
@@ -2404,13 +2444,19 @@ function updateEqName(id,val){
 function updateEqTablet(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(e){
+    var prev=e.tabletAssigned;
     e.tabletAssigned=val;
+    if(val&&val.trim()&&val!==prev){
+      var ul=(e.name&&e.name.trim())?e.unit+' ('+e.name.trim()+')':e.unit;
+      logActivity('notes','Tablet assigned to <strong>'+ul+'</strong>','Tablet: '+val);
+    }
     saveEquipment();
     renderEquipment();
   }
 }
 
 var notesSaveTimers = {};
+var notesOriginalVal = {}; // value when focus first entered the field
 
 function queueEqNotesSave(id, val){
   var e = equipment.find(function(x){return x.id===id;});
@@ -2421,18 +2467,47 @@ function queueEqNotesSave(id, val){
 
   if(notesSaveTimers[id]) clearTimeout(notesSaveTimers[id]);
   notesSaveTimers[id] = setTimeout(function(){
-    saveEquipment().finally(function(){
-      delete notesSaveTimers[id];
-    });
+    saveEquipment().finally(function(){ delete notesSaveTimers[id]; });
   }, 350);
 }
 
 function updateEqNotes(id,val){
   queueEqNotesSave(id,val);
 }
+
+// Log note changes on blur — captures original on focus, logs on blur if changed
+(function(){
+  document.addEventListener('focusin', function(ev){
+    var inp = ev.target;
+    if(!inp || !inp.classList || !inp.classList.contains('notes-input')) return;
+    var id = inp.dataset.eid;
+    if(!id) return;
+    // Store original only once per focus session
+    if(notesOriginalVal[id] === undefined){
+      notesOriginalVal[id] = inp.value;
+    }
+  }, true);
+
+  document.addEventListener('focusout', function(ev){
+    var inp = ev.target;
+    if(!inp || !inp.classList || !inp.classList.contains('notes-input')) return;
+    var id = inp.dataset.eid;
+    if(!id || notesOriginalVal[id] === undefined) return;
+    var orig = notesOriginalVal[id];
+    var cur  = inp.value;
+    delete notesOriginalVal[id];
+    if(!cur.trim()) return;
+    if(cur.trim() === orig.trim()) return;
+    var e = equipment.find(function(x){return x.id===id;});
+    if(!e) return;
+    var ul = (e.name&&e.name.trim()) ? e.unit+' ('+e.name.trim()+')' : e.unit;
+    logActivity('notes','Note updated on <strong>'+ul+'</strong>','"'+cur.trim()+'"');
+  }, true);
+})();
 async function deleteEquipment(id){
   if(!confirm('Remove this unit?')) return;
-
+  var eq=equipment.find(function(e){return e.id===id;});
+  if(eq) logActivity('equipment','<strong>'+(eq.name&&eq.name.trim()?eq.unit+' ('+eq.name.trim()+')':eq.unit)+'</strong> removed from fleet','Type: '+eq.type);
   equipment = equipment.filter(function(e){ return e.id !== id; });
 
   try{
@@ -2449,15 +2524,17 @@ async function deleteEquipment(id){
   await saveEquipment();
   renderEquipment();
 }
-async function addSpecificEquip(type){
+function addSpecificEquip(type){
   var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
-  equipment.push({id:eqUid(),type:type,unit:pre+'-'+String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
-  await persistEquipmentAndRefresh();
+  var unit=pre+'-'+String(n+1).padStart(2,'0');
+  equipment.push({id:eqUid(),type:type,unit:unit,name:'',tabletAssigned:'',staysCharged:'pending',status:'operational',notes:''});
+  logActivity('equipment','<strong>'+unit+'</strong> added to fleet','Type: '+type);
+  persistEquipmentAndRefresh();
   renderEquipment();
 }
 function openAddUnitModal(){document.getElementById('add-unit-modal').style.display='flex';}
 function closeAddUnitModal(){document.getElementById('add-unit-modal').style.display='none';}
-async function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)await addSpecificEquip(t);closeAddUnitModal();}
+function confirmAddUnit(){var t=document.getElementById('add-unit-type').value;if(t)addSpecificEquip(t);closeAddUnitModal();}
 
 function eqStatusClass(s){return {operational:'status-op',down:'status-down',maintenance:'status-maint',standby:'status-stand'}[s]||'status-op';}
 function eqStatusLabel(s){return {operational:'Operational',down:'Down',maintenance:'Maintenance',standby:'Standby'}[s]||s;}
@@ -2485,11 +2562,13 @@ function eqRowHtml(e, idx){
   }
 
   var needsAttention = (!String(e.notes || '').trim() && e.status !== 'operational');
-  var notesBadge = notesMissing(e)
-    ? '<span class="eq-status-badge eq-status-badge-warn'+(needsAttention ? ' eq-note-alert' : '')+'">'+(needsAttention ? 'Needs notes' : 'Notes missing')+'</span>'
-    : '<span class="eq-status-badge eq-status-badge-ok">Notes set</span>';
+  var notesBadge = '';
+  if(notesMissing(e)){
+    notesBadge = '<span class="eq-status-badge eq-status-badge-warn'+(needsAttention ? ' eq-note-alert' : '')+'">'+(needsAttention ? 'Needs notes' : 'Notes missing')+'</span>';
+  }
 
-  return '<tr>'
+  var rowClass = needsAttention ? ' class="eq-row-needs-notes"' : '';
+  return '<tr'+rowClass+'>'
     +'<td class="eq-num">'+(idx+1)+'</td>'
     +'<td><input class="name-input" type="text" value="'+name+'" placeholder="Name / ID" data-eid="'+e.id+'"></td>'
     +'<td><select class="eq-status-select '+sc+'" id="sel-'+e.id+'" data-eid="'+e.id+'">'
@@ -2499,7 +2578,7 @@ function eqRowHtml(e, idx){
     +'<option value="standby"'+(e.status==='standby'?' selected':'')+'>Standby</option>'
     +'</select>'
     +'<div class="eq-row-extra">'+statusBadge+'</div></td>'
-    +'<td>'+tabletCell+'</td>'
+    +'<td>'+tabletCell+'</td>'    +'<td><select class="charged-select charged-'+(e.staysCharged||'pending')+'" data-eid="'+e.id+'" data-field="staysCharged">'    +'<option value="yes"'     +(e.staysCharged==='yes'     ?' selected':'')+'>&#10003; Yes</option>'    +'<option value="no"'      +(e.staysCharged==='no'      ?' selected':'')+'>&#10007; No</option>'    +'<option value="pending"' +((!e.staysCharged||e.staysCharged==='pending')?' selected':'')+'>&ndash; Pending</option>'    +'</select></td>'
     +'<td><input class="notes-input'+(needsAttention ? ' eq-note-alert' : '')+'" wrap="soft" type="text" value="'+notes+'" placeholder="Notes..." data-eid="'+e.id+'"><div class="eq-row-extra">'+notesBadge+'</div></td>'
     +'<td style="text-align:center;"><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></td>'
     +'</tr>';
@@ -2532,7 +2611,6 @@ function renderCalloutComposer(){
     + '<textarea id="callout-message" class="callout-textarea" placeholder="Type the callout details here..."></textarea>'
     + '<div class="callout-row">'
       + '<button class="callout-send" onclick="sendCallout()">Send Callout</button>'
-      + '<button class="callout-send" style="border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.12);color:#fcd34d" onclick="retryPendingCallouts()">Retry Pending</button>'
     + '</div>'
     + '<div class="callout-note">If Supabase is offline or blocked, callouts stay in this device’s queue and remain visible in the app.</div>';
 
@@ -2591,8 +2669,7 @@ async function sendCallout(){
       if(error) throw error;
       if(document.getElementById('callout-message')) document.getElementById('callout-message').value = '';
       if(document.getElementById('callout-subject')) document.getElementById('callout-subject').value = '';
-      renderCalloutComposer();
-      return;
+          return;
     }
     throw new Error('No supabase client');
   }catch(err){
@@ -2600,8 +2677,7 @@ async function sendCallout(){
     queueCalloutFallback(payload);
     if(document.getElementById('callout-message')) document.getElementById('callout-message').value = '';
     if(document.getElementById('callout-subject')) document.getElementById('callout-subject').value = '';
-    renderCalloutComposer();
-  }
+    }
 }
 
 async function retryPendingCallouts(){
@@ -2624,7 +2700,6 @@ async function retryPendingCallouts(){
   }
   calloutQueue = stillPending;
   saveCalloutsLocal();
-  renderCalloutComposer();
 }
 function renderEquipBanner(){
   var banner=document.getElementById('equip-banner');
@@ -2633,12 +2708,22 @@ function renderEquipBanner(){
   var maint=equipment.filter(function(e){return e.status==='maintenance';});
   var html='';
   if(down.length){
-    var chips=down.map(function(e){var col=EQ_COLORS[e.type]||'#888';return '<span class="bchip" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;margin-right:3px;"></span>'+(e.name||e.unit)+'</span>';}).join('');
-    html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Units Down</div><div class="banner-chips">'+chips+'</div></div>';
+    var showDown = down.slice(0, 3);
+    var chips=showDown.map(function(e){
+      var col=EQ_COLORS[e.type]||'#888';
+      return '<span class="bchip" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;margin-right:3px;"></span>'+(e.name||e.unit)+'</span>';
+    }).join('');
+    var moreDown = down.length - showDown.length;
+    html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Units Down</div><div class="banner-chips">'+chips+(moreDown>0 ? '<span class="bchip" style="background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.22);">+'+moreDown+' more</span>' : '')+'</div></div>';
   }
   if(maint.length){
-    var chips2=maint.map(function(e){var col=EQ_COLORS[e.type]||'#888';return '<span class="bchip" style="background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;margin-right:3px;"></span>'+(e.name||e.unit)+'</span>';}).join('');
-    html+='<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>In Maintenance</div><div class="banner-chips">'+chips2+'</div></div>';
+    var showMaint = maint.slice(0, 3);
+    var chips2=showMaint.map(function(e){
+      var col=EQ_COLORS[e.type]||'#888';
+      return '<span class="bchip" style="background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3);"><span style="width:5px;height:5px;border-radius:50%;background:'+col+';display:inline-block;margin-right:3px;"></span>'+(e.name||e.unit)+'</span>';
+    }).join('');
+    var moreMaint = maint.length - showMaint.length;
+    html+='<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>In Maintenance</div><div class="banner-chips">'+chips2+(moreMaint>0 ? '<span class="bchip" style="background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.22);">+'+moreMaint+' more</span>' : '')+'</div></div>';
   }
   banner.innerHTML=html;
 }
@@ -2673,10 +2758,11 @@ function renderEquipment(){
       +'<table class="equip-table" style="--row-accent:'+col+'">'
       +'<thead><tr>'
       +'<th style="width:48px;text-align:center;">#</th>'
-      +'<th style="width:24%;">Name</th>'
-      +'<th style="width:16%;">Status</th>'
-      +'<th style="width:18%;">Tablet</th>'
-      +'<th style="width:34%;">Notes</th>'
+      +'<th style="width:20%;">Name</th>'
+      +'<th style="width:15%;">Status</th>'
+      +'<th style="width:15%;">Tablet</th>'
+      +'<th style="width:11%;">Stays Charged?</th>'
+      +'<th style="width:30%;">Notes</th>'
       +'<th style="width:48px;text-align:center;"></th>'
       +'</tr></thead>'
       +'<tbody>'
@@ -2708,6 +2794,23 @@ function renderEquipment(){
     inp.addEventListener('input', function(){ updateEqNotes(this.dataset.eid, this.value); });
     inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value); });
     inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); });
+  });
+  container.querySelectorAll('select.charged-select[data-eid]').forEach(function(sel){
+    sel.addEventListener('change', function(){
+      var id = this.dataset.eid;
+      var val = this.value;
+      var e = equipment.find(function(x){return x.id===id;});
+      if(!e) return;
+      var prev = e.staysCharged || 'pending';
+      e.staysCharged = val;
+      this.className = 'charged-select charged-' + val;
+      saveEquipment();
+      if(val !== prev){
+        var ul = (e.name&&e.name.trim()) ? e.unit+' ('+e.name.trim()+')' : e.unit;
+        var labels = {yes:'✓ Yes',no:'✕ No',pending:'– Pending'};
+        logActivity('notes','<strong>'+ul+'</strong> — Stays Charged set to <strong>'+labels[val]+'</strong>','Type: '+e.type);
+      }
+    });
   });
   container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){ btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); deleteEquipment(this.dataset.eid); }); });
   container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){ btn.addEventListener('click', function(){ addSpecificEquip(this.dataset.type); }); });
@@ -2932,36 +3035,31 @@ function renderEquipmentAttention(){
   if(!wrap) return;
 
   var list = equipment.filter(function(e){ return needsAttentionUnit(e); });
-  var statusText = list.length ? (list.length + ' unit' + (list.length !== 1 ? 's' : '') + ' need attention') : 'No smart-note issues';
+  var statusText = list.length ? (list.length + ' unit' + (list.length !== 1 ? 's' : '') + ' need notes') : 'No documentation issues';
 
-  var html = ''
-    + '<div class="equipment-attention-head">'
+  var sample = list.slice(0, 3).map(function(e){
+    return (e.name && String(e.name).trim()) ? e.name : e.unit;
+  }).join(' · ');
+
+  wrap.innerHTML =
+    '<div class="equipment-attention-head">'
       + '<div>'
         + '<div class="equipment-attention-title">'
           + '<strong>Needs Attention</strong>'
-          + '<div class="equipment-attention-sub">Non-operational units with empty notes are escalated here automatically.</div>'
+          + '<div class="equipment-attention-sub">Only non-operational units missing notes are surfaced here.</div>'
         + '</div>'
       + '</div>'
       + '<div class="shift-readiness-status ' + (list.length ? 'shift-status-watch' : 'shift-status-good') + '">' + statusText + '</div>'
-    + '</div>';
-
-  if(!list.length){
-    html += '<div class="equipment-attention-list"><div class="equipment-attention-item"><div class="equipment-attention-meta"><div class="equipment-attention-name">All down / maintenance units are documented</div><div class="equipment-attention-reason">Good operational discipline</div></div></div></div>';
-  }else{
-    html += '<div class="equipment-attention-list">' + list.map(function(e){
-      var label = (e.name && String(e.name).trim()) ? e.name : e.unit;
-      var reason = eqStatusLabel(e.status) + ' · notes missing';
-      return '<div class="equipment-attention-item">'
+    + '</div>'
+    + '<div class="equipment-attention-list">'
+      + '<div class="equipment-attention-item">'
         + '<div class="equipment-attention-meta">'
-          + '<div class="equipment-attention-name">' + label + '</div>'
-          + '<div class="equipment-attention-reason">' + reason + '</div>'
+          + '<div class="equipment-attention-name">' + (list.length ? (sample || 'None listed') : 'All down / maintenance units are documented') + '</div>'
+          + '<div class="equipment-attention-reason">' + (list.length ? 'Top items · notes required' : 'Good operational discipline') + '</div>'
         + '</div>'
-        + '<span class="eq-status-badge eq-status-badge-warn eq-note-alert">Needs notes</span>'
-      + '</div>';
-    }).join('') + '</div>';
-  }
-
-  wrap.innerHTML = html;
+        + '<span class="eq-status-badge ' + (list.length ? 'eq-status-badge-warn eq-note-alert' : 'eq-status-badge-ok') + '">' + (list.length ? 'Review' : 'Clear') + '</span>'
+      + '</div>'
+    + '</div>';
 }
 
 function updateEquipmentStatusMeta(){
@@ -3041,6 +3139,7 @@ function renderShiftReadinessDashboard(){
   var statusClass = s.coverageStatus === 'GOOD' ? 'good' : (s.coverageStatus === 'WATCH' ? 'watch' : (s.coverageStatus === 'SHORT' ? 'short' : 'neutral'));
   var statusText = s.coverageStatus;
   var shiftLabel = s.currentShiftLabel + ' · ' + s.currentShiftCount + ' employees';
+  var exceptionCount = s.downUnits + s.missingNotes + s.longTermDown;
 
   wrap.innerHTML =
     '<div class="shift-readiness-head">'
@@ -3050,40 +3149,25 @@ function renderShiftReadinessDashboard(){
       +'<div class="shift-readiness-status shift-status-'+statusClass+'">Coverage ' + statusText + '</div>'
     +'</div>'
     +'<div class="shift-readiness-grid">'
+      +'<div class="shift-kpi '+(s.diff >= 0 ? 'good' : 'short')+'">'
+        +'<div class="shift-kpi-label">Coverage</div>'
+        +'<div class="shift-kpi-value">'+statusText+'</div>'
+        +'<div class="trend '+(s.diff >= 0 ? 'good' : 'short')+'">'+s.currentShiftLabel+' · need '+s.requiredHostlers+' · '+diffLabel+'</div>'
+      +'</div>'
       +'<div class="shift-kpi good">'
         +'<div class="shift-kpi-label">Operational Hostlers</div>'
         +'<div class="shift-kpi-value">'+s.operationalHostlers+'</div>'
         +'<div class="trend good">Ready for dispatch</div>'
       +'</div>'
       +'<div class="shift-kpi info">'
-        +'<div class="shift-kpi-label">Current Shift Employees</div>'
+        +'<div class="shift-kpi-label">Current Shift</div>'
         +'<div class="shift-kpi-value">'+s.currentShiftCount+'</div>'
         +'<div class="trend neutral">'+s.currentShiftLabel+'</div>'
       +'</div>'
-      +'<div class="shift-kpi neutral">'
-        +'<div class="shift-kpi-label">Required Hostlers</div>'
-        +'<div class="shift-kpi-value">'+s.requiredHostlers+'</div>'
-        +'<div class="trend neutral">Minimum coverage target</div>'
-      +'</div>'
-      +'<div class="shift-kpi '+(s.diff >= 0 ? 'good' : 'short')+'">'
-        +'<div class="shift-kpi-label">Shortage / Excess</div>'
-        +'<div class="shift-kpi-value">'+diffLabel+'</div>'
-        +'<div class="trend '+(s.diff >= 0 ? 'good' : 'short')+'">'+(s.diff >= 0 ? 'Cover is healthy' : 'Coverage gap')+'</div>'
-      +'</div>'
       +'<div class="shift-kpi warn">'
-        +'<div class="shift-kpi-label">Down Units</div>'
-        +'<div class="shift-kpi-value">'+s.downUnits+'</div>'
-        +'<div class="trend watch">Units out of service</div>'
-      +'</div>'
-      +'<div class="shift-kpi warn">'
-        +'<div class="shift-kpi-label">Units Missing Notes</div>'
-        +'<div class="shift-kpi-value">'+s.missingNotes+'</div>'
-        +'<div class="trend watch">Needs documentation</div>'
-      +'</div>'
-      +'<div class="shift-kpi '+(s.longTermDown ? 'short' : 'good')+'">'
-        +'<div class="shift-kpi-label">Down &gt; 24h</div>'
-        +'<div class="shift-kpi-value">'+s.longTermDown+'</div>'
-        +'<div class="trend '+(s.longTermDown ? 'short' : 'good')+'">Long-term downtime</div>'
+        +'<div class="shift-kpi-label">Exceptions</div>'
+        +'<div class="shift-kpi-value">'+exceptionCount+'</div>'
+        +'<div class="trend watch">Down '+s.downUnits+' · Notes '+s.missingNotes+' · 24h+ '+s.longTermDown+'</div>'
       +'</div>'
     +'</div>';
 }
@@ -3102,16 +3186,11 @@ function renderStaffingWidget(){
   var dayCount = sched.day.length;
   var nightCount = sched.night.length;
   var currentShiftCount = isDay ? dayCount : nightCount;
-  var currentShiftNames = isDay ? sched.day : sched.night;
-  var offShiftCount = isDay ? nightCount : dayCount;
-  var offShiftLabel = isDay ? 'Night Shift' : 'Day Shift';
-  var offShiftNames = isDay ? sched.night : sched.day;
 
   var operationalHostlers = equipment.filter(function(e){
     return e.type==='Hostler' && e.status==='operational';
   }).length;
   var totalHostlers = equipment.filter(function(e){ return e.type==='Hostler'; }).length;
-
   var neededHostlers = Math.max(0, currentShiftCount - 2);
   var shortage = neededHostlers - operationalHostlers;
 
@@ -3121,23 +3200,14 @@ function renderStaffingWidget(){
     verdictMsg='No hostler data yet — add equipment to check coverage.';
   } else if(shortage <= 0){
     verdictClass='verdict-ok'; verdictIcon='✓';
-    verdictMsg=operationalHostlers+' operational hostler'+(operationalHostlers!==1?'s':'')+' for '+neededHostlers+' needed.';
+    verdictMsg='Coverage is healthy for the current shift.';
   } else if(shortage === 1){
     verdictClass='verdict-warn'; verdictIcon='⚠';
-    verdictMsg='Short by 1 hostler — need '+neededHostlers+' for '+currentShiftCount+' employees on '+currentShiftLabel+'.';
+    verdictMsg='Short by 1 hostler for '+currentShiftLabel+'.';
   } else {
     verdictClass='verdict-bad'; verdictIcon='✕';
-    verdictMsg='Short by '+shortage+' hostlers — need '+neededHostlers+' for '+currentShiftCount+' employees on '+currentShiftLabel+'.';
+    verdictMsg='Short by '+shortage+' hostlers for '+currentShiftLabel+'.';
   }
-
-  function nameList(names, dotColor){
-    return names.map(function(n){
-      return '<div class="staffing-name-item"><span class="sname-dot" style="background:'+dotColor+';"></span>'+n+'</div>';
-    }).join('');
-  }
-
-  var activeDot = isDay ? '#f59e0b' : '#818cf8';
-  var offDot = isDay ? '#818cf8' : '#f59e0b';
 
   wrap.innerHTML =
     '<div class="staffing-header">'
@@ -3145,34 +3215,10 @@ function renderStaffingWidget(){
     +'<span class="staffing-day-label">'+DAY_NAMES[dow]+' · <span style="color:'+(isDay ? 'var(--day)' : 'var(--night)')+'">'+currentShiftLabel+' Active</span></span>'
     +'</div>'
     +'<div class="staffing-strip">'
-    +'<div class="staffing-mini staffing-mini-day">'
-      +'<div class="staffing-mini-inline">'
-        +'<div class="staffing-mini-label">Day Shift</div>'
-        +'<div class="staffing-mini-note">Scheduled today</div>'
-      +'</div>'
-      +'<div class="staffing-mini-val" style="color:var(--day)">'+dayCount+'</div>'
-    +'</div>'
-    +'<div class="staffing-mini staffing-mini-night">'
-      +'<div class="staffing-mini-inline">'
-        +'<div class="staffing-mini-label">Night Shift</div>'
-        +'<div class="staffing-mini-note">Scheduled today</div>'
-      +'</div>'
-      +'<div class="staffing-mini-val" style="color:var(--night)">'+nightCount+'</div>'
-    +'</div>'
-    +'<div class="staffing-mini staffing-mini-active">'
-      +'<div class="staffing-mini-inline">'
-        +'<div class="staffing-mini-label">Current Shift</div>'
-        +'<div class="staffing-mini-note">'+currentShiftLabel+' employees right now</div>'
-      +'</div>'
-      +'<div class="staffing-mini-val" style="color:var(--success)">'+currentShiftCount+'</div>'
-    +'</div>'
-    +'<div class="staffing-mini staffing-mini-hostler">'
-      +'<div class="staffing-mini-inline">'
-        +'<div class="staffing-mini-label">Hostlers Needed</div>'
-        +'<div class="staffing-mini-note">After crane + unlock reserve</div>'
-      +'</div>'
-      +'<div class="staffing-mini-val" style="color:var(--accent)">'+neededHostlers+'</div>'
-    +'</div>'
+    +'<div class="staffing-mini staffing-mini-day"><div class="staffing-mini-inline"><div class="staffing-mini-label">Day Shift</div><div class="staffing-mini-note">Scheduled today</div></div><div class="staffing-mini-val" style="color:var(--day)">'+dayCount+'</div></div>'
+    +'<div class="staffing-mini staffing-mini-night"><div class="staffing-mini-inline"><div class="staffing-mini-label">Night Shift</div><div class="staffing-mini-note">Scheduled today</div></div><div class="staffing-mini-val" style="color:var(--night)">'+nightCount+'</div></div>'
+    +'<div class="staffing-mini staffing-mini-active"><div class="staffing-mini-inline"><div class="staffing-mini-label">Current Shift</div><div class="staffing-mini-note">'+currentShiftLabel+' employees right now</div></div><div class="staffing-mini-val" style="color:var(--success)">'+currentShiftCount+'</div></div>'
+    +'<div class="staffing-mini staffing-mini-hostler"><div class="staffing-mini-inline"><div class="staffing-mini-label">Hostlers Needed</div><div class="staffing-mini-note">Current coverage target</div></div><div class="staffing-mini-val" style="color:var(--accent)">'+neededHostlers+'</div></div>'
     +'</div>'
     +'<div class="staffing-summary-line">'
       +'<span class="staffing-chip staffing-chip-day"><strong>Day</strong> '+dayCount+'</span>'
@@ -3180,12 +3226,7 @@ function renderStaffingWidget(){
       +'<span class="staffing-chip staffing-chip-active"><strong>Now</strong> '+currentShiftLabel+' · '+currentShiftCount+'</span>'
       +'<span class="staffing-chip staffing-chip-hostler"><strong>Hostlers</strong> '+operationalHostlers+' / '+neededHostlers+'</span>'
     +'</div>'
-    +'<div class="staffing-verdict '+verdictClass+'"><span class="verdict-icon">'+verdictIcon+'</span><span>'+verdictMsg+'</span></div>'
-    +'<div class="staffing-names">'
-    +'<div class="staffing-names-col"><div class="staffing-col-title"><span class="sname-dot" style="background:'+activeDot+';"></span>'+currentShiftLabel+' — '+currentShiftCount+' employees</div>'+nameList(currentShiftNames,activeDot)+'</div>'
-    +'<div class="staffing-names-col"><div class="staffing-col-title"><span class="sname-dot" style="background:'+offDot+';"></span>'+offShiftLabel+' — '+offShiftCount+' employees</div>'+nameList(offShiftNames,offDot)+'</div>'
-    +'</div>';
-  applyStaffingNamesHidden();
+    +'<div class="staffing-verdict '+verdictClass+'"><span class="verdict-icon">'+verdictIcon+'</span><span>'+verdictMsg+'</span></div>';
 }
 
 
@@ -3538,6 +3579,7 @@ async function initAuditsPage(){
 
 load();
 syncEqLoginUI();
+updateActivityBadge();
 initGlobalScale();
 if(eqLoggedIn){
   // Show cached roster instantly while Supabase loads
@@ -3673,6 +3715,28 @@ window.addEventListener('DOMContentLoaded', () => {
   setTimeout(triggerLiveEquipmentRefresh, 250);
 });
 </script>
+
+<!-- PAGE: ACTIVITY FEED -->
+<div class="page" id="page-activity">
+  <div class="header">
+    <div>
+      <div class="header-title">Activity Feed</div>
+      <div class="header-sub">Audit trail — every change, timestamped</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <select id="activity-filter" onchange="renderActivityFeed()" style="background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:6px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;cursor:pointer;">
+        <option value="all">All Events</option>
+        <option value="employee">Employees</option>
+        <option value="equipment">Equipment</option>
+        <option value="status">Status Changes</option>
+        <option value="notes">Notes</option>
+        <option value="system">System</option>
+      </select>
+      <button onclick="clearActivityLog()" style="font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:#fca5a5;transition:all .15s;">Clear Log</button>
+    </div>
+  </div>
+  <div id="activity-feed-wrap" style="padding:16px 24px 40px;max-width:900px;"></div>
+</div><!-- end page-activity -->
 
 </body>
 </html>
