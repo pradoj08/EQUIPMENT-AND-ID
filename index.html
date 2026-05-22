@@ -1099,6 +1099,16 @@ textarea{
   .af-icon{width:24px;height:24px;font-size:11px}
   .af-msg{font-size:11px}
 }
+
+/* ── AUTH BAR MOBILE ── */
+#auth-bar { display: flex; }
+@media (max-width: 640px) {
+  #auth-bar { padding: 10px 12px; gap: 8px; }
+  #auth-signin-form { flex-direction: column; align-items: stretch; gap: 8px; }
+  #auth-signin-form input { width: 100% !important; max-width: 100% !important; min-width: 0 !important; font-size: 16px !important; padding: 10px 12px !important; }
+  #auth-signin-form .nav-auth-btn { width: 100%; padding: 10px; font-size: 13px; letter-spacing: 1px; }
+  #auth-signed-in { width: 100%; }
+}
 </style>
 <style id="table-scale">
 html,body{
@@ -1320,20 +1330,23 @@ setInterval(function(){
 </head>
 <body>
 
+<!-- AUTH BAR -->
+<div id="auth-bar" style="background:#0b0e14;border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+  <div id="auth-signin-form" class="nav-auth-form" style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;width:100%;">
+    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">Sign In</span>
+    <input id="eq-username" type="text" value="CONGLOBAL" readonly style="flex:1;min-width:80px;max-width:130px;">
+    <input id="eq-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')signInEq()" style="flex:2;min-width:100px;">
+    <button class="nav-auth-btn" onclick="signInEq()">Sign In</button>
+  </div>
+  <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;width:100%;">
+    <span id="eq-auth-status" class="nav-auth-status"></span>
+    <button class="nav-signout-btn" onclick="signOutEq()">Sign Out</button>
+  </div>
+</div>
+
 <!-- PAGE NAV -->
 <div class="page-nav">
-  <div class="page-nav-left" id="eq-auth-panel">
-    <div id="auth-signin-form" style="display:flex;align-items:center;gap:7px;" class="nav-auth-form">
-      <input id="eq-username" type="text" value="CONGLOBAL" readonly>
-      <input id="eq-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')signInEq()">
-      <button class="nav-auth-btn" onclick="signInEq()">Sign In</button>
-    </div>
-    <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
-      <span id="eq-auth-status" class="nav-auth-status"></span>
-      <button class="nav-signout-btn" onclick="signOutEq()">Sign Out</button>
-    </div>
-  </div>
-  <div class="page-nav-right">
+  <div class="page-nav-right" style="flex:1;flex-wrap:wrap;">
     <div class="global-size-wrap" title="Resize the app">
       <span class="size-letter">A</span>
       <input type="range" id="global-size-slider" min="85" max="130" value="100" step="1" oninput="setGlobalScale(this.value)">
@@ -2168,16 +2181,20 @@ var equipmentPollTimer = null;
 var equipmentSyncBusy = false;
 
 function syncEqLoginUI(){
-  var signinForm=document.getElementById('auth-signin-form');
-  var signedIn=document.getElementById('auth-signed-in');
-  var st=document.getElementById('eq-auth-status');
+  var signinForm = document.getElementById('auth-signin-form');
+  var signedIn   = document.getElementById('auth-signed-in');
+  var authBar    = document.getElementById('auth-bar');
+  var st         = document.getElementById('eq-auth-status');
   if(eqLoggedIn){
-    if(signinForm) signinForm.style.display='none';
-    if(signedIn){ signedIn.style.display='flex'; }
-    if(st) st.textContent='\u2713 Signed in as '+eqLoginUsername;
+    if(signinForm) signinForm.style.display = 'none';
+    if(signedIn)   signedIn.style.display   = 'flex';
+    if(st)         st.textContent = '\u2713 Signed in as ' + eqLoginUsername;
+    // Hide auth bar after sign-in to reclaim space
+    if(authBar)    authBar.style.display = 'none';
   } else {
-    if(signinForm) signinForm.style.display='flex';
-    if(signedIn) signedIn.style.display='none';
+    if(signinForm) signinForm.style.display = 'flex';
+    if(signedIn)   signedIn.style.display   = 'none';
+    if(authBar)    authBar.style.display    = 'flex';
   }
 }
 
