@@ -302,6 +302,66 @@ select option{background:var(--surface)}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
+.app-auth-bar{
+  margin:6px 24px 0;
+  padding:6px 12px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:rgba(30,35,51,.72);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.app-auth-bar input{
+  width:150px;
+  max-width:100%;
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:5px;
+  padding:5px 8px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--text);
+  outline:none;
+}
+.app-auth-bar input[readonly]{
+  opacity:.82;
+  cursor:default;
+}
+.app-auth-bar input:focus{border-color:var(--accent)}
+.app-auth-bar .eq-auth-btn{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:5px;
+  cursor:pointer;
+  border:1px solid var(--accent);
+  background:rgba(74,158,255,.12);
+  color:#9ec8ff;
+}
+.app-auth-bar .eq-auth-secondary{
+  border-color:var(--border2);
+  background:transparent;
+  color:var(--muted);
+}
+.app-auth-bar .eq-auth-status{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  margin-left:auto;
+  white-space:nowrap;
+}
+#eq-login-overlay{display:none !important;}
+@media (max-width: 640px){
+  .app-auth-bar{margin:8px 12px 0; gap:6px}
+  .app-auth-bar input{width:100%; flex:1 1 100%}
+  .app-auth-bar .eq-auth-status{width:100%; margin-left:0}
+}
+
+
 @media (max-width: 640px){
   #callout-banner,#equip-banner{padding:6px 12px 0;gap:8px}
   .banner-row{flex-direction:column;min-height:auto}
@@ -314,8 +374,210 @@ select option{background:var(--surface)}
   .banner-row-attn .banner-label{background:rgba(239,68,68,.16)}
 }
 
+
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden !important;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+}
+
+.app,
+.page,
+.content,
+table,
+.equip-table,
+.employee-table{
+  max-width:100%;
+}
+
+table{
+  table-layout:fixed;
+}
+
+td,th{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+input,
+select,
+textarea{
+  max-width:100%;
+}
+
+.banner-chips{
+  overflow-x:hidden;
+}
+
+@media (max-width: 768px){
+  body{
+    overflow-x:hidden !important;
+  }
+
+  .header{
+    padding:12px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .header-title{
+    font-size:15px;
+  }
+
+  .header-sub{
+    font-size:10px;
+  }
+
+  .topbar{
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+
+  .topbar::-webkit-scrollbar{
+    display:none;
+  }
+
+  .equip-table,
+  .employee-table{
+    display:block;
+    overflow-x:hidden;
+  }
+
+  .equip-section{
+    overflow:hidden;
+  }
+
+  .notes-input,
+  .tablet-input,
+  .name-input{
+    width:100%;
+    min-width:0;
+  }
+
+  .banner-row{
+    width:100%;
+    overflow:hidden;
+  }
+
+  .banner-chips{
+    width:100%;
+    overflow:hidden;
+  }
+
+  .bchip{
+    max-width:100%;
+  }
+}
+
 </style>
-<style id="table-scale"></style>
+<style id="table-scale">
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden !important;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+}
+
+.app,
+.page,
+.content,
+table,
+.equip-table,
+.employee-table{
+  max-width:100%;
+}
+
+table{
+  table-layout:fixed;
+}
+
+td,th{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+input,
+select,
+textarea{
+  max-width:100%;
+}
+
+.banner-chips{
+  overflow-x:hidden;
+}
+
+@media (max-width: 768px){
+  body{
+    overflow-x:hidden !important;
+  }
+
+  .header{
+    padding:12px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .header-title{
+    font-size:15px;
+  }
+
+  .header-sub{
+    font-size:10px;
+  }
+
+  .topbar{
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+
+  .topbar::-webkit-scrollbar{
+    display:none;
+  }
+
+  .equip-table,
+  .employee-table{
+    display:block;
+    overflow-x:hidden;
+  }
+
+  .equip-section{
+    overflow:hidden;
+  }
+
+  .notes-input,
+  .tablet-input,
+  .name-input{
+    width:100%;
+    min-width:0;
+  }
+
+  .banner-row{
+    width:100%;
+    overflow:hidden;
+  }
+
+  .banner-chips{
+    width:100%;
+    overflow:hidden;
+  }
+
+  .bchip{
+    max-width:100%;
+  }
+}
+
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 window.APP_LOGIN_PASSWORD = "admin";
@@ -435,6 +697,18 @@ window.addEventListener('load',function(){
   </button>
 </div>
 
+<div class="app-auth-bar" id="eq-auth-panel">
+  <div id="auth-signin-form" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <input id="eq-username" type="text" value="CONGLOBAL" readonly>
+    <input id="eq-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')signInEq()">
+    <button class="eq-auth-btn" onclick="signInEq()">Sign In</button>
+  </div>
+  <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
+    <span id="eq-auth-status" class="eq-auth-status" style="color:#6ee7b7;"></span>
+    <button class="eq-auth-btn eq-auth-secondary" onclick="signOutEq()">Sign Out</button>
+  </div>
+</div>
+
 <!-- PAGE: EMPLOYEES -->
 <div class="page active" id="page-employees">
 <div class="header">
@@ -501,13 +775,6 @@ window.addEventListener('load',function(){
   <div><button onclick="openAddUnitModal()" style="font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid #4a9eff;background:rgba(74,158,255,.12);color:#4a9eff;display:flex;align-items:center;gap:6px;">
     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
   </button></div>
-</div>
-<div class="eq-auth-panel" id="eq-auth-panel">
-  <input id="eq-username" type="text" readonly / readonly style="pointer-events:none;opacity:.85;">
-  <input id="eq-password" type="password" placeholder="Password" />
-  <button class="eq-auth-btn" onclick="signInEq()">Sign In</button>
-  <button class="eq-auth-btn eq-auth-secondary" onclick="signOutEq()">Sign Out</button>
-  <span id="eq-auth-status" class="eq-auth-status">Sign-in to save</span>
 </div>
 <div id="equip-banner"></div>
 <div id="equip-content" style="padding-bottom:24px;"></div>
@@ -585,8 +852,76 @@ var _toastTimer;
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
 function load(){
-  try{ employees=JSON.parse(localStorage.getItem(STORAGE_KEY))||[]; }catch(e){ employees=[]; }
-  if(!employees.length) seedData();
+  employees=[];
+}
+
+async function loadEmployees(){
+  if(!eqLoggedIn){
+    employees = [];
+    return;
+  }
+  try{
+    const { data, error } = await supabaseClient
+      .from('employees')
+      .select('*')
+      .order('updated_at', { ascending: true });
+
+    if(error){
+      console.error('Supabase employee load error:', error);
+      employees = [];
+      return;
+    }
+
+    employees = (data || []).map(function(row){
+      return {
+        id: row.id,
+        first: row.first_name || '',
+        last: row.last_name || '',
+        empId: row.employee_id || '',
+        upId: row.up_id || '',
+        shift: row.shift || 'Day',
+        phone: row.phone || '',
+        daysOff: row.days_off || '',
+        status: row.status || 'active'
+      };
+    });
+
+    if(!employees.length){
+      seedData();
+    }
+  }catch(e){
+    console.error(e);
+    employees = [];
+  }
+}
+
+async function saveEmployees(){
+  if(!eqLoggedIn) return;
+  try{
+    const rows = employees.map(function(e){
+      return {
+        id: e.id,
+        first_name: e.first,
+        last_name: e.last,
+        employee_id: e.empId,
+        up_id: e.upId,
+        shift: e.shift,
+        phone: e.phone,
+        days_off: e.daysOff,
+        status: e.status,
+        updated_at: new Date().toISOString(),
+        last_edited_by: eqLoginUsername || 'CONGLOBAL'
+      };
+    });
+
+    const { error } = await supabaseClient
+      .from('employees')
+      .upsert(rows, { onConflict: 'id' });
+
+    if(error) console.error('Supabase employee save error:', error);
+  }catch(err){
+    console.error('Employee save failed:', err);
+  }
 }
 
 function pushHistory(){
@@ -608,12 +943,12 @@ function showSaveToast(){
 
 function save(){
   pushHistory();
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(employees));
+  saveEmployees();
   showSaveToast();
 }
 
 function ensureEmployeeRoster(){
-  if(!Array.isArray(employees) || !employees.length){
+  if(eqLoggedIn && (!Array.isArray(employees) || !employees.length)){
     seedData();
   }
 }
@@ -777,6 +1112,16 @@ function render(){
   var list=getFiltered();
   var tbody=document.getElementById('emp-table');
   var noData=document.getElementById('no-data');
+  if(!eqLoggedIn){
+    tbody.innerHTML='';
+    if(noData){
+      noData.style.display='block';
+      noData.textContent='Sign in to unlock the employee roster.';
+    }
+    updateStats(); updateBanner(); updateTabCounts();
+    return;
+  }
+  if(noData) noData.textContent='No employees found.';
   if(!list.length){tbody.innerHTML='';noData.style.display='block';return;}
   noData.style.display='none';
   tbody.innerHTML=list.map(function(e){
@@ -899,44 +1244,73 @@ var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
 
 function syncEqLoginUI(){
-  var u=document.getElementById('eq-username');
+  var signinForm=document.getElementById('auth-signin-form');
+  var signedIn=document.getElementById('auth-signed-in');
   var st=document.getElementById('eq-auth-status');
   var panel=document.getElementById('eq-auth-panel');
-  if(u) u.value = eqLoginUsername;
-  if(st) st.textContent = eqLoggedIn ? ('Signed in as ' + eqLoginUsername) : 'Sign-in to save';
-  if(panel) panel.style.opacity = eqLoggedIn ? '1' : '1';
+  if(eqLoggedIn){
+    if(signinForm) signinForm.style.display='none';
+    if(signedIn){ signedIn.style.display='flex'; }
+    if(st) st.textContent='\u2713 Signed in as '+eqLoginUsername;
+    if(panel){ panel.style.padding='6px 12px'; }
+  } else {
+    if(signinForm) signinForm.style.display='flex';
+    if(signedIn) signedIn.style.display='none';
+    if(panel){ panel.style.padding='10px 12px'; }
+  }
 }
 
-function signInEq(){
+async function signInEq(){
   var pw=(document.getElementById('eq-password')||{}).value || '';
-  var u=(document.getElementById('eq-username')||{}).value || 'admin';
-  // This is an app-level gate only; credentials are not echoed back.
+  var u=(document.getElementById('eq-username')||{}).value || 'CONGLOBAL';
+
   if(!pw){
     alert('Enter the password.');
     return;
   }
-  eqLoginUsername = u.trim() || 'admin';
+
+  if(pw !== window.APP_LOGIN_PASSWORD){
+    alert('Incorrect password.');
+    var pwEl=document.getElementById('eq-password');
+    if(pwEl) pwEl.value='';
+    return;
+  }
+
+  eqLoginUsername = u.trim() || 'CONGLOBAL';
   eqLoggedIn = true;
   sessionStorage.setItem('eq_logged_in','1');
   sessionStorage.setItem('eq_login_username', eqLoginUsername);
-  var pwEl=document.getElementById('eq-password'); if(pwEl) pwEl.value='';
+
+  var pwEl=document.getElementById('eq-password');
+  if(pwEl) pwEl.value='';
+
   syncEqLoginUI();
+  await loadEmployees();
+  await loadEquipment();
+  render();
   renderEquipment();
 }
 
-function signOutEq(){
+async function signOutEq(){
   eqLoggedIn = false;
   sessionStorage.removeItem('eq_logged_in');
   syncEqLoginUI();
+  employees = [];
+  equipment = [];
+  render();
   renderEquipment();
 }
 
-var eqLoginUsername = localStorage.getItem('eq_login_username') || 'admin';
+var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'CONGLOBAL';
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 
 async function loadEquipment(){
+  if(!eqLoggedIn){
+    equipment = [];
+    return;
+  }
   try{
     const { data, error } = await supabaseClient
       .from('equipment')
@@ -968,6 +1342,7 @@ async function loadEquipment(){
 }
 
 async function saveEquipment(){
+  if(!eqLoggedIn) return;
   try{
     for(const e of equipment){
       await supabaseClient
@@ -979,7 +1354,8 @@ async function saveEquipment(){
           name: e.name,
           tablet_assigned: e.tabletAssigned,
           status: e.status,
-          notes: e.notes
+          notes: e.notes,
+          updated_at: new Date().toISOString()
         });
     }
 
@@ -1086,7 +1462,7 @@ function renderEquipment(){
   syncEqLoginUI();
 
   if(!eqLoggedIn){
-    container.innerHTML = '<div class="eq-lock-overlay">Sign in to unlock equipment editing.</div>';
+    container.innerHTML = '<div class="eq-lock-overlay">Sign in above to unlock equipment editing.</div>';
     return;
   }
 
@@ -1126,10 +1502,14 @@ function renderEquipment(){
 
 // ── INIT ──
 load();
-ensureEmployeeRoster();
-render();
-try{ if(typeof syncEqLoginUI === 'function') syncEqLoginUI(); }catch(e){}
-loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
+syncEqLoginUI();
+if(eqLoggedIn){
+  loadEmployees().then(function(){ render(); }).catch(function(){ ensureEmployeeRoster(); render(); });
+  loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
+} else {
+  render();
+  loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
+}
 
 document.addEventListener('click',function(e){
   var btn=e.target.closest('.equip-del-btn');
@@ -1210,30 +1590,6 @@ window.addEventListener('load',function(){
 });
 
 </script>
-
-<div class="eq-login-overlay" id="eq-login-overlay">
-  <div class="eq-login-modal">
-    <div class="eq-login-title">Equipment Access</div>
-    <div class="eq-login-sub">Sign in to access and save live equipment updates.</div>
-
-    <input class="eq-login-user" type="text" value="CONGLOBAL" readonly>
-
-    <input
-      id="eq-popup-password"
-      class="eq-login-pass"
-      type="password"
-      placeholder="Enter password"
-    >
-
-    <button class="eq-login-btn" onclick="handlePopupLogin()">
-      Sign In
-    </button>
-
-    <div class="eq-login-error" id="eq-login-error">
-      Invalid password
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
