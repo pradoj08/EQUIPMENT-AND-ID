@@ -2314,15 +2314,58 @@ async function signOutEq(){
 
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'CONGLOBAL';
 
-function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function slugifyEqPart(value){
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'unknown';
+}
 
+function stableEqId(type, unit){
+  return 'eq_' + slugifyEqPart(type) + '_' + slugifyEqPart(unit);
+}
+
+function normalizeEquipmentRow(row){
+  if(!row) return row;
+  var type = row.type || 'Hostler';
+  var unit = String(row.unit || '').trim();
+  var normalized = Object.assign({}, row);
+  normalized.type = type;
+  normalized.unit = unit;
+  normalized.id = stableEqId(type, unit);
+  return normalized;
+}
+
+function dedupeEquipmentRows(rows){
+  var byId = {};
+  (rows || []).forEach(function(row){
+    if(!row) return;
+    var existing = byId[row.id];
+    if(!existing){
+      byId[row.id] = row;
+      return;
+    }
+    var a = new Date(existing.updated_at || existing.status_changed_at || 0).getTime() || 0;
+    var b = new Date(row.updated_at || row.status_changed_at || 0).getTime() || 0;
+    if(b >= a) byId[row.id] = row;
+  });
+  return Object.keys(byId).map(function(id){ return byId[id]; });
+}
+
+function eqUid(type, unit){
+  return stableEqId(type, unit);
+}
 
 function loadEquipmentFromCache(){
   try{
     var cached = localStorage.getItem(EQ_KEY);
     if(cached){
       var parsed = JSON.parse(cached);
-      if(Array.isArray(parsed) && parsed.length){ equipment = parsed; return true; }
+      if(Array.isArray(parsed) && parsed.length){
+        equipment = dedupeEquipmentRows(parsed.map(normalizeEquipmentRow));
+        return true;
+      }
     }
   }catch(e){}
   return false;
@@ -2348,10 +2391,12 @@ async function loadEquipment(){
     }
 
     var remote = (data || []).map(function(row){
+      var type = row.type || 'Hostler';
+      var unit = String(row.unit || '').trim();
       return {
-        id: row.id,
-        type: row.type || 'Hostler',
-        unit: row.unit || '',
+        id: stableEqId(type, unit),
+        type: type,
+        unit: unit,
         name: row.name || '',
         tabletAssigned: row.tablet_assigned || '',
         staysCharged: row.stays_charged || 'pending',
@@ -2359,19 +2404,68 @@ async function loadEquipment(){
         notes: row.notes || '',
         updated_at: row.updated_at || null,
         status_changed_at: (row.status_changed_at || null) || ((row.status && row.status !== 'operational' && row.updated_at) ? row.updated_at : null),
-        status_changed_day: row.status_changed_day || null
+        status_changed_day: row.status_changed_day || null,
+        __remote_id: row.id || null
       };
     });
 
-    if(remote.length){
-      equipment = remote;
-      localStorage.setItem(EQ_KEY, JSON.stringify(equipment));
+    var normalizedRemote = dedupeEquipmentRows(remote);
+    var needsMigration = remote.some(function(row){ return row.__remote_id && row.__remote_id !== row.id; });
+
+    if(normalizedRemote.length){
+      equipment = normalizedRemote.map(function(row){
+        var copy = Object.assign({}, row);
+        delete copy.__remote_id;
+        return copy;
+      });
+      try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
+
+      if(needsMigration){
+        try{
+          await migrateEquipmentIds(remote);
+        }catch(mErr){
+          console.warn('Equipment id migration failed:', mErr && (mErr.message || mErr));
+        }
+      }
     }
     updateEquipmentStatusMeta();
 
   }catch(e){
     console.warn('loadEquipment: using local data:', e.message || e);
     updateEquipmentStatusMeta();
+  }
+}
+
+async function migrateEquipmentIds(remoteRows){
+  if(!eqLoggedIn || typeof supabaseClient === 'undefined' || !Array.isArray(remoteRows) || !remoteRows.length) return;
+  var normalized = remoteRows.map(function(row){
+    var copy = normalizeEquipmentRow(row);
+    delete copy.__remote_id;
+    return copy;
+  });
+  var oldIds = remoteRows
+    .filter(function(row){ return row && row.__remote_id && row.__remote_id !== row.id; })
+    .map(function(row){ return row.__remote_id; })
+    .filter(function(id){ return !!id; });
+
+  if(!normalized.length) return;
+
+  const { error: upsertError } = await supabaseClient
+    .from('equipment')
+    .upsert(normalized, { onConflict: 'id' });
+  if(upsertError){
+    console.warn('Equipment migration upsert failed:', upsertError.message || upsertError);
+    return;
+  }
+
+  if(oldIds.length){
+    const { error: deleteError } = await supabaseClient
+      .from('equipment')
+      .delete()
+      .in('id', oldIds);
+    if(deleteError){
+      console.warn('Equipment migration cleanup failed:', deleteError.message || deleteError);
+    }
   }
 }
 
@@ -2385,6 +2479,8 @@ async function persistEquipmentAndRefresh(){
 }
 
 async function saveEquipment(){
+  equipment = dedupeEquipmentRows(equipment.map(normalizeEquipmentRow));
+
   // Always save locally first — this is the source of truth when offline
   try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
   showSaveToast();
@@ -2394,6 +2490,7 @@ async function saveEquipment(){
     if(!supabaseClient) return;
     var stamp = new Date().toISOString();
     var payload = equipment.map(function(e){
+      e.id = stableEqId(e.type, e.unit);
       e.updated_at = stamp;
       return {
         id: e.id,
@@ -2428,7 +2525,7 @@ function seedEquipment(){
     var pre = EQ_PREFIX[type] || type.slice(0,2).toUpperCase();
     var n   = equipment.filter(function(x){ return x.type===type; }).length + 1;
     return {
-      id: eqUid(),
+      id: stableEqId(type, pre + '-' + String(n).padStart(2,'0')),
       type: type,
       unit: pre + '-' + String(n).padStart(2,'0'),
       name: String(equipNum || ''),
@@ -2544,6 +2641,7 @@ async function flushEqNotesSave(id){
     delete notesSaveTimers[id];
   }
   await saveEquipment();
+  await loadEquipment();
 }
 
 function updateEqNotes(id,val){
@@ -2602,7 +2700,7 @@ async function deleteEquipment(id){
 function addSpecificEquip(type){
   var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
   var unit=pre+'-'+String(n+1).padStart(2,'0');
-  equipment.push({id:eqUid(),type:type,unit:unit,name:'',tabletAssigned:'',staysCharged:'pending',status:'operational',notes:''});
+  equipment.push({id: stableEqId(type, unit),type:type,unit:unit,name:'',tabletAssigned:'',staysCharged:'pending',status:'operational',notes:''});
   logActivity('equipment','<strong>'+unit+'</strong> added to fleet','Type: '+type);
   persistEquipmentAndRefresh();
   renderEquipment();
