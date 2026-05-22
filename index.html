@@ -1254,6 +1254,18 @@ setInterval(function(){
   }
 }, 60000);
 
+
+window.addEventListener('focus', async function(){
+  if(!eqLoggedIn) return;
+  try{
+    await loadEquipment();
+    renderEquipment();
+    updateEquipmentStatusMeta();
+    renderEquipmentAttention();
+    refreshEquipmentAgingDisplay();
+  }catch(err){}
+});
+
 </script>
 
 </head>
@@ -1972,6 +1984,7 @@ var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
 
 var equipmentRealtimeChannel = null;
 var equipmentPollTimer = null;
+var equipmentPollActive = false;
 var equipmentSyncBusy = false;
 
 function syncEqLoginUI(){
@@ -2002,11 +2015,39 @@ function stopEquipmentRealtimeSync(){
     clearInterval(equipmentPollTimer);
     equipmentPollTimer = null;
   }
+  equipmentPollActive = false;
+}
+
+
+async function startEquipmentPolling(){
+  if(!eqLoggedIn || equipmentPollActive) return;
+  equipmentPollActive = true;
+
+  if(equipmentPollTimer) clearInterval(equipmentPollTimer);
+  equipmentPollTimer = setInterval(async function(){
+    if(!eqLoggedIn || equipmentSyncBusy) return;
+    equipmentSyncBusy = true;
+    try{
+      await loadEquipment();
+      renderEquipment();
+      updateEquipmentStatusMeta();
+      renderEquipmentAttention();
+      refreshEquipmentAgingDisplay();
+    }catch(err){
+      console.error('Equipment poll refresh failed:', err);
+    }finally{
+      equipmentSyncBusy = false;
+    }
+  }, 15000);
 }
 
 async function startEquipmentRealtimeSync(){
   if(!eqLoggedIn) return;
-  if(equipmentRealtimeChannel || equipmentPollTimer) return;
+
+  // Always keep polling active so devices stay in sync even if realtime is delayed or unavailable.
+  await startEquipmentPolling();
+
+  if(equipmentRealtimeChannel) return;
 
   try{
     equipmentRealtimeChannel = supabaseClient
@@ -2027,29 +2068,17 @@ async function startEquipmentRealtimeSync(){
           }
         }
       )
-      .subscribe();
+      .subscribe(function(status){
+        if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT'){
+          console.warn('Realtime equipment sync degraded:', status);
+        }
+      });
   }catch(err){
     console.error('Realtime equipment sync unavailable:', err);
   }
-
-  // Fallback for environments where realtime is not available
-  equipmentPollTimer = setInterval(async function(){
-    if(!eqLoggedIn || equipmentSyncBusy) return;
-    equipmentSyncBusy = true;
-    try{
-      await loadEquipment();
-      renderEquipment();
-      updateEquipmentStatusMeta();
-      renderEquipmentAttention();
-      refreshEquipmentAgingDisplay();
-    }catch(err){
-      console.error('Equipment poll refresh failed:', err);
-    }finally{
-      equipmentSyncBusy = false;
-    }
-  }, 15000);
 }
 
+async function signInEq(){
 async function signInEq(){
   var pw=(document.getElementById('eq-password')||{}).value || '';
   var u=(document.getElementById('eq-username')||{}).value || 'CONGLOBAL';
@@ -2077,6 +2106,7 @@ async function signInEq(){
   syncEqLoginUI();
   await loadEmployees();
   await loadEquipment();
+  equipmentPollActive = false;
   await startEquipmentRealtimeSync();
   render();
   renderEquipment();
