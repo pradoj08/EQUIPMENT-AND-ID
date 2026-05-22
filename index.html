@@ -1494,6 +1494,72 @@ setInterval(function(){
 
 </script>
 
+
+
+<style id="final-equipment-table-preview-fix">
+/* FINAL SAFE EQUIPMENT TABLE FIX: keeps preview visible and aligns headers/cells */
+#equipment-page .equip-section{overflow:hidden !important;}
+#equipment-page .equip-page-wrap{overflow-x:hidden !important;}
+#equipment-page .equip-table{
+  width:100% !important;
+  table-layout:fixed !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+#equipment-page .equip-table th,
+#equipment-page .equip-table td{
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+  vertical-align:top !important;
+}
+#equipment-page .equip-table th:nth-child(1), #equipment-page .equip-table td:nth-child(1){width:5% !important; min-width:44px !important; text-align:center !important;}
+#equipment-page .equip-table th:nth-child(2), #equipment-page .equip-table td:nth-child(2){width:15% !important;}
+#equipment-page .equip-table th:nth-child(3), #equipment-page .equip-table td:nth-child(3){width:13% !important;}
+#equipment-page .equip-table th:nth-child(4), #equipment-page .equip-table td:nth-child(4){width:18% !important; min-width:155px !important; display:table-cell !important;}
+#equipment-page .equip-table th:nth-child(5), #equipment-page .equip-table td:nth-child(5){width:10% !important;}
+#equipment-page .equip-table th:nth-child(6), #equipment-page .equip-table td:nth-child(6){width:34% !important; min-width:0 !important;}
+#equipment-page .equip-table th:nth-child(7), #equipment-page .equip-table td:nth-child(7){width:5% !important; min-width:54px !important; text-align:center !important;}
+#equipment-page .equip-table .name-input,
+#equipment-page .equip-table .tablet-input,
+#equipment-page .equip-table .notes-input,
+#equipment-page .equip-table select{
+  box-sizing:border-box !important;
+  max-width:100% !important;
+}
+#equipment-page .equip-table .tablet-input{
+  width:100% !important;
+  min-width:0 !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  padding-left:8px !important;
+  padding-right:10px !important;
+}
+#equipment-page .equip-table .notes-input{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+  overflow:hidden !important;
+}
+#equipment-page .equip-table tr:has(.eq-status-select.status-maint) td,
+#equipment-page tr.eq-row-maintenance td{
+  background:linear-gradient(180deg,rgba(245,158,11,.30),rgba(120,75,5,.28)) !important;
+  color:#fff7ed !important;
+}
+@media(max-width:768px){
+  #equipment-page .equip-page-wrap{overflow-x:auto !important; -webkit-overflow-scrolling:touch !important;}
+  #equipment-page .equip-table{min-width:980px !important;}
+  #equipment-page .equip-table th:nth-child(2),
+  #equipment-page .equip-table td:nth-child(2),
+  #equipment-page .equip-table th:nth-child(4),
+  #equipment-page .equip-table td:nth-child(4){display:table-cell !important;}
+}
+</style>
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
