@@ -855,6 +855,23 @@ function load(){
   employees=[];
 }
 
+var EMP_CACHE_KEY = 'eit_emp_cache_v1';
+
+function loadEmployeesFromCache(){
+  try{
+    var cached = localStorage.getItem(EMP_CACHE_KEY);
+    if(cached){
+      var parsed = JSON.parse(cached);
+      if(Array.isArray(parsed) && parsed.length){ employees = parsed; return true; }
+    }
+  }catch(e){}
+  return false;
+}
+
+function saveEmployeesToCache(){
+  try{ localStorage.setItem(EMP_CACHE_KEY, JSON.stringify(employees)); }catch(e){}
+}
+
 async function loadEmployees(){
   if(!eqLoggedIn){
     employees = [];
@@ -868,7 +885,7 @@ async function loadEmployees(){
 
     if(error){
       console.error('Supabase employee load error:', error);
-      employees = [];
+      if(!loadEmployeesFromCache()) seedData();
       return;
     }
 
@@ -887,11 +904,13 @@ async function loadEmployees(){
     });
 
     if(!employees.length){
-      seedData();
+      if(!loadEmployeesFromCache()) seedData();
+    } else {
+      saveEmployeesToCache();
     }
   }catch(e){
     console.error(e);
-    employees = [];
+    if(!loadEmployeesFromCache()) seedData();
   }
 }
 
@@ -919,6 +938,7 @@ async function saveEmployees(){
       .upsert(rows, { onConflict: 'id' });
 
     if(error) console.error('Supabase employee save error:', error);
+    else saveEmployeesToCache();
   }catch(err){
     console.error('Employee save failed:', err);
   }
@@ -1504,7 +1524,10 @@ function renderEquipment(){
 load();
 syncEqLoginUI();
 if(eqLoggedIn){
-  loadEmployees().then(function(){ render(); }).catch(function(){ ensureEmployeeRoster(); render(); });
+  // Show cached roster instantly while Supabase loads
+  loadEmployeesFromCache();
+  render();
+  loadEmployees().then(function(){ render(); }).catch(function(){ render(); });
   loadEquipment().then(function(){ renderEquipment(); }).catch(function(){ renderEquipment(); });
 } else {
   render();
