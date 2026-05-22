@@ -136,6 +136,7 @@ select option{background:var(--surface)}
 /* SAVE TOAST */
 #save-toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--surface);border:1px solid rgba(34,197,94,.4);border-left:3px solid var(--success);border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:11px;color:var(--success);display:flex;align-items:center;gap:7px;letter-spacing:.5px;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
 #save-toast.show{opacity:1;transform:translateY(0)}
+#save-toast.error{border-color:rgba(239,68,68,.4);border-left-color:var(--danger);color:#f87171;}
 /* EQUIPMENT */
 .equip-section{padding:16px 24px 0}
 .equip-section-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 0 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;margin-bottom:0}
@@ -512,18 +513,26 @@ function pushHistory(){
   if(empHistory.length>10) empHistory=empHistory.slice(0,10);
 }
 
-function showSaveToast(){
+function showSaveToast(ok){
   var t=document.getElementById('save-toast');
   if(!t) return;
+  t.classList.remove('show','error');
+  if(ok===false){
+    t.classList.add('error');
+    t.innerHTML='<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Save failed — check console';
+  } else {
+    t.innerHTML='<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Saved';
+  }
+  void t.offsetWidth;
   t.classList.add('show');
   clearTimeout(_toastTimer);
-  _toastTimer=setTimeout(function(){ t.classList.remove('show'); },2000);
+  _toastTimer=setTimeout(function(){ t.classList.remove('show'); },2500);
 }
 
-function save(){
+async function save(){
   pushHistory();
-  queueSharedSave();
-  showSaveToast();
+  var ok = await saveSharedState();
+  showSaveToast(ok);
 }
 
 function seedData(){
@@ -850,35 +859,33 @@ async function saveSharedState(){
   try{
     const payload = {
       id: SHARED_STATE_ID,
-      data: { employees: employees, equipment: equipment },
-      updated_at: new Date().toISOString()
+      data: { employees: employees, equipment: equipment }
     };
 
     const { error } = await supabaseClient
       .from('app_state')
       .upsert(payload, { onConflict: 'id' });
 
-    if(error) console.error('Supabase save error — code:', error.code, '| message:', error.message, '| hint:', error.hint);
+    if(error){
+      console.error('Supabase save error — code:', error.code, '| message:', error.message, '| hint:', error.hint);
+      return false;
+    }
+    return true;
   }catch(err){
     console.error('Supabase save exception:', err && err.message ? err.message : err);
+    return false;
   }
 }
 
-function queueSharedSave(){
-  clearTimeout(sharedSaveTimer);
-  sharedSaveTimer = setTimeout(function(){
-    saveSharedState();
-  }, 250);
-}
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 function loadEquipment(){
   equipment = Array.isArray(equipment) ? equipment : [];
 }
-function saveEquipment(){
-  queueSharedSave();
-  showSaveToast();
+async function saveEquipment(){
+  var ok = await saveSharedState();
+  showSaveToast(ok);
 }
 
 function seedEquipment(){
