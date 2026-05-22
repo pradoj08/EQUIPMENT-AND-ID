@@ -1306,6 +1306,167 @@ textarea{
   .equip-table td:nth-child(4){display:table-cell !important; min-width:150px !important; width:150px !important;}
 }
 
+
+
+/* MOBILE EQUIPMENT TABLE REBUILD — card layout */
+@media (max-width: 768px){
+  #equipment-page .equip-page-wrap{
+    padding:10px 10px 34px !important;
+    overflow-x:hidden !important;
+  }
+  #equipment-page .equip-section{
+    margin:0 0 14px !important;
+    border-radius:14px !important;
+    overflow:visible !important;
+  }
+  #equipment-page .equip-section-title{
+    padding:12px 12px !important;
+    gap:8px !important;
+  }
+  #equipment-page .eq-section-add-btn{
+    width:100% !important;
+    margin-left:0 !important;
+    justify-content:center !important;
+  }
+  #equipment-page .equip-table,
+  #equipment-page .equip-table thead,
+  #equipment-page .equip-table tbody,
+  #equipment-page .equip-table tr,
+  #equipment-page .equip-table th,
+  #equipment-page .equip-table td{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+  #equipment-page .equip-table{
+    min-width:0 !important;
+    table-layout:auto !important;
+    border-collapse:separate !important;
+    background:transparent !important;
+  }
+  #equipment-page .equip-table thead{
+    display:none !important;
+  }
+  #equipment-page .equip-table tbody{
+    padding:10px !important;
+    background:#0b0f18 !important;
+  }
+  #equipment-page .equip-table tr{
+    margin:0 0 12px !important;
+    padding:10px 10px 12px !important;
+    border:1px solid rgba(148,163,184,.24) !important;
+    border-left:4px solid var(--row-accent, #4a9eff) !important;
+    border-radius:14px !important;
+    background:linear-gradient(180deg,#151c2b,#0f1521) !important;
+    box-shadow:0 10px 22px rgba(0,0,0,.22) !important;
+  }
+  #equipment-page .equip-table tr:last-child{
+    margin-bottom:0 !important;
+  }
+  #equipment-page .equip-table td{
+    position:relative !important;
+    padding:8px 0 9px 92px !important;
+    border:0 !important;
+    border-bottom:1px solid rgba(148,163,184,.13) !important;
+    background:transparent !important;
+    color:#eef2ff !important;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+    overflow-wrap:anywhere !important;
+  }
+  #equipment-page .equip-table td:last-child{
+    border-bottom:0 !important;
+    padding-left:0 !important;
+    padding-top:10px !important;
+    text-align:right !important;
+  }
+  #equipment-page .equip-table td::before{
+    position:absolute !important;
+    left:0 !important;
+    top:11px !important;
+    width:82px !important;
+    font-family:var(--mono) !important;
+    font-size:9px !important;
+    letter-spacing:1.2px !important;
+    text-transform:uppercase !important;
+    color:#94a3b8 !important;
+    white-space:nowrap !important;
+  }
+  #equipment-page .equip-table td:nth-child(1)::before{content:'Count';}
+  #equipment-page .equip-table td:nth-child(2)::before{content:'Name';}
+  #equipment-page .equip-table td:nth-child(3)::before{content:'Status';}
+  #equipment-page .equip-table td:nth-child(4)::before{content:'Tablet';}
+  #equipment-page .equip-table td:nth-child(5)::before{content:'Charged';}
+  #equipment-page .equip-table td:nth-child(6)::before{content:'Notes';}
+  #equipment-page .equip-table td:nth-child(7)::before{content:'';display:none;}
+  #equipment-page .eq-num{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-width:34px !important;
+    min-height:26px !important;
+    padding:3px 8px !important;
+    border-radius:999px !important;
+    background:rgba(74,158,255,.16) !important;
+    border:1px solid rgba(74,158,255,.35) !important;
+    color:#bfdbfe !important;
+  }
+  #equipment-page .equip-table .name-input,
+  #equipment-page .equip-table .tablet-input,
+  #equipment-page .equip-table .notes-input,
+  #equipment-page .equip-table select{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:38px !important;
+    height:auto !important;
+    padding:9px 10px !important;
+    font-size:12px !important;
+    line-height:1.35 !important;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:clip !important;
+  }
+  #equipment-page .equip-table .tablet-input{
+    white-space:nowrap !important;
+    overflow:visible !important;
+    padding-right:12px !important;
+    letter-spacing:.2px !important;
+  }
+  #equipment-page .equip-table .notes-input{
+    min-height:46px !important;
+    resize:vertical !important;
+    overflow-wrap:anywhere !important;
+    background:rgba(15,23,42,.88) !important;
+    color:#f8fafc !important;
+  }
+  #equipment-page .equip-table tr.eq-row-maintenance,
+  #equipment-page .equip-table tr.eq-maint-row,
+  #equipment-page .equip-table tr:has(.eq-status-select.status-maint),
+  #equipment-page .equip-table tr:has(select.status-maint){
+    background:linear-gradient(180deg,rgba(180,113,8,.40),rgba(92,58,9,.34)) !important;
+    border-color:rgba(251,191,36,.58) !important;
+    border-left-color:#f59e0b !important;
+    box-shadow:0 12px 26px rgba(245,158,11,.13) !important;
+  }
+  #equipment-page .equip-table tr.eq-row-maintenance td,
+  #equipment-page .equip-table tr.eq-maint-row td,
+  #equipment-page .equip-table tr:has(.eq-status-select.status-maint) td,
+  #equipment-page .equip-table tr:has(select.status-maint) td{
+    background:transparent !important;
+    color:#fff7ed !important;
+    border-bottom-color:rgba(251,191,36,.20) !important;
+  }
+  #equipment-page .equip-del-btn{
+    min-width:44px !important;
+    min-height:34px !important;
+    border:1px solid rgba(239,68,68,.30) !important;
+    background:rgba(239,68,68,.08) !important;
+    color:#fca5a5 !important;
+  }
+}
 </style>
 <style id="table-scale">
 html,body{
