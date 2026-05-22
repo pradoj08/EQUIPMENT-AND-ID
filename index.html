@@ -1,4 +1,4 @@
-add a option to toggle from table to car mode where the table value turn into cards<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2153,7 +2153,8 @@ function updateEqNotes(id,val){
   if(e){
     e.notes=val;
     saveEquipment();
-    renderEquipment();
+    renderEquipmentAttention();
+    updateEquipmentStatusMeta();
   }
 }
 async function deleteEquipment(id){
@@ -2291,6 +2292,7 @@ function renderEquipment(){
   html += '</div>';
   container.innerHTML = html;
   renderEquipmentAttention();
+  restoreNotesFocus();
 
   container.querySelectorAll('select.eq-status-select[data-eid]').forEach(function(sel){
     sel.addEventListener('change', function(){
@@ -2307,9 +2309,36 @@ function renderEquipment(){
     if(this.value.trim()){ if(flag) flag.remove(); }
     else if(!flag){ var d=document.createElement('span'); d.className='tablet-missing'; d.textContent='⚠ Missing'; td.insertBefore(d,this); }
   }); });
-  container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){ inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); }); });
+  container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){
+    inp.addEventListener('focus', function(){ this.setAttribute('data-has-focus','1'); });
+    inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value); });
+    inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); });
+  });
   container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){ btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); deleteEquipment(this.dataset.eid); }); });
   container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){ btn.addEventListener('click', function(){ addSpecificEquip(this.dataset.type); }); });
+}
+
+
+function preserveNotesFocus(){
+  try{
+    var active = document.activeElement;
+    if(!active || !active.classList || !active.classList.contains('notes-input')) return;
+    active.setAttribute('data-has-focus','1');
+  }catch(err){}
+}
+
+function restoreNotesFocus(){
+  try{
+    var candidate = document.querySelector('.notes-input[data-has-focus="1"]');
+    if(candidate){
+      candidate.focus({preventScroll:true});
+      candidate.removeAttribute('data-has-focus');
+      if(typeof candidate.setSelectionRange === 'function'){
+        var len = candidate.value.length;
+        candidate.setSelectionRange(len, len);
+      }
+    }
+  }catch(err){}
 }
 
 function refreshEquipmentAgingDisplay(){
@@ -3209,6 +3238,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if(typeof renderEquipmentAttention === 'function'){
         renderEquipmentAttention();
       }
+      restoreNotesFocus();
       if(typeof updateEquipmentDashboard === 'function'){
         updateEquipmentDashboard();
       }
@@ -3231,7 +3261,16 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(triggerLiveEquipmentRefresh, 10);
   });
 
-  document.body.addEventListener('input', () => {
+  document.body.addEventListener('input', (e) => {
+    const t = e.target;
+    if (!t) return;
+
+    // Do not rerender the whole equipment page while typing in text fields.
+    // These fields should save on blur/change instead.
+    if (t.matches && t.matches('.notes-input, .name-input, .tablet-input, input[type="text"], textarea')) {
+      return;
+    }
+
     setTimeout(triggerLiveEquipmentRefresh, 10);
   });
 
