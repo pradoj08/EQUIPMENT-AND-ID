@@ -1213,60 +1213,16 @@ textarea{
 
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-window.APP_LOGIN_PASSWORD = "admin";
-
-function isAppUnlocked(){
-  try{
-    return localStorage.getItem('eq_app_logged_in') === 'true';
-  }catch(e){
-    return false;
-  }
-}
-
-function unlockApplication(){
-  localStorage.setItem('eq_app_logged_in','true');
-  var overlay=document.getElementById('eq-login-overlay');
-  if(overlay) overlay.style.display='none';
-}
-
-function handlePopupLogin(){
-  var input=document.getElementById('eq-popup-password');
-  var error=document.getElementById('eq-login-error');
-
-  if(!input) return;
-
-  if(input.value===window.APP_LOGIN_PASSWORD){
-    unlockApplication();
-  }else{
-    if(error) error.style.display='block';
-    input.value='';
-  }
-}
-
-window.addEventListener('load',function(){
-  loadCalloutsLocal();
-  var loggedIn=localStorage.getItem('eq_app_logged_in');
-
-  if(loggedIn==='true'){
-    unlockApplication();
-  }
-
-  var input=document.getElementById('eq-popup-password');
-  if(input){
-    input.addEventListener('keydown',function(e){
-      if(e.key==='Enter'){
-        handlePopupLogin();
-      }
-    });
-  }
-});
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = (window.supabase && typeof window.supabase.createClient === 'function')
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
+if(!supabaseClient){
+  console.warn('Supabase library did not load; remote sync is disabled.');
+}
 
 window.APP_LOGIN_PASSWORD = "admin";
 
@@ -2496,8 +2452,7 @@ function updateEqName(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(e){
     e.name=val;
-    saveEquipment();
-    renderEquipment();
+    saveEquipment().then(function(){ renderEquipment(); });
   }
 }
 
@@ -2510,8 +2465,7 @@ function updateEqTablet(id,val){
       var ul=(e.name&&e.name.trim())?e.unit+' ('+e.name.trim()+')':e.unit;
       logActivity('notes','Tablet assigned to <strong>'+ul+'</strong>','Tablet: '+val);
     }
-    saveEquipment();
-    renderEquipment();
+    saveEquipment().then(function(){ renderEquipment(); });
   }
 }
 
@@ -2530,14 +2484,15 @@ function queueEqNotesSave(id, val, immediate){
     delete notesSaveTimers[id];
   }
 
+  var savePromise = null;
   if(immediate){
-    saveEquipment();
-    return;
+    savePromise = saveEquipment();
+  }else{
+    notesSaveTimers[id] = setTimeout(function(){
+      saveEquipment().finally(function(){ delete notesSaveTimers[id]; });
+    }, 350);
   }
-
-  notesSaveTimers[id] = setTimeout(function(){
-    saveEquipment().finally(function(){ delete notesSaveTimers[id]; });
-  }, 350);
+  return savePromise;
 }
 
 function updateEqNotes(id,val,immediate){
@@ -2861,8 +2816,12 @@ function renderEquipment(){
   container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){
     inp.addEventListener('focus', function(){ this.setAttribute('data-has-focus','1'); });
     inp.addEventListener('input', function(){ updateEqNotes(this.dataset.eid, this.value, false); });
-    inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value, true); });
-    inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value, true); });
+    inp.addEventListener('blur', function(){
+      updateEqNotes(this.dataset.eid, this.value, true);
+    });
+    inp.addEventListener('change', function(){
+      updateEqNotes(this.dataset.eid, this.value, true);
+    });
   });
   container.querySelectorAll('select.charged-select[data-eid]').forEach(function(sel){
     sel.addEventListener('change', function(){
