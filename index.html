@@ -2127,7 +2127,7 @@ function switchPage(p){
 }
 
 // ── EQUIPMENT ──
-var EQ_KEY='eit_eq_v3';
+var EQ_KEY='eit_eq_v4';
 var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck','Reach Stacker','Pick Up'];
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff','Reach Stacker':'#e879f9','Pick Up':'#38bdf8'};
 var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT','Reach Stacker':'RS','Pick Up':'PU'};
@@ -2424,7 +2424,7 @@ function seedEquipment(){
   equipment.push(eq('Hostler','115520','25241523023377'));
   equipment.push(eq('Hostler','114465','25240523020919'));
   equipment.push(eq('Hostler','324013','25240523020864'));
-  equipment.push(eq('Hostler','104188','25242523023604'));
+  equipment.push(eq('Hostler','109188','25242523023604'));
   equipment.push(eq('Hostler','112389','25251523020085'));
   equipment.push(eq('Hostler','113423','25240523020883'));
   equipment.push(eq('Hostler','324015','25251523020170'));
@@ -2440,23 +2440,14 @@ function seedEquipment(){
   equipment.push(eq('Hostler','426042','25084523020786'));
   // ── CRANES ──
   equipment.push(eq('Crane','92502','25241523021175'));
-  equipment.push(eq('Crane','91805','25241523020087'));
+  equipment.push(eq('Crane','91805','25242523020087'));
   equipment.push(eq('Crane','91804','25251523020474'));
-  // ── SIDE-LOADERS ──
-  equipment.push(eq('Side-Loader','82103','25126523021322'));
   // ── REACH STACKERS ──
   equipment.push(eq('Reach Stacker','72501','25242523023454'));
   // ── PICK UPS ──
   equipment.push(eq('Pick Up','2770','25251523020089'));
-  // ── OPS TRUCKS / SPARES ──
-  equipment.push(eq('Ops Truck','Spare','25240523020763'));
-  equipment.push(eq('Ops Truck','Spare','25241523023483'));
-  equipment.push(eq('Ops Truck','Spare','25240523023824'));
-  equipment.push(eq('Ops Truck','Spare','25242523023691'));
-  equipment.push(eq('Ops Truck','for pu','25241523020435'));
-  equipment.push(eq('Ops Truck','for pu','25242523020156'));
-  equipment.push(eq('Ops Truck','Spare','25242623023196'));
-  equipment.push(eq('Ops Truck','Spare','25251523020114'));
+  // ── SIDE-LOADERS ──
+  equipment.push(eq('Side-Loader','82103','25126523021322'));
   saveEquipment();
 }
 
