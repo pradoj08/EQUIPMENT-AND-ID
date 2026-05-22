@@ -369,6 +369,233 @@ select option{background:var(--surface)}
 .status-down{color:#fca5a5;border-color:rgba(239,68,68,.4)!important;background:rgba(239,68,68,.08)!important}
 .status-maint{color:#fcd34d;border-color:rgba(245,158,11,.4)!important;background:rgba(245,158,11,.08)!important}
 .status-stand{color:#a5b4fc;border-color:rgba(129,140,248,.4)!important;background:rgba(129,140,248,.08)!important}
+.eq-row-extra{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;min-width:0}
+.eq-status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px;white-space:nowrap;border:1px solid transparent}
+.eq-status-badge-ok{background:rgba(16,185,129,.12);color:#6ee7b7;border-color:rgba(16,185,129,.28)}
+.eq-status-badge-warn{background:rgba(245,158,11,.12);color:#fcd34d;border-color:rgba(245,158,11,.28)}
+.eq-status-badge-bad{background:rgba(239,68,68,.12);color:#fca5a5;border-color:rgba(239,68,68,.28)}
+.eq-status-date{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px;white-space:nowrap;color:#cbd5e1;background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.22)}
+.eq-age-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.6px;white-space:nowrap;border:1px solid transparent}
+.eq-age-fresh{background:rgba(34,197,94,.10);color:#86efac;border-color:rgba(34,197,94,.22)}
+.eq-age-warn{background:rgba(245,158,11,.14);color:#fcd34d;border-color:rgba(245,158,11,.26)}
+.eq-age-orange{background:rgba(249,115,22,.14);color:#fdba74;border-color:rgba(249,115,22,.26)}
+.eq-age-critical{background:rgba(239,68,68,.16);color:#fca5a5;border-color:rgba(239,68,68,.30)}
+
+
+/* EQUIPMENT SMART NOTES ENFORCEMENT */
+.equipment-attention{
+  margin:16px 24px 0;
+  padding:14px 16px 16px;
+  background:linear-gradient(180deg, rgba(24,28,38,.98), rgba(18,22,31,.98));
+  border:1px solid rgba(239,68,68,.22);
+  border-radius:14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.20);
+}
+.equipment-attention-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.equipment-attention-title{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.equipment-attention-title strong{
+  display:block;
+  color:var(--text);
+  font-size:13px;
+  letter-spacing:1.2px;
+  margin-top:2px;
+}
+.equipment-attention-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.equipment-attention-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;
+}
+.equipment-attention-item{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(239,68,68,.20);
+  background:rgba(239,68,68,.06);
+}
+.equipment-attention-meta{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.equipment-attention-name{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text);
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.equipment-attention-reason{
+  font-family:var(--mono);
+  font-size:10px;
+  color:#fca5a5;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+}
+.eq-note-alert{
+  animation:eqPulse 1.3s infinite;
+  border-color:rgba(239,68,68,.45) !important;
+  background:rgba(239,68,68,.12) !important;
+  color:#fca5a5 !important;
+}
+.eq-note-alert::before{
+  content:'⚠';
+  margin-right:6px;
+}
+
+/* SHIFT READINESS DASHBOARD */
+.shift-readiness-dashboard{
+  margin:16px 24px 0;
+  padding:16px 18px 18px;
+  background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(14,20,31,.98));
+  border:1px solid rgba(74,158,255,.20);
+  border-radius:14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.22);
+}
+.shift-readiness-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.shift-readiness-title{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.shift-readiness-title strong{
+  display:block;
+  color:var(--text);
+  font-size:13px;
+  letter-spacing:1.4px;
+  margin-top:2px;
+}
+.shift-readiness-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+.shift-readiness-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.shift-status-good{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.30);color:#6ee7b7;}
+.shift-status-watch{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.30);color:#fcd34d;}
+.shift-status-short{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.30);color:#fca5a5;}
+.shift-status-neutral{background:rgba(74,158,255,.12);border-color:rgba(74,158,255,.30);color:#9ec8ff;}
+.shift-readiness-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:10px;
+}
+.shift-kpi{
+  background:linear-gradient(180deg, rgba(30,35,51,.95), rgba(21,26,38,.95));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 14px;
+  position:relative;
+  overflow:hidden;
+  min-height:88px;
+}
+.shift-kpi::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--kpi-accent, var(--accent));
+}
+.shift-kpi-label{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:8px;
+  line-height:1.4;
+}
+.shift-kpi-value{
+  font-family:var(--mono);
+  font-size:28px;
+  font-weight:700;
+  line-height:1;
+  color:var(--text);
+}
+.shift-kpi-value small{
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+  margin-left:4px;
+}
+.shift-kpi-sub{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:8px;
+  line-height:1.4;
+}
+.shift-kpi.good{--kpi-accent:#22c55e;}
+.shift-kpi.watch{--kpi-accent:#f59e0b;}
+.shift-kpi.short{--kpi-accent:#ef4444;}
+.shift-kpi.info{--kpi-accent:#4a9eff;}
+.shift-kpi.warn{--kpi-accent:#f59e0b;}
+.shift-kpi.neutral{--kpi-accent:#64748b;}
+.shift-kpi .trend{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+.shift-kpi .trend.good{color:#6ee7b7;}
+.shift-kpi .trend.watch{color:#fcd34d;}
+.shift-kpi .trend.short{color:#fca5a5;}
+.shift-kpi .trend.neutral{color:#9ec8ff;}
+@media (max-width: 640px){
+  .shift-readiness-dashboard{margin:12px 12px 0;}
+}
 
 /* STAFFING WIDGET */
 .staffing-widget{margin:16px 24px 0;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;gap:14px}
@@ -767,6 +994,51 @@ textarea{
   }
 }
 
+
+/* LIVE EQUIPMENT ESCALATION */
+.eq-aging-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.5px;
+  white-space:nowrap;
+}
+
+.eq-aging-good{
+  background:rgba(34,197,94,.12);
+  color:#86efac;
+  border:1px solid rgba(34,197,94,.35);
+}
+
+.eq-aging-warn{
+  background:rgba(245,158,11,.12);
+  color:#fcd34d;
+  border:1px solid rgba(245,158,11,.35);
+}
+
+.eq-aging-orange{
+  background:rgba(249,115,22,.14);
+  color:#fdba74;
+  border:1px solid rgba(249,115,22,.35);
+}
+
+.eq-aging-critical{
+  background:rgba(239,68,68,.14);
+  color:#fca5a5;
+  border:1px solid rgba(239,68,68,.4);
+  animation:eqPulse 1.5s infinite;
+}
+
+@keyframes eqPulse{
+  0%,100%{opacity:1}
+  50%{opacity:.65}
+}
+
 </style>
 <style id="table-scale">
 html,body{
@@ -972,6 +1244,16 @@ window.addEventListener('load',function(){
   }
 });
 
+setInterval(function(){
+  if(document.hidden) return;
+  var equipPage = document.getElementById('page-equipment');
+  if(equipPage && equipPage.classList.contains('active')){
+    refreshEquipmentAgingDisplay();
+    renderShiftReadinessDashboard();
+    updateEquipmentStatusMeta();
+  }
+}, 60000);
+
 </script>
 
 </head>
@@ -1087,6 +1369,8 @@ window.addEventListener('load',function(){
     </button>
   </div>
 </div>
+<div id="shift-readiness-dashboard" class="shift-readiness-dashboard"></div>
+<div id="equipment-attention" class="equipment-attention"></div>
 <div id="equip-banner"></div>
 <div class="staffing-widget" id="staffing-widget"></div>
 <div id="equip-content" style="padding-bottom:28px;"></div>
@@ -1673,7 +1957,7 @@ function switchPage(p){
   document.querySelectorAll('.page-nav-btn').forEach(function(el){el.classList.remove('active');});
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('nav-'+p).classList.add('active');
-  if(p==='equipment'){ renderEquipment(); updateEquipmentStatusMeta(); startEquipmentSync(); }
+  if(p==='equipment'){ renderEquipment(); updateEquipmentStatusMeta(); }
   if(p==='audits') initAuditsPage();
 }
 
@@ -1685,7 +1969,9 @@ var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck'
 var equipment=[];
 var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
-var equipmentSyncTimer = null;
+
+var equipmentRealtimeChannel = null;
+var equipmentPollTimer = null;
 var equipmentSyncBusy = false;
 
 function syncEqLoginUI(){
@@ -1700,6 +1986,68 @@ function syncEqLoginUI(){
     if(signinForm) signinForm.style.display='flex';
     if(signedIn) signedIn.style.display='none';
   }
+}
+
+
+
+function stopEquipmentRealtimeSync(){
+  try{
+    if(equipmentRealtimeChannel && supabaseClient && typeof supabaseClient.removeChannel === 'function'){
+      supabaseClient.removeChannel(equipmentRealtimeChannel);
+    }
+  }catch(err){}
+  equipmentRealtimeChannel = null;
+
+  if(equipmentPollTimer){
+    clearInterval(equipmentPollTimer);
+    equipmentPollTimer = null;
+  }
+}
+
+async function startEquipmentRealtimeSync(){
+  if(!eqLoggedIn) return;
+  if(equipmentRealtimeChannel || equipmentPollTimer) return;
+
+  try{
+    equipmentRealtimeChannel = supabaseClient
+      .channel('equipment-live-sync')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'equipment' },
+        async function(){
+          if(!eqLoggedIn || equipmentSyncBusy) return;
+          equipmentSyncBusy = true;
+          try{
+            await loadEquipment();
+            renderEquipment();
+            updateEquipmentStatusMeta();
+            renderEquipmentAttention();
+            refreshEquipmentAgingDisplay();
+          }finally{
+            equipmentSyncBusy = false;
+          }
+        }
+      )
+      .subscribe();
+  }catch(err){
+    console.error('Realtime equipment sync unavailable:', err);
+  }
+
+  // Fallback for environments where realtime is not available
+  equipmentPollTimer = setInterval(async function(){
+    if(!eqLoggedIn || equipmentSyncBusy) return;
+    equipmentSyncBusy = true;
+    try{
+      await loadEquipment();
+      renderEquipment();
+      updateEquipmentStatusMeta();
+      renderEquipmentAttention();
+      refreshEquipmentAgingDisplay();
+    }catch(err){
+      console.error('Equipment poll refresh failed:', err);
+    }finally{
+      equipmentSyncBusy = false;
+    }
+  }, 15000);
 }
 
 async function signInEq(){
@@ -1729,16 +2077,17 @@ async function signInEq(){
   syncEqLoginUI();
   await loadEmployees();
   await loadEquipment();
-  await startEquipmentSync();
+  await startEquipmentRealtimeSync();
   render();
   renderEquipment();
   updateEquipmentStatusMeta();
+  refreshEquipmentAgingDisplay();
 }
 
 async function signOutEq(){
   eqLoggedIn = false;
   sessionStorage.removeItem('eq_logged_in');
-  stopEquipmentSync();
+  stopEquipmentRealtimeSync();
   syncEqLoginUI();
   employees = [];
   equipment = [];
@@ -1750,49 +2099,6 @@ var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'CONGLOBAL'
 
 function eqUid(){return 'eq_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
-function stopEquipmentSync(){
-  if(equipmentSyncTimer){
-    clearInterval(equipmentSyncTimer);
-    equipmentSyncTimer = null;
-  }
-}
-
-async function startEquipmentSync(){
-  if(!eqLoggedIn) return;
-  if(equipmentSyncTimer) return;
-
-  // Keep equipment state fresh across devices without relying on manual refresh.
-  equipmentSyncTimer = setInterval(async function(){
-    if(!eqLoggedIn || equipmentSyncBusy) return;
-    equipmentSyncBusy = true;
-    try{
-      await loadEquipment();
-      renderEquipment();
-      updateEquipmentStatusMeta();
-      if(typeof renderEquipBanner === 'function') renderEquipBanner();
-    }catch(err){
-      console.error('Equipment sync refresh failed:', err);
-    }finally{
-      equipmentSyncBusy = false;
-    }
-  }, 15000);
-
-  // Immediate refresh when the tab becomes active again.
-  document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState === 'visible' && eqLoggedIn && !equipmentSyncBusy){
-      equipmentSyncBusy = true;
-      loadEquipment().then(function(){
-        renderEquipment();
-        updateEquipmentStatusMeta();
-        if(typeof renderEquipBanner === 'function') renderEquipBanner();
-      }).catch(function(err){
-        console.error('Equipment visibility refresh failed:', err);
-      }).finally(function(){
-        equipmentSyncBusy = false;
-      });
-    }
-  }, { once: false });
-}
 
 async function loadEquipment(){
   if(!eqLoggedIn){
@@ -1808,6 +2114,7 @@ async function loadEquipment(){
 
     if(error){
       console.error('Supabase load error:', error);
+      equipment = [];
       updateEquipmentStatusMeta();
       return;
     }
@@ -1822,7 +2129,7 @@ async function loadEquipment(){
         status: row.status || 'operational',
         notes: row.notes || '',
         updated_at: row.updated_at || null,
-        status_changed_at: row.status_changed_at || null,
+        status_changed_at: (row.status_changed_at || null) || ((row.status && row.status !== 'operational' && row.updated_at) ? row.updated_at : null),
         status_changed_day: row.status_changed_day || null
       };
     });
@@ -1830,15 +2137,26 @@ async function loadEquipment(){
 
   }catch(e){
     console.error(e);
+    equipment = [];
     updateEquipmentStatusMeta();
   }
+}
+
+
+async function persistEquipmentAndRefresh(){
+  await saveEquipment();
+  await loadEquipment();
+  renderEquipment();
+  renderEquipmentAttention();
+  updateEquipmentStatusMeta();
+  refreshEquipmentAgingDisplay();
 }
 
 async function saveEquipment(){
   if(!eqLoggedIn) return;
   try{
     var stamp = new Date().toISOString();
-    var rows = equipment.map(function(e){
+    var payload = equipment.map(function(e){
       e.updated_at = stamp;
       return {
         id: e.id,
@@ -1848,21 +2166,19 @@ async function saveEquipment(){
         tablet_assigned: e.tabletAssigned,
         status: e.status,
         notes: e.notes,
-        status_changed_at: e.status_changed_at || null,
-        status_changed_day: e.status_changed_day || null,
         updated_at: stamp,
-        updated_by: eqLoginUsername || 'CONGLOBAL'
+        status_changed_at: e.status_changed_at || null,
+        status_changed_day: e.status_changed_day || null
       };
     });
 
     const { data, error } = await supabaseClient
       .from('equipment')
-      .upsert(rows, { onConflict: 'id' })
+      .upsert(payload, { onConflict: 'id' })
       .select('*');
 
     if(error) throw error;
 
-    // Keep the local view aligned with the shared backend response.
     if(Array.isArray(data) && data.length){
       equipment = data.map(function(row){
         return {
@@ -1881,8 +2197,11 @@ async function saveEquipment(){
     }
 
     showSaveToast();
-    updateEquipmentStatusMeta();
+    await loadEquipment();        // pull back the server truth
     renderEquipment();
+    renderEquipmentAttention();
+    updateEquipmentStatusMeta();
+    refreshEquipmentAgingDisplay();
 
   }catch(err){
     console.error('Save failed:', err);
@@ -1911,17 +2230,48 @@ function updateEqStatus(id,val){
     e.status_changed_day = null;
   }
 
-  saveEquipment();
-  var sel=document.getElementById('sel-'+id);
-  if(sel) sel.className='eq-status-select '+eqStatusClass(val);
-  renderEquipBanner();
-  renderStaffingWidget();
-  updateEquipmentStatusMeta();
-  startEquipmentSync();
+  await persistEquipmentAndRefresh();
+  renderEquipment();
 }
-function updateEqName(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.name=val;saveEquipment();updateEquipmentStatusMeta();}}
-function updateEqTablet(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.tabletAssigned=val;saveEquipment();updateEquipmentStatusMeta();}}
-function updateEqNotes(id,val){var e=equipment.find(function(x){return x.id===id;});if(e){e.notes=val;saveEquipment();updateEquipmentStatusMeta();}}
+
+function updateEqName(id,val){
+  var e=equipment.find(function(x){return x.id===id;});
+  if(e){
+    e.name=val;
+    saveEquipment();
+    renderEquipment();
+  }
+}
+
+function updateEqTablet(id,val){
+  var e=equipment.find(function(x){return x.id===id;});
+  if(e){
+    e.tabletAssigned=val;
+    saveEquipment();
+    renderEquipment();
+  }
+}
+
+var notesSaveTimers = {};
+
+function queueEqNotesSave(id, val){
+  var e = equipment.find(function(x){return x.id===id;});
+  if(!e) return;
+  e.notes = val;
+  renderEquipmentAttention();
+  updateEquipmentStatusMeta();
+
+  if(notesSaveTimers[id]) clearTimeout(notesSaveTimers[id]);
+  notesSaveTimers[id] = setTimeout(function(){
+    saveEquipment().finally(function(){
+      delete notesSaveTimers[id];
+    });
+  }, 350);
+}
+
+function updateEqNotes(id,val){
+  queueEqNotesSave(id,val);
+}
 async function deleteEquipment(id){
   if(!confirm('Remove this unit?')) return;
 
@@ -1938,13 +2288,14 @@ async function deleteEquipment(id){
     console.error('Delete failed:', err);
   }
 
-  saveEquipment();
+  await saveEquipment();
   renderEquipment();
 }
 function addSpecificEquip(type){
   var pre=EQ_PREFIX[type],n=equipment.filter(function(e){return e.type===type;}).length;
   equipment.push({id:eqUid(),type:type,unit:pre+'-'+String(n+1).padStart(2,'0'),name:'',tabletAssigned:'',status:'operational',notes:''});
-  saveEquipment().then(function(){ loadEquipment(); renderEquipment(); updateEquipmentStatusMeta(); });
+  persistEquipmentAndRefresh();
+  renderEquipment();
 }
 function openAddUnitModal(){document.getElementById('add-unit-modal').style.display='flex';}
 function closeAddUnitModal(){document.getElementById('add-unit-modal').style.display='none';}
@@ -1967,12 +2318,17 @@ function eqRowHtml(e, idx){
   if(e.status === 'operational'){
     statusBadge = '<span class="eq-status-badge eq-status-badge-ok">Operational</span>';
   }else{
-    var dayLabel = formatStatusChangedDay(e.status_changed_at);
-    statusBadge = '<span class="eq-status-badge eq-status-badge-bad">Off op' + (dayLabel ? ' · '+dayLabel : '') + '</span>';
+    var dayStamp = formatStatusChangedDay(e.status_changed_at);
+    var ageMeta = getEquipmentAgeMeta(e);
+    var statusText = (e.status === 'down' ? 'Down' : (e.status === 'maintenance' ? 'Maintenance' : 'Standby'));
+    statusBadge = '<span class="eq-status-badge eq-status-badge-bad">'+statusText+'</span>'
+      + (ageMeta ? '<span class="eq-age-pill eq-age-'+ageMeta.severity+'" data-equipment-age="1" data-age-start="'+(e.status_changed_at || e.updated_at || '')+'" data-age-kind="'+statusText.toLowerCase()+'">'+ageMeta.label+'</span>' : '')
+      + (dayStamp ? '<span class="eq-status-date" title="Left operational on '+dayStamp+'">'+dayStamp+'</span>' : '');
   }
 
+  var needsAttention = (!String(e.notes || '').trim() && e.status !== 'operational');
   var notesBadge = notesMissing(e)
-    ? '<span class="eq-status-badge eq-status-badge-warn">Notes missing</span>'
+    ? '<span class="eq-status-badge eq-status-badge-warn'+(needsAttention ? ' eq-note-alert' : '')+'">'+(needsAttention ? 'Needs notes' : 'Notes missing')+'</span>'
     : '<span class="eq-status-badge eq-status-badge-ok">Notes set</span>';
 
   return '<tr>'
@@ -1986,7 +2342,7 @@ function eqRowHtml(e, idx){
     +'</select>'
     +'<div class="eq-row-extra">'+statusBadge+'</div></td>'
     +'<td>'+tabletCell+'</td>'
-    +'<td><input class="notes-input" wrap="soft" type="text" value="'+notes+'" placeholder="Notes..." data-eid="'+e.id+'"><div class="eq-row-extra">'+notesBadge+'</div></td>'
+    +'<td><input class="notes-input'+(needsAttention ? ' eq-note-alert' : '')+'" wrap="soft" type="text" value="'+notes+'" placeholder="Notes..." data-eid="'+e.id+'"><div class="eq-row-extra">'+notesBadge+'</div></td>'
     +'<td style="text-align:center;"><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></td>'
     +'</tr>';
 }
@@ -2051,6 +2407,8 @@ function renderEquipment(){
   });
   html += '</div>';
   container.innerHTML = html;
+  renderEquipmentAttention();
+  restoreNotesFocus();
 
   container.querySelectorAll('select.eq-status-select[data-eid]').forEach(function(sel){
     sel.addEventListener('change', function(){
@@ -2067,9 +2425,71 @@ function renderEquipment(){
     if(this.value.trim()){ if(flag) flag.remove(); }
     else if(!flag){ var d=document.createElement('span'); d.className='tablet-missing'; d.textContent='⚠ Missing'; td.insertBefore(d,this); }
   }); });
-  container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){ inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); }); });
+  container.querySelectorAll('input.notes-input[data-eid]').forEach(function(inp){
+    inp.addEventListener('focus', function(){ this.setAttribute('data-has-focus','1'); });
+    inp.addEventListener('input', function(){ updateEqNotes(this.dataset.eid, this.value); });
+    inp.addEventListener('blur', function(){ updateEqNotes(this.dataset.eid, this.value); });
+    inp.addEventListener('change', function(){ updateEqNotes(this.dataset.eid, this.value); });
+  });
   container.querySelectorAll('.equip-del-btn[data-eid]').forEach(function(btn){ btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); deleteEquipment(this.dataset.eid); }); });
   container.querySelectorAll('.eq-section-add[data-type]').forEach(function(btn){ btn.addEventListener('click', function(){ addSpecificEquip(this.dataset.type); }); });
+}
+
+
+function preserveNotesFocus(){
+  try{
+    var active = document.activeElement;
+    if(!active || !active.classList || !active.classList.contains('notes-input')) return;
+    active.setAttribute('data-has-focus','1');
+  }catch(err){}
+}
+
+function restoreNotesFocus(){
+  try{
+    var candidate = document.querySelector('.notes-input[data-has-focus="1"]');
+    if(candidate){
+      candidate.focus({preventScroll:true});
+      candidate.removeAttribute('data-has-focus');
+      if(typeof candidate.setSelectionRange === 'function'){
+        var len = candidate.value.length;
+        candidate.setSelectionRange(len, len);
+      }
+    }
+  }catch(err){}
+}
+
+function refreshEquipmentAgingDisplay(){
+  document.querySelectorAll('[data-equipment-age="1"]').forEach(function(el){
+    var start = el.getAttribute('data-age-start');
+    if(!start) return;
+    try{
+      var ts = new Date(start);
+      if(isNaN(ts.getTime())) return;
+      var ms = Date.now() - ts.getTime();
+      if(ms < 0) ms = 0;
+      var hours = ms / 3600000;
+      var mins = Math.max(1, Math.floor(ms / 60000));
+      var days = Math.floor(hours / 24);
+      var remHours = Math.floor(hours % 24);
+      var duration = '';
+      if(days > 0){
+        duration = days + 'd' + (remHours ? ' ' + remHours + 'h' : '');
+      }else if(hours >= 1){
+        duration = Math.floor(hours) + 'h';
+      }else{
+        duration = mins + 'm';
+      }
+      var kind = (el.getAttribute('data-age-kind') || 'down').toLowerCase();
+      var prefix = kind === 'maintenance' ? 'Maintenance ' : (kind === 'standby' ? 'Standby ' : 'Down ');
+      el.textContent = prefix + duration;
+
+      var severity = 'fresh';
+      if(hours >= 48) severity = 'critical';
+      else if(hours >= 24) severity = 'orange';
+      else if(hours >= 12) severity = 'warn';
+      el.className = 'eq-age-pill eq-age-' + severity;
+    }catch(err){}
+  });
 }
 
 // ── WEEKLY SCHEDULE ──
@@ -2175,8 +2595,95 @@ function formatStatusChangedDay(value){
   }
 }
 
+function formatDowntimeLabel(value){
+  if(!value) return '';
+  try{
+    var d = new Date(value);
+    if(isNaN(d.getTime())) return '';
+    var ms = Date.now() - d.getTime();
+    if(ms < 0) ms = 0;
+    var totalMinutes = Math.floor(ms / 60000);
+    var hours = Math.floor(totalMinutes / 60);
+    var days = Math.floor(hours / 24);
+    var remHours = hours % 24;
+    if(days > 0){
+      return days + 'd' + (remHours ? ' ' + remHours + 'h' : '');
+    }
+    if(hours > 0){
+      return hours + 'h';
+    }
+    return Math.max(1, totalMinutes) + 'm';
+  }catch(e){
+    return '';
+  }
+}
+
+function getEquipmentAgeMeta(e){
+  if(!e || e.status === 'operational') return null;
+  var start = e.status_changed_at || e.updated_at;
+  if(!start) return null;
+  try{
+    var ts = new Date(start);
+    if(isNaN(ts.getTime())) return null;
+    var hours = (Date.now() - ts.getTime()) / 3600000;
+    var severity = 'fresh';
+    if(hours >= 48) severity = 'critical';
+    else if(hours >= 24) severity = 'orange';
+    else if(hours >= 12) severity = 'warn';
+    var kind = (e.status === 'maintenance' ? 'Maintenance' : (e.status === 'standby' ? 'Standby' : 'Down'));
+    return {
+      label: kind + ' ' + formatDowntimeLabel(start),
+      severity: severity,
+      start: start
+    };
+  }catch(err){
+    return null;
+  }
+}
+
 function notesMissing(e){
   return !String(e.notes || '').trim();
+}
+
+function needsAttentionUnit(e){
+  return e.status !== 'operational' && notesMissing(e);
+}
+
+function renderEquipmentAttention(){
+  var wrap = document.getElementById('equipment-attention');
+  if(!wrap) return;
+
+  var list = equipment.filter(function(e){ return needsAttentionUnit(e); });
+  var statusText = list.length ? (list.length + ' unit' + (list.length !== 1 ? 's' : '') + ' need attention') : 'No smart-note issues';
+
+  var html = ''
+    + '<div class="equipment-attention-head">'
+      + '<div>'
+        + '<div class="equipment-attention-title">'
+          + '<strong>Needs Attention</strong>'
+          + '<div class="equipment-attention-sub">Non-operational units with empty notes are escalated here automatically.</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="shift-readiness-status ' + (list.length ? 'shift-status-watch' : 'shift-status-good') + '">' + statusText + '</div>'
+    + '</div>';
+
+  if(!list.length){
+    html += '<div class="equipment-attention-list"><div class="equipment-attention-item"><div class="equipment-attention-meta"><div class="equipment-attention-name">All down / maintenance units are documented</div><div class="equipment-attention-reason">Good operational discipline</div></div></div></div>';
+  }else{
+    html += '<div class="equipment-attention-list">' + list.map(function(e){
+      var label = (e.name && String(e.name).trim()) ? e.name : e.unit;
+      var reason = eqStatusLabel(e.status) + ' · notes missing';
+      return '<div class="equipment-attention-item">'
+        + '<div class="equipment-attention-meta">'
+          + '<div class="equipment-attention-name">' + label + '</div>'
+          + '<div class="equipment-attention-reason">' + reason + '</div>'
+        + '</div>'
+        + '<span class="eq-status-badge eq-status-badge-warn eq-note-alert">Needs notes</span>'
+      + '</div>';
+    }).join('') + '</div>';
+  }
+
+  wrap.innerHTML = html;
 }
 
 function updateEquipmentStatusMeta(){
@@ -2203,6 +2710,104 @@ function updateEquipmentStatusMeta(){
   if(dot){
     dot.style.background = state.enough ? '#22c55e' : (state.shortage <= 1 ? '#f59e0b' : '#ef4444');
   }
+  renderShiftReadinessDashboard();
+  renderEquipmentAttention();
+}
+
+function getShiftReadinessSnapshot(){
+  var now = new Date();
+  var dow = now.getDay();
+  var hour = now.getHours();
+  var isDay = hour >= 6 && hour < 18;
+  var sched = WEEKLY_SCHEDULE[dow] || {day:[],night:[]};
+  var currentShiftCount = isDay ? sched.day.length : sched.night.length;
+  var requiredHostlers = Math.max(0, currentShiftCount - 2);
+  var operationalHostlers = equipment.filter(function(e){
+    return e.type === 'Hostler' && e.status === 'operational';
+  }).length;
+  var diff = operationalHostlers - requiredHostlers;
+  var downUnits = equipment.filter(function(e){ return e.status === 'down'; }).length;
+  var missingNotes = equipment.filter(function(e){ return notesMissing(e); }).length;
+  var longTermDown = equipment.filter(function(e){
+    if(e.status !== 'down' || !e.status_changed_at) return false;
+    var ts = new Date(e.status_changed_at);
+    if(isNaN(ts.getTime())) return false;
+    return (now.getTime() - ts.getTime()) > (24 * 60 * 60 * 1000);
+  }).length;
+  var coverageStatus = 'GOOD';
+  if(requiredHostlers === 0){
+    coverageStatus = 'NO DATA';
+  }else if(diff < 0){
+    coverageStatus = Math.abs(diff) > 1 ? 'SHORT' : 'WATCH';
+  }
+  return {
+    isDay: isDay,
+    currentShiftLabel: isDay ? 'Day Shift' : 'Night Shift',
+    currentShiftCount: currentShiftCount,
+    requiredHostlers: requiredHostlers,
+    operationalHostlers: operationalHostlers,
+    diff: diff,
+    downUnits: downUnits,
+    missingNotes: missingNotes,
+    longTermDown: longTermDown,
+    coverageStatus: coverageStatus
+  };
+}
+
+function renderShiftReadinessDashboard(){
+  var wrap = document.getElementById('shift-readiness-dashboard');
+  if(!wrap) return;
+
+  var s = getShiftReadinessSnapshot();
+  var diffLabel = s.diff > 0 ? ('+' + s.diff + ' excess') : (s.diff < 0 ? (Math.abs(s.diff) + ' short') : 'Balanced');
+  var statusClass = s.coverageStatus === 'GOOD' ? 'good' : (s.coverageStatus === 'WATCH' ? 'watch' : (s.coverageStatus === 'SHORT' ? 'short' : 'neutral'));
+  var statusText = s.coverageStatus;
+  var shiftLabel = s.currentShiftLabel + ' · ' + s.currentShiftCount + ' employees';
+
+  wrap.innerHTML =
+    '<div class="shift-readiness-head">'
+      +'<div>'
+        +'<div class="shift-readiness-title">Shift Readiness Dashboard<strong>Command Center</strong><div class="shift-readiness-sub">'+shiftLabel+'</div></div>'
+      +'</div>'
+      +'<div class="shift-readiness-status shift-status-'+statusClass+'">Coverage ' + statusText + '</div>'
+    +'</div>'
+    +'<div class="shift-readiness-grid">'
+      +'<div class="shift-kpi good">'
+        +'<div class="shift-kpi-label">Operational Hostlers</div>'
+        +'<div class="shift-kpi-value">'+s.operationalHostlers+'</div>'
+        +'<div class="trend good">Ready for dispatch</div>'
+      +'</div>'
+      +'<div class="shift-kpi info">'
+        +'<div class="shift-kpi-label">Current Shift Employees</div>'
+        +'<div class="shift-kpi-value">'+s.currentShiftCount+'</div>'
+        +'<div class="trend neutral">'+s.currentShiftLabel+'</div>'
+      +'</div>'
+      +'<div class="shift-kpi neutral">'
+        +'<div class="shift-kpi-label">Required Hostlers</div>'
+        +'<div class="shift-kpi-value">'+s.requiredHostlers+'</div>'
+        +'<div class="trend neutral">Minimum coverage target</div>'
+      +'</div>'
+      +'<div class="shift-kpi '+(s.diff >= 0 ? 'good' : 'short')+'">'
+        +'<div class="shift-kpi-label">Shortage / Excess</div>'
+        +'<div class="shift-kpi-value">'+diffLabel+'</div>'
+        +'<div class="trend '+(s.diff >= 0 ? 'good' : 'short')+'">'+(s.diff >= 0 ? 'Cover is healthy' : 'Coverage gap')+'</div>'
+      +'</div>'
+      +'<div class="shift-kpi warn">'
+        +'<div class="shift-kpi-label">Down Units</div>'
+        +'<div class="shift-kpi-value">'+s.downUnits+'</div>'
+        +'<div class="trend watch">Units out of service</div>'
+      +'</div>'
+      +'<div class="shift-kpi warn">'
+        +'<div class="shift-kpi-label">Units Missing Notes</div>'
+        +'<div class="shift-kpi-value">'+s.missingNotes+'</div>'
+        +'<div class="trend watch">Needs documentation</div>'
+      +'</div>'
+      +'<div class="shift-kpi '+(s.longTermDown ? 'short' : 'good')+'">'
+        +'<div class="shift-kpi-label">Down &gt; 24h</div>'
+        +'<div class="shift-kpi-value">'+s.longTermDown+'</div>'
+        +'<div class="trend '+(s.longTermDown ? 'short' : 'good')+'">Long-term downtime</div>'
+      +'</div>'
+    +'</div>';
 }
 
 function renderStaffingWidget(){
@@ -2661,15 +3266,7 @@ if(eqLoggedIn){
   loadEmployeesFromCache();
   render();
   loadEmployees().then(function(){ render(); }).catch(function(){ render(); });
-  loadEquipment().then(function(){
-    renderEquipment();
-    updateEquipmentStatusMeta();
-    startEquipmentSync();
-  }).catch(function(){
-    renderEquipment();
-    updateEquipmentStatusMeta();
-    startEquipmentSync();
-  });
+  loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
 } else {
   render();
   loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
@@ -2744,6 +3341,59 @@ window.addEventListener('load',function(){
   }
 });
 
+</script>
+
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+
+  function triggerLiveEquipmentRefresh(){
+    try{
+      if(typeof renderEquipment === 'function'){
+        renderEquipment();
+      }
+      if(typeof renderEquipmentAttention === 'function'){
+        renderEquipmentAttention();
+      }
+      restoreNotesFocus();
+      if(typeof updateEquipmentDashboard === 'function'){
+        updateEquipmentDashboard();
+      }
+      if(typeof updateEquipmentKPIs === 'function'){
+        updateEquipmentKPIs();
+      }
+      if(typeof renderEquipmentAlerts === 'function'){
+        renderEquipmentAlerts();
+      }
+    }catch(err){
+      console.log('Live refresh error:', err);
+    }
+  }
+
+  // refresh every 30 seconds automatically
+  setInterval(triggerLiveEquipmentRefresh, 30000);
+
+  // instant refresh after interactions
+  document.body.addEventListener('change', () => {
+    setTimeout(triggerLiveEquipmentRefresh, 10);
+  });
+
+  document.body.addEventListener('input', (e) => {
+    const t = e.target;
+    if (!t) return;
+
+    // Do not rerender the whole equipment page while typing in text fields.
+    // These fields should save on blur/change instead.
+    if (t.matches && t.matches('.notes-input, .name-input, .tablet-input, input[type="text"], textarea')) {
+      return;
+    }
+
+    setTimeout(triggerLiveEquipmentRefresh, 10);
+  });
+
+  // initial run
+  setTimeout(triggerLiveEquipmentRefresh, 250);
+});
 </script>
 
 </body>
