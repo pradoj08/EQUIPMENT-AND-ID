@@ -897,7 +897,8 @@ tr.eq-row-needs-notes td:first-child {
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-#eq-login-overlay{display:none !important;}
+/* Login overlay is visible until the correct password is entered. */
+#eq-login-overlay{display:flex;}
 @media (max-width: 640px){
   .app-auth-bar{margin:8px 12px 0; gap:6px}
   .app-auth-bar input{width:100%; flex:1 1 100%}
@@ -1109,6 +1110,10 @@ textarea{
   #auth-signin-form .nav-auth-btn { width: 100%; padding: 10px; font-size: 13px; letter-spacing: 1px; }
   #auth-signed-in { width: 100%; }
 }
+
+/* forced login overlay visibility for preview */
+#eq-login-overlay.eq-login-overlay{display:flex;z-index:2147483647;}
+#eq-login-overlay[style*="none"]{display:none !important;}
 </style>
 <style id="table-scale">
 html,body{
@@ -1213,75 +1218,46 @@ textarea{
 
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-window.APP_LOGIN_PASSWORD = "admin";
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-function isAppUnlocked(){
-  try{
-    return localStorage.getItem('eq_app_logged_in') === 'true';
-  }catch(e){
-    return false;
-  }
-}
-
-function unlockApplication(){
-  localStorage.setItem('eq_app_logged_in','true');
-  var overlay=document.getElementById('eq-login-overlay');
-  if(overlay) overlay.style.display='none';
-}
-
-function handlePopupLogin(){
-  var input=document.getElementById('eq-popup-password');
-  var error=document.getElementById('eq-login-error');
-
-  if(!input) return;
-
-  if(input.value===window.APP_LOGIN_PASSWORD){
-    unlockApplication();
-  }else{
-    if(error) error.style.display='block';
-    input.value='';
-  }
-}
-
-window.addEventListener('load',function(){
-  loadCalloutsLocal();
-  var loggedIn=localStorage.getItem('eq_app_logged_in');
-
-  if(loggedIn==='true'){
-    unlockApplication();
-  }
-
-  var input=document.getElementById('eq-popup-password');
-  if(input){
-    input.addEventListener('keydown',function(e){
-      if(e.key==='Enter'){
-        handlePopupLogin();
-      }
-    });
-  }
-});
-
-</script>
 <script>
 const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var supabaseClient = null;
+try {
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } else {
+    console.warn('Supabase library did not load. App will preview with local fallback.');
+  }
+} catch (err) {
+  console.warn('Supabase client init failed. App will preview with local fallback.', err);
+  supabaseClient = null;
+}
 
 window.APP_LOGIN_PASSWORD = "admin";
 
 function isAppUnlocked(){
   try{
-    return localStorage.getItem('eq_app_logged_in') === 'true';
+    return sessionStorage.getItem('eq_app_logged_in') === 'true';
   }catch(e){
     return false;
   }
 }
 
 function unlockApplication(){
-  localStorage.setItem('eq_app_logged_in','true');
+  try{ sessionStorage.setItem('eq_app_logged_in','true'); }catch(e){}
   var overlay=document.getElementById('eq-login-overlay');
   if(overlay) overlay.style.display='none';
+}
+
+function showLoginOverlay(){
+  var overlay=document.getElementById('eq-login-overlay');
+  if(overlay) overlay.style.display='flex';
+  setTimeout(function(){
+    var input=document.getElementById('eq-popup-password');
+    if(input) input.focus();
+  },50);
 }
 
 function handlePopupLogin(){
@@ -1291,19 +1267,18 @@ function handlePopupLogin(){
   if(!input) return;
 
   if(input.value===window.APP_LOGIN_PASSWORD){
+    if(error) error.style.display='none';
     unlockApplication();
   }else{
     if(error) error.style.display='block';
     input.value='';
+    input.focus();
   }
 }
 
-window.addEventListener('load',function(){
-  var loggedIn=localStorage.getItem('eq_app_logged_in');
-
-  if(loggedIn==='true'){
-    unlockApplication();
-  }
+window.addEventListener('DOMContentLoaded',function(){
+  if(isAppUnlocked()) unlockApplication();
+  else showLoginOverlay();
 
   var input=document.getElementById('eq-popup-password');
   if(input){
@@ -1329,6 +1304,18 @@ setInterval(function(){
 
 </head>
 <body>
+<!-- FULL SCREEN LOGIN OVERLAY -->
+<div id="eq-login-overlay" class="eq-login-overlay">
+  <div class="eq-login-modal">
+    <div class="eq-login-title">CONGLOBAL</div>
+    <div class="eq-login-sub">Sign in to use the employee and equipment tracker.</div>
+    <input id="eq-popup-user" class="eq-login-user" type="text" value="CONGLOBAL" readonly aria-label="Username">
+    <input id="eq-popup-password" class="eq-login-pass" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
+    <button class="eq-login-btn" onclick="handlePopupLogin()">Sign In</button>
+    <div id="eq-login-error" class="eq-login-error">Wrong password. Try admin.</div>
+  </div>
+</div>
+
 
 <!-- AUTH BAR -->
 <div id="auth-bar" style="background:#0b0e14;border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -2228,9 +2215,10 @@ function switchPage(p){
 
 // ── EQUIPMENT ──
 var EQ_KEY='eit_eq_v4';
-var EQ_TYPES=['Hostler','Crane','Forklift','Side-Loader','Ops Truck','Reach Stacker','Pick Up'];
-var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff','Reach Stacker':'#e879f9','Pick Up':'#38bdf8'};
-var EQ_PREFIX={Hostler:'H',Crane:'C',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT','Reach Stacker':'RS','Pick Up':'PU'};
+var EQ_IMPORT_VERSION='equipment_import_2026_05_22_exact_photo_v2';
+var EQ_TYPES=['Hostler','Crane','Reach stacker','Ford pick up','Side loader'];
+var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8','Reach stacker':'#e879f9','Ford pick up':'#38bdf8','Side loader':'#f97316',Forklift:'#10b981','Side-Loader':'#f97316','Ops Truck':'#4a9eff','Reach Stacker':'#e879f9','Pick Up':'#38bdf8'};
+var EQ_PREFIX={Hostler:'H',Crane:'C','Reach stacker':'RS','Ford pick up':'PU','Side loader':'SL',Forklift:'F','Side-Loader':'SL','Ops Truck':'OT','Reach Stacker':'RS','Pick Up':'PU'};
 var equipment=[];
 var eqLoggedIn = sessionStorage.getItem('eq_logged_in') === '1';
 var eqLoginUsername = sessionStorage.getItem('eq_login_username') || 'admin';
@@ -2373,6 +2361,7 @@ async function signInEq(){
   if(pwEl) pwEl.value='';
 
   syncEqLoginUI();
+  await applyImportedEquipmentListOnce();
   await loadEmployees();
   await loadEquipment();
   await startEquipmentRealtimeSync();
@@ -2604,55 +2593,87 @@ async function saveEquipment(){
 }
 
 
-function seedEquipment(){
-  // eq(type, equipNum=name, vmu=tablet)
-  function eq(type, equipNum, vmu){
-    var pre = EQ_PREFIX[type] || type.slice(0,2).toUpperCase();
-    var n   = equipment.filter(function(x){ return x.type===type; }).length + 1;
-    return {
-      id: stableEqId(type, pre + '-' + String(n).padStart(2,'0')),
+
+function buildImportedEquipmentList(){
+  function row(type, equipNum, tablet){
+    return normalizeEquipmentRow({
       type: type,
-      unit: pre + '-' + String(n).padStart(2,'0'),
+      unit: String(equipNum || ''),
       name: String(equipNum || ''),
-      tabletAssigned: String(vmu || ''),
+      tabletAssigned: String(tablet || ''),
       staysCharged: 'pending',
       status: 'operational',
       notes: '',
       status_changed_at: null,
       status_changed_day: null
-    };
+    });
   }
-  equipment = [];
-  // ── HOSTLERS ──
-  equipment.push(eq('Hostler','112388','25242523023319'));
-  equipment.push(eq('Hostler','324012','25241523023522'));
-  equipment.push(eq('Hostler','115520','25241523023377'));
-  equipment.push(eq('Hostler','114465','25240523020919'));
-  equipment.push(eq('Hostler','324013','25240523020864'));
-  equipment.push(eq('Hostler','109188','25242523023604'));
-  equipment.push(eq('Hostler','112389','25251523020085'));
-  equipment.push(eq('Hostler','113423','25240523020883'));
-  equipment.push(eq('Hostler','324015','25251523020170'));
-  equipment.push(eq('Hostler','115517','25240523020893'));
-  equipment.push(eq('Hostler','118764','25241523023331'));
-  equipment.push(eq('Hostler','111316','25273523020636'));
-  equipment.push(eq('Hostler','426040','25252623023281'));
-  equipment.push(eq('Hostler','117560','25251523020046'));
-  equipment.push(eq('Hostler','113419','25241523023501'));
-  equipment.push(eq('Hostler','121002','25242523023896'));
-  equipment.push(eq('Hostler','324014','25242623023242'));
-  equipment.push(eq('Hostler','426041','25241523023347'));
-  equipment.push(eq('Hostler','426042','25084523020786'));
-  // ── CRANES ──
-  equipment.push(eq('Crane','92502','25241523021175'));
-  equipment.push(eq('Crane','91805','25242523020087'));
-  equipment.push(eq('Crane','91804','25251523020474'));
-  // ── REACH STACKERS ──
-  equipment.push(eq('Reach Stacker','72501','25242523023454'));
-  // ── PICK UPS ──
-  equipment.push(eq('Pick Up','2770','25251523020089'));
-  // ── SIDE-LOADERS ──
-  equipment.push(eq('Side-Loader','82103','25126523021322'));
+  return [
+    row('Hostler','112388','25242523023319'),
+    row('Hostler','324012','25241523023522'),
+    row('Hostler','115520','25241523023377'),
+    row('Hostler','114465','25240523020919'),
+    row('Hostler','324013','25240523020864'),
+    row('Hostler','109188','25242523023604'),
+    row('Crane','92502','25241523021175'),
+    row('Hostler','112389','25251523020085'),
+    row('Hostler','113423','25240523020883'),
+    row('Hostler','324015','25251523020170'),
+    row('Hostler','115517','25240523020893'),
+    row('Hostler','118764','25241523023331'),
+    row('Hostler','111316','25273523020636'),
+    row('Hostler','426040','25252623023281'),
+    row('Hostler','117560','25251523020046'),
+    row('Hostler','113419','25241523023501'),
+    row('Crane','91805','25242523020087'),
+    row('Reach stacker','72501','25242523023454'),
+    row('Hostler','121002','25242523023896'),
+    row('Ford pick up','2770','25251523020089'),
+    row('Hostler','324014','25242623023242'),
+    row('Hostler','426041','25241523023347'),
+    row('Crane','91804','25251523020474'),
+    row('Side loader','82103','25126523021322'),
+    row('Hostler','426042','25084523020786')
+  ];
+}
+
+async function applyImportedEquipmentListOnce(){
+  try{
+    if(localStorage.getItem('eq_import_version') === EQ_IMPORT_VERSION) return;
+  }catch(e){}
+  equipment = buildImportedEquipmentList();
+  try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
+  try{
+    if(supabaseClient){
+      var stamp = new Date().toISOString();
+      var payload = equipment.map(function(e){
+        return {
+          id: e.id,
+          type: e.type,
+          unit: e.unit,
+          name: e.name,
+          tablet_assigned: e.tabletAssigned,
+          stays_charged: e.staysCharged || 'pending',
+          status: e.status,
+          notes: e.notes,
+          updated_at: stamp,
+          status_changed_at: null,
+          status_changed_day: null
+        };
+      });
+      var res = await supabaseInsertReplacingTable('equipment', payload);
+      if(res && res.error){
+        console.warn('Equipment import saved locally but Supabase replace failed:', res.error.message || res.error);
+      }
+    }
+  }catch(err){
+    console.warn('Equipment import saved locally but Supabase replace failed:', err.message || err);
+  }
+  try{ localStorage.setItem('eq_import_version', EQ_IMPORT_VERSION); }catch(e){}
+}
+
+function seedEquipment(){
+  equipment = buildImportedEquipmentList();
   saveEquipment();
 }
 
@@ -3884,14 +3905,14 @@ window.APP_LOGIN_PASSWORD = "admin";
 
 function isAppUnlocked(){
   try{
-    return localStorage.getItem('eq_app_logged_in') === 'true';
+    return sessionStorage.getItem('eq_app_logged_in') === 'true';
   }catch(e){
     return false;
   }
 }
 
 function unlockApplication(){
-  localStorage.setItem('eq_app_logged_in','true');
+  sessionStorage.setItem('eq_app_logged_in','true');
   var overlay=document.getElementById('eq-login-overlay');
   if(overlay) overlay.style.display='none';
 }
@@ -3911,7 +3932,7 @@ function handlePopupLogin(){
 }
 
 window.addEventListener('load',function(){
-  var loggedIn=localStorage.getItem('eq_app_logged_in');
+  var loggedIn=sessionStorage.getItem('eq_app_logged_in');
 
   if(loggedIn==='true'){
     unlockApplication();
@@ -4004,5 +4025,49 @@ window.addEventListener('DOMContentLoaded', () => {
   <div id="activity-feed-wrap" style="padding:16px 24px 40px;max-width:900px;"></div>
 </div><!-- end page-activity -->
 
+
+<script>
+/* Login overlay restore / preview-safe guard */
+window.APP_LOGIN_PASSWORD = window.APP_LOGIN_PASSWORD || 'admin';
+function isAppUnlocked(){
+  try{ return sessionStorage.getItem('eq_app_logged_in') === 'true'; }
+  catch(e){ return false; }
+}
+function unlockApplication(){
+  try{ sessionStorage.setItem('eq_app_logged_in','true'); }catch(e){}
+  var overlay=document.getElementById('eq-login-overlay');
+  if(overlay) overlay.style.display='none';
+  var pass=document.getElementById('eq-popup-password');
+  if(pass) pass.value='';
+}
+function handlePopupLogin(){
+  var input=document.getElementById('eq-popup-password');
+  var error=document.getElementById('eq-login-error');
+  if(!input) return;
+  if(input.value === window.APP_LOGIN_PASSWORD){
+    if(error) error.style.display='none';
+    unlockApplication();
+    if(typeof signInEq === 'function'){
+      try{ signInEq(); }catch(e){}
+    }
+  }else{
+    if(error) error.style.display='block';
+    input.value='';
+    input.focus();
+  }
+}
+window.addEventListener('DOMContentLoaded',function(){
+  var overlay=document.getElementById('eq-login-overlay');
+  if(overlay && !isAppUnlocked()) overlay.style.display='flex';
+  if(overlay && isAppUnlocked()) overlay.style.display='none';
+  var input=document.getElementById('eq-popup-password');
+  if(input){
+    input.addEventListener('keydown',function(e){
+      if(e.key==='Enter') handlePopupLogin();
+    });
+    if(!isAppUnlocked()) setTimeout(function(){ input.focus(); },100);
+  }
+});
+</script>
 </body>
 </html>
