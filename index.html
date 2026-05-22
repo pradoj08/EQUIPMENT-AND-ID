@@ -1266,7 +1266,42 @@ window.addEventListener('load',function(){
 <script>
 const SUPABASE_URL = 'https://jznqyngrtmfkivddgxhv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+var supabaseSaveState = { ok:false, lastError:'Not connected yet', checkedAt:null };
+
+function setSupabaseSaveState(ok, message){
+  supabaseSaveState.ok = !!ok;
+  supabaseSaveState.lastError = message || (ok ? '' : 'Supabase is not available.');
+  supabaseSaveState.checkedAt = new Date().toISOString();
+  renderSupabaseSaveBanner();
+}
+
+function renderSupabaseSaveBanner(){
+  var banner = document.getElementById('equip-banner');
+  if(!banner) return;
+  var existing = document.getElementById('supabase-save-warning');
+  if(existing) existing.remove();
+  if(supabaseSaveState.ok) return;
+  var row = document.createElement('div');
+  row.id = 'supabase-save-warning';
+  row.className = 'banner-row banner-row-attn';
+  row.innerHTML = '<div class="banner-label banner-label-attn"><span class="pulse"></span>Not Globally Saving</div>'
+    + '<div class="banner-chips"><span class="bchip" style="background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.3);white-space:normal;line-height:1.4;">Supabase connection/save failed. Local data storage is disabled in this build, so changes will not survive refresh or sync across devices until Supabase saves successfully. Reason: '
+    + escapeHtml(String(supabaseSaveState.lastError || 'unknown')) + '</span></div>';
+  banner.prepend(row);
+}
+
+function requireSupabaseReady(actionName){
+  if(!supabaseClient){
+    setSupabaseSaveState(false, 'Supabase library did not load. Check internet/CDN access.');
+    return false;
+  }
+  if(!eqLoggedIn){
+    setSupabaseSaveState(false, (actionName || 'Save') + ' blocked because the app is not signed in.');
+    return false;
+  }
+  return true;
+}
 
 window.APP_LOGIN_PASSWORD = "admin";
 
@@ -1710,25 +1745,19 @@ function load(){
 
 var EMP_CACHE_KEY = 'eit_emp_cache_v1';
 
-function loadEmployeesFromCache(){
-  try{
-    var cached = localStorage.getItem(EMP_CACHE_KEY);
-    if(cached){
-      var parsed = JSON.parse(cached);
-      if(Array.isArray(parsed) && parsed.length){ employees = parsed; return true; }
-    }
-  }catch(e){}
-  return false;
-}
-
-function saveEmployeesToCache(){
-  try{ localStorage.setItem(EMP_CACHE_KEY, JSON.stringify(employees)); }catch(e){}
-}
+function loadEmployeesFromCache(){ return false; } // local employee cache disabled — Supabase is source of truth
+function saveEmployeesToCache(){} // local employee cache disabled — Supabase is source of truth
 
 async function loadEmployees(){
   if(!eqLoggedIn){
     employees = [];
-    return;
+    setSupabaseSaveState(false, 'Sign in to load global employee data from Supabase.');
+    return false;
+  }
+  if(!supabaseClient){
+    employees = [];
+    setSupabaseSaveState(false, 'Supabase library did not load. Employee data cannot load globally.');
+    return false;
   }
   try{
     const { data, error } = await supabaseClient
@@ -1737,9 +1766,10 @@ async function loadEmployees(){
       .order('updated_at', { ascending: true });
 
     if(error){
+      employees = [];
       console.error('Supabase employee load error:', error);
-      if(!loadEmployeesFromCache()) seedData();
-      return;
+      setSupabaseSaveState(false, error.message || 'Employee load failed.');
+      return false;
     }
 
     employees = (data || []).map(function(row){
@@ -1757,19 +1787,22 @@ async function loadEmployees(){
     });
 
     if(!employees.length){
-      if(!loadEmployeesFromCache()) seedData();
-    } else {
-      saveEmployeesToCache();
+      seedData(); // preload defaults only when Supabase table is empty
     }
+    setSupabaseSaveState(true, 'Employee data loaded from Supabase.');
+    return true;
   }catch(e){
+    employees = [];
     console.error(e);
-    if(!loadEmployeesFromCache()) seedData();
+    setSupabaseSaveState(false, e.message || 'Employee load failed.');
+    return false;
   }
 }
 
 async function saveEmployees(){
-  if(!eqLoggedIn) return;
+  if(!requireSupabaseReady('Employee save')) return false;
   try{
+    const stamp = new Date().toISOString();
     const rows = employees.map(function(e){
       return {
         id: e.id,
@@ -1781,7 +1814,7 @@ async function saveEmployees(){
         phone: e.phone,
         days_off: e.daysOff,
         status: e.status,
-        updated_at: new Date().toISOString(),
+        updated_at: stamp,
         last_edited_by: eqLoginUsername || 'CONGLOBAL'
       };
     });
@@ -1790,10 +1823,18 @@ async function saveEmployees(){
       .from('employees')
       .upsert(rows, { onConflict: 'id' });
 
-    if(error) console.error('Supabase employee save error:', error);
-    else saveEmployeesToCache();
+    if(error){
+      console.error('Supabase employee save error:', error);
+      setSupabaseSaveState(false, error.message || 'Employee save failed.');
+      return false;
+    }
+    setSupabaseSaveState(true, 'Employee data saved to Supabase.');
+    showSaveToast();
+    return true;
   }catch(err){
     console.error('Employee save failed:', err);
+    setSupabaseSaveState(false, err.message || 'Employee save failed.');
+    return false;
   }
 }
 
@@ -1814,10 +1855,8 @@ function showSaveToast(){
   _toastTimer=setTimeout(function(){ t.classList.remove('show'); },2000);
 }
 
-function save(){
-  pushHistory();
-  saveEmployees();
-  showSaveToast();
+async function save(){
+  await saveEmployees();
 }
 
 function ensureEmployeeRoster(){
@@ -2357,27 +2396,22 @@ function eqUid(type, unit){
   return stableEqId(type, unit);
 }
 
-function loadEquipmentFromCache(){
-  try{
-    var cached = localStorage.getItem(EQ_KEY);
-    if(cached){
-      var parsed = JSON.parse(cached);
-      if(Array.isArray(parsed) && parsed.length){
-        equipment = dedupeEquipmentRows(parsed.map(normalizeEquipmentRow));
-        return true;
-      }
-    }
-  }catch(e){}
-  return false;
-}
+function loadEquipmentFromCache(){ return false; } // local equipment cache disabled — Supabase is source of truth
 
 async function loadEquipment(){
-  // Always load local data first so the page renders immediately
-  if(!equipment.length){
-    if(!loadEquipmentFromCache()) seedEquipment();
+  if(!supabaseClient){
+    if(!equipment.length) seedEquipment(false);
+    setSupabaseSaveState(false, 'Supabase library did not load. Equipment data cannot load globally.');
+    updateEquipmentStatusMeta();
+    return false;
+  }
+  if(!eqLoggedIn){
+    equipment = [];
+    setSupabaseSaveState(false, 'Sign in to load global equipment data from Supabase.');
+    updateEquipmentStatusMeta();
+    return false;
   }
 
-  // Then try Supabase in background — only replace if we actually get data back
   try{
     const { data, error } = await supabaseClient
       .from('equipment')
@@ -2385,9 +2419,11 @@ async function loadEquipment(){
       .order('updated_at', { ascending: true });
 
     if(error){
-      console.warn('Supabase equipment load error (using local data):', error.message);
+      equipment = [];
+      console.warn('Supabase equipment load error:', error.message || error);
+      setSupabaseSaveState(false, error.message || 'Equipment load failed.');
       updateEquipmentStatusMeta();
-      return;
+      return false;
     }
 
     var remote = (data || []).map(function(row){
@@ -2418,21 +2454,23 @@ async function loadEquipment(){
         delete copy.__remote_id;
         return copy;
       });
-      try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
-
       if(needsMigration){
-        try{
-          await migrateEquipmentIds(remote);
-        }catch(mErr){
-          console.warn('Equipment id migration failed:', mErr && (mErr.message || mErr));
-        }
+        try{ await migrateEquipmentIds(remote); }
+        catch(mErr){ console.warn('Equipment id migration failed:', mErr && (mErr.message || mErr)); }
       }
+    } else {
+      seedEquipment(true); // preload defaults and write them to Supabase when table is empty
     }
-    updateEquipmentStatusMeta();
 
-  }catch(e){
-    console.warn('loadEquipment: using local data:', e.message || e);
+    setSupabaseSaveState(true, 'Equipment data loaded from Supabase.');
     updateEquipmentStatusMeta();
+    return true;
+  }catch(e){
+    equipment = [];
+    console.warn('loadEquipment failed:', e.message || e);
+    setSupabaseSaveState(false, e.message || 'Equipment load failed.');
+    updateEquipmentStatusMeta();
+    return false;
   }
 }
 
@@ -2481,13 +2519,9 @@ async function persistEquipmentAndRefresh(){
 async function saveEquipment(){
   equipment = dedupeEquipmentRows(equipment.map(normalizeEquipmentRow));
 
-  // Always save locally first — this is the source of truth when offline
-  try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
-  showSaveToast();
+  if(!requireSupabaseReady('Equipment save')) return false;
 
-  // Try Supabase in background — failure is silent, local data is already safe
   try{
-    if(!supabaseClient) return;
     var stamp = new Date().toISOString();
     var payload = equipment.map(function(e){
       e.id = stableEqId(e.type, e.unit);
@@ -2511,15 +2545,23 @@ async function saveEquipment(){
       .from('equipment')
       .upsert(payload, { onConflict: 'id' });
 
-    if(error) console.warn('Supabase equipment sync failed (data saved locally):', error.message);
-
+    if(error){
+      console.warn('Supabase equipment sync failed:', error.message || error);
+      setSupabaseSaveState(false, error.message || 'Equipment save failed.');
+      return false;
+    }
+    setSupabaseSaveState(true, 'Equipment data saved to Supabase.');
+    showSaveToast();
+    return true;
   }catch(err){
-    console.warn('Supabase equipment sync failed (data saved locally):', err.message || err);
+    console.warn('Supabase equipment sync failed:', err.message || err);
+    setSupabaseSaveState(false, err.message || 'Equipment save failed.');
+    return false;
   }
 }
 
 
-function seedEquipment(){
+function seedEquipment(saveRemote){
   // eq(type, equipNum=name, vmu=tablet)
   function eq(type, equipNum, vmu){
     var pre = EQ_PREFIX[type] || type.slice(0,2).toUpperCase();
@@ -2568,7 +2610,7 @@ function seedEquipment(){
   equipment.push(eq('Pick Up','2770','25251523020089'));
   // ── SIDE-LOADERS ──
   equipment.push(eq('Side-Loader','82103','25126523021322'));
-  saveEquipment();
+  if(saveRemote && eqLoggedIn){ saveEquipment(); }
 }
 
 async function updateEqStatus(id,val){
@@ -2879,7 +2921,9 @@ function renderEquipBanner(){
   if(!banner) return;
   var down=equipment.filter(function(e){return e.status==='down';});
   var maint=equipment.filter(function(e){return e.status==='maintenance';});
-  var html='';
+  var existingWarning = document.getElementById('supabase-save-warning');
+  var warningHtml = existingWarning ? existingWarning.outerHTML : '';
+  var html = warningHtml;
   if(down.length){
     var showDown = down.slice(0, 3);
     var chips=showDown.map(function(e){
@@ -3529,24 +3573,10 @@ function emptyRosterPayload(){
   return { items: [], updated_at: null };
 }
 
-function saveRosterCacheOnly(type, data){
-  try{ localStorage.setItem(rosterStorageKey(type), JSON.stringify(data)); }catch(e){}
-}
+function saveRosterCacheOnly(type, data){} // local roster cache disabled — Supabase is source of truth
 
 function loadRosterList(type){
-  type = normalizeRosterType(type);
-  var fallback = emptyRosterPayload();
-
-  try{
-    var raw = localStorage.getItem(rosterStorageKey(type));
-    var parsed = raw ? JSON.parse(raw) : null;
-    if(parsed && Array.isArray(parsed.items)){
-      fallback.items = parsed.items;
-      fallback.updated_at = parsed.updated_at || null;
-    }
-  }catch(e){}
-
-  return fallback;
+  return emptyRosterPayload();
 }
 
 async function syncRosterFromSupabase(type){
@@ -3569,7 +3599,6 @@ async function saveRosterList(type, data){
   type = normalizeRosterType(type);
   data = data || emptyRosterPayload();
   data.updated_at = new Date().toISOString();
-  saveRosterCacheOnly(type, data);
   rosterLastUpdated[type] = data.updated_at;
 
   if(eqLoggedIn && typeof supabaseClient !== 'undefined'){
@@ -3581,7 +3610,7 @@ async function saveRosterList(type, data){
         updated_at: data.updated_at,
         updated_by: eqLoginUsername || 'CONGLOBAL'
       });
-      if(res && res.error) console.error('Roster save error:', res.error);
+      if(res && res.error){ console.error('Roster save error:', res.error); setSupabaseSaveState(false, res.error.message || 'Roster save failed.'); } else { setSupabaseSaveState(true, 'Roster saved to Supabase.'); }
     }catch(err){
       console.error('Roster save failed:', err);
     }
@@ -3763,14 +3792,16 @@ syncEqLoginUI();
 updateActivityBadge();
 initGlobalScale();
 if(eqLoggedIn){
-  // Show cached roster instantly while Supabase loads
-  loadEmployeesFromCache();
   render();
   loadEmployees().then(function(){ render(); }).catch(function(){ render(); });
   loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
+  startEquipmentRealtimeSync();
 } else {
+  employees = [];
+  equipment = [];
+  setSupabaseSaveState(false, 'Sign in to load and save global Supabase data.');
   render();
-  loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
+  renderEquipment();
 }
 
 document.addEventListener('input',function(e){
