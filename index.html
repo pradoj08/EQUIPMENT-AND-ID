@@ -1725,6 +1725,67 @@ function saveEmployeesToCache(){
   try{ localStorage.setItem(EMP_CACHE_KEY, JSON.stringify(employees)); }catch(e){}
 }
 
+
+function dbMissingColumn(error){
+  var msg = String((error && (error.message || error.details || error.hint)) || error || '');
+  var m = msg.match(/Could not find the '([^']+)' column/i) || msg.match(/column ["']?([a-zA-Z0-9_]+)["']? does not exist/i);
+  return m ? m[1] : '';
+}
+
+function stripColumnFromRows(rows, column){
+  if(!column) return rows;
+  return (rows || []).map(function(row){
+    var copy = Object.assign({}, row);
+    delete copy[column];
+    return copy;
+  });
+}
+
+async function supabaseInsertReplacingTable(tableName, rows){
+  if(!supabaseClient || !Array.isArray(rows)) return { error:null };
+  var payload = rows.slice();
+  for(var tries=0; tries<8; tries++){
+    var del = await supabaseClient.from(tableName).delete().neq('__never_match__','__never_match__');
+    // Some schemas reject unknown filter columns. Retry with a known-ish harmless filter per table.
+    if(del.error){
+      if(tableName === 'employees') del = await supabaseClient.from(tableName).delete().neq('employee_id','__never_match__');
+      if(tableName === 'equipment') del = await supabaseClient.from(tableName).delete().neq('unit','__never_match__');
+    }
+    if(del.error){ return { error: del.error }; }
+    if(!payload.length) return { error:null };
+    var ins = await supabaseClient.from(tableName).insert(payload);
+    if(!ins.error) return { error:null };
+    var missing = dbMissingColumn(ins.error);
+    if(!missing) return { error: ins.error };
+    payload = stripColumnFromRows(payload, missing);
+  }
+  return { error: { message:'Supabase insert failed after schema fallback retries.' } };
+}
+
+async function supabaseUpsertWithColumnFallback(tableName, rows, options){
+  if(!supabaseClient || !Array.isArray(rows)) return { error:null };
+  var payload = rows.slice();
+  var opts = options || {};
+  for(var tries=0; tries<8; tries++){
+    var res;
+    if(opts.onConflict && payload.length && Object.prototype.hasOwnProperty.call(payload[0], opts.onConflict)){
+      res = await supabaseClient.from(tableName).upsert(payload, { onConflict: opts.onConflict });
+    }else{
+      res = await supabaseInsertReplacingTable(tableName, payload);
+    }
+    if(!res.error) return { error:null };
+    var missing = dbMissingColumn(res.error);
+    if(!missing) return { error: res.error };
+    console.warn('Supabase schema fallback: removing missing column "'+missing+'" from '+tableName+' payload.');
+    payload = stripColumnFromRows(payload, missing);
+    if(missing === opts.onConflict){
+      opts = Object.assign({}, opts);
+      delete opts.onConflict;
+    }
+  }
+  return { error: { message:'Supabase save failed after schema fallback retries.' } };
+}
+
 async function loadEmployees(){
   if(!eqLoggedIn){
     employees = [];
@@ -1784,7 +1845,6 @@ async function loadEmployees(){
 async function saveEmployees(){
   if(!eqLoggedIn) return;
 
-  // Persist locally first so a refresh never wipes unsynced changes.
   saveEmployeesToCache();
 
   try{
@@ -1809,12 +1869,10 @@ async function saveEmployees(){
       };
     });
 
-    const { error } = await supabaseClient
-      .from('employees')
-      .upsert(rows, { onConflict: 'id' });
+    const result = await supabaseUpsertWithColumnFallback('employees', rows, { onConflict:'id' });
 
-    if(error){
-      console.error('Supabase employee save error:', error);
+    if(result.error){
+      console.error('Supabase employee save error:', result.error);
     }else{
       saveEmployeesToCache();
     }
@@ -2510,11 +2568,9 @@ async function persistEquipmentAndRefresh(){
 async function saveEquipment(){
   equipment = dedupeEquipmentRows(equipment.map(normalizeEquipmentRow));
 
-  // Always save locally first — this is the source of truth when offline
   try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
   showSaveToast();
 
-  // Try Supabase in background — failure is silent, local data is already safe
   try{
     if(!supabaseClient) return;
     var stamp = new Date().toISOString();
@@ -2536,11 +2592,11 @@ async function saveEquipment(){
       };
     });
 
-    const { error } = await supabaseClient
-      .from('equipment')
-      .upsert(payload, { onConflict: 'id' });
+    const result = await supabaseUpsertWithColumnFallback('equipment', payload, { onConflict:'id' });
 
-    if(error) console.warn('Supabase equipment sync failed (data saved locally):', error.message);
+    if(result.error){
+      console.warn('Supabase equipment sync failed (data saved locally):', result.error.message || result.error);
+    }
 
   }catch(err){
     console.warn('Supabase equipment sync failed (data saved locally):', err.message || err);
