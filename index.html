@@ -5005,6 +5005,54 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
 #page-employees #employee-table-main .emp-password-cell,
 #page-employees #employee-table-main .missing-password{display:none!important;}
 </style>
+
+<style id="employee-id-metric-card-bigger-text">
+/* Employee ID metric cards: larger, easier-to-read numbers and labels. */
+#page-employees .stats-row{
+  gap:12px;
+}
+#page-employees .stat-card{
+  padding:18px 18px;
+  min-height:96px;
+}
+#page-employees .stat-label{
+  font-size:12px !important;
+  line-height:1.15;
+  letter-spacing:1.2px;
+  font-weight:900 !important;
+}
+#page-employees .stat-val{
+  font-size:38px !important;
+  line-height:.95;
+  font-weight:900 !important;
+  letter-spacing:.02em;
+}
+#page-employees .stat-icon{
+  font-size:24px;
+  opacity:.62;
+}
+#page-employees .stat-bar{
+  height:5px;
+  margin-top:8px;
+}
+@media(max-width:700px){
+  #page-employees .stats-row{
+    padding:12px;
+    gap:10px;
+  }
+  #page-employees .stat-card{
+    min-width:calc(50% - 5px);
+    padding:16px 14px;
+    min-height:88px;
+  }
+  #page-employees .stat-label{
+    font-size:11px !important;
+  }
+  #page-employees .stat-val{
+    font-size:34px !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
@@ -18891,3 +18939,93 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
   border-left-color:rgba(255,255,255,.06)!important;
 }
 </style>
+
+
+<style id="employee-metric-number-threshold-colors">
+/* Employee ID metric numbers: red below 90%, yellow from 90-97.99%, green from 98-100%. */
+#page-employees .stat-val.employee-metric-red,
+#page-employees .stat-val.employee-metric-red span{color:#ef4444!important;}
+#page-employees .stat-val.employee-metric-yellow,
+#page-employees .stat-val.employee-metric-yellow span{color:#f59e0b!important;}
+#page-employees .stat-val.employee-metric-green,
+#page-employees .stat-val.employee-metric-green span{color:#22c55e!important;}
+</style>
+<script id="employee-metric-number-threshold-colors-js">
+(function(){
+  if(window.__employeeMetricNumberThresholdColors) return;
+  window.__employeeMetricNumberThresholdColors = true;
+
+  function employeeMetricPct(complete,total){
+    complete = Number(complete) || 0;
+    total = Number(total) || 0;
+    if(!total) return 0;
+    return Math.max(0, Math.min(100, (complete / total) * 100));
+  }
+
+  function employeeMetricClass(pct){
+    if(pct >= 98) return 'employee-metric-green';
+    if(pct >= 90) return 'employee-metric-yellow';
+    return 'employee-metric-red';
+  }
+
+  function employeeMetricFmt(complete,total){
+    return String(complete) + '<span style="font-size:16px;font-weight:700;color:inherit!important;">/' + String(total) + '</span>';
+  }
+
+  function setEmployeeMetricValue(id, complete, total){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var pct = employeeMetricPct(complete,total);
+    el.innerHTML = employeeMetricFmt(complete,total);
+    el.classList.remove('employee-metric-red','employee-metric-yellow','employee-metric-green');
+    el.classList.add(employeeMetricClass(pct));
+    el.title = Math.round(pct) + '% complete';
+  }
+
+  function setEmployeeMetricBar(id, complete, total){
+    if(typeof window.setBar !== 'function') return;
+    window.setBar(id, total ? employeeMetricPct(complete,total) : 0);
+  }
+
+  var originalUpdateStats = window.updateStats;
+  window.updateStats = function(){
+    var list = window.employees || [];
+    var day = list.filter(function(e){return e && e.shift === 'Day';});
+    var night = list.filter(function(e){return e && e.shift === 'Night';});
+    var gate = list.filter(function(e){return e && e.shift === 'Gate';});
+    var completeFn = (typeof window.isComplete === 'function') ? window.isComplete : function(e){
+      return !!(e && e.first && e.last && e.empId && e.upId && e.phone && e.daysOff && String(e.first).trim() && String(e.last).trim() && String(e.empId).trim() && String(e.upId).trim() && String(e.phone).trim() && String(e.daysOff).trim());
+    };
+    var dc = day.filter(completeFn).length;
+    var nc = night.filter(completeFn).length;
+    var gc = gate.filter(completeFn).length;
+    var tc = list.filter(completeFn).length;
+    var maps = (typeof window.buildDuplicateMaps === 'function') ? window.buildDuplicateMaps() : null;
+    var attn = list.filter(function(e){
+      var missing = (typeof window.missingItems === 'function') ? window.missingItems(e).length : !completeFn(e);
+      var dupes = (maps && typeof window.duplicateFields === 'function') ? window.duplicateFields(e,maps).length : 0;
+      return missing || dupes;
+    }).length;
+
+    setEmployeeMetricValue('s-total', tc, list.length);
+    setEmployeeMetricValue('s-day', dc, day.length);
+    setEmployeeMetricValue('s-night', nc, night.length);
+    setEmployeeMetricValue('s-gate', gc, gate.length);
+
+    var out = document.getElementById('s-out');
+    if(out){
+      out.textContent = attn;
+      out.classList.remove('employee-metric-red','employee-metric-yellow','employee-metric-green');
+    }
+
+    setEmployeeMetricBar('s-total-bar', tc, list.length);
+    setEmployeeMetricBar('s-day-bar', dc, day.length);
+    setEmployeeMetricBar('s-night-bar', nc, night.length);
+    setEmployeeMetricBar('s-gate-bar', gc, gate.length);
+    if(typeof window.setBar === 'function') window.setBar('s-out-bar', list.length ? (attn / list.length) * 100 : 0);
+  };
+
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){ if(typeof window.updateStats === 'function') window.updateStats(); }, 250); });
+  setTimeout(function(){ if(typeof window.updateStats === 'function') window.updateStats(); }, 500);
+})();
+</script>
