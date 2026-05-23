@@ -2030,6 +2030,508 @@ th:hover{
   .embedded-page-wrap{height:calc(100vh - 132px);min-height:640px;}
 }
 
+
+
+/* BRIGHT OUT-OF-SERVICE EQUIPMENT BORDER */
+#equipment-page .equip-table tr.eq-main-row[data-status="down"] td,
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"] td,
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"] td{
+  border-top:2px solid var(--out-service-border,#ef4444) !important;
+  border-bottom:2px solid var(--out-service-border,#ef4444) !important;
+  background:linear-gradient(180deg,var(--out-service-bg,rgba(239,68,68,.10)),rgba(15,17,23,.94)) !important;
+  box-shadow:inset 0 0 0 9999px var(--out-service-wash,rgba(239,68,68,.03));
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="down"]{
+  --out-service-border:#ff3b3b;
+  --out-service-bg:rgba(239,68,68,.18);
+  --out-service-wash:rgba(239,68,68,.04);
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"]{
+  --out-service-border:#ffb020;
+  --out-service-bg:rgba(245,158,11,.18);
+  --out-service-wash:rgba(245,158,11,.04);
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"]{
+  --out-service-border:#8b9cff;
+  --out-service-bg:rgba(129,140,248,.18);
+  --out-service-wash:rgba(129,140,248,.04);
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="down"] td:first-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"] td:first-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"] td:first-child{
+  border-left:4px solid var(--out-service-border,#ef4444) !important;
+  box-shadow:inset 3px 0 0 var(--out-service-border,#ef4444), inset 0 0 0 9999px var(--out-service-wash,rgba(239,68,68,.03));
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="down"] td:last-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"] td:last-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"] td:last-child{
+  border-right:4px solid var(--out-service-border,#ef4444) !important;
+}
+#equipment-page .equip-table tr.eq-notes-row[data-status="down"] td,
+#equipment-page .equip-table tr.eq-notes-row[data-status="maintenance"] td,
+#equipment-page .equip-table tr.eq-notes-row[data-status="standby"] td{
+  border-left:4px solid var(--out-service-border,#ef4444) !important;
+  border-right:4px solid var(--out-service-border,#ef4444) !important;
+  border-bottom:2px solid var(--out-service-border,#ef4444) !important;
+}
+#equipment-page .equip-table tr.eq-notes-row[data-status="down"]{--out-service-border:#ff3b3b;}
+#equipment-page .equip-table tr.eq-notes-row[data-status="maintenance"]{--out-service-border:#ffb020;}
+#equipment-page .equip-table tr.eq-notes-row[data-status="standby"]{--out-service-border:#8b9cff;}
+#equipment-page .eq-card[data-status="down"],
+#equipment-page .eq-card[data-status="maintenance"],
+#equipment-page .eq-card[data-status="standby"]{
+  border-width:2px !important;
+  border-color:var(--out-service-border,#ef4444) !important;
+  border-left-width:7px !important;
+  box-shadow:0 0 0 1px var(--out-service-border,#ef4444),0 12px 28px rgba(0,0,0,.28),0 0 22px var(--out-service-glow,rgba(239,68,68,.25)) !important;
+}
+#equipment-page .eq-card[data-status="down"]{--out-service-border:#ff3b3b;--out-service-glow:rgba(239,68,68,.32);}
+#equipment-page .eq-card[data-status="maintenance"]{--out-service-border:#ffb020;--out-service-glow:rgba(245,158,11,.30);}
+#equipment-page .eq-card[data-status="standby"]{--out-service-border:#8b9cff;--out-service-glow:rgba(129,140,248,.28);}
+#equipment-page .eq-card[data-status="operational"]{
+  box-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+}
+
+
+/* RED/GOLD OUT-OF-SERVICE EQUIPMENT BORDERS — final override
+   Down = red. Maintenance and Standby = gold. Operational remains clean/green only. */
+#equipment-page .equip-table tr.eq-main-row[data-status="down"],
+#equipment-page .equip-table tr.eq-notes-row[data-status="down"],
+#equipment-page .eq-card[data-status="down"]{
+  --row-accent:#ff1f1f !important;
+  --out-service-border:#ff1f1f !important;
+  --out-service-bg:rgba(255,31,31,.16) !important;
+  --out-service-wash:rgba(255,31,31,.045) !important;
+  --out-service-glow:rgba(255,31,31,.34) !important;
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"],
+#equipment-page .equip-table tr.eq-notes-row[data-status="maintenance"],
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"],
+#equipment-page .equip-table tr.eq-notes-row[data-status="standby"],
+#equipment-page .eq-card[data-status="maintenance"],
+#equipment-page .eq-card[data-status="standby"]{
+  --row-accent:#ffbf00 !important;
+  --out-service-border:#ffbf00 !important;
+  --out-service-bg:rgba(255,191,0,.16) !important;
+  --out-service-wash:rgba(255,191,0,.045) !important;
+  --out-service-glow:rgba(255,191,0,.30) !important;
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="down"] td,
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"] td,
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"] td{
+  border-top:2px solid var(--out-service-border) !important;
+  border-bottom:2px solid var(--out-service-border) !important;
+  background:linear-gradient(180deg,var(--out-service-bg),rgba(15,17,23,.94)) !important;
+  box-shadow:inset 0 0 0 9999px var(--out-service-wash) !important;
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="down"] td:first-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"] td:first-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"] td:first-child{
+  border-left:6px solid var(--out-service-border) !important;
+  box-shadow:inset 4px 0 0 var(--out-service-border), inset 0 0 0 9999px var(--out-service-wash) !important;
+}
+#equipment-page .equip-table tr.eq-main-row[data-status="down"] td:last-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="maintenance"] td:last-child,
+#equipment-page .equip-table tr.eq-main-row[data-status="standby"] td:last-child{
+  border-right:6px solid var(--out-service-border) !important;
+}
+#equipment-page .equip-table tr.eq-notes-row[data-status="down"] td,
+#equipment-page .equip-table tr.eq-notes-row[data-status="maintenance"] td,
+#equipment-page .equip-table tr.eq-notes-row[data-status="standby"] td{
+  border-left:6px solid var(--out-service-border) !important;
+  border-right:6px solid var(--out-service-border) !important;
+  border-bottom:2px solid var(--out-service-border) !important;
+}
+#equipment-page .eq-card[data-status="down"],
+#equipment-page .eq-card[data-status="maintenance"],
+#equipment-page .eq-card[data-status="standby"]{
+  border-width:2px !important;
+  border-left-width:8px !important;
+  border-color:var(--out-service-border) !important;
+  box-shadow:0 0 0 1px var(--out-service-border),0 12px 28px rgba(0,0,0,.28),0 0 22px var(--out-service-glow) !important;
+}
+#equipment-page .eq-card[data-status="operational"]{
+  border-color:var(--border) !important;
+  border-left-color:#22c55e !important;
+  box-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+}
+
+
+
+/* ─────────────────────────────────────────────
+   FUTURISTIC TOP PAGE SELECTOR OVERHAUL
+   ───────────────────────────────────────────── */
+.app-command-nav.page-nav{
+  zoom:1 !important;
+  position:sticky;
+  top:0;
+  z-index:700;
+  min-height:70px;
+  padding:10px 16px;
+  gap:14px;
+  align-items:center;
+  justify-content:space-between;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(74,158,255,.22), transparent 34%),
+    radial-gradient(circle at 78% 0%, rgba(16,185,129,.14), transparent 34%),
+    linear-gradient(180deg, rgba(11,14,20,.98), rgba(10,12,18,.96));
+  border-bottom:1px solid rgba(74,158,255,.22);
+  box-shadow:0 14px 34px rgba(0,0,0,.34), inset 0 -1px 0 rgba(255,255,255,.035);
+  overflow:hidden;
+}
+.app-command-nav.page-nav::before{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(74,158,255,.80), rgba(16,185,129,.55), transparent);
+  pointer-events:none;
+}
+.app-command-nav.page-nav::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:24px 24px;
+  opacity:.22;
+  pointer-events:none;
+}
+.nav-brand-panel,
+.page-nav-center,
+.nav-tools-panel{position:relative;z-index:1;}
+.nav-brand-panel{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:216px;
+  padding:8px 12px;
+  border:1px solid rgba(74,158,255,.18);
+  border-radius:16px;
+  background:rgba(15,17,23,.62);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.nav-brand-orb{
+  width:38px;
+  height:38px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#06111f;
+  background:linear-gradient(135deg,#93c5fd,#4a9eff 48%,#22c55e);
+  box-shadow:0 0 24px rgba(74,158,255,.38);
+}
+.nav-brand-copy{display:flex;flex-direction:column;min-width:0;line-height:1.1;}
+.nav-brand-title{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:#dbeafe;
+  white-space:nowrap;
+}
+.nav-brand-sub{
+  margin-top:3px;
+  font-family:var(--mono);
+  font-size:8px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:rgba(122,135,168,.95);
+  white-space:nowrap;
+}
+.page-nav-center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex:1;
+  min-width:0;
+  padding:6px;
+  border:1px solid rgba(58,68,96,.72);
+  border-radius:18px;
+  background:rgba(10,14,22,.62);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035), 0 8px 22px rgba(0,0,0,.24);
+}
+.app-command-nav .page-nav-btn{
+  position:relative;
+  min-height:42px;
+  border:1px solid rgba(58,68,96,.75);
+  border-radius:13px;
+  padding:8px 13px;
+  background:linear-gradient(180deg, rgba(30,35,51,.74), rgba(18,22,31,.72));
+  color:rgba(232,236,245,.70);
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.9px;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+  overflow:hidden;
+}
+.app-command-nav .page-nav-btn::before{
+  content:'';
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:4px;
+  height:2px;
+  border-radius:999px;
+  background:transparent;
+  transition:all .15s ease;
+}
+.app-command-nav .page-nav-btn:hover{
+  transform:translateY(-1px);
+  color:#fff;
+  border-color:rgba(74,158,255,.55);
+  background:linear-gradient(180deg, rgba(37,99,235,.20), rgba(30,35,51,.88));
+  box-shadow:0 10px 20px rgba(0,0,0,.24);
+}
+.app-command-nav .page-nav-btn.active{
+  color:#eff6ff;
+  border-color:rgba(74,158,255,.86);
+  background:
+    radial-gradient(circle at 25% 0%, rgba(147,197,253,.24), transparent 44%),
+    linear-gradient(135deg, rgba(37,99,235,.48), rgba(74,158,255,.18));
+  box-shadow:0 0 0 1px rgba(74,158,255,.16), 0 0 28px rgba(74,158,255,.20), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.app-command-nav .page-nav-btn.active::before{background:linear-gradient(90deg,#60a5fa,#22c55e);}
+.nav-admin-btn.active,
+.nav-admin-btn:hover{
+  border-color:rgba(192,132,252,.7) !important;
+  box-shadow:0 0 25px rgba(192,132,252,.20) !important;
+}
+.nav-icon-wrap{
+  width:24px;
+  height:24px;
+  border-radius:9px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  background:rgba(74,158,255,.10);
+  border:1px solid rgba(74,158,255,.16);
+}
+.app-command-nav .page-nav-btn.active .nav-icon-wrap{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.20);}
+.nav-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  font-family:var(--mono);
+  font-size:9px;
+  font-weight:900;
+  line-height:1;
+  color:#fff;
+  background:#ef4444;
+  box-shadow:0 0 14px rgba(239,68,68,.38);
+}
+.nav-tools-panel{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  min-width:158px;
+}
+.app-command-nav .global-size-wrap{
+  height:42px;
+  margin:0;
+  padding:7px 10px;
+  gap:7px;
+  border:1px solid rgba(58,68,96,.72);
+  border-radius:14px;
+  background:rgba(15,17,23,.62);
+}
+.app-command-nav .global-size-wrap input[type="range"]{width:78px;}
+.app-command-nav .global-size-value{color:#bfdbfe;font-weight:800;}
+@media (max-width:1180px){
+  .app-command-nav.page-nav{align-items:stretch;flex-wrap:wrap;}
+  .nav-brand-panel{flex:1 1 220px;}
+  .nav-tools-panel{flex:0 0 auto;}
+  .page-nav-center{order:3;flex-basis:100%;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;}
+  .page-nav-center::-webkit-scrollbar{display:none;}
+}
+@media (max-width:640px){
+  .app-command-nav.page-nav{padding:8px 10px;gap:8px;}
+  .nav-brand-panel{min-width:0;flex:1 1 100%;padding:7px 9px;}
+  .nav-brand-orb{width:32px;height:32px;border-radius:10px;font-size:10px;}
+  .nav-brand-title{font-size:10px;}
+  .nav-brand-sub{font-size:7px;}
+  .nav-tools-panel{order:2;width:100%;justify-content:flex-start;}
+  .app-command-nav .global-size-wrap{height:36px;}
+  .page-nav-center{order:3;padding:5px;gap:6px;border-radius:15px;}
+  .app-command-nav .page-nav-btn{min-height:38px;padding:7px 10px;font-size:9px;}
+  .nav-icon-wrap{width:22px;height:22px;}
+}
+
+
+/* Combined top selector: one header bar with Equipment Compliance metric card */
+#auth-bar{display:none !important;}
+.app-command-nav.page-nav{
+  min-height:64px;
+  padding:8px 14px;
+}
+.nav-brand-panel.nav-metric-card{
+  min-width:292px;
+  padding:9px 14px;
+  border-color:rgba(16,185,129,.30);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(16,185,129,.22), transparent 45%),
+    linear-gradient(135deg, rgba(15,23,42,.92), rgba(6,22,20,.72));
+  box-shadow:0 0 28px rgba(16,185,129,.12), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.nav-brand-panel.nav-metric-card .nav-brand-orb{
+  color:#03140c;
+  background:linear-gradient(135deg,#bbf7d0,#22c55e 45%,#4a9eff);
+  box-shadow:0 0 26px rgba(34,197,94,.35);
+}
+.nav-brand-panel.nav-metric-card .nav-brand-title{
+  color:#dcfce7;
+  font-size:12px;
+  letter-spacing:1.4px;
+}
+.nav-brand-panel.nav-metric-card .nav-brand-sub{
+  color:rgba(187,247,208,.64);
+}
+.nav-metric-pulse{
+  margin-left:auto;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 0 0 rgba(34,197,94,.65);
+  animation:metricPulse 1.8s infinite;
+}
+@keyframes metricPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.65);opacity:1;}
+  50%{box-shadow:0 0 0 8px rgba(34,197,94,0);opacity:.72;}
+}
+.nav-tools-panel{gap:8px;}
+.nav-auth-chip{
+  height:42px;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  border:1px solid rgba(16,185,129,.28);
+  border-radius:14px;
+  background:rgba(16,185,129,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.nav-auth-chip .nav-auth-status{
+  color:#bbf7d0;
+  max-width:220px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+@media (max-width:1180px){
+  .nav-brand-panel.nav-metric-card{min-width:240px;}
+  .nav-auth-chip{order:1;}
+}
+@media (max-width:640px){
+  .nav-brand-panel.nav-metric-card{flex-basis:100%;min-width:0;}
+  .nav-tools-panel{width:100%;justify-content:space-between;gap:6px;}
+  .nav-auth-chip{height:auto;min-height:36px;flex:1;min-width:0;}
+  .nav-auth-chip .nav-auth-status{max-width:100%;font-size:10px;}
+}
+
+
+
+/* UNDO BUTTONS — equipment + audits/training */
+.eq-undo-btn,
+.undo-roster-btn{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:6px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  border:1px solid rgba(56,189,248,.45);
+  background:linear-gradient(135deg,rgba(56,189,248,.13),rgba(16,185,129,.07));
+  color:#bae6fd;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  box-shadow:0 0 16px rgba(56,189,248,.10);
+  transition:all .15s ease;
+  white-space:nowrap;
+}
+.eq-undo-btn:hover:not(:disabled),
+.undo-roster-btn:hover:not(:disabled){
+  border-color:rgba(56,189,248,.85);
+  color:#fff;
+  background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(16,185,129,.12));
+  transform:translateY(-1px);
+}
+.eq-undo-btn:disabled,
+.undo-roster-btn:disabled{
+  opacity:.38;
+  cursor:not-allowed;
+  filter:saturate(.45);
+  box-shadow:none;
+}
+
+
+
+/* =====================================================
+   FINAL: SINGLE TOP HEADER + COMPACT PAGE ACTION BARS
+   Removes the duplicate large page-title header under the top selector.
+   Page actions remain available, but page titles/subtitles are folded into the top nav.
+   ===================================================== */
+.page > .header{
+  background:transparent !important;
+  border-bottom:none !important;
+  border-top:none !important;
+  box-shadow:none !important;
+  padding:10px 24px 0 !important;
+  min-height:0 !important;
+  justify-content:flex-end !important;
+}
+.page > .header > div:first-child{
+  display:none !important;
+}
+#page-employees > .header{
+  padding:8px 24px 0 !important;
+}
+#page-employees > .header > div:last-child{
+  width:100%;
+  justify-content:flex-end;
+}
+#page-equipment > .header,
+#page-audits > .header,
+#page-admin > .header,
+#page-activity > .header,
+#page-ppe > .header{
+  display:flex !important;
+}
+#page-ppe > .header{
+  display:none !important;
+}
+.page > .header button,
+.page > .header .roster-btn,
+.page > .header .eq-filter-btn,
+.page > .header .eq-view-toggle-btn,
+.page > .header .eq-undo-btn{
+  box-shadow:0 0 0 1px rgba(74,158,255,.08), 0 8px 22px rgba(0,0,0,.18);
+}
+@media(max-width:700px){
+  .page > .header{padding:8px 12px 0 !important;}
+  .page > .header > div:last-child{justify-content:flex-start !important;overflow-x:auto;flex-wrap:nowrap !important;width:100%;}
+}
 </style>
 <style id="table-scale">
 html,body{
@@ -3529,65 +4031,458 @@ function clearEqNotesInline(btn){
 }
 </style>
 
+
+<style id="equipment-tablet-center-final">
+/* Final equipment header/table cleanup */
+#page-equipment .header-sub{display:none !important;}
+#equipment-page .equip-table td.eq-tablet-cell,
+#page-equipment .equip-table td.eq-tablet-cell{
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+#equipment-page .equip-table td.eq-tablet-cell,
+#page-equipment .equip-table td.eq-tablet-cell{
+  display:table-cell !important;
+}
+#equipment-page .eq-tablet-cell .tablet-input,
+#page-equipment .eq-tablet-cell .tablet-input,
+#equipment-page .equip-table .tablet-input,
+#page-equipment .equip-table .tablet-input{
+  text-align:center !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  display:block !important;
+  width:100% !important;
+  max-width:150px !important;
+}
+#equipment-page .eq-tablet-cell .tablet-missing,
+#page-equipment .eq-tablet-cell .tablet-missing{
+  display:inline-flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  margin:0 auto 5px !important;
+  white-space:nowrap !important;
+}
+#equipment-page .eq-card-field .tablet-input,
+#page-equipment .eq-card-field .tablet-input{
+  text-align:center !important;
+}
+</style>
+
+
+<style id="final-out-service-border-and-futuristic-admin">
+/* =========================================================
+   FINAL EQUIPMENT BORDER FIX
+   Earlier CSS targeted #equipment-page, but the live page id is #page-equipment.
+   This override uses the real page id and forces visible red/gold borders.
+   ========================================================= */
+#page-equipment .equip-table{
+  border-collapse:separate !important;
+  border-spacing:0 8px !important;
+  background:transparent !important;
+}
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"],
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"],
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"]{
+  position:relative !important;
+  isolation:isolate !important;
+}
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"]{--eq-service-border:#ff1f1f;--eq-service-bg:rgba(255,31,31,.18);--eq-service-glow:rgba(255,31,31,.38);}
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"],
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"]{--eq-service-border:#ffbf00;--eq-service-bg:rgba(255,191,0,.18);--eq-service-glow:rgba(255,191,0,.34);}
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"] td,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"] td,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"] td{
+  background:linear-gradient(180deg,var(--eq-service-bg),rgba(17,24,39,.98)) !important;
+  border-top:3px solid var(--eq-service-border) !important;
+  border-bottom:3px solid var(--eq-service-border) !important;
+  box-shadow:inset 0 0 0 9999px rgba(255,255,255,.015), 0 0 18px var(--eq-service-glow) !important;
+}
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"] td:first-child,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"] td:first-child,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"] td:first-child{
+  border-left:5px solid var(--eq-service-border) !important;
+  border-top-left-radius:12px !important;
+  border-bottom-left-radius:12px !important;
+  box-shadow:inset 5px 0 0 var(--eq-service-border), 0 0 18px var(--eq-service-glow) !important;
+}
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"] td:last-child,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"] td:last-child,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"] td:last-child{
+  border-right:5px solid var(--eq-service-border) !important;
+  border-top-right-radius:12px !important;
+  border-bottom-right-radius:12px !important;
+}
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="down"] td{--eq-service-border:#ff1f1f;--eq-service-bg:rgba(255,31,31,.10);--eq-service-glow:rgba(255,31,31,.32);}
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="maintenance"] td,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="standby"] td{--eq-service-border:#ffbf00;--eq-service-bg:rgba(255,191,0,.10);--eq-service-glow:rgba(255,191,0,.28);}
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="down"] td,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="maintenance"] td,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="standby"] td{
+  background:linear-gradient(180deg,var(--eq-service-bg),rgba(15,17,23,.98)) !important;
+  border-left:5px solid var(--eq-service-border) !important;
+  border-right:5px solid var(--eq-service-border) !important;
+  border-bottom:3px solid var(--eq-service-border) !important;
+  border-radius:0 0 12px 12px !important;
+  box-shadow:0 0 18px var(--eq-service-glow) !important;
+}
+#page-equipment .eq-card[data-status="down"]{--eq-service-border:#ff1f1f;--eq-service-glow:rgba(255,31,31,.40);}
+#page-equipment .eq-card[data-status="maintenance"],
+#page-equipment .eq-card[data-status="standby"]{--eq-service-border:#ffbf00;--eq-service-glow:rgba(255,191,0,.36);}
+#page-equipment .eq-card[data-status="down"],
+#page-equipment .eq-card[data-status="maintenance"],
+#page-equipment .eq-card[data-status="standby"]{
+  border:3px solid var(--eq-service-border) !important;
+  border-left-width:9px !important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 16px 36px rgba(0,0,0,.32),0 0 26px var(--eq-service-glow) !important;
+}
+#page-equipment .eq-card[data-status="operational"]{
+  border-color:var(--border) !important;
+  border-left-color:#22c55e !important;
+  box-shadow:0 8px 18px rgba(0,0,0,.18) !important;
+}
+
+/* =========================================================
+   FUTURISTIC ADMIN PAGE OVERHAUL
+   ========================================================= */
+#page-admin{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(74,158,255,.18), transparent 34%),
+    radial-gradient(circle at 90% 12%, rgba(34,197,94,.12), transparent 32%),
+    linear-gradient(180deg,#080b13,#0f1117 44%,#090b10) !important;
+  min-height:calc(100vh - 44px);
+}
+#page-admin .header{
+  background:linear-gradient(135deg,rgba(8,13,24,.98),rgba(12,21,38,.96)) !important;
+  border-bottom:1px solid rgba(74,158,255,.42) !important;
+  box-shadow:0 14px 40px rgba(0,0,0,.35), inset 0 -1px 0 rgba(34,197,94,.14) !important;
+  position:relative;
+  overflow:hidden;
+}
+#page-admin .header::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(74,158,255,.16),transparent 38%,rgba(34,197,94,.10));
+  pointer-events:none;
+}
+#page-admin .header-title{
+  position:relative;
+  font-size:20px !important;
+  letter-spacing:3px !important;
+  color:#bfdbfe !important;
+  text-shadow:0 0 18px rgba(74,158,255,.35);
+}
+#page-admin .header-sub{
+  position:relative;
+  color:#7dd3fc !important;
+  letter-spacing:1.4px !important;
+}
+#page-admin .admin-wrap{
+  padding:22px 24px 48px !important;
+  gap:18px !important;
+}
+#page-admin .admin-wrap::before{
+  content:'SECURE CONTROL PANEL';
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:0 0 2px;
+  padding:12px 14px;
+  border:1px solid rgba(74,158,255,.32);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(74,158,255,.11),rgba(15,23,42,.72));
+  color:#93c5fd;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:2.2px;
+  text-transform:uppercase;
+  box-shadow:0 10px 28px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
+}
+#page-admin .admin-panel{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(74,158,255,.30) !important;
+  border-radius:18px !important;
+  background:linear-gradient(145deg,rgba(17,24,39,.98),rgba(6,11,22,.98)) !important;
+  box-shadow:0 18px 46px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.06) !important;
+  padding:18px !important;
+}
+#page-admin .admin-panel::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#38bdf8,#22c55e,#f59e0b);
+  opacity:.9;
+}
+#page-admin .admin-panel::after{
+  content:'';
+  position:absolute;
+  top:-90px;right:-90px;
+  width:220px;height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(74,158,255,.16),transparent 68%);
+  pointer-events:none;
+}
+#page-admin .admin-panel-head{
+  position:relative;
+  z-index:1;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(148,163,184,.16);
+  margin-bottom:16px !important;
+}
+#page-admin .admin-title{
+  font-size:13px !important;
+  letter-spacing:2px !important;
+  color:#e0f2fe !important;
+  text-shadow:0 0 14px rgba(56,189,248,.22);
+}
+#page-admin .admin-sub{
+  color:#94a3b8 !important;
+  font-size:10px !important;
+}
+#page-admin .admin-sub strong{color:#facc15 !important;}
+#page-admin .admin-form-grid{
+  position:relative;
+  z-index:1;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr)) !important;
+  gap:14px !important;
+}
+#page-admin .admin-form-grid label{
+  color:#7dd3fc !important;
+  font-weight:800 !important;
+  letter-spacing:1.5px !important;
+}
+#page-admin .admin-form-grid input,
+#page-admin .admin-form-grid select{
+  min-height:42px;
+  background:rgba(2,6,23,.78) !important;
+  border:1px solid rgba(74,158,255,.32) !important;
+  border-radius:12px !important;
+  color:#f8fafc !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+#page-admin .admin-form-grid input:focus,
+#page-admin .admin-form-grid select:focus{
+  border-color:#38bdf8 !important;
+  box-shadow:0 0 0 3px rgba(56,189,248,.16),0 0 22px rgba(56,189,248,.10) !important;
+}
+#page-admin .admin-btn{
+  position:relative;
+  z-index:1;
+  min-height:36px;
+  border-radius:999px !important;
+  border-color:rgba(74,158,255,.42) !important;
+  background:linear-gradient(135deg,rgba(30,41,59,.88),rgba(15,23,42,.88)) !important;
+  color:#dbeafe !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+#page-admin .admin-btn:hover{
+  transform:translateY(-1px);
+  border-color:#38bdf8 !important;
+  box-shadow:0 0 18px rgba(56,189,248,.18), inset 0 1px 0 rgba(255,255,255,.08);
+}
+#page-admin .admin-btn.primary{
+  border-color:rgba(34,197,94,.62) !important;
+  background:linear-gradient(135deg,rgba(34,197,94,.24),rgba(14,165,233,.16)) !important;
+  color:#dcfce7 !important;
+}
+#page-admin .admin-btn.danger{
+  border-color:rgba(239,68,68,.60) !important;
+  background:linear-gradient(135deg,rgba(239,68,68,.16),rgba(127,29,29,.18)) !important;
+  color:#fecaca !important;
+}
+#page-admin .admin-permission-table-wrap{
+  position:relative;
+  z-index:1;
+  border:1px solid rgba(74,158,255,.24) !important;
+  border-radius:16px !important;
+  background:rgba(2,6,23,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+#page-admin .admin-permission-table{
+  margin:0 !important;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+#page-admin .admin-permission-table th{
+  background:linear-gradient(180deg,rgba(30,41,59,.95),rgba(15,23,42,.95)) !important;
+  color:#93c5fd !important;
+  border-bottom:1px solid rgba(74,158,255,.24) !important;
+}
+#page-admin .admin-permission-table td{
+  background:rgba(15,23,42,.62) !important;
+  border-bottom:1px solid rgba(148,163,184,.12) !important;
+}
+#page-admin .admin-permission-table td:first-child{
+  color:#f8fafc !important;
+}
+#page-admin .admin-permission-table input[type="checkbox"]{
+  width:20px !important;
+  height:20px !important;
+  accent-color:#22c55e !important;
+  filter:drop-shadow(0 0 6px rgba(34,197,94,.20));
+}
+#page-admin .admin-users-list{
+  position:relative;
+  z-index:1;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr)) !important;
+  gap:14px !important;
+}
+#page-admin .admin-user-card{
+  border:1px solid rgba(74,158,255,.26) !important;
+  border-radius:16px !important;
+  background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(2,6,23,.96)) !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.05);
+  padding:14px !important;
+}
+#page-admin .admin-user-card:hover{
+  border-color:rgba(56,189,248,.62) !important;
+  box-shadow:0 12px 34px rgba(0,0,0,.34),0 0 22px rgba(56,189,248,.10);
+}
+#page-admin .admin-user-name{
+  color:#f8fafc !important;
+  font-size:14px !important;
+}
+#page-admin .admin-user-meta{
+  color:#94a3b8 !important;
+}
+#page-admin .admin-user-pill{
+  border-color:rgba(34,197,94,.40) !important;
+  background:rgba(34,197,94,.12) !important;
+  color:#bbf7d0 !important;
+}
+#page-admin .admin-perm-chip{
+  border-color:rgba(148,163,184,.20) !important;
+  color:#94a3b8 !important;
+  background:rgba(15,23,42,.88) !important;
+}
+#page-admin .admin-perm-chip.edit{
+  border-color:rgba(34,197,94,.36) !important;
+  color:#86efac !important;
+  background:rgba(34,197,94,.10) !important;
+}
+#page-admin .admin-warning{
+  border-radius:14px !important;
+  border-color:rgba(250,204,21,.45) !important;
+  background:linear-gradient(135deg,rgba(250,204,21,.12),rgba(245,158,11,.07)) !important;
+  color:#fde68a !important;
+}
+@media(max-width:700px){
+  #page-admin .admin-wrap{padding:14px 12px 40px !important;}
+  #page-admin .admin-users-list{grid-template-columns:1fr !important;}
+}
+</style>
+
+
+
+<style id="fix-out-service-double-left-border">
+/* =========================================================
+   FIX: remove double left border on out-of-service equipment
+   The previous warning border used BOTH border-left and inset box-shadow,
+   creating a doubled red/gold stripe. This keeps one clean outer stripe.
+   ========================================================= */
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"] td:first-child,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"] td:first-child,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"] td:first-child{
+  border-left:6px solid var(--eq-service-border) !important;
+  box-shadow:0 0 18px var(--eq-service-glow) !important;
+  background-clip:padding-box !important;
+}
+
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"] td,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"] td,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"] td{
+  box-shadow:0 0 14px var(--eq-service-glow) !important;
+}
+
+/* Keep the notes row attached visually, but do not draw a second inner stripe. */
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="down"] td,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="maintenance"] td,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="standby"] td{
+  border-left:6px solid var(--eq-service-border) !important;
+  box-shadow:0 0 14px var(--eq-service-glow) !important;
+  background-clip:padding-box !important;
+}
+
+/* Out-of-service warning border should override older equipment-type/status edge styles. */
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="down"] td:first-child::before,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="maintenance"] td:first-child::before,
+#page-equipment .equip-table tbody tr.eq-main-row[data-status="standby"] td:first-child::before,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="down"] td:first-child::before,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="maintenance"] td:first-child::before,
+#page-equipment .equip-table tbody tr.eq-notes-row[data-status="standby"] td:first-child::before{
+  display:none !important;
+  content:none !important;
+}
+</style>
+
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
 <div id="eq-login-overlay" class="eq-login-overlay">
   <div class="eq-login-modal">
     <div class="eq-login-title">CONGLOBAL</div>
-    <div class="eq-login-sub">Sign in to use the employee and equipment tracker.</div>
-    <input id="eq-popup-user" class="eq-login-user" type="text" value="CONGLOBAL" readonly aria-label="Username">
+    <div class="eq-login-sub">Sign in with your user ID and password.</div>
+    <input id="eq-popup-user" class="eq-login-user" type="text" value="admin" placeholder="User ID" autocomplete="username" aria-label="User ID">
     <input id="eq-popup-password" class="eq-login-pass" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
     <button class="eq-login-btn" onclick="handlePopupLogin()">Sign In</button>
-    <div id="eq-login-error" class="eq-login-error">Wrong password. Try admin.</div>
+    <div id="eq-login-error" class="eq-login-error">Wrong user ID or password.</div>
   </div>
 </div>
 
-
-<!-- AUTH BAR -->
-<div id="auth-bar" style="background:#0b0e14;border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-  <div id="auth-signin-form" class="nav-auth-form" style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;width:100%;">
-    <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">Sign In</span>
-    <input id="eq-username" type="text" value="CONGLOBAL" readonly style="flex:1;min-width:80px;max-width:130px;">
-    <input id="eq-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')signInEq()" style="flex:2;min-width:100px;">
-    <button class="nav-auth-btn" onclick="signInEq()">Sign In</button>
-  </div>
-  <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;width:100%;">
-    <span id="eq-auth-status" class="nav-auth-status"></span>
-    <button class="nav-signout-btn" onclick="signOutEq()">Sign Out</button>
-  </div>
-</div>
 
 <!-- PAGE NAV -->
-<div class="page-nav">
-  <div class="page-nav-right" style="flex:1;flex-wrap:wrap;">
+<div class="page-nav app-command-nav">
+  <div class="nav-brand-panel nav-metric-card">
+    <div class="nav-brand-orb">SO</div>
+    <div class="nav-brand-copy">
+      <div class="nav-brand-title">SETTEGAST OPERATIONS</div>
+      <div class="nav-brand-sub">Created by Jacob Prado</div>
+    </div>
+    <div class="nav-metric-pulse" title="Global dashboard"></div>
+  </div>
+
+  <div class="page-nav-center">
+    <button class="page-nav-btn active" id="nav-employees" onclick="switchPage('employees')">
+      <span class="nav-icon-wrap"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span class="nav-label">Employee ID</span>
+    </button>
+    <button class="page-nav-btn" id="nav-equipment" onclick="switchPage('equipment')">
+      <span class="nav-icon-wrap"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+      <span class="nav-label">Equipment</span>
+    </button>
+    <button class="page-nav-btn" id="nav-audits" onclick="switchPage('audits')">
+      <span class="nav-icon-wrap"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+      <span class="nav-label">Audits</span>
+    </button>
+    <button class="page-nav-btn" id="nav-ppe" onclick="switchPage('ppe')">
+      <span class="nav-icon-wrap"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9z"/></svg></span>
+      <span class="nav-label">PPE</span>
+    </button>
+    <button class="page-nav-btn admin-only-nav nav-admin-btn" id="nav-admin" onclick="switchPage('admin')" style="display:none;">
+      <span class="nav-icon-wrap"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
+      <span class="nav-label">Admin</span>
+    </button>
+    <button class="page-nav-btn" id="nav-activity" onclick="switchPage('activity')">
+      <span class="nav-icon-wrap"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      <span class="nav-label">Activity</span>
+      <span id="activity-badge" class="nav-badge" style="display:none;"></span>
+    </button>
+  </div>
+
+  <div class="nav-tools-panel">
+    <div id="auth-signed-in" class="nav-auth-chip" style="display:none;">
+      <span id="eq-auth-status" class="nav-auth-status"></span>
+      <button class="nav-signout-btn" onclick="signOutEq()">Sign Out</button>
+    </div>
     <div class="global-size-wrap" title="Resize the app">
       <span class="size-letter">A</span>
       <input type="range" id="global-size-slider" min="85" max="130" value="100" step="1" oninput="setGlobalScale(this.value)">
       <span class="size-letter" style="font-size:13px;">A</span>
       <span class="global-size-value" id="global-size-value">100%</span>
     </div>
-    <button class="page-nav-btn active" id="nav-employees" onclick="switchPage('employees')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Employee Roster
-    </button>
-    <button class="page-nav-btn" id="nav-equipment" onclick="switchPage('equipment')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-      Equipment Status
-    </button>
-    <button class="page-nav-btn" id="nav-audits" onclick="switchPage('audits')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Audits &amp; Training
-    </button>
-    <button class="page-nav-btn" id="nav-ppe" onclick="switchPage('ppe')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9z"/></svg>
-      PPE &amp; Compliance
-    </button>
-    <button class="page-nav-btn" id="nav-activity" onclick="switchPage('activity')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Activity Feed
-      <span id="activity-badge" style="display:none;font-size:9px;background:#ef4444;color:#fff;border-radius:8px;padding:1px 6px;font-family:var(--mono);font-weight:700;line-height:1.4;margin-left:2px;"></span>
-    </button>
   </div>
 </div>
 
@@ -7757,6 +8652,14 @@ function getPPESupabaseClient(){
 function setPPESyncBanner(kind, message, autoHide){
   const banner = document.getElementById(&#x27;ppe-sync-banner&#x27;);
   if(!banner) return;
+
+  // Do not show success popups/banners on the PPE page.
+  // Keep warning/error banners visible so failed global saving is still obvious.
+  if(kind === &#x27;good&#x27;){
+    banner.classList.remove(&#x27;show&#x27;);
+    return;
+  }
+
   banner.className = &#x27;ppe-sync-banner show &#x27; + (kind || &#x27;warn&#x27;);
   const text = banner.querySelector(&#x27;.ppe-sync-text&#x27;);
   if(text) text.textContent = message || &#x27;&#x27;;
@@ -8314,7 +9217,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 <div class="header">
   <div>
     <div class="header-title">EMPLOYEE ID TRACKER</div>
-    <div class="header-sub">Employee User ID &amp; Contact Information</div>
+    <div class="header-sub">Employee ID &amp; Contact Information</div>
   </div>
   <div style="display:flex;align-items:center;gap:16px;">
     <button id="needs-attn-btn" onclick="toggleNeedsAttention()" style="font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid rgba(239,68,68,.5);background:rgba(239,68,68,.1);color:#f87171;display:flex;align-items:center;gap:7px;transition:all .15s;">
@@ -8337,6 +9240,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   <button class="tab" onclick="setTab('Day')"><span class="dot dot-day"></span>Day Shift<span class="tab-count" id="tc-day">0</span></button>
   <button class="tab" onclick="setTab('Night')"><span class="dot dot-night"></span>Night Shift<span class="tab-count" id="tc-night">0</span></button>
   <button class="tab" onclick="setTab('Gate')"><span class="dot dot-gate"></span>Gate<span class="tab-count" id="tc-gate">0</span></button>
+  <button class="tab" onclick="setTab('attention')"><span class="dot" style="background:#ef4444;"></span>Needs Attention<span class="tab-count" id="tc-attn">0</span></button>
 </div>
 <div class="toolbar">
   <div class="employee-search-actions">
@@ -8344,9 +9248,6 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" id="search-input" placeholder="Search name, ID, phone..." oninput="render()">
     </div>
-    <button id="employee-attn-filter-btn" class="employee-attn-filter-btn" type="button" onclick="toggleEmployeeNeedsAttentionFilter()" aria-pressed="false">
-      <span class="attn-dot"></span> Needs Attention <span id="employee-attn-filter-count">0</span>
-    </button>
   </div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
     <button class="btn btn-ghost" onclick="openRevertModal()">
@@ -8373,14 +9274,9 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 <div class="header">
   <div>
     <div class="header-title">Equipment Status</div>
-    <div class="header-sub">Live Equipment Tracking &amp; Status Board</div>
     <div id="equipment-updated" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">Last updated: —</div>
   </div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <div id="equipment-kpi" style="display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--border2);border-radius:999px;background:rgba(30,35,51,.8);font-family:var(--mono);font-size:10px;color:var(--muted);">
-      <span class="pulse" id="equipment-kpi-dot" style="background:#4a9eff;"></span>
-      <span id="equipment-kpi-label">Coverage: —</span>
-    </div>
     <button id="eq-out-service-filter-btn" class="eq-filter-btn" type="button" onclick="toggleEquipmentOutOfServiceFilter()" aria-pressed="false">
       <span class="eq-filter-dot"></span>
       Out of Service Only
@@ -8388,6 +9284,9 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
     <button id="eq-card-view-btn" class="eq-view-toggle-btn" type="button" onclick="toggleEquipmentCardView()" aria-pressed="false">
       <span class="eq-view-toggle-icon">▦</span>
       Card View
+    </button>
+    <button id="eq-undo-btn" class="eq-undo-btn" type="button" onclick="undoEquipmentChange()" disabled title="Undo last equipment change">
+      ↶ Undo
     </button>
     <button onclick="openAddUnitModal()" style="font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid #4a9eff;background:rgba(74,158,255,.12);color:#4a9eff;display:flex;align-items:center;gap:6px;">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Unit
@@ -8405,7 +9304,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   <div class="header">
     <div>
       <div class="header-title">Audits &amp; Monthly Training</div>
-      <div class="header-sub">Paste names, sort by shift, and filter the results.</div>
+      <div class="header-sub">Audit and monthly training command center — paste rosters, filter by shift, and track completion readiness.</div>
       <div id="roster-updated" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">Last updated: —</div>
     </div>
     <div class="roster-page-actions">
@@ -8413,24 +9312,55 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/><path d="M9 4v16"/></svg>
         Paste Names
       </button>
+      <button id="roster-undo-btn" class="roster-btn undo-roster-btn" onclick="undoRosterChange()" disabled title="Undo last audit/training change">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 1 1 0 12h-1"/></svg>
+        Undo
+      </button>
       <button class="roster-btn" onclick="resetRosterData()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg>
         Reset
       </button>
     </div>
   </div>
+  <div id="roster-updated-banner" class="roster-updated-banner"><strong>Last Updated</strong><span id="roster-updated-banner-text">No audit/training updates loaded yet.</span></div>
 
   <div class="audits-wrap">
-    <div class="roster-overview">
-      <div class="roster-summary-card roster-summary-audit">
-        <div class="roster-summary-title">Audit List</div>
-        <div class="roster-summary-value" id="audit-total-count">0</div>
-        <div class="roster-summary-sub" id="audit-shift-summary">Day 0 · Night 0 · Other 0</div>
+    <div class="roster-overview audit-training-hero-cards">
+      <div class="roster-summary-card roster-summary-audit audit-hero-card">
+        <div class="audit-hero-card-top">
+          <div class="audit-hero-icon audit-hero-icon-blue">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="audit-hero-title-wrap">
+            <div class="roster-summary-title">Audit List</div>
+            <div class="audit-hero-kicker">People pending audit review</div>
+          </div>
+          <div class="audit-hero-status audit-hero-status-blue">Active</div>
+        </div>
+        <div class="audit-hero-main">
+          <div class="roster-summary-value" id="audit-total-count">0</div>
+          <div class="audit-hero-unit">names</div>
+        </div>
+        <div class="audit-hero-divider"></div>
+        <div class="roster-summary-sub audit-hero-breakdown" id="audit-shift-summary">Day 0 · Night 0 · Other 0</div>
       </div>
-      <div class="roster-summary-card roster-summary-train">
-        <div class="roster-summary-title">Monthly Trainings</div>
-        <div class="roster-summary-value" id="train-total-count">0</div>
-        <div class="roster-summary-sub" id="train-shift-summary">Day 0 · Night 0 · Other 0</div>
+      <div class="roster-summary-card roster-summary-train audit-hero-card">
+        <div class="audit-hero-card-top">
+          <div class="audit-hero-icon audit-hero-icon-green">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="audit-hero-title-wrap">
+            <div class="roster-summary-title">Monthly Training</div>
+            <div class="audit-hero-kicker">People pending training completion</div>
+          </div>
+          <div class="audit-hero-status audit-hero-status-green">Monthly</div>
+        </div>
+        <div class="audit-hero-main">
+          <div class="roster-summary-value" id="train-total-count">0</div>
+          <div class="audit-hero-unit">names</div>
+        </div>
+        <div class="audit-hero-divider"></div>
+        <div class="roster-summary-sub audit-hero-breakdown" id="train-shift-summary">Day 0 · Night 0 · Other 0</div>
       </div>
     </div>
 
@@ -8554,12 +9484,46 @@ var HISTORY_KEY = 'eit_hist_v1';
 var ACTIVITY_KEY = 'eit_activity_v1';
 var _toastTimer2;
 
+function getCurrentActivityUser(){
+  try{
+    var raw = sessionStorage.getItem('conglobal_current_user_v1');
+    if(raw){
+      var u = JSON.parse(raw);
+      return (u.display_name || u.id || u.username || eqLoginUsername || 'Unknown User');
+    }
+  }catch(e){}
+  return eqLoginUsername || 'Unknown User';
+}
+function currentActivityUserIsAdmin(){
+  try{
+    var raw = sessionStorage.getItem('conglobal_current_user_v1');
+    if(raw){ return String((JSON.parse(raw) || {}).role || '').toLowerCase() === 'admin'; }
+  }catch(e){}
+  return String(eqLoginUsername || '').toLowerCase() === 'admin';
+}
+
+async function saveActivityEntryToSupabase(entry){
+  try{
+    if(!window.supabaseClient) return;
+    await window.supabaseClient.from('activity_log').insert([{
+      id: entry.id,
+      category: entry.type,
+      message: entry.msg,
+      details: { sub: entry.sub || '', author: entry.author || '', ts: entry.ts },
+      created_at: new Date(entry.ts).toISOString(),
+      last_edited_by: entry.author || getCurrentActivityUser()
+    }]);
+  }catch(err){ console.warn('Activity Supabase save failed:', err && (err.message || err)); }
+}
+
 function logActivity(type, msg, sub) {
   try {
     var log = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
-    log.unshift({ ts: Date.now(), type: type, msg: msg, sub: sub || '' });
+    var entry = { id:'act_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), ts: Date.now(), type: type, msg: msg, sub: sub || '', author: getCurrentActivityUser() };
+    log.unshift(entry);
     if (log.length > 200) log = log.slice(0, 200);
     localStorage.setItem(ACTIVITY_KEY, JSON.stringify(log));
+    saveActivityEntryToSupabase(entry);
     updateActivityBadge();
     var pg = document.getElementById('page-activity');
     if (pg && pg.classList.contains('active')) renderActivityFeed();
@@ -8571,8 +9535,10 @@ function getActivityLog() {
 }
 
 function clearActivityLog() {
+  if (!currentActivityUserIsAdmin()) { alert('Only the admin can clear the activity log.'); return; }
   if (!confirm('Clear all activity history?')) return;
   localStorage.removeItem(ACTIVITY_KEY);
+  try{ if(window.supabaseClient) window.supabaseClient.from('activity_log').delete().neq('id','__never_match__'); }catch(e){}
   updateActivityBadge();
   renderActivityFeed();
 }
@@ -8631,7 +9597,7 @@ function renderActivityFeed() {
       html += '<div class="af-entry">'
         + '<div class="af-icon ' + (AF_ICON_CLS[e.type]||'af-icon-system') + '">' + (AF_ICONS[e.type]||'⚙') + '</div>'
         + '<div class="af-body">'
-        + '<div class="af-msg">' + e.msg + '<span class="af-tag ' + (AF_TAG_CLS[e.type]||'af-tag-system') + '">' + e.type + '</span></div>'
+        + '<div class="af-msg">' + (e.author ? '<span class="af-author">' + String(e.author).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>' : '') + e.msg + '<span class="af-tag ' + (AF_TAG_CLS[e.type]||'af-tag-system') + '">' + e.type + '</span></div>'
         + (e.sub ? '<div class="af-sub">' + e.sub + '</div>' : '')
         + '</div>'
         + '<div class="af-time">' + afFmtTime(e.ts) + '</div>'
@@ -9007,18 +9973,15 @@ function employeeNeedsAttention(e){
   return !isComplete(e);
 }
 function toggleEmployeeNeedsAttentionFilter(){
-  employeeNeedsAttentionOnly=!employeeNeedsAttentionOnly;
-  var btn=document.getElementById('employee-attn-filter-btn');
-  if(btn){
-    btn.classList.toggle('active',employeeNeedsAttentionOnly);
-    btn.setAttribute('aria-pressed',employeeNeedsAttentionOnly?'true':'false');
-  }
-  render();
+  employeeNeedsAttentionOnly=false;
+  setTab('attention');
 }
 function updateEmployeeNeedsAttentionButton(){
   var count=employees.filter(employeeNeedsAttention).length;
   var countEl=document.getElementById('employee-attn-filter-count');
   if(countEl) countEl.textContent=count;
+  var tabCountEl=document.getElementById('tc-attn');
+  if(tabCountEl) tabCountEl.textContent=count;
   var btn=document.getElementById('employee-attn-filter-btn');
   if(btn){
     btn.classList.toggle('active',employeeNeedsAttentionOnly);
@@ -9030,7 +9993,11 @@ function updateEmployeeNeedsAttentionButton(){
 // ── TABS ──
 function setTab(t){
   currentTab=t;
-  document.querySelectorAll('.tab').forEach(function(el,i){el.classList.toggle('active',['all','today','Day','Night','Gate'][i]===t);});
+  employeeNeedsAttentionOnly=false;
+  var tabOrder=['all','today','Day','Night','Gate','attention'];
+  document.querySelectorAll('.tabs-row .tab').forEach(function(el,i){
+    el.classList.toggle('active',tabOrder[i]===t);
+  });
   render();
 }
 
@@ -9041,10 +10008,10 @@ function getFiltered(){
     var matchTab;
     if(currentTab==='all') matchTab=true;
     else if(currentTab==='today') matchTab=!isOffToday(e)&&e.status!=='off';
+    else if(currentTab==='attention') matchTab=employeeNeedsAttention(e);
     else matchTab=e.shift===currentTab;
     var matchQ=!q||[e.first,e.last,e.empId,e.upId||'',e.phone,e.daysOff].some(function(v){return String(v||'').toLowerCase().includes(q);});
-    var matchAttention=!employeeNeedsAttentionOnly||employeeNeedsAttention(e);
-    return matchTab&&matchQ&&matchAttention;
+    return matchTab&&matchQ;
   });
 }
 
@@ -9079,6 +10046,8 @@ function updateTabCounts(){
   document.getElementById('tc-day').textContent=employees.filter(function(e){return e.shift==='Day';}).length;
   document.getElementById('tc-night').textContent=employees.filter(function(e){return e.shift==='Night';}).length;
   document.getElementById('tc-gate').textContent=employees.filter(function(e){return e.shift==='Gate';}).length;
+  var attnEl=document.getElementById('tc-attn');
+  if(attnEl) attnEl.textContent=employees.filter(employeeNeedsAttention).length;
 }
 
 function shiftChip(e){
@@ -9268,13 +10237,12 @@ function setGlobalScale(val){
 }
 
 function initGlobalScale(){
+  // Default every new app load to 100% zoom.
+  // Previous saved zoom values were causing the app to reopen oversized/undersized.
   var saved = 100;
-  try{
-    var raw = localStorage.getItem(APP_SCALE_KEY);
-    if(raw) saved = parseInt(raw, 10) || 100;
-  }catch(e){}
+  try{ localStorage.setItem(APP_SCALE_KEY, '100'); }catch(e){}
   var slider = document.getElementById('global-size-slider');
-  if(slider) slider.value = String(saved);
+  if(slider) slider.value = '100';
   setGlobalScale(saved);
 }
 
@@ -9298,6 +10266,8 @@ var EQ_TYPES=['Hostler','Crane','Forklift','Reach Stacker','Side-Loader','Ops Tr
 var EQ_COLORS={Hostler:'#f59e0b',Crane:'#818cf8',Forklift:'#10b981','Reach Stacker':'#e879f9','Side-Loader':'#f97316','Ops Truck':'#4a9eff'};
 var EQ_PREFIX={Hostler:'HS',Crane:'CR',Forklift:'FL','Reach Stacker':'RS','Side-Loader':'SL','Ops Truck':'OP'};
 var equipment=[];
+var equipmentUndoStack = [];
+var equipmentUndoLimit = 25;
 var equipmentShowOutOfServiceOnly = false;
 var equipmentCardView = (function(){
   try{ return localStorage.getItem('equipment_card_view') === 'true'; }
@@ -9337,6 +10307,37 @@ function queueCalloutFallback(payload){
 var equipmentRealtimeChannel = null;
 var equipmentPollTimer = null;
 var equipmentSyncBusy = false;
+var lastEquipmentLocalEditAt = 0;
+function markEquipmentLocalEdit(){ lastEquipmentLocalEditAt = Date.now(); }
+function equipmentEditCoolingDown(){ return Date.now() - lastEquipmentLocalEditAt < 3500; }
+
+function cloneEquipmentState(){
+  try{ return JSON.parse(JSON.stringify(equipment || [])); }
+  catch(e){ return (equipment || []).map(function(row){ return Object.assign({}, row); }); }
+}
+function updateEquipmentUndoButton(){
+  var btn = document.getElementById('eq-undo-btn');
+  if(btn) btn.disabled = !equipmentUndoStack.length;
+}
+function pushEquipmentUndo(reason){
+  if(!Array.isArray(equipmentUndoStack)) equipmentUndoStack = [];
+  equipmentUndoStack.push({ ts: Date.now(), reason: reason || 'equipment change', rows: cloneEquipmentState() });
+  if(equipmentUndoStack.length > equipmentUndoLimit) equipmentUndoStack.shift();
+  updateEquipmentUndoButton();
+}
+async function undoEquipmentChange(){
+  if(!equipmentUndoStack.length){ alert('No equipment change to undo.'); return; }
+  var snap = equipmentUndoStack.pop();
+  equipment = dedupeEquipmentRows((snap.rows || []).map(normalizeEquipmentRow));
+  markEquipmentLocalEdit();
+  await saveEquipment();
+  renderEquipment();
+  renderEquipmentAttention();
+  updateEquipmentStatusMeta();
+  refreshEquipmentAgingDisplay();
+  updateEquipmentUndoButton();
+  logActivity('equipment','Undo applied on <strong>Equipment Status</strong>', snap.reason || 'Previous equipment state restored');
+}
 
 function syncEqLoginUI(){
   var signinForm = document.getElementById('auth-signin-form');
@@ -9382,7 +10383,7 @@ async function startEquipmentRealtimeSync(){
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'equipment' },
         async function(){
-          if(!eqLoggedIn || equipmentSyncBusy) return;
+          if(!eqLoggedIn || equipmentSyncBusy || equipmentEditCoolingDown()) return;
           equipmentSyncBusy = true;
           try{
             await loadEquipment();
@@ -9402,7 +10403,7 @@ async function startEquipmentRealtimeSync(){
 
   // Fallback for environments where realtime is not available
   equipmentPollTimer = setInterval(async function(){
-    if(!eqLoggedIn || equipmentSyncBusy) return;
+    if(!eqLoggedIn || equipmentSyncBusy || equipmentEditCoolingDown()) return;
     if(typeof navigator !== 'undefined' && !navigator.onLine) return; // skip when offline
     equipmentSyncBusy = true;
     try{
@@ -9520,6 +10521,8 @@ function normalizeEquipmentRow(row){
   normalized.type = type;
   normalized.unit = unit;
   normalized.name = prefixedEquipmentName(type, normalized.name || unit, unit);
+  normalized.assignedTo = String(normalized.assignedTo || normalized.assigned_to || '').trim();
+  if(isGateEmployeeName(normalized.assignedTo)) normalized.assignedTo = '';
   normalized.id = stableEqId(type, unit);
   return normalized;
 }
@@ -9585,8 +10588,9 @@ async function loadEquipment(){
         type: type,
         unit: unit,
         name: row.name || '',
-        tabletAssigned: row.tablet_assigned || '',
-        staysCharged: row.stays_charged || 'pending',
+        tabletAssigned: row.tablet_assigned || row.tablet || '',
+        assignedTo: row.assigned_to || '',
+        staysCharged: row.stays_charged || row.charged || 'pending',
         status: row.status || 'operational',
         notes: row.notes || '',
         updated_at: row.updated_at || null,
@@ -9666,6 +10670,7 @@ async function persistEquipmentAndRefresh(){
 }
 
 async function saveEquipment(){
+  markEquipmentLocalEdit();
   equipment = dedupeEquipmentRows(equipment.map(normalizeEquipmentRow));
 
   try{ localStorage.setItem(EQ_KEY, JSON.stringify(equipment)); }catch(e){}
@@ -9683,7 +10688,10 @@ async function saveEquipment(){
         unit: e.unit,
         name: e.name,
         tablet_assigned: e.tabletAssigned,
+        tablet: e.tabletAssigned,
+        assigned_to: e.assignedTo || '',
         stays_charged: e.staysCharged || 'pending',
+        charged: e.staysCharged || 'pending',
         status: e.status,
         notes: e.notes,
         updated_at: stamp,
@@ -9711,6 +10719,7 @@ function buildImportedEquipmentList(){
       unit: String(equipNum || ''),
       name: prefixedEquipmentName(type, equipNum, equipNum),
       tabletAssigned: String(tablet || ''),
+      assignedTo: '',
       staysCharged: 'pending',
       status: 'operational',
       notes: '',
@@ -9763,7 +10772,10 @@ async function applyImportedEquipmentListOnce(){
           unit: e.unit,
           name: e.name,
           tablet_assigned: e.tabletAssigned,
+          tablet: e.tabletAssigned,
+          assigned_to: e.assignedTo || '',
           stays_charged: e.staysCharged || 'pending',
+          charged: e.staysCharged || 'pending',
           status: e.status,
           notes: e.notes,
           updated_at: stamp,
@@ -9791,6 +10803,7 @@ async function updateEqStatus(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(!e) return;
   var prev = e.status;
+  if(prev !== val) pushEquipmentUndo('Status changed for ' + (e.name || e.unit || id));
   e.status=val;
 
   if(prev==='operational' && val!=='operational'){
@@ -9814,6 +10827,7 @@ async function updateEqStatus(id,val){
 function updateEqName(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(e){
+    if(String(e.name || '') !== String(val || '')) pushEquipmentUndo('Name changed for ' + (e.name || e.unit || id));
     e.type = canonicalEquipmentType(e.type);
     e.name = prefixedEquipmentName(e.type, val, e.unit);
     saveEquipment();
@@ -9824,6 +10838,7 @@ function updateEqName(id,val){
 function updateEqTablet(id,val){
   var e=equipment.find(function(x){return x.id===id;});
   if(e){
+    if(String(e.tabletAssigned || '') !== String(val || '')) pushEquipmentUndo('Tablet changed for ' + (e.name || e.unit || id));
     var prev=e.tabletAssigned;
     e.tabletAssigned=val;
     if(val&&val.trim()&&val!==prev){
@@ -9842,6 +10857,7 @@ function queueEqNotesSave(id, val){
   var e = equipment.find(function(x){return x.id===id;});
   if(!e) return;
 
+  if(String(e.notes || '') !== String(val || '') && !e.__notesUndoCaptured){ pushEquipmentUndo('Notes changed for ' + (e.name || e.unit || id)); e.__notesUndoCaptured = true; }
   e.notes = val;
   renderEquipmentAttention();
   updateEquipmentStatusMeta();
@@ -9853,6 +10869,8 @@ function queueEqNotesSave(id, val){
 }
 
 async function flushEqNotesSave(id){
+  var eForUndoReset = equipment.find(function(x){return x.id===id;});
+  if(eForUndoReset) delete eForUndoReset.__notesUndoCaptured;
   if(notesSaveTimers[id]){
     clearTimeout(notesSaveTimers[id]);
     delete notesSaveTimers[id];
@@ -9896,6 +10914,7 @@ function updateEqNotes(id,val){
 })();
 async function deleteEquipment(id){
   if(!confirm('Remove this unit?')) return;
+  pushEquipmentUndo('Removed equipment unit');
   var eq=equipment.find(function(e){return e.id===id;});
   if(eq) logActivity('equipment','<strong>'+(eq.name&&eq.name.trim()?eq.unit+' ('+eq.name.trim()+')':eq.unit)+'</strong> removed from fleet','Type: '+eq.type);
   equipment = equipment.filter(function(e){ return e.id !== id; });
@@ -9915,6 +10934,7 @@ async function deleteEquipment(id){
   renderEquipment();
 }
 function addSpecificEquip(type){
+  pushEquipmentUndo('Added equipment unit');
   type = canonicalEquipmentType(type);
   var pre=EQ_PREFIX[type] || 'EQ',n=equipment.filter(function(e){return canonicalEquipmentType(e.type)===type;}).length;
   var unit=pre+'-'+String(n+1).padStart(2,'0');
@@ -10005,6 +11025,58 @@ function eqStatusAccent(status){
   })[status] || '#22c55e';
 }
 
+
+function isGateEmployeeName(name){
+  var target = String(name || '').replace(/\s+/g,' ').trim().toLowerCase();
+  if(!target) return false;
+  return (employees || []).some(function(emp){
+    var full = ((emp.first || '') + ' ' + (emp.last || '')).replace(/\s+/g,' ').trim().toLowerCase();
+    var shift = String(emp.shift || '').trim().toLowerCase();
+    return full === target && shift === 'gate';
+  });
+}
+
+function getEmployeeAssignmentOptions(selected){
+  selected = String(selected || '').trim();
+  if(isGateEmployeeName(selected)) selected = '';
+  var seen = {};
+  var list = (employees || []).filter(function(emp){
+    return String(emp.shift || '').trim().toLowerCase() !== 'gate';
+  }).map(function(emp){
+    var full = ((emp.first || '') + ' ' + (emp.last || '')).replace(/\s+/g,' ').trim();
+    return full;
+  }).filter(function(name){
+    if(!name) return false;
+    var key = name.toLowerCase();
+    if(seen[key]) return false;
+    seen[key] = true;
+    return true;
+  }).sort(function(a,b){ return a.localeCompare(b); });
+  var html = '<option value=""' + (!selected ? ' selected' : '') + '>Unassigned</option>';
+  list.forEach(function(name){
+    var esc = String(name).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    html += '<option value="' + esc + '"' + (selected === name ? ' selected' : '') + '>' + esc + '</option>';
+  });
+  if(selected && list.indexOf(selected) === -1 && !isGateEmployeeName(selected)){
+    var selEsc = String(selected).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    html += '<option value="' + selEsc + '" selected>' + selEsc + '</option>';
+  }
+  return html;
+}
+
+function updateEqAssignedTo(id, val){
+  var e = equipment.find(function(x){return x.id===id;});
+  if(!e) return;
+  var prev = String(e.assignedTo || '').trim();
+  if(prev !== String(val || '').trim()) pushEquipmentUndo('Assignment changed for ' + (e.name || e.unit || id));
+  e.assignedTo = String(val || '').trim();
+  saveEquipment();
+  if(e.assignedTo !== prev){
+    var ul = (e.name && e.name.trim()) ? e.unit + ' (' + e.name.trim() + ')' : e.unit;
+    logActivity('equipment','<strong>'+ul+'</strong> assigned to <strong>'+(e.assignedTo || 'Unassigned')+'</strong>','Previous: '+(prev || 'Unassigned'));
+  }
+}
+
 function eqRowHtml(e, idx){
   var status = normalizeEqStatus(e.status);
   e.status = status;
@@ -10020,6 +11092,8 @@ function eqRowHtml(e, idx){
   var tabletCell = tablet.trim()
     ? '<input class="tablet-input" type="text" value="'+tablet+'" placeholder="Tablet ID" data-eid="'+e.id+'">'
     : '<span class="tablet-missing">⚠ Missing</span><input class="tablet-input" type="text" value="" placeholder="Tablet ID" data-eid="'+e.id+'" style="margin-left:6px;width:auto;">';
+  var assignedValue = String(e.assignedTo || '').trim();
+  var assignedCell = '<select class="assigned-select" data-eid="'+e.id+'">' + getEmployeeAssignmentOptions(assignedValue) + '</select>';
 
   var statusTimerHtml = '<span class="eq-status-dash">—</span>';
   var statusSinceHtml = '<span class="eq-status-dash">—</span>';
@@ -10072,18 +11146,19 @@ function eqRowHtml(e, idx){
     +'</select></td>'
     +'<td class="eq-timer-cell">'+statusTimerHtml+'</td>'
     +'<td class="eq-since-cell">'+statusSinceHtml+'</td>'
-    +'<td>'+tabletCell+'</td>'
+    +'<td class="eq-tablet-cell">'+tabletCell+'</td>'
     +'<td><select class="charged-select charged-'+(e.staysCharged||'pending')+'" data-eid="'+e.id+'" data-field="staysCharged">'
     +'<option value="yes"'     +(e.staysCharged==='yes'     ?' selected':'')+'>&#10003; Yes</option>'
     +'<option value="no"'      +(e.staysCharged==='no'      ?' selected':'')+'>&#10007; No</option>'
     +'<option value="pending"' +((!e.staysCharged||e.staysCharged==='pending')?' selected':'')+'>&ndash; Pending</option>'
     +'</select></td>'
+    +'<td class="eq-assigned-cell">'+assignedCell+'</td>'
     +'<td class="eq-action-cell">'+notesButtonV3+'<button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></td>'
     +'</tr>';
 
   return mainRow
     +'<tr class="'+notesRowClasses.join(' ')+notesOpenClass+'" data-eid="'+e.id+'" data-status="'+status+'" style="--row-accent:'+statusAccent+';display:'+notesRowDisplay+';">'
-    +'<td colspan="8">'
+    +'<td colspan="9">'
     +'<div class="eq-notes-shell">'
     +'<div class="eq-notes-head"><span>Notes</span><button type="button" class="eq-notes-clear-btn" data-eid="'+e.id+'" onclick="return clearEqNotesInline(this);">Clear Note</button>'+notesBadge+'</div>'
     +'<textarea class="notes-input'+(needsAttention ? ' eq-note-alert' : '')+'" placeholder="Add maintenance, down-time, damage, tablet, or handoff notes..." data-eid="'+e.id+'">'+notes+'</textarea>'
@@ -10261,6 +11336,8 @@ function eqCardHtml(e, idx){
   var name  = (e.name||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
   var tablet = (e.tabletAssigned||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
   var tabletCell = tablet.trim() ? '<input class="tablet-input" type="text" value="'+tablet+'" placeholder="Tablet ID" data-eid="'+e.id+'">' : '<span class="tablet-missing">⚠ Missing</span><input class="tablet-input" type="text" value="" placeholder="Tablet ID" data-eid="'+e.id+'">';
+  var assignedValue = String(e.assignedTo || '').trim();
+  var assignedCell = '<select class="assigned-select" data-eid="'+e.id+'">' + getEmployeeAssignmentOptions(assignedValue) + '</select>';
   var statusTimerHtml = '<span class="eq-status-dash">—</span>';
   var statusSinceHtml = '<span class="eq-status-dash">—</span>';
   if(status !== 'operational'){
@@ -10280,7 +11357,7 @@ function eqCardHtml(e, idx){
   return '<div class="eq-card'+(needsAttention ? ' eq-row-needs-notes' : '')+(status === 'maintenance' ? ' eq-row-maintenance' : '')+'" data-status="'+status+'" data-eid="'+e.id+'" style="--row-accent:'+eqStatusAccent(status)+';">'
     +'<div class="eq-card-head"><span class="eq-card-count">#'+(idx+1)+'</span><div class="eq-card-name"><input class="name-input" type="text" value="'+name+'" placeholder="Name / ID" data-eid="'+e.id+'"></div></div>'
     +'<div class="eq-card-status-line"><select class="eq-status-select '+sc+'" id="sel-'+e.id+'" data-eid="'+e.id+'"><option value="operational"'+(status==='operational'?' selected':'')+'>Operational</option><option value="down"'+(status==='down'?' selected':'')+'>Down</option><option value="maintenance"'+(status==='maintenance'?' selected':'')+'>Maintenance</option><option value="standby"'+(status==='standby'?' selected':'')+'>Standby</option></select>'+statusTimerHtml+statusSinceHtml+'</div>'
-    +'<div class="eq-card-details"><div class="eq-card-field"><div class="eq-card-label">Tablet</div>'+tabletCell+'</div><div class="eq-card-field"><div class="eq-card-label">Stays Charged?</div><select class="charged-select charged-'+(e.staysCharged||'pending')+'" data-eid="'+e.id+'" data-field="staysCharged"><option value="yes"'+(e.staysCharged==='yes'?' selected':'')+'>&#10003; Yes</option><option value="no"'+(e.staysCharged==='no'?' selected':'')+'>&#10007; No</option><option value="pending"'+((!e.staysCharged||e.staysCharged==='pending')?' selected':'')+'>&ndash; Pending</option></select></div></div>'
+    +'<div class="eq-card-details"><div class="eq-card-field"><div class="eq-card-label">Tablet</div>'+tabletCell+'</div><div class="eq-card-field"><div class="eq-card-label">Stays Charged?</div><select class="charged-select charged-'+(e.staysCharged||'pending')+'" data-eid="'+e.id+'" data-field="staysCharged"><option value="yes"'+(e.staysCharged==='yes'?' selected':'')+'>&#10003; Yes</option><option value="no"'+(e.staysCharged==='no'?' selected':'')+'>&#10007; No</option><option value="pending"'+((!e.staysCharged||e.staysCharged==='pending')?' selected':'')+'>&ndash; Pending</option></select></div><div class="eq-card-field"><div class="eq-card-label">Assigned To</div>'+assignedCell+'</div></div>'
     +'<div class="eq-card-actions eq-card-actions-no-notes-toggle"><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></div>'
     +'<div class="eq-card-notes '+panelClass+'" data-eid="'+e.id+'" data-status="'+status+'" style="display:'+panelDisplay+';"><div class="eq-notes-shell"><div class="eq-notes-head"><span>Notes</span><button type="button" class="eq-notes-clear-btn" data-eid="'+e.id+'" onclick="return clearEqNotesInline(this);">Clear Note</button>'+notesBadge+'</div><textarea class="notes-input'+(needsAttention ? ' eq-note-alert' : '')+'" placeholder="Add maintenance, down-time, damage, tablet, or handoff notes..." data-eid="'+e.id+'">'+notes+'</textarea></div></div></div>';
 }
@@ -10345,7 +11422,7 @@ function renderEquipment(){
     }else{
       html += '<table class="equip-table" style="--row-accent:'+col+'">'
         +'<colgroup>'
-        +'<col style="width:76px"><col style="width:250px"><col style="width:160px"><col style="width:145px"><col style="width:150px"><col style="width:190px"><col style="width:190px"><col style="width:205px">'
+        +'<col style="width:76px"><col style="width:230px"><col style="width:150px"><col style="width:125px"><col style="width:130px"><col style="width:165px"><col style="width:165px"><col style="width:220px"><col style="width:170px">'
         +'</colgroup><thead><tr>'
         +'<th style="width:76px;text-align:center;white-space:nowrap;">Count</th>'
         +'<th style="width:230px;">Name</th>'
@@ -10353,8 +11430,9 @@ function renderEquipment(){
         +'<th style="width:145px;text-align:center;white-space:nowrap;">Timer</th>'
         +'<th style="width:150px;text-align:center;white-space:nowrap;">Since</th>'
         +'<th style="width:190px;text-align:center;white-space:nowrap;">Tablet</th>'
-        +'<th style="width:190px;text-align:center;white-space:nowrap;">Stays&nbsp;Charged?</th>'
-        +'<th style="width:205px;text-align:center;white-space:nowrap;">Actions</th>'
+        +'<th style="width:165px;text-align:center;white-space:nowrap;">Stays&nbsp;Charged?</th>'
+        +'<th style="width:220px;text-align:center;white-space:nowrap;">Assigned&nbsp;To</th>'
+        +'<th style="width:170px;text-align:center;white-space:nowrap;">Actions</th>'
         +'</tr></thead><tbody>'
         + units.map(function(e,idx){ return eqRowHtml(e,idx); }).join('')
         +'</tbody></table></div>';
@@ -10367,6 +11445,7 @@ function renderEquipment(){
   container.innerHTML = html;
   updateEquipmentFilterButton();
   updateEquipmentViewButton();
+  updateEquipmentUndoButton();
   renderEquipmentAttention();
   restoreNotesFocus();
 
@@ -10376,6 +11455,7 @@ function renderEquipment(){
       this.className = 'eq-status-select '+eqStatusClass(val);
       if(String(val).toLowerCase() !== 'operational'){ eqNotesExpanded[this.dataset.eid] = true; }
       else { eqNotesExpanded[this.dataset.eid] = false; }
+      markEquipmentLocalEdit();
       updateEqStatus(this.dataset.eid, val);
     });
   });
@@ -10402,20 +11482,30 @@ function renderEquipment(){
     });
   });
   container.querySelectorAll('select.charged-select[data-eid]').forEach(function(sel){
-    sel.addEventListener('change', function(){
+    sel.addEventListener('change', async function(){
       var id = this.dataset.eid;
       var val = this.value;
       var e = equipment.find(function(x){return x.id===id;});
       if(!e) return;
       var prev = e.staysCharged || 'pending';
+      if(prev !== val) pushEquipmentUndo('Stays Charged changed for ' + (e.name || e.unit || id));
       e.staysCharged = val;
+      e.updated_at = new Date().toISOString();
+      this.value = val;
       this.className = 'charged-select charged-' + val;
-      saveEquipment();
+      await saveEquipment();
       if(val !== prev){
         var ul = (e.name&&e.name.trim()) ? e.unit+' ('+e.name.trim()+')' : e.unit;
         var labels = {yes:'✓ Yes',no:'✕ No',pending:'– Pending'};
         logActivity('notes','<strong>'+ul+'</strong> — Stays Charged set to <strong>'+labels[val]+'</strong>','Type: '+e.type);
       }
+      updateEquipmentStatusMeta();
+      renderEquipmentAttention();
+    });
+  });
+  container.querySelectorAll('select.assigned-select[data-eid]').forEach(function(sel){
+    sel.addEventListener('change', function(){
+      updateEqAssignedTo(this.dataset.eid, this.value);
     });
   });
   container.querySelectorAll('.eq-notes-toggle-v2[data-eid]').forEach(function(btn){
@@ -10855,8 +11945,10 @@ function renderStaffingWidget(){
 var ROSTER_AUDIT_KEY = 'eit_audit_roster_v3';
 var ROSTER_TRAIN_KEY = 'eit_train_roster_v3';
 var ROSTER_SUPABASE_TABLES = { audits: 'audit_roster_lists', trainings: 'training_roster_lists' };
-var rosterFilters = { audits: 'all', trainings: 'all' };
+var rosterFilters = { audits: { shift: 'all', working: false }, trainings: { shift: 'all', working: false } };
 var rosterLastUpdated = { audits: null, trainings: null };
+var rosterDeleteSuppression = { audits: {}, trainings: {} };
+var rosterDeleteSuppressMs = 10 * 60 * 1000;
 
 function normalizeRosterName(name){
   return String(name || '')
@@ -10947,6 +12039,33 @@ function normalizeRosterType(type){
   return type === 'trainings' ? 'trainings' : 'audits';
 }
 
+
+function markRosterDeleted(type, item){
+  type = normalizeRosterType(type);
+  if(!rosterDeleteSuppression[type]) rosterDeleteSuppression[type] = {};
+  var now = Date.now();
+  if(item && item.id) rosterDeleteSuppression[type]['id:' + String(item.id)] = now;
+  if(item && item.name) rosterDeleteSuppression[type]['name:' + normalizeRosterName(item.name)] = now;
+}
+
+function pruneRosterDeleteSuppression(type){
+  type = normalizeRosterType(type);
+  var bucket = rosterDeleteSuppression[type] || {};
+  var now = Date.now();
+  Object.keys(bucket).forEach(function(k){
+    if(now - bucket[k] > rosterDeleteSuppressMs) delete bucket[k];
+  });
+}
+
+function isRosterSuppressed(type, item){
+  type = normalizeRosterType(type);
+  pruneRosterDeleteSuppression(type);
+  var bucket = rosterDeleteSuppression[type] || {};
+  if(item && item.id && bucket['id:' + String(item.id)]) return true;
+  if(item && item.name && bucket['name:' + normalizeRosterName(item.name)]) return true;
+  return false;
+}
+
 function rosterStorageKey(type){
   return normalizeRosterType(type) === 'trainings' ? ROSTER_TRAIN_KEY : ROSTER_AUDIT_KEY;
 }
@@ -10968,6 +12087,36 @@ function emptyRosterPayload(){
 
 function saveRosterCacheOnly(type, data){
   try{ localStorage.setItem(rosterStorageKey(type), JSON.stringify(data)); }catch(e){}
+}
+
+function cloneRosterPayload(type){
+  var payload = loadRosterList(type);
+  try{ return JSON.parse(JSON.stringify(payload || emptyRosterPayload())); }
+  catch(e){ return { items: (payload.items || []).slice(), updated_at: payload.updated_at || null }; }
+}
+function updateRosterUndoButton(){
+  var btn = document.getElementById('roster-undo-btn');
+  if(btn) btn.disabled = !rosterUndoStack.length;
+}
+function pushRosterUndo(reason){
+  if(!Array.isArray(rosterUndoStack)) rosterUndoStack = [];
+  rosterUndoStack.push({
+    ts: Date.now(),
+    reason: reason || 'audit/training change',
+    audits: cloneRosterPayload('audits'),
+    trainings: cloneRosterPayload('trainings')
+  });
+  if(rosterUndoStack.length > rosterUndoLimit) rosterUndoStack.shift();
+  updateRosterUndoButton();
+}
+async function undoRosterChange(){
+  if(!rosterUndoStack.length){ alert('No audit/training change to undo.'); return; }
+  var snap = rosterUndoStack.pop();
+  await saveRosterList('audits', snap.audits || emptyRosterPayload(), true);
+  await saveRosterList('trainings', snap.trainings || emptyRosterPayload(), true);
+  await renderRosterPanels();
+  updateRosterUndoButton();
+  logActivity('notes','Undo applied on <strong>Audits & Monthly Training</strong>', snap.reason || 'Previous audit/training state restored');
 }
 
 function loadRosterList(type){
@@ -10992,7 +12141,8 @@ async function syncRosterFromSupabase(type){
   try{
     var res = await supabaseClient.from(table).select('*').eq('id', normalizeRosterType(type)).maybeSingle();
     if(res && !res.error && res.data && Array.isArray(res.data.items)){
-      var payload = { items: res.data.items || [], updated_at: res.data.updated_at || null };
+      var remoteItems = (res.data.items || []).filter(function(item){ return !isRosterSuppressed(type, item); });
+      var payload = { items: remoteItems, updated_at: res.data.updated_at || null };
       saveRosterCacheOnly(type, payload);
       return payload;
     }
@@ -11002,7 +12152,7 @@ async function syncRosterFromSupabase(type){
   return null;
 }
 
-async function saveRosterList(type, data){
+async function saveRosterList(type, data, fromUndo){
   type = normalizeRosterType(type);
   data = data || emptyRosterPayload();
   data.updated_at = new Date().toISOString();
@@ -11048,26 +12198,74 @@ function countsByShift(items){
   };
 }
 
+function rosterWorkingTodayNameSet(){
+  var set = {};
+  try{
+    var sched = WEEKLY_SCHEDULE[(new Date()).getDay()] || {day:[], night:[]};
+    (sched.day || []).concat(sched.night || []).forEach(function(name){
+      var key = normalizeRosterName(name);
+      if(key) set[key] = true;
+    });
+  }catch(e){}
+  return set;
+}
+
+function rosterItemWorksToday(item){
+  var set = rosterWorkingTodayNameSet();
+  var keys = [normalizeRosterName(item.name), normalizeRosterName(item.employee)];
+  return keys.some(function(key){ return key && set[key]; });
+}
+
+function normalizeRosterFilterState(filter){
+  // Backward compatible: older builds stored this as a single string.
+  if(!filter) return { shift: 'all', working: false };
+  if(typeof filter === 'string'){
+    if(filter === 'working') return { shift: 'all', working: true };
+    if(filter === 'Day' || filter === 'Night' || filter === 'Other') return { shift: filter, working: false };
+    return { shift: 'all', working: false };
+  }
+  return {
+    shift: filter.shift || 'all',
+    working: !!filter.working
+  };
+}
+
 function filterRosterItems(items, filter){
-  if(filter === 'all') return items;
-  return items.filter(function(i){ return i.shift === filter; });
+  var state = normalizeRosterFilterState(filter);
+  var out = items.slice();
+  if(state.shift && state.shift !== 'all'){
+    out = out.filter(function(i){ return i.shift === state.shift; });
+  }
+  if(state.working){
+    out = out.filter(rosterItemWorksToday);
+  }
+  return out;
 }
 
 function filterButtons(type){
-  var current = rosterFilters[type];
-  return [
+  var state = normalizeRosterFilterState(rosterFilters[type]);
+  var shiftButtons = [
     ['all','All'],
     ['Day','Day'],
     ['Night','Night'],
     ['Other','Other']
   ].map(function(pair){
     var key = pair[0], label = pair[1];
-    return '<button class="roster-filter-btn'+(current===key?' active':'')+'" onclick="setRosterFilter(\''+type+'\',\''+key+'\')">'+label+'</button>';
+    return '<button class="roster-filter-btn'+(state.shift===key?' active':'')+'" onclick="setRosterFilter(\''+type+'\',\''+key+'\')">'+label+'</button>';
   }).join('');
+  var workingButton = '<button class="roster-filter-btn working-today'+(state.working?' active':'')+'" onclick="setRosterFilter(\''+type+'\',\'working\')">Working Today</button>';
+  return shiftButtons + workingButton;
 }
 
 function setRosterFilter(type, filter){
-  rosterFilters[normalizeRosterType(type)] = filter;
+  var key = normalizeRosterType(type);
+  var state = normalizeRosterFilterState(rosterFilters[key]);
+  if(filter === 'working'){
+    state.working = !state.working;
+  } else {
+    state.shift = filter || 'all';
+  }
+  rosterFilters[key] = state;
   renderRosterPanels();
 }
 
@@ -11088,10 +12286,19 @@ function renderRosterTable(type){
   var counts = countsByShift(items);
   if(totalLabel) totalLabel.textContent = String(counts.all);
   if(summaryLabel) summaryLabel.textContent = 'Day ' + counts.Day + ' · Night ' + counts.Night + ' · Other ' + counts.Other;
-  if(countLabel) countLabel.textContent = counts.all + ' names';
+  if(countLabel) countLabel.textContent = filtered.length + ' shown · ' + counts.all + ' total';
   if(updatedLabel){
     var latest = rosterLastUpdated.audits || rosterLastUpdated.trainings || data.updated_at || null;
     updatedLabel.textContent = formatRosterTimestamp(latest);
+  }
+  var bannerText = document.getElementById('roster-updated-banner-text');
+  if(bannerText){
+    var auditData = loadRosterList('audits');
+    var trainData = loadRosterList('trainings');
+    var latest2 = rosterLastUpdated.audits || rosterLastUpdated.trainings || auditData.updated_at || trainData.updated_at || data.updated_at || null;
+    var auditCount = (auditData.items || []).length;
+    var trainCount = (trainData.items || []).length;
+    bannerText.textContent = formatRosterTimestamp(latest2).replace('Last updated: ', '') + ' · Audits ' + auditCount + ' · Training ' + trainCount;
   }
 
   if(!wrap) return;
@@ -11112,7 +12319,7 @@ function renderRosterTable(type){
       + '<td><span class="roster-name">'+item.name+'</span></td>'
       + '<td><span class="roster-pill '+shiftClass+'">'+item.shift+'</span></td>'
       + '<td><span class="roster-pill '+matchClass+'">'+matchLabel+'</span></td>'
-      + '<td><button class="roster-action-btn" onclick="removeRosterItem(\''+key+'\',\''+item.id+'\')">Remove</button></td>'
+      + '<td><button type="button" class="roster-action-btn roster-delete-btn" data-roster-type="'+key+'" data-roster-id="'+String(item.id).replace(/"/g,'&quot;')+'">Delete</button></td>'
       + '</tr>';
   }).join('');
 
@@ -11132,6 +12339,7 @@ async function renderRosterPanels(){
   await syncRosterFromSupabase('trainings');
   renderRosterTable('audits');
   renderRosterTable('trainings');
+  updateRosterUndoButton();
 }
 
 function openRosterModal(){
@@ -11158,6 +12366,7 @@ function clearRosterModalInputs(){
 }
 
 async function importRosterLists(){
+  pushRosterUndo('Imported audit/training roster names');
   var auditInput = document.getElementById('audit-paste');
   var trainInput = document.getElementById('train-paste');
   var auditNames = parseNameList(auditInput ? auditInput.value : '');
@@ -11166,8 +12375,8 @@ async function importRosterLists(){
   await saveRosterList('audits', { items: buildRosterItems(auditNames) });
   await saveRosterList('trainings', { items: buildRosterItems(trainNames) });
 
-  rosterFilters.audits = 'all';
-  rosterFilters.trainings = 'all';
+  rosterFilters.audits = { shift: 'all', working: false };
+  rosterFilters.trainings = { shift: 'all', working: false };
 
   closeRosterModal();
   await renderRosterPanels();
@@ -11175,23 +12384,66 @@ async function importRosterLists(){
 
 async function removeRosterItem(type, id){
   var key = normalizeRosterType(type);
-  var data = loadRosterList(key);
-  data.items = (data.items || []).filter(function(item){ return item.id !== id; });
+  var data = loadRosterList(key) || emptyRosterPayload();
+  var items = Array.isArray(data.items) ? data.items.slice() : [];
+  var targetId = String(id || '');
+  var removedItem = items.find(function(item){ return String(item.id) === targetId; });
+
+  if(!removedItem){
+    console.warn('Roster delete skipped: item id not found', key, id);
+    return;
+  }
+
+  pushRosterUndo('Deleted one name from ' + key);
+  markRosterDeleted(key, removedItem);
+  data.items = items.filter(function(item){ return String(item.id) !== targetId; });
+  data.updated_at = new Date().toISOString();
+
+  // Save locally first so the row disappears immediately.
+  saveRosterCacheOnly(key, data);
+  rosterLastUpdated[key] = data.updated_at;
+  renderRosterTable(key);
+  updateRosterUndoButton();
+
+  // Then push the new list to Supabase. We do not re-sync right away because
+  // a stale remote read can make the deleted name pop back onto the screen.
   await saveRosterList(key, data);
-  await renderRosterPanels();
+  renderRosterTable(key);
+
+  var bannerText = document.getElementById('roster-updated-banner-text');
+  if(bannerText){
+    var auditData = loadRosterList('audits');
+    var trainData = loadRosterList('trainings');
+    var latest = rosterLastUpdated.audits || rosterLastUpdated.trainings || auditData.updated_at || trainData.updated_at || data.updated_at || null;
+    bannerText.textContent = formatRosterTimestamp(latest).replace('Last updated: ', '') + ' · Audits ' + ((auditData.items || []).length) + ' · Training ' + ((trainData.items || []).length);
+  }
+
+  var displayName = removedItem && removedItem.name ? removedItem.name : 'one name';
+  logActivity('notes','Deleted <strong>'+displayName+'</strong> from Audits & Monthly Training', key + ' roster item removed');
 }
 
+// Capture audit/training delete clicks with event delegation. This avoids the
+// old inline onclick problem and keeps working after the roster table re-renders.
+document.addEventListener('click', function(e){
+  var btn = e.target && e.target.closest ? e.target.closest('.roster-delete-btn[data-roster-type][data-roster-id]') : null;
+  if(!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  removeRosterItem(btn.getAttribute('data-roster-type'), btn.getAttribute('data-roster-id'));
+}, true);
+
 async function resetRosterData(){
+  pushRosterUndo('Reset audits and monthly training lists');
   await saveRosterList('audits', emptyRosterPayload());
   await saveRosterList('trainings', emptyRosterPayload());
-  rosterFilters.audits = 'all';
-  rosterFilters.trainings = 'all';
+  rosterFilters.audits = { shift: 'all', working: false };
+  rosterFilters.trainings = { shift: 'all', working: false };
   await renderRosterPanels();
 }
 
 async function initAuditsPage(){
-  if(!rosterFilters.audits) rosterFilters.audits = 'all';
-  if(!rosterFilters.trainings) rosterFilters.trainings = 'all';
+  if(!rosterFilters.audits) rosterFilters.audits = { shift: 'all', working: false };
+  if(!rosterFilters.trainings) rosterFilters.trainings = { shift: 'all', working: false };
   await renderRosterPanels();
 }
 
@@ -11342,6 +12594,61 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+
+
+<!-- PAGE: ADMIN USER MANAGEMENT -->
+<div class="page" id="page-admin">
+  <div class="header">
+    <div>
+      <div class="header-title">ADMIN USER SETUP</div>
+      <div class="header-sub">Create user IDs, passwords, and page permissions</div>
+    </div>
+  </div>
+  <div class="admin-wrap">
+    <div id="admin-auth-warning" class="admin-warning" style="display:none;">Admin access only.</div>
+    <div id="admin-sync-warning" class="admin-warning" style="display:none;"></div>
+
+    <div class="admin-panel">
+      <div class="admin-panel-head">
+        <div>
+          <div class="admin-title">Add / Update User</div>
+          <div class="admin-sub">Admin password remains <strong>admin</strong>. Add other users here.</div>
+        </div>
+        <button class="admin-btn primary" onclick="saveAdminUserFromForm()">Save User</button>
+      </div>
+      <div class="admin-form-grid">
+        <label>User ID<input id="admin-user-id" type="text" placeholder="example: daylead"></label>
+        <label>Display Name<input id="admin-user-name" type="text" placeholder="Example Name"></label>
+        <label>Password<input id="admin-user-password" type="text" placeholder="Set password"></label>
+        <label>Role
+          <select id="admin-user-role">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="admin-permission-table-wrap">
+        <table class="admin-permission-table">
+          <thead><tr><th>Page</th><th>Can View</th><th>Can Edit</th></tr></thead>
+          <tbody id="admin-permission-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="admin-panel-head">
+        <div>
+          <div class="admin-title">Current Users</div>
+          <div class="admin-sub">Only admins can see this page.</div>
+        </div>
+        <button class="admin-btn" onclick="loadAppUsers(); renderAdminUsers();">Refresh Users</button>
+      </div>
+      <div id="admin-users-list" class="admin-users-list"></div>
+    </div>
+  </div>
+</div>
+
 <!-- PAGE: ACTIVITY FEED -->
 <div class="page" id="page-activity">
   <div class="header">
@@ -11358,7 +12665,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <option value="notes">Notes</option>
         <option value="system">System</option>
       </select>
-      <button onclick="clearActivityLog()" style="font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:#fca5a5;transition:all .15s;">Clear Log</button>
+      <button id="clear-activity-log-btn" onclick="clearActivityLog()" style="font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:6px 14px;border-radius:5px;cursor:pointer;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:#fca5a5;transition:all .15s;">Clear Log</button>
     </div>
   </div>
   <div id="activity-feed-wrap" style="padding:16px 24px 40px;max-width:900px;"></div>
@@ -13015,6 +14322,1186 @@ window.addEventListener('DOMContentLoaded',function(){
   border-left-color:#818cf8 !important;
 }
 </style>
+
+
+
+<style id="admin-user-management-styles">
+.admin-wrap{padding:18px 24px 42px;display:flex;flex-direction:column;gap:16px;}
+.admin-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 10px 26px rgba(0,0,0,.18);}
+.admin-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.admin-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text);}
+.admin-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;}
+.admin-sub strong{color:#fcd34d;}
+.admin-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px;}
+.admin-form-grid label{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.admin-form-grid input,.admin-form-grid select{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 10px;font-family:var(--mono);font-size:12px;color:var(--text);}
+.admin-btn{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;border-radius:8px;border:1px solid var(--border2);background:rgba(30,35,51,.75);color:var(--text);cursor:pointer;}
+.admin-btn:hover{border-color:var(--accent);background:rgba(74,158,255,.12);}
+.admin-btn.primary{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.12);color:#d1fae5;}
+.admin-btn.danger{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.08);color:#fca5a5;}
+.admin-permission-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+.admin-permission-table{width:100%;border-collapse:collapse;font-family:var(--mono);table-layout:auto;margin:0;}
+.admin-permission-table th,.admin-permission-table td{text-align:center;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap;}
+.admin-permission-table th{background:var(--surface2);font-size:10px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;}
+.admin-permission-table td:first-child{text-align:left;color:var(--text);font-weight:700;}
+.admin-permission-table input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);}
+.admin-users-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;}
+.admin-user-card{border:1px solid var(--border);border-radius:12px;background:var(--bg);padding:12px;display:flex;flex-direction:column;gap:10px;}
+.admin-user-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.admin-user-name{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);}
+.admin-user-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.admin-user-pill{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;border-radius:999px;padding:3px 8px;border:1px solid rgba(74,158,255,.35);background:rgba(74,158,255,.10);color:#bfdbfe;}
+.admin-user-perms{display:flex;flex-wrap:wrap;gap:5px;}
+.admin-perm-chip{font-family:var(--mono);font-size:9px;border-radius:999px;padding:3px 7px;border:1px solid var(--border2);color:var(--muted);background:rgba(255,255,255,.03);}
+.admin-perm-chip.edit{border-color:rgba(34,197,94,.32);color:#86efac;background:rgba(34,197,94,.08);}
+.admin-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.admin-warning{border:1px solid rgba(245,158,11,.35);background:rgba(245,158,11,.10);color:#fcd34d;border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:11px;}
+body:not(.is-admin) #nav-admin{display:none !important;}
+.page.no-view{display:none !important;}
+.page.view-only input:not([type="range"]),.page.view-only select,.page.view-only textarea{pointer-events:none !important;opacity:.75 !important;}
+.page.view-only button:not(.page-nav-btn):not(.admin-btn):not(.nav-signout-btn){pointer-events:none !important;opacity:.55 !important;}
+.page.view-only::before{content:'VIEW ONLY — editing disabled for this user';display:block;margin:10px 24px 0;padding:8px 12px;border-radius:8px;border:1px solid rgba(245,158,11,.35);background:rgba(245,158,11,.10);color:#fcd34d;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+#page-ppe.view-only .embedded-page-frame{pointer-events:none !important;filter:saturate(.85);}
+@media(max-width:700px){.admin-wrap{padding:12px}.admin-panel{padding:12px}.admin-form-grid{grid-template-columns:1fr}.admin-users-list{grid-template-columns:1fr}}
+
+/* Assigned-to equipment column */
+.assigned-select{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.3px;
+  padding:5px 8px;
+  border-radius:6px;
+  border:1px solid rgba(74,158,255,.35);
+  background:rgba(74,158,255,.08);
+  color:var(--text);
+  outline:none;
+  width:100%;
+  min-width:150px;
+  text-align:center;
+}
+.assigned-select option{background:var(--surface);color:var(--text);}
+.eq-assigned-cell{text-align:center;}
+.af-author{display:inline-flex;align-items:center;gap:4px;margin-right:7px;padding:2px 7px;border-radius:999px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.25);color:#9ec8ff;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
+
+/* Audits / Monthly Training updated banner + working-today filter */
+.roster-updated-banner{
+  margin:12px 24px 0;
+  padding:10px 14px;
+  border:1px solid rgba(74,158,255,.28);
+  border-left:4px solid var(--accent);
+  border-radius:10px;
+  background:linear-gradient(135deg, rgba(74,158,255,.12), rgba(30,35,51,.72));
+  color:#cfe4ff;
+  font-family:var(--mono);
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.roster-updated-banner strong{color:#fff;font-size:12px;}
+.roster-filter-btn.working-today{
+  border-color:rgba(34,197,94,.35);
+  color:#bbf7d0;
+  background:rgba(34,197,94,.08);
+}
+.roster-filter-btn.working-today.active{
+  border-color:rgba(34,197,94,.65);
+  background:rgba(34,197,94,.16);
+  color:#dcfce7;
+}
+</style>
+
+
+
+
+<style id="audits-training-command-center-overhaul">
+/* ─────────────────────────────────────────────
+   AUDITS & TRAINING — COMMAND CENTER OVERHAUL
+   Reworks the section into a cleaner, scan-first dashboard.
+   ───────────────────────────────────────────── */
+#page-audits{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(74,158,255,.14), transparent 34%),
+    radial-gradient(circle at 88% 10%, rgba(34,197,94,.10), transparent 30%),
+    linear-gradient(180deg, rgba(15,17,23,.98), rgba(10,12,18,1));
+  padding-bottom:34px;
+}
+#page-audits .header{
+  margin:16px 24px 0;
+  padding:18px 20px;
+  border:1px solid rgba(74,158,255,.24);
+  border-radius:18px;
+  background:
+    linear-gradient(135deg, rgba(24,28,38,.98), rgba(12,16,26,.96)),
+    radial-gradient(circle at top right, rgba(74,158,255,.22), transparent 42%);
+  box-shadow:0 18px 48px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.04);
+  position:relative;
+  overflow:hidden;
+}
+#page-audits .header::before{
+  content:'';
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:linear-gradient(180deg,#4a9eff,#22c55e,#f59e0b);
+  opacity:.95;
+}
+#page-audits .header::after{
+  content:'AUDIT OPS';
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:2.4px;
+  color:rgba(148,163,184,.16);
+  font-weight:800;
+}
+#page-audits .header-title{
+  font-size:21px;
+  letter-spacing:2.5px;
+  color:#fff;
+  background:linear-gradient(90deg,#fff,#9ec8ff,#6ee7b7);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+#page-audits .header-sub{
+  max-width:720px;
+  margin-top:6px;
+  color:#aab7d7;
+  font-size:11px;
+  line-height:1.45;
+}
+#page-audits #roster-updated{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:10px !important;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(74,158,255,.10);
+  border:1px solid rgba(74,158,255,.22);
+  color:#cfe4ff !important;
+}
+#page-audits #roster-updated::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 10px rgba(34,197,94,.65);
+}
+#page-audits .roster-page-actions{
+  position:relative;
+  z-index:1;
+}
+#page-audits .roster-btn{
+  min-height:34px;
+  border-radius:10px;
+  border-color:rgba(148,163,184,.24);
+  background:rgba(15,17,23,.72);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+}
+#page-audits .roster-btn.primary{
+  border-color:rgba(74,158,255,.50);
+  background:linear-gradient(135deg,rgba(74,158,255,.20),rgba(37,99,235,.10));
+  color:#dbeafe;
+}
+#page-audits .roster-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 22px rgba(0,0,0,.22);
+}
+#page-audits .roster-updated-banner{
+  margin:14px 24px 0;
+  padding:12px 15px;
+  border-radius:14px;
+  border:1px solid rgba(34,197,94,.24);
+  border-left:0;
+  background:
+    linear-gradient(135deg, rgba(34,197,94,.12), rgba(74,158,255,.08)),
+    rgba(24,28,38,.82);
+  box-shadow:0 12px 30px rgba(0,0,0,.24);
+}
+#page-audits .roster-updated-banner strong{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+}
+#page-audits .roster-updated-banner strong::before{
+  content:'●';
+  color:#22c55e;
+  font-size:11px;
+  text-shadow:0 0 12px rgba(34,197,94,.9);
+}
+#page-audits .audits-wrap{
+  padding:18px 24px 40px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+#page-audits .roster-overview{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(240px,1fr));
+  gap:14px;
+}
+#page-audits .roster-summary-card{
+  min-height:118px;
+  padding:18px 20px;
+  border-radius:18px;
+  background:
+    linear-gradient(135deg, rgba(30,35,51,.96), rgba(14,18,29,.98));
+  border:1px solid rgba(74,158,255,.20);
+  box-shadow:0 16px 40px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.035);
+  position:relative;
+  overflow:hidden;
+}
+#page-audits .roster-summary-card::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+  background:linear-gradient(90deg,#4a9eff,transparent);
+}
+#page-audits .roster-summary-card::after{
+  content:'';
+  position:absolute;
+  right:-42px;
+  top:-42px;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(74,158,255,.16), transparent 68%);
+}
+#page-audits .roster-summary-train{
+  border-color:rgba(34,197,94,.22);
+}
+#page-audits .roster-summary-train::before{
+  background:linear-gradient(90deg,#22c55e,transparent);
+}
+#page-audits .roster-summary-train::after{
+  background:radial-gradient(circle, rgba(34,197,94,.15), transparent 68%);
+}
+#page-audits .roster-summary-title{
+  position:relative;
+  z-index:1;
+  color:#9fb3d9;
+  font-size:10px;
+  letter-spacing:2.2px;
+}
+#page-audits .roster-summary-value{
+  position:relative;
+  z-index:1;
+  margin-top:6px;
+  font-size:42px;
+  letter-spacing:-1px;
+  color:#fff;
+  text-shadow:0 0 20px rgba(74,158,255,.18);
+}
+#page-audits .roster-summary-train .roster-summary-value{
+  text-shadow:0 0 20px rgba(34,197,94,.18);
+}
+#page-audits .roster-summary-sub{
+  position:relative;
+  z-index:1;
+  margin-top:8px;
+  color:#8d9bbc;
+  font-size:11px;
+}
+#page-audits .roster-section{
+  border-radius:18px;
+  padding:0;
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(24,28,38,.96), rgba(15,18,28,.98));
+  border:1px solid rgba(148,163,184,.18);
+  box-shadow:0 18px 48px rgba(0,0,0,.28);
+}
+#page-audits .roster-section:nth-of-type(2){
+  border-color:rgba(74,158,255,.22);
+}
+#page-audits .roster-section:nth-of-type(3){
+  border-color:rgba(34,197,94,.22);
+}
+#page-audits .roster-section-head{
+  margin:0;
+  padding:16px 16px 14px;
+  background:
+    linear-gradient(135deg, rgba(30,35,51,.96), rgba(17,21,32,.96));
+  border-bottom:1px solid rgba(148,163,184,.14);
+}
+#page-audits .roster-section-title{
+  gap:11px;
+  color:#9fb3d9;
+}
+#page-audits .roster-section-title svg{
+  width:22px;
+  height:22px;
+  padding:5px;
+  border-radius:8px;
+  color:#9ec8ff;
+  background:rgba(74,158,255,.12);
+  border:1px solid rgba(74,158,255,.22);
+}
+#page-audits .roster-section:nth-of-type(3) .roster-section-title svg{
+  color:#86efac;
+  background:rgba(34,197,94,.10);
+  border-color:rgba(34,197,94,.22);
+}
+#page-audits .roster-section-title strong{
+  color:#fff;
+  font-size:13px;
+  letter-spacing:1.5px;
+}
+#page-audits .roster-counts{
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(148,163,184,.16);
+  color:#cbd5e1;
+}
+#page-audits .roster-filter-row{
+  margin:0;
+  padding:12px 14px;
+  gap:8px;
+  background:rgba(5,8,15,.38);
+  border-bottom:1px solid rgba(148,163,184,.12);
+}
+#page-audits .roster-filter-btn{
+  padding:7px 11px;
+  border-radius:10px;
+  background:rgba(15,17,23,.70);
+  border:1px solid rgba(148,163,184,.20);
+  color:#93a4c7;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+#page-audits .roster-filter-btn:hover{
+  transform:translateY(-1px);
+  border-color:rgba(74,158,255,.45);
+  color:#e5edff;
+}
+#page-audits .roster-filter-btn.active{
+  border-color:rgba(74,158,255,.70);
+  background:linear-gradient(135deg,rgba(74,158,255,.22),rgba(37,99,235,.10));
+  color:#eff6ff;
+  box-shadow:0 0 18px rgba(74,158,255,.10);
+}
+#page-audits .roster-filter-btn.working-today{
+  border-color:rgba(34,197,94,.35);
+  color:#bbf7d0;
+  background:rgba(34,197,94,.08);
+}
+#page-audits .roster-filter-btn.working-today.active{
+  border-color:rgba(34,197,94,.75);
+  background:linear-gradient(135deg,rgba(34,197,94,.24),rgba(20,83,45,.10));
+  box-shadow:0 0 18px rgba(34,197,94,.12);
+}
+#page-audits .roster-table-wrap{
+  margin:0;
+  border:0;
+  border-radius:0;
+  background:rgba(8,11,18,.65);
+  overflow:auto;
+  max-height:560px;
+}
+#page-audits .roster-table{
+  margin:0;
+  table-layout:fixed;
+  border-collapse:separate;
+  border-spacing:0;
+}
+#page-audits .roster-table th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:12px 14px;
+  text-align:center;
+  background:#111827;
+  color:#9fb3d9;
+  border-bottom:1px solid rgba(74,158,255,.24);
+  font-size:9px;
+  letter-spacing:1.8px;
+}
+#page-audits .roster-table th:first-child,
+#page-audits .roster-table td:first-child{
+  text-align:left;
+}
+#page-audits .roster-table td{
+  padding:12px 14px;
+  text-align:center;
+  border-bottom:1px solid rgba(148,163,184,.10);
+  background:rgba(15,17,23,.30);
+}
+#page-audits .roster-table tr:nth-child(even) td{
+  background:rgba(30,35,51,.28);
+}
+#page-audits .roster-table tr:hover td{
+  background:rgba(74,158,255,.08);
+}
+#page-audits .roster-name{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  letter-spacing:.2px;
+}
+#page-audits .roster-name::before{
+  content:'';
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#4a9eff;
+  box-shadow:0 0 10px rgba(74,158,255,.55);
+  flex-shrink:0;
+}
+#page-audits .roster-pill{
+  min-width:74px;
+  justify-content:center;
+  border-radius:999px;
+  padding:5px 9px;
+}
+#page-audits .roster-pill-match{
+  min-width:98px;
+  background:rgba(34,197,94,.12);
+  border-color:rgba(34,197,94,.34);
+}
+#page-audits .roster-pill-unmatch{
+  min-width:98px;
+  background:rgba(239,68,68,.13);
+  border-color:rgba(239,68,68,.38);
+}
+#page-audits .roster-action-btn{
+  border-radius:9px;
+  padding:6px 9px;
+  border-color:rgba(239,68,68,.24);
+  color:#fca5a5;
+  background:rgba(239,68,68,.06);
+}
+#page-audits .roster-action-btn:hover{
+  border-color:rgba(239,68,68,.55);
+  background:rgba(239,68,68,.14);
+  color:#fecaca;
+}
+#page-audits .roster-empty{
+  margin:16px;
+  padding:30px 18px;
+  border-radius:14px;
+  border:1px dashed rgba(148,163,184,.26);
+  background:rgba(15,17,23,.58);
+}
+#page-audits #roster-modal-bg .modal{
+  border-radius:18px;
+  border-color:rgba(74,158,255,.28);
+  box-shadow:0 28px 80px rgba(0,0,0,.48);
+}
+#page-audits .roster-paste-card textarea{
+  border-radius:12px;
+  min-height:360px;
+}
+@media(max-width:1100px){
+  #page-audits .audits-wrap{
+    grid-template-columns:1fr;
+  }
+  #page-audits .roster-overview{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:760px){
+  #page-audits .header,
+  #page-audits .roster-updated-banner{
+    margin-left:12px;
+    margin-right:12px;
+  }
+  #page-audits .header{
+    padding:16px 14px 14px;
+  }
+  #page-audits .header-title{
+    font-size:17px;
+  }
+  #page-audits .audits-wrap{
+    padding:14px 12px 28px;
+  }
+  #page-audits .roster-summary-value{
+    font-size:34px;
+  }
+  #page-audits .roster-filter-row{
+    overflow-x:auto;
+    flex-wrap:nowrap;
+  }
+  #page-audits .roster-filter-btn{
+    white-space:nowrap;
+  }
+  #page-audits .roster-table-wrap{
+    max-height:none;
+  }
+  #page-audits .roster-table{
+    min-width:680px;
+  }
+}
+</style>
+
+
+<style id="audit-training-summary-card-rehaul">
+/* AUDIT LIST / MONTHLY TRAINING SUMMARY CARDS — REHAUL */
+#page-audits .audit-training-hero-cards{
+  gap:18px !important;
+  align-items:stretch;
+}
+#page-audits .audit-hero-card{
+  min-height:174px !important;
+  padding:0 !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:space-between !important;
+  isolation:isolate;
+}
+#page-audits .audit-hero-card::before{
+  height:100% !important;
+  width:4px !important;
+  right:auto !important;
+  bottom:0 !important;
+  background:linear-gradient(180deg,#4a9eff,#2563eb,transparent) !important;
+  z-index:1;
+}
+#page-audits .roster-summary-train.audit-hero-card::before{
+  background:linear-gradient(180deg,#22c55e,#10b981,transparent) !important;
+}
+#page-audits .audit-hero-card::after{
+  width:220px !important;
+  height:220px !important;
+  right:-72px !important;
+  top:-80px !important;
+  opacity:.95;
+  z-index:0;
+}
+#page-audits .audit-hero-card-top{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:18px 20px 8px 22px;
+}
+#page-audits .audit-hero-icon{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 14px 26px rgba(0,0,0,.22);
+}
+#page-audits .audit-hero-icon-blue{
+  color:#bfdbfe;
+  background:linear-gradient(135deg,rgba(74,158,255,.28),rgba(37,99,235,.10));
+  border:1px solid rgba(74,158,255,.38);
+}
+#page-audits .audit-hero-icon-green{
+  color:#bbf7d0;
+  background:linear-gradient(135deg,rgba(34,197,94,.26),rgba(20,83,45,.12));
+  border:1px solid rgba(34,197,94,.38);
+}
+#page-audits .audit-hero-title-wrap{min-width:0;}
+#page-audits .audit-hero-card .roster-summary-title{
+  color:#ffffff !important;
+  font-size:14px !important;
+  letter-spacing:1.5px !important;
+  line-height:1.15;
+}
+#page-audits .audit-hero-kicker{
+  margin-top:4px;
+  font-family:var(--mono);
+  font-size:10px;
+  color:#8290af;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-audits .audit-hero-status{
+  align-self:start;
+  padding:5px 9px;
+  border-radius:999px;
+  font-family:var(--mono);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+#page-audits .audit-hero-status-blue{
+  color:#dbeafe;
+  background:rgba(74,158,255,.14);
+  border:1px solid rgba(74,158,255,.32);
+}
+#page-audits .audit-hero-status-green{
+  color:#dcfce7;
+  background:rgba(34,197,94,.14);
+  border:1px solid rgba(34,197,94,.32);
+}
+#page-audits .audit-hero-main{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  padding:8px 22px 4px;
+}
+#page-audits .audit-hero-card .roster-summary-value{
+  margin:0 !important;
+  font-size:58px !important;
+  line-height:.9 !important;
+  letter-spacing:-2px !important;
+}
+#page-audits .audit-hero-unit{
+  padding-bottom:7px;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:#697796;
+}
+#page-audits .audit-hero-divider{
+  position:relative;
+  z-index:2;
+  height:1px;
+  margin:8px 22px 0;
+  background:linear-gradient(90deg,rgba(74,158,255,.35),rgba(148,163,184,.12),transparent);
+}
+#page-audits .roster-summary-train .audit-hero-divider{
+  background:linear-gradient(90deg,rgba(34,197,94,.35),rgba(148,163,184,.12),transparent);
+}
+#page-audits .audit-hero-breakdown{
+  position:relative;
+  z-index:2;
+  margin:0 !important;
+  padding:11px 22px 16px;
+  color:#cbd5e1 !important;
+  font-size:11px !important;
+  letter-spacing:.2px;
+  background:linear-gradient(90deg,rgba(255,255,255,.035),transparent);
+}
+#page-audits .audit-hero-breakdown::before{
+  content:'SHIFT MIX';
+  display:inline-flex;
+  margin-right:8px;
+  padding:2px 7px;
+  border-radius:999px;
+  background:rgba(148,163,184,.10);
+  border:1px solid rgba(148,163,184,.18);
+  color:#94a3b8;
+  font-size:8px;
+  letter-spacing:1px;
+}
+@media(max-width:760px){
+  #page-audits .audit-hero-card-top{
+    grid-template-columns:auto minmax(0,1fr);
+  }
+  #page-audits .audit-hero-status{
+    grid-column:1 / -1;
+    width:max-content;
+    margin-left:54px;
+  }
+  #page-audits .audit-hero-card .roster-summary-value{font-size:48px !important;}
+  #page-audits .audit-hero-kicker{white-space:normal;}
+}
+</style>
+
+<script id="admin-user-management-logic">
+(function(){
+  const USER_TABLE = 'app_users';
+  const USER_CACHE_KEY = 'conglobal_app_users_cache_v1';
+  const CURRENT_USER_KEY = 'conglobal_current_user_v1';
+  const PAGE_LABELS = {
+    employees:'Employee ID',
+    equipment:'Equipment Status',
+    audits:'Audits & Training',
+    ppe:'PPE & Compliance',
+    activity:'Activity Feed'
+  };
+  const PAGE_ORDER = ['employees','equipment','audits','ppe','activity'];
+  const ADMIN_PERMISSIONS = {
+    employees:{view:true,edit:true},
+    equipment:{view:true,edit:true},
+    audits:{view:true,edit:true},
+    ppe:{view:true,edit:true},
+    activity:{view:true,edit:true},
+    admin:{view:true,edit:true}
+  };
+  let appUsers = [];
+  let activeAppUser = null;
+  let usersTableReady = true;
+
+  function clone(obj){ return JSON.parse(JSON.stringify(obj || {})); }
+  function normalizeUserId(v){ return String(v || '').trim().toLowerCase(); }
+  function adminUser(){
+    return { id:'admin', username:'admin', display_name:'Admin', password:'admin', role:'admin', permissions:clone(ADMIN_PERMISSIONS), updated_at:new Date().toISOString(), last_edited_by:'system' };
+  }
+  function normalizePermissions(perms, role){
+    const base = {};
+    PAGE_ORDER.forEach(p=>{ base[p] = { view:false, edit:false }; });
+    base.admin = { view:false, edit:false };
+    if(role === 'admin') return clone(ADMIN_PERMISSIONS);
+    if(perms && typeof perms === 'object'){
+      Object.keys(base).forEach(p=>{
+        if(perms[p]){
+          base[p].view = !!perms[p].view;
+          base[p].edit = !!perms[p].edit && !!perms[p].view;
+        }
+      });
+    }
+    return base;
+  }
+  function normalizeUser(row){
+    const id = normalizeUserId(row && (row.id || row.username));
+    const role = String((row && row.role) || (id === 'admin' ? 'admin' : 'user')).toLowerCase();
+    return {
+      id: id || ('user_' + Date.now()),
+      username: id || ('user_' + Date.now()),
+      display_name: String((row && (row.display_name || row.name)) || id || 'User'),
+      password: String((row && row.password) || ''),
+      role: role,
+      permissions: normalizePermissions(row && row.permissions, role),
+      updated_at: (row && row.updated_at) || new Date().toISOString(),
+      last_edited_by: (row && row.last_edited_by) || 'CONGLOBAL'
+    };
+  }
+  function ensureAdminUser(list){
+    const byId = {};
+    (list || []).forEach(u=>{ const n=normalizeUser(u); if(n.id) byId[n.id]=n; });
+    byId.admin = normalizeUser(Object.assign(adminUser(), byId.admin || {} , { password: ((byId.admin||{}).password || 'admin'), role:'admin', permissions:clone(ADMIN_PERMISSIONS) }));
+    return Object.values(byId).sort((a,b)=> a.id === 'admin' ? -1 : b.id === 'admin' ? 1 : a.id.localeCompare(b.id));
+  }
+  function cacheUsers(){ try{ localStorage.setItem(USER_CACHE_KEY, JSON.stringify(appUsers)); }catch(e){} }
+  function loadCachedUsers(){
+    try{ return ensureAdminUser(JSON.parse(localStorage.getItem(USER_CACHE_KEY) || '[]') || []); }
+    catch(e){ return ensureAdminUser([adminUser()]); }
+  }
+  async function loadAppUsers(){
+    usersTableReady = true;
+    if(window.supabaseClient){
+      try{
+        const res = await window.supabaseClient.from(USER_TABLE).select('*').order('id', { ascending:true });
+        if(res.error) throw res.error;
+        appUsers = ensureAdminUser(res.data || []);
+        cacheUsers();
+        return appUsers;
+      }catch(err){
+        usersTableReady = false;
+        console.warn('App users table unavailable; using local fallback.', err);
+      }
+    }
+    appUsers = loadCachedUsers();
+    return appUsers;
+  }
+  async function upsertAppUser(user){
+    const clean = normalizeUser(user);
+    appUsers = ensureAdminUser(appUsers.filter(u=>u.id !== clean.id).concat([clean]));
+    cacheUsers();
+    if(window.supabaseClient){
+      try{
+        const res = await window.supabaseClient.from(USER_TABLE).upsert([clean], { onConflict:'id' });
+        if(res.error) throw res.error;
+        usersTableReady = true;
+      }catch(err){
+        usersTableReady = false;
+        console.warn('Could not save app user to Supabase.', err);
+      }
+    }else{
+      usersTableReady = false;
+    }
+    updateAdminSyncWarning();
+    return clean;
+  }
+  async function deleteAppUser(id){
+    id = normalizeUserId(id);
+    if(!id || id === 'admin') return;
+    appUsers = ensureAdminUser(appUsers.filter(u=>u.id !== id));
+    cacheUsers();
+    if(window.supabaseClient){
+      try{ await window.supabaseClient.from(USER_TABLE).delete().eq('id', id); }catch(err){ console.warn(err); }
+    }
+    renderAdminUsers();
+  }
+  function findUser(username, password){
+    const id = normalizeUserId(username || 'admin');
+    const pw = String(password || '');
+    return (appUsers || []).find(u => normalizeUserId(u.id || u.username) === id && String(u.password || '') === pw) || null;
+  }
+  function saveSession(user){
+    activeAppUser = normalizeUser(user);
+    eqLoginUsername = activeAppUser.display_name || activeAppUser.id;
+    eqLoggedIn = true;
+    sessionStorage.setItem('eq_logged_in','1');
+    sessionStorage.setItem('eq_login_username', eqLoginUsername);
+    try{ sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(activeAppUser)); }catch(e){}
+  }
+  function clearSession(){
+    activeAppUser = null;
+    try{ sessionStorage.removeItem(CURRENT_USER_KEY); }catch(e){}
+  }
+  function restoreSession(){
+    try{
+      const raw = sessionStorage.getItem(CURRENT_USER_KEY);
+      if(raw){ activeAppUser = normalizeUser(JSON.parse(raw)); }
+    }catch(e){}
+  }
+  function isAdmin(){ return !!(activeAppUser && activeAppUser.role === 'admin'); }
+  function canView(page){
+    if(isAdmin()) return true;
+    return !!(activeAppUser && activeAppUser.permissions && activeAppUser.permissions[page] && activeAppUser.permissions[page].view);
+  }
+  function canEdit(page){
+    if(isAdmin()) return true;
+    return !!(activeAppUser && activeAppUser.permissions && activeAppUser.permissions[page] && activeAppUser.permissions[page].edit);
+  }
+  function firstVisiblePage(){ return PAGE_ORDER.find(p=>canView(p)) || (isAdmin() ? 'admin' : 'employees'); }
+  function updateAdminSyncWarning(){
+    const el = document.getElementById('admin-sync-warning');
+    if(!el) return;
+    if(usersTableReady){ el.style.display='none'; el.textContent=''; }
+    else{
+      el.style.display='block';
+      el.textContent='User setup is using browser fallback because the Supabase app_users table is missing or unavailable. Run the SQL setup block so users save globally.';
+    }
+  }
+  function applyPermissions(){
+    document.body.classList.toggle('is-admin', isAdmin());
+    PAGE_ORDER.concat(['admin']).forEach(function(page){
+      const nav = document.getElementById('nav-' + page);
+      const pg = document.getElementById('page-' + page);
+      const visible = page === 'admin' ? isAdmin() : canView(page);
+      const editable = page === 'admin' ? isAdmin() : canEdit(page);
+      if(nav){ nav.style.display = visible ? '' : 'none'; }
+      if(pg){
+        pg.classList.toggle('no-view', !visible);
+        pg.classList.toggle('view-only', visible && !editable);
+      }
+    });
+    const st = document.getElementById('eq-auth-status');
+    if(st && activeAppUser) st.textContent = '✓ Signed in as ' + (activeAppUser.display_name || activeAppUser.id) + (isAdmin() ? ' — ADMIN' : '');
+  }
+  function goAllowedAfterLogin(){
+    applyPermissions();
+    const current = document.querySelector('.page.active');
+    const currentName = current && current.id ? current.id.replace('page-','') : '';
+    if(!currentName || currentName === 'admin' || !canView(currentName)) window.switchPage(firstVisiblePage());
+  }
+
+  const oldSwitchPage = window.switchPage;
+  window.switchPage = function(p){
+    if(p === 'admin' && !isAdmin()){
+      const w = document.getElementById('admin-auth-warning');
+      if(w) w.style.display = 'block';
+      return;
+    }
+    if(p !== 'admin' && activeAppUser && !canView(p)){
+      alert('This user does not have permission to view that page.');
+      return;
+    }
+    if(typeof oldSwitchPage === 'function') oldSwitchPage(p);
+    applyPermissions();
+    if(p === 'admin'){ renderAdminPermissionRows(); renderAdminUsers(); updateAdminSyncWarning(); }
+  };
+
+  function renderAdminPermissionRows(){
+    const tbody = document.getElementById('admin-permission-rows');
+    if(!tbody) return;
+    tbody.innerHTML = PAGE_ORDER.map(p => `
+      <tr>
+        <td>${PAGE_LABELS[p]}</td>
+        <td><input type="checkbox" id="perm-${p}-view" onchange="if(!this.checked)document.getElementById('perm-${p}-edit').checked=false"></td>
+        <td><input type="checkbox" id="perm-${p}-edit" onchange="if(this.checked)document.getElementById('perm-${p}-view').checked=true"></td>
+      </tr>
+    `).join('');
+  }
+  function readFormPermissions(role){
+    if(role === 'admin') return clone(ADMIN_PERMISSIONS);
+    const perms = {};
+    PAGE_ORDER.forEach(p=>{
+      const v = document.getElementById('perm-'+p+'-view');
+      const e = document.getElementById('perm-'+p+'-edit');
+      perms[p] = { view:!!(v && v.checked), edit:!!(e && e.checked && v && v.checked) };
+    });
+    perms.admin = { view:false, edit:false };
+    return perms;
+  }
+  function fillAdminForm(user){
+    const u = normalizeUser(user || {role:'user'});
+    document.getElementById('admin-user-id').value = u.id === 'user_' ? '' : u.id;
+    document.getElementById('admin-user-name').value = u.display_name || '';
+    document.getElementById('admin-user-password').value = u.password || '';
+    document.getElementById('admin-user-role').value = u.role || 'user';
+    renderAdminPermissionRows();
+    PAGE_ORDER.forEach(p=>{
+      const v = document.getElementById('perm-'+p+'-view');
+      const e = document.getElementById('perm-'+p+'-edit');
+      if(v) v.checked = !!(u.permissions && u.permissions[p] && u.permissions[p].view);
+      if(e) e.checked = !!(u.permissions && u.permissions[p] && u.permissions[p].edit);
+    });
+  }
+  async function saveAdminUserFromForm(){
+    if(!isAdmin()) return alert('Admin only.');
+    const id = normalizeUserId(document.getElementById('admin-user-id').value);
+    const name = document.getElementById('admin-user-name').value.trim() || id;
+    const password = document.getElementById('admin-user-password').value;
+    const role = document.getElementById('admin-user-role').value || 'user';
+    if(!id) return alert('Enter a User ID.');
+    if(!password) return alert('Enter a password for this user.');
+    const saved = await upsertAppUser({ id, username:id, display_name:name, password, role, permissions:readFormPermissions(role), updated_at:new Date().toISOString(), last_edited_by:eqLoginUsername || 'admin' });
+    fillAdminForm({role:'user'});
+    renderAdminUsers();
+    alert('Saved user: ' + saved.id);
+  }
+  function renderAdminUsers(){
+    renderAdminPermissionRows();
+    const list = document.getElementById('admin-users-list');
+    if(!list) return;
+    if(!isAdmin()){
+      list.innerHTML = '<div class="admin-warning">Admin access only.</div>';
+      return;
+    }
+    appUsers = ensureAdminUser(appUsers);
+    list.innerHTML = appUsers.map(u=>{
+      const perms = PAGE_ORDER.map(p=>{
+        const pp = u.permissions && u.permissions[p] || {};
+        if(!pp.view) return '';
+        return `<span class="admin-perm-chip ${pp.edit?'edit':''}">${PAGE_LABELS[p]} ${pp.edit?'EDIT':'VIEW'}</span>`;
+      }).join('') || '<span class="admin-perm-chip">No page access</span>';
+      const safeId = String(u.id).replace(/'/g,"\\'");
+      return `<div class="admin-user-card">
+        <div class="admin-user-top"><div><div class="admin-user-name">${u.display_name || u.id}</div><div class="admin-user-meta">User ID: ${u.id}</div></div><span class="admin-user-pill">${u.role}</span></div>
+        <div class="admin-user-perms">${perms}</div>
+        <div class="admin-card-actions"><button class="admin-btn" onclick="editAdminUser('${safeId}')">Edit</button>${u.id==='admin'?'':'<button class="admin-btn danger" onclick="deleteAdminUser(\''+safeId+'\')">Delete</button>'}</div>
+      </div>`;
+    }).join('');
+    updateAdminSyncWarning();
+  }
+  function editAdminUser(id){
+    const u = appUsers.find(x=>x.id===id);
+    if(u) fillAdminForm(u);
+    window.switchPage('admin');
+  }
+  async function deleteAdminUser(id){
+    if(!isAdmin()) return;
+    if(!confirm('Delete user ' + id + '?')) return;
+    await deleteAppUser(id);
+  }
+
+  window.loadAppUsers = loadAppUsers;
+  window.renderAdminUsers = renderAdminUsers;
+  window.saveAdminUserFromForm = saveAdminUserFromForm;
+  window.editAdminUser = editAdminUser;
+  window.deleteAdminUser = deleteAdminUser;
+
+  async function completeLogin(username, password, popup){
+    await loadAppUsers();
+    const user = findUser(username, password);
+    if(!user){
+      if(popup){
+        const err = document.getElementById('eq-login-error');
+        if(err) err.style.display='block';
+      }else alert('Incorrect user ID or password.');
+      return false;
+    }
+    saveSession(user);
+    const pwEl = document.getElementById('eq-password'); if(pwEl) pwEl.value='';
+    const ppw = document.getElementById('eq-popup-password'); if(ppw) ppw.value='';
+    const overlay = document.getElementById('eq-login-overlay'); if(overlay) overlay.style.display='none';
+    if(typeof syncEqLoginUI === 'function') syncEqLoginUI();
+    applyPermissions();
+    try{ if(typeof applyImportedEquipmentListOnce === 'function') await applyImportedEquipmentListOnce(); }catch(e){}
+    try{ if(typeof loadEmployees === 'function') await loadEmployees(); }catch(e){}
+    try{ if(typeof loadEquipment === 'function') await loadEquipment(); }catch(e){}
+    try{ if(typeof startEquipmentRealtimeSync === 'function') await startEquipmentRealtimeSync(); }catch(e){}
+    try{ if(typeof render === 'function') render(); }catch(e){}
+    try{ if(typeof renderEquipment === 'function') renderEquipment(); }catch(e){}
+    try{ if(typeof updateEquipmentStatusMeta === 'function') updateEquipmentStatusMeta(); }catch(e){}
+    try{ if(typeof refreshEquipmentAgingDisplay === 'function') refreshEquipmentAgingDisplay(); }catch(e){}
+    goAllowedAfterLogin();
+    return true;
+  }
+
+  window.signInEq = async function(){
+    const uEl = document.getElementById('eq-username');
+    const pEl = document.getElementById('eq-password');
+    const username = (uEl && uEl.value) || 'admin';
+    const password = (pEl && pEl.value) || '';
+    if(!password) return alert('Enter your password.');
+    await completeLogin(username, password, false);
+  };
+  window.handlePopupLogin = async function(){
+    const uEl = document.getElementById('eq-popup-user');
+    const pEl = document.getElementById('eq-popup-password');
+    const username = (uEl && uEl.value) || 'admin';
+    const password = (pEl && pEl.value) || '';
+    const err = document.getElementById('eq-login-error');
+    if(err) err.style.display='none';
+    await completeLogin(username, password, true);
+  };
+
+  const oldSignOut = window.signOutEq;
+  window.signOutEq = async function(){
+    clearSession();
+    if(typeof oldSignOut === 'function') await oldSignOut();
+    const overlay = document.getElementById('eq-login-overlay'); if(overlay) overlay.style.display='flex';
+    applyPermissions();
+  };
+
+  document.addEventListener('DOMContentLoaded', async function(){
+    renderAdminPermissionRows();
+    restoreSession();
+    await loadAppUsers();
+    if(activeAppUser){ applyPermissions(); goAllowedAfterLogin(); }
+    else applyPermissions();
+    const popUser = document.getElementById('eq-popup-user'); if(popUser && !popUser.value) popUser.value='admin';
+    const topUser = document.getElementById('eq-username'); if(topUser && !topUser.value) topUser.value='admin';
+    const popPass = document.getElementById('eq-popup-password');
+    if(popPass){ popPass.onkeydown = function(e){ if(e.key === 'Enter') window.handlePopupLogin(); }; }
+  });
+})();
+</script>
+
+
+
+<script id="audit-training-delete-hard-fix">
+(function(){
+  function normalizeType(type){ return type === 'trainings' ? 'trainings' : 'audits'; }
+  function storageKey(type){ return normalizeType(type) === 'trainings' ? 'eit_train_roster_v3' : 'eit_audit_roster_v3'; }
+  function normalizeName(name){
+    return String(name || '').toLowerCase().replace(/[^a-z\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
+  function loadPayload(type){
+    var payload = { items: [], updated_at: null };
+    try{
+      var raw = localStorage.getItem(storageKey(type));
+      var parsed = raw ? JSON.parse(raw) : null;
+      if(parsed && Array.isArray(parsed.items)) payload = parsed;
+    }catch(e){}
+    if(!Array.isArray(payload.items)) payload.items = [];
+    return payload;
+  }
+  function savePayload(type, payload){
+    try{ localStorage.setItem(storageKey(type), JSON.stringify(payload)); }catch(e){}
+  }
+  function refreshRosterHeader(){
+    try{
+      var auditData = loadPayload('audits');
+      var trainData = loadPayload('trainings');
+      var latest = auditData.updated_at || trainData.updated_at || null;
+      if(typeof rosterLastUpdated !== 'undefined') latest = rosterLastUpdated.audits || rosterLastUpdated.trainings || latest;
+      var bannerText = document.getElementById('roster-updated-banner-text');
+      if(bannerText && typeof formatRosterTimestamp === 'function'){
+        bannerText.textContent = formatRosterTimestamp(latest).replace('Last updated: ', '') + ' · Audits ' + auditData.items.length + ' · Training ' + trainData.items.length;
+      }
+      var updatedLabel = document.getElementById('roster-updated');
+      if(updatedLabel && typeof formatRosterTimestamp === 'function') updatedLabel.textContent = formatRosterTimestamp(latest);
+    }catch(e){}
+  }
+  async function saveRemoteRoster(type, payload){
+    var key = normalizeType(type);
+    var table = key === 'trainings' ? 'training_roster_lists' : 'audit_roster_lists';
+    if(!window.supabaseClient) return { ok:false, skipped:true };
+    try{
+      var res = await window.supabaseClient.from(table).upsert({
+        id: key,
+        items: payload.items || [],
+        updated_at: payload.updated_at,
+        updated_by: (window.eqLoginUsername || 'CONGLOBAL')
+      }, { onConflict: 'id' });
+      if(res && res.error){
+        console.error('Audit/training delete save failed:', res.error);
+        return { ok:false, error:res.error };
+      }
+      return { ok:true };
+    }catch(err){
+      console.error('Audit/training delete save failed:', err);
+      return { ok:false, error:err };
+    }
+  }
+  async function hardDeleteRosterItem(type, id, fallbackName){
+    var key = normalizeType(type);
+    var data = loadPayload(key);
+    var targetId = String(id || '');
+    var targetName = normalizeName(fallbackName || '');
+    var removed = null;
+    var next = [];
+    var deletedOnce = false;
+
+    for(var i=0;i<data.items.length;i++){
+      var item = data.items[i] || {};
+      var idMatch = targetId && String(item.id || '') === targetId;
+      var nameMatch = !idMatch && targetName && normalizeName(item.name || item.employee || '') === targetName;
+      if(!deletedOnce && (idMatch || nameMatch)){
+        removed = item;
+        deletedOnce = true;
+        continue;
+      }
+      next.push(item);
+    }
+
+    if(!deletedOnce){
+      console.warn('Delete failed: item not found in local roster payload', { type:key, id:targetId, fallbackName:fallbackName, items:data.items });
+      alert('Could not delete this name because the row ID was not found. Refresh the page and try again.');
+      return;
+    }
+
+    try{ if(typeof pushRosterUndo === 'function') pushRosterUndo('Deleted one name from ' + key); }catch(e){}
+    try{ if(typeof markRosterDeleted === 'function') markRosterDeleted(key, removed); }catch(e){}
+
+    data.items = next;
+    data.updated_at = new Date().toISOString();
+    savePayload(key, data);
+    try{ if(typeof rosterLastUpdated !== 'undefined') rosterLastUpdated[key] = data.updated_at; }catch(e){}
+
+    // Re-render from local state only, so the row disappears immediately and cannot be brought back by a stale refresh.
+    try{ if(typeof renderRosterTable === 'function'){ renderRosterTable('audits'); renderRosterTable('trainings'); } }catch(e){}
+    try{ if(typeof updateRosterUndoButton === 'function') updateRosterUndoButton(); }catch(e){}
+    refreshRosterHeader();
+
+    var remote = await saveRemoteRoster(key, data);
+    if(!remote.ok && !remote.skipped){
+      alert('Deleted locally, but Supabase did not save the audit/training delete. Make sure audit_roster_lists and training_roster_lists exist.');
+    }
+
+    try{ if(typeof renderRosterTable === 'function'){ renderRosterTable('audits'); renderRosterTable('trainings'); } }catch(e){}
+    refreshRosterHeader();
+
+    try{
+      var displayName = (removed && (removed.name || removed.employee)) || fallbackName || 'one name';
+      if(typeof logActivity === 'function') logActivity('notes','Deleted <strong>'+displayName+'</strong> from Audits & Monthly Training', key + ' roster item removed');
+    }catch(e){}
+  }
+
+  // Replace the old function too, in case any inline/event code calls it.
+  window.removeRosterItem = hardDeleteRosterItem;
+
+  // Capture clicks at the top and stop the old broken handler from fighting this one.
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('.roster-delete-btn') : null;
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    var row = btn.closest('tr');
+    var rowName = row && row.cells && row.cells[0] ? row.cells[0].innerText.trim() : '';
+    hardDeleteRosterItem(btn.getAttribute('data-roster-type') || 'audits', btn.getAttribute('data-roster-id') || '', rowName);
+  }, true);
+})();
+</script>
 
 </body>
 </html>
