@@ -10290,7 +10290,7 @@ function stripColumnFromRows(rows, column){
 async function supabaseInsertReplacingTable(tableName, rows){
   if(!supabaseClient || !Array.isArray(rows)) return { error:null };
   var payload = rows.slice();
-  for(var tries=0; tries<8; tries++){
+  for(var tries=0; tries<30; tries++){
     var del = await supabaseClient.from(tableName).delete().neq('__never_match__','__never_match__');
     // Some schemas reject unknown filter columns. Retry with a known-ish harmless filter per table.
     if(del.error){
@@ -10312,7 +10312,7 @@ async function supabaseUpsertWithColumnFallback(tableName, rows, options){
   if(!supabaseClient || !Array.isArray(rows)) return { error:null };
   var payload = rows.slice();
   var opts = options || {};
-  for(var tries=0; tries<8; tries++){
+  for(var tries=0; tries<30; tries++){
     var res;
     if(opts.onConflict && payload.length && Object.prototype.hasOwnProperty.call(payload[0], opts.onConflict)){
       res = await supabaseClient.from(tableName).upsert(payload, { onConflict: opts.onConflict });
