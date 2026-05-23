@@ -10013,7 +10013,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
       <div class="form-group"><label>First Name</label><input type="text" id="f-first" placeholder="John"></div>
       <div class="form-group"><label>Last Name</label><input type="text" id="f-last" placeholder="Smith"></div>
       <div class="form-group"><label>Conglobal ID</label><input type="text" id="f-empid" placeholder="EMP-0001"></div>
-      <div class="form-group"><label>UP ID</label><input type="text" id="f-upid" placeholder="UP-0001"></div>
+      <div class="form-group"><label>UP ID</label><input type="text" id="f-upid" list="upid-status-options" placeholder="Type UP ID or choose status"><datalist id="upid-status-options"><option value="SENT IN"></option><option value="NEED TO SEND"></option><option value="NEED TO CALL"></option><option value="WAITING ON DAN"></option></datalist><select id="f-upid-status-preset" onchange="applyUpIdPreset(this.value)" style="margin-top:8px;width:100%;"><option value="">Select preset status...</option><option value="SENT IN">SENT IN</option><option value="NEED TO SEND">NEED TO SEND</option><option value="NEED TO CALL">NEED TO CALL</option><option value="WAITING ON DAN">WAITING ON DAN</option></select><div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.35;">Type the actual UP ID manually, or use the dropdown for a follow-up status.</div></div>
       <div class="form-group"><label>Password</label><input type="password" id="f-password" placeholder="Set password" autocomplete="new-password"></div>
       <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="name@example.com"></div>
       <div class="form-group"><label>Shift</label><select id="f-shift"><option value="Day">Day Shift</option><option value="Night">Night Shift</option><option value="Gate">Gate</option></select></div>
@@ -17319,6 +17319,10 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   window.employeeNotesHasFocus = employeeNotesHasFocus;
   function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function clean(v){ return String(v || '').trim(); }
+  var UP_ID_PRESET_VALUES = ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'];
+  function normalizeUpIdValue(v){ return clean(v).toUpperCase(); }
+  function isUpIdPreset(v){ return UP_ID_PRESET_VALUES.indexOf(normalizeUpIdValue(v)) > -1; }
+  function isResolvedUpId(v){ return !!clean(v) && !isUpIdPreset(v); }
   function lower(v){ return clean(v).toLowerCase(); }
   function nowIso(){ return new Date().toISOString(); }
   function currentEditor(){ return (typeof eqLoginUsername !== 'undefined' && eqLoginUsername) ? eqLoginUsername : 'CONGLOBAL'; }
@@ -17331,7 +17335,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   function missingItems(e){
     var out=[];
     if(!clean(e.empId)) out.push('Conglobal ID');
-    if(!clean(e.upId)) out.push('UP ID');
+    if(!isResolvedUpId(e.upId)) out.push('UP ID');
     // Password is intentionally NOT included in Needs Attention.
     // The Password column can still show Missing Password, but it will not drive the Needs Attention tab/count/banner.
     if(!clean(e.email)) out.push('Email');
@@ -17341,18 +17345,27 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   }
   function duplicateMap(field){
     var counts={};
-    (employees||[]).forEach(function(e){ var v=lower(e && e[field]); if(v) counts[v]=(counts[v]||0)+1; });
+    (employees||[]).forEach(function(e){
+      if(field === 'upId' && isUpIdPreset(e && e[field])) return;
+      var v=lower(e && e[field]);
+      if(v) counts[v]=(counts[v]||0)+1;
+    });
     return counts;
   }
   function duplicateFields(e, maps){
     var out=[];
     if(clean(e.empId) && maps.empId[lower(e.empId)]>1) out.push('Duplicate Conglobal ID');
-    if(clean(e.upId) && maps.upId[lower(e.upId)]>1) out.push('Duplicate UP ID');
+    if(isResolvedUpId(e.upId) && maps.upId[lower(e.upId)]>1) out.push('Duplicate UP ID');
     if(clean(e.email) && maps.email[lower(e.email)]>1) out.push('Duplicate Email');
     if(clean(e.phone) && maps.phone[lower(e.phone)]>1) out.push('Duplicate Phone');
     return out;
   }
   function buildDuplicateMaps(){ return {empId:duplicateMap('empId'),upId:duplicateMap('upId'),email:duplicateMap('email'),phone:duplicateMap('phone')}; }
+  window.isComplete = function(e){
+    e = e || {};
+    return !!(clean(e.first) && clean(e.last) && clean(e.empId) && isResolvedUpId(e.upId) && clean(e.phone) && clean(e.daysOff));
+  };
+  try{ isComplete = window.isComplete; }catch(_e){}
   function needsAttention(e){ return missingItems(e).length > 0 || duplicateFields(e, buildDuplicateMaps()).length > 0; }
   function personName(e){ return (clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || 'Unnamed Employee'; }
   function employeeNoteValue(e){
@@ -17479,9 +17492,9 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var wrap=document.getElementById('employee-card-list');
     if(!wrap) return;
     var canSeePw = (typeof canViewEmployeePasswords === 'function') ? canViewEmployeePasswords() : false;
-    function cardField(label, value, missingText, extraClass, title){
-      var isMissing = !clean(value);
-      var shown = isMissing ? (missingText || 'Missing') : value;
+    function cardField(label, value, missingText, extraClass, title, forceMissing){
+      var isMissing = !!forceMissing || !clean(value);
+      var shown = isMissing ? (clean(value) || missingText || 'Missing') : value;
       return '<div class="employee-card-field '+(isMissing?'has-missing':'')+'"><div class="employee-card-label">'+esc(label)+'</div><div class="employee-card-value '+(isMissing?'employee-card-missing ':'')+(extraClass||'')+'"'+(title?' title="'+esc(title)+'"':'')+'>'+esc(shown)+'</div></div>';
     }
     wrap.innerHTML=(list||[]).map(function(e){
@@ -17491,7 +17504,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
         + '<div class="employee-card-head"><div><div class="employee-card-name" data-employee-name-id="'+esc(e.id)+'">'+esc(personName(e))+noteFlagHtml(e)+'</div></div>'+shiftBadge(e.shift)+'</div>'
         + '<div class="employee-card-grid">'
         + cardField('Conglobal ID', e.empId, 'Missing Conglobal ID')
-        + cardField('UP ID', e.upId, 'Missing UP ID')
+        + cardField('UP ID', e.upId, 'Missing UP ID', isUpIdPreset(e.upId) ? 'upid-preset-status' : '', null, !isResolvedUpId(e.upId))
         + cardField('Password', pwShown, 'Update', 'employee-hover-meta employee-password-update-card', fmtMeta(e.password_edited_at, e.password_edited_by))
         + cardField('Email', e.email, 'Missing Email', 'employee-hover-meta', fmtMeta(e.email_edited_at, e.email_edited_by))
         + cardField('Phone', e.phone, 'Missing Phone', 'employee-hover-meta', fmtMeta(e.phone_edited_at, e.phone_edited_by))
@@ -17519,7 +17532,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       var matchTab;
       if(currentTab==='all') matchTab=true;
       else if(currentTab==='today') matchTab=!isOffToday(e)&&e.status!=='off';
-      else if(currentTab==='missingUp') matchTab=!clean(e.upId);
+      else if(currentTab==='missingUp') matchTab=!isResolvedUpId(e.upId);
       else if(currentTab==='attention') matchTab=missingItems(e).length>0 || duplicateFields(e,maps).length>0;
       else matchTab=e.shift===currentTab;
       var hay=[e.first,e.last,e.empId,e.upId||'',e.email||'',e.phone,e.daysOff].join(' ').toLowerCase();
@@ -17546,14 +17559,14 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   window.updateTabCounts = function(){
     var list=employees||[]; var maps=buildDuplicateMaps();
     var set=function(id,val){var el=document.getElementById(id); if(el) el.textContent=val;};
-    set('tc-all',list.length); set('tc-today',workingToday().length); set('tc-day',list.filter(function(e){return e.shift==='Day';}).length); set('tc-night',list.filter(function(e){return e.shift==='Night';}).length); set('tc-gate',list.filter(function(e){return e.shift==='Gate';}).length); set('tc-missing-up',list.filter(function(e){return !clean(e.upId);}).length); set('tc-attn',list.filter(function(e){return missingItems(e).length>0 || duplicateFields(e,maps).length>0;}).length);
+    set('tc-all',list.length); set('tc-today',workingToday().length); set('tc-day',list.filter(function(e){return e.shift==='Day';}).length); set('tc-night',list.filter(function(e){return e.shift==='Night';}).length); set('tc-gate',list.filter(function(e){return e.shift==='Gate';}).length); set('tc-missing-up',list.filter(function(e){return !isResolvedUpId(e.upId);}).length); set('tc-attn',list.filter(function(e){return missingItems(e).length>0 || duplicateFields(e,maps).length>0;}).length);
   };
   window.updateBanner = function(){
     var banner=document.getElementById('callout-banner'); if(!banner) return;
     var maps=buildDuplicateMaps();
     var callouts=(employees||[]).filter(function(e){return e.status==='callout';});
     var waiting=(employees||[]).filter(function(e){return e.status==='waiting';});
-    var missingUp=(employees||[]).filter(function(e){return !clean(e.upId);});
+    var missingUp=(employees||[]).filter(function(e){return !isResolvedUpId(e.upId);});
     var attn=(employees||[]).filter(function(e){return missingItems(e).length>0 || duplicateFields(e,maps).length>0;});
     var html='';
     if(callouts.length) html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Called Out</div><div class="banner-chips">'+callouts.map(shiftChip).join('')+'</div></div>';
@@ -17583,7 +17596,11 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     tbody.innerHTML=list.map(function(e){
       var empCell=clean(e.empId)?metaSpan(e.empId,'emp-id','Conglobal ID',''):'<button type="button" class="missing-field-btn missing-empid" data-eid="'+esc(e.id)+'" title="Add Conglobal ID">Missing ID</button>';
       if(clean(e.empId)) empCell='<span class="emp-id emp-table-value">'+esc(e.empId)+'</span>'+(duplicateFields(e,maps).indexOf('Duplicate Conglobal ID')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':'');
-      var upCell=clean(e.upId)?'<span class="emp-id emp-table-value">'+esc(e.upId)+'</span>'+(duplicateFields(e,maps).indexOf('Duplicate UP ID')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-upid" data-eid="'+esc(e.id)+'" title="Add UP ID">Missing UP</button>';
+      var upIsResolved = isResolvedUpId(e.upId);
+      var upIsPreset = isUpIdPreset(e.upId);
+      var upCell = upIsResolved
+        ? '<span class="emp-id emp-table-value">'+esc(e.upId)+'</span>'+(duplicateFields(e,maps).indexOf('Duplicate UP ID')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':'')
+        : '<button type="button" class="missing-field-btn missing-upid '+(upIsPreset?'upid-preset-status':'')+'" data-eid="'+esc(e.id)+'" title="Update UP ID">'+esc(upIsPreset ? e.upId : 'Missing UP')+'</button>';
       var phoneCell=clean(e.phone)?metaSpan(e.phone,'phone-cell',fmtMeta(e.phone_edited_at,e.phone_edited_by),e.phone)+(duplicateFields(e,maps).indexOf('Duplicate Phone')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-phone" data-eid="'+esc(e.id)+'" title="Add phone number">Missing Phone</button>';
       var pw=clean(e.password); var pwCell=pw?metaSpan(canSeePw?pw:'••••••','emp-id emp-password-cell',fmtMeta(e.password_edited_at,e.password_edited_by),canSeePw?pw:'••••••'):'<button type="button" class="missing-field-btn missing-password" data-eid="'+esc(e.id)+'" title="Update password">Update</button>';
       var emailCell=clean(e.email)?metaSpan(e.email,'phone-cell',fmtMeta(e.email_edited_at,e.email_edited_by),e.email)+(duplicateFields(e,maps).indexOf('Duplicate Email')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-email" data-eid="'+esc(e.id)+'" title="Add email">Missing Email</button>';
@@ -17599,6 +17616,12 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     renderCards(list,maps);
     updateStats(); updateBanner(); updateTabCounts(); updateEmployeeNeedsAttentionButton();
   };
+
+  window.applyUpIdPreset = function(value){
+    var input=document.getElementById('f-upid');
+    if(input && value){ input.value=value; input.focus(); }
+  };
+
   window.protectedDeleteEmployee = function(id){
     if(!id) return;
     if(pendingEmployeeDeleteId !== id){ pendingEmployeeDeleteId = id; render(); return; }
@@ -17621,7 +17644,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     protectedDeleteEmployee(editId);
   };
   var oldOpenModal=window.openModal;
-  window.openModal=function(id){ pendingEmployeeDeleteId=null; if(typeof oldOpenModal==='function') oldOpenModal(id); var btn=document.getElementById('del-btn'); var cancelBtn=document.getElementById('cancel-del-btn'); if(btn){ btn.textContent='Delete'; btn.classList.remove('confirm'); btn.classList.add('emp-delete-btn'); } if(cancelBtn){ cancelBtn.style.display='none'; } };
+  window.openModal=function(id){ pendingEmployeeDeleteId=null; if(typeof oldOpenModal==='function') oldOpenModal(id); var upPreset=document.getElementById('f-upid-status-preset'); if(upPreset){ upPreset.value=''; } var btn=document.getElementById('del-btn'); var cancelBtn=document.getElementById('cancel-del-btn'); if(btn){ btn.textContent='Delete'; btn.classList.remove('confirm'); btn.classList.add('emp-delete-btn'); } if(cancelBtn){ cancelBtn.style.display='none'; } };
   var oldCloseModal=window.closeModal;
   window.closeModal=function(){ pendingEmployeeDeleteId=null; var cancelBtn=document.getElementById('cancel-del-btn'); if(cancelBtn){ cancelBtn.style.display='none'; } if(typeof oldCloseModal==='function') oldCloseModal(); if(typeof render==='function') render(); };
   window.saveEmp = function(){
