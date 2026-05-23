@@ -4630,6 +4630,58 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
   #page-employees .employee-notes-box{min-height:92px;font-size:13px;}
 }
 </style>
+
+<style id="employee-password-update-and-notes-restore-css">
+/* Employee ID password action: less urgent than missing/attention alerts. */
+#page-employees .missing-field-btn.missing-password{
+  border-color:rgba(148,163,184,.38) !important;
+  background:rgba(148,163,184,.10) !important;
+  color:#cbd5e1 !important;
+  box-shadow:none !important;
+  font-weight:800 !important;
+  letter-spacing:.06em !important;
+}
+#page-employees .missing-field-btn.missing-password::before{
+  content:'↻' !important;
+  color:#cbd5e1 !important;
+  font-size:12px !important;
+}
+#page-employees .missing-field-btn.missing-password:hover{
+  border-color:rgba(203,213,225,.62) !important;
+  background:rgba(148,163,184,.16) !important;
+  color:#ffffff !important;
+  transform:translateY(-1px);
+}
+#page-employees .employee-card-field.has-missing .employee-password-update-card,
+#page-employees .employee-card-value.employee-password-update-card{
+  border-color:rgba(148,163,184,.38) !important;
+  background:rgba(148,163,184,.10) !important;
+  color:#cbd5e1 !important;
+  box-shadow:none !important;
+}
+/* Restore / protect Employee Notes visibility after the note flag patch. */
+#page-employees .employee-notes-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin-left:6px !important;
+  white-space:nowrap !important;
+}
+#page-employees .employee-notes-row{
+  display:table-row !important;
+}
+#page-employees .employee-notes-row td{
+  display:table-cell !important;
+}
+#page-employees .employee-notes-panel,
+#page-employees .employee-card-notes{
+  display:block !important;
+}
+#page-employees .employee-card-actions .employee-notes-toggle{
+  margin-left:0 !important;
+}
+</style>
+
 <style id="employee-card-missing-visibility-fix">
 /* Employee ID card view: make missing values impossible to miss on mobile. */
 #page-employees .employee-card-field.has-missing{
@@ -10216,7 +10268,7 @@ function normalizeEmployeeRecord(e){
     phone: String(e.phone || '').trim(),
     daysOff: String(e.daysOff || '').trim(),
     status: e.status || 'active',
-    notes: String(e.notes || '').trim(),
+    notes: String(e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments || '').trim(),
     notes_edited_at: e.notes_edited_at || '',
     notes_edited_by: e.notes_edited_by || ''
   });
@@ -10701,7 +10753,7 @@ function render(){
     var pwText = e.password && String(e.password).trim() ? String(e.password).trim() : '';
     var pwCell = pwText
       ? '<span class="emp-id emp-table-value emp-password-cell" title="'+(canSeePw ? pwText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : 'Password hidden')+'">'+(canSeePw ? pwText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '••••••')+'</span>'
-      : '<button type="button" class="missing-field-btn missing-password" data-eid="'+e.id+'" title="Add password">Missing Password</button>';
+      : '<button type="button" class="missing-field-btn missing-password" data-eid="'+e.id+'" title="Update password">Update</button>';
     var emailCell=(e.email&&String(e.email).trim())
       ?'<span class="phone-cell emp-table-value">'+String(e.email).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>'
       :'<button type="button" class="missing-field-btn missing-email" data-eid="'+e.id+'" title="Add email">Missing Email</button>';
@@ -17303,7 +17355,21 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   function buildDuplicateMaps(){ return {empId:duplicateMap('empId'),upId:duplicateMap('upId'),email:duplicateMap('email'),phone:duplicateMap('phone')}; }
   function needsAttention(e){ return missingItems(e).length > 0 || duplicateFields(e, buildDuplicateMaps()).length > 0; }
   function personName(e){ return (clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || 'Unnamed Employee'; }
-  function noteFlagHtml(e){ return clean(e && e.notes) ? '<span class="employee-note-flag" title="This employee has notes">Note</span>' : ''; }
+  function employeeNoteValue(e){
+    e = e || {};
+    return String(e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments || '').trim();
+  }
+  function employeeHasNote(e){ return !!employeeNoteValue(e); }
+  function noteFlagHtml(e){ return employeeHasNote(e) ? '<span class="employee-note-flag" title="This employee has notes">Note</span>' : ''; }
+  function refreshEmployeeNoteFlags(id, value){
+    var has = !!String(value == null ? '' : value).trim();
+    var safeId = (window.CSS && CSS.escape) ? CSS.escape(String(id)) : String(id).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
+    document.querySelectorAll('[data-employee-name-id="' + safeId + '"]').forEach(function(nameEl){
+      var flag = nameEl.querySelector('.employee-note-flag');
+      if(has && !flag){ nameEl.insertAdjacentHTML('beforeend', noteFlagHtml({notes:value})); }
+      if(!has && flag){ flag.remove(); }
+    });
+  }
   function metaSpan(value, cls, title, textOverride){ return '<span class="'+cls+' emp-table-value employee-hover-meta" title="'+esc(title)+'">'+esc(textOverride != null ? textOverride : (value || '—'))+'</span>'; }
   function flagsHtml(e, maps){
     var miss = missingItems(e).map(function(m){ return '<span class="emp-flag">Missing '+esc(m)+'</span>'; }).join('');
@@ -17345,7 +17411,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     if(!open) return '';
     var meta = fmtMeta(e.notes_edited_at, e.notes_edited_by);
     var inner = '<div class="employee-notes-panel"><div class="employee-notes-title">Employee Notes</div>'
-      + '<textarea class="employee-notes-box" data-notes-save-eid="'+esc(e.id)+'" placeholder="Type employee notes here...">'+esc(e.notes || '')+'</textarea>'
+      + '<textarea class="employee-notes-box" data-notes-save-eid="'+esc(e.id)+'" placeholder="Type employee notes here...">'+esc(employeeNoteValue(e))+'</textarea>'
       + '<div class="employee-notes-meta">'+esc(meta)+'</div></div>';
     return tableMode ? '<tr class="employee-notes-row"><td colspan="9">'+inner+'</td></tr>' : '<div class="employee-card-notes">'+inner+'</div>';
   }
@@ -17369,6 +17435,10 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var next=String(value == null ? '' : value);
     if(String(e.notes||'')===next && !employeeNoteDirty[id]) return false;
     e.notes=next;
+    e.note=next;
+    e.employee_notes=next;
+    e.employeeNotes=next;
+    refreshEmployeeNoteFlags(id, next);
     e.notes_edited_at=nowIso();
     e.notes_edited_by=currentEditor();
     employeeNoteDirty[id]=true;
@@ -17418,11 +17488,11 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       var pw=clean(e.password);
       var pwShown = pw ? (canSeePw ? pw : '••••••') : '';
       return '<div class="employee-card '+(pendingEmployeeDeleteId===e.id?'delete-pending':'')+'" data-eid="'+esc(e.id)+'">'
-        + '<div class="employee-card-head"><div><div class="employee-card-name">'+esc(personName(e))+noteFlagHtml(e)+'</div></div>'+shiftBadge(e.shift)+'</div>'
+        + '<div class="employee-card-head"><div><div class="employee-card-name" data-employee-name-id="'+esc(e.id)+'">'+esc(personName(e))+noteFlagHtml(e)+'</div></div>'+shiftBadge(e.shift)+'</div>'
         + '<div class="employee-card-grid">'
         + cardField('Conglobal ID', e.empId, 'Missing Conglobal ID')
         + cardField('UP ID', e.upId, 'Missing UP ID')
-        + cardField('Password', pwShown, 'Missing Password', 'employee-hover-meta', fmtMeta(e.password_edited_at, e.password_edited_by))
+        + cardField('Password', pwShown, 'Update', 'employee-hover-meta employee-password-update-card', fmtMeta(e.password_edited_at, e.password_edited_by))
         + cardField('Email', e.email, 'Missing Email', 'employee-hover-meta', fmtMeta(e.email_edited_at, e.email_edited_by))
         + cardField('Phone', e.phone, 'Missing Phone', 'employee-hover-meta', fmtMeta(e.phone_edited_at, e.phone_edited_by))
         + cardField('Days Off', e.daysOff, 'Missing Days Off')
@@ -17515,10 +17585,10 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       if(clean(e.empId)) empCell='<span class="emp-id emp-table-value">'+esc(e.empId)+'</span>'+(duplicateFields(e,maps).indexOf('Duplicate Conglobal ID')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':'');
       var upCell=clean(e.upId)?'<span class="emp-id emp-table-value">'+esc(e.upId)+'</span>'+(duplicateFields(e,maps).indexOf('Duplicate UP ID')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-upid" data-eid="'+esc(e.id)+'" title="Add UP ID">Missing UP</button>';
       var phoneCell=clean(e.phone)?metaSpan(e.phone,'phone-cell',fmtMeta(e.phone_edited_at,e.phone_edited_by),e.phone)+(duplicateFields(e,maps).indexOf('Duplicate Phone')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-phone" data-eid="'+esc(e.id)+'" title="Add phone number">Missing Phone</button>';
-      var pw=clean(e.password); var pwCell=pw?metaSpan(canSeePw?pw:'••••••','emp-id emp-password-cell',fmtMeta(e.password_edited_at,e.password_edited_by),canSeePw?pw:'••••••'):'<button type="button" class="missing-field-btn missing-password" data-eid="'+esc(e.id)+'" title="Add password">Missing Password</button>';
+      var pw=clean(e.password); var pwCell=pw?metaSpan(canSeePw?pw:'••••••','emp-id emp-password-cell',fmtMeta(e.password_edited_at,e.password_edited_by),canSeePw?pw:'••••••'):'<button type="button" class="missing-field-btn missing-password" data-eid="'+esc(e.id)+'" title="Update password">Update</button>';
       var emailCell=clean(e.email)?metaSpan(e.email,'phone-cell',fmtMeta(e.email_edited_at,e.email_edited_by),e.email)+(duplicateFields(e,maps).indexOf('Duplicate Email')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-email" data-eid="'+esc(e.id)+'" title="Add email">Missing Email</button>';
       return '<tr class="'+(pendingEmployeeDeleteId===e.id?'employee-delete-pending':'')+'">'
-        +'<td><div class="emp-name emp-table-value">'+esc(personName(e))+noteFlagHtml(e)+'</div></td>'
+        +'<td><div class="emp-name emp-table-value" data-employee-name-id="'+esc(e.id)+'">'+esc(personName(e))+noteFlagHtml(e)+'</div></td>'
         +'<td>'+empCell+'</td><td>'+upCell+'</td><td>'+pwCell+'</td><td>'+emailCell+'</td><td>'+shiftBadge(e.shift)+'</td><td><span class="days-off emp-table-value">'+esc(e.daysOff||'—')+'</span></td><td>'+phoneCell+'</td>'
         +'<td><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+'</td></tr>'
         + notesPanelHtml(e, true);
@@ -17558,7 +17628,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var first=document.getElementById('f-first').value.trim(); var last=document.getElementById('f-last').value.trim(); if(!first||!last){alert('First and last name required.');return;}
     var pwInput=document.getElementById('f-password'); var canSeePw=(typeof canViewEmployeePasswords==='function')?canViewEmployeePasswords():false; var currentEmp=editId?(employees||[]).find(function(x){return x.id===editId;}):null;
     var safePassword=canSeePw?(pwInput?pwInput.value.trim():''):(currentEmp?(currentEmp.password||''):'');
-    var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:safePassword,email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:(currentEmp&&currentEmp.status)?currentEmp.status:'active',notes:(currentEmp&&currentEmp.notes)?currentEmp.notes:'',notes_edited_at:(currentEmp&&currentEmp.notes_edited_at)?currentEmp.notes_edited_at:'',notes_edited_by:(currentEmp&&currentEmp.notes_edited_by)?currentEmp.notes_edited_by:''};
+    var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:safePassword,email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:(currentEmp&&currentEmp.status)?currentEmp.status:'active',notes:(currentEmp?employeeNoteValue(currentEmp):''),note:(currentEmp?employeeNoteValue(currentEmp):''),employee_notes:(currentEmp?employeeNoteValue(currentEmp):''),employeeNotes:(currentEmp?employeeNoteValue(currentEmp):''),notes_edited_at:(currentEmp&&currentEmp.notes_edited_at)?currentEmp.notes_edited_at:'',notes_edited_by:(currentEmp&&currentEmp.notes_edited_by)?currentEmp.notes_edited_by:''};
     var stamp=nowIso(), editor=currentEditor();
     if(currentEmp){
       if(canSeePw && clean(currentEmp.password)!==clean(data.password)){ data.password_edited_at=stamp; data.password_edited_by=editor; } else { data.password_edited_at=currentEmp.password_edited_at||''; data.password_edited_by=currentEmp.password_edited_by||''; }
@@ -17603,7 +17673,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     try{
       if(!window.supabaseClient){ if(!loadEmployeesFromCache()) seedData(); if(typeof showEmployeeSyncWarning==='function') showEmployeeSyncWarning('Employee ID is using browser cache only because Supabase is not connected.'); return; }
       var res=await window.supabaseClient.from('employees').select('*').order('updated_at',{ascending:true}); if(res.error) throw res.error;
-      var rows=(res.data||[]).map(function(row){ return normalizeEmployeeRecord({id:row.id||row.employee_id||uid(),first:row.first_name||row.first||'',last:row.last_name||row.last||'',empId:row.employee_id||row.empId||'',upId:row.up_id||row.upId||'',password:row.password||'',email:row.email||'',shift:row.shift||'Day',phone:row.phone||'',daysOff:row.days_off||row.daysOff||'',status:row.status||'active',password_edited_at:row.password_edited_at||'',password_edited_by:row.password_edited_by||'',email_edited_at:row.email_edited_at||'',email_edited_by:row.email_edited_by||'',phone_edited_at:row.phone_edited_at||'',phone_edited_by:row.phone_edited_by||'',notes:row.notes||'',notes_edited_at:row.notes_edited_at||'',notes_edited_by:row.notes_edited_by||''}); });
+      var rows=(res.data||[]).map(function(row){ return normalizeEmployeeRecord({id:row.id||row.employee_id||uid(),first:row.first_name||row.first||'',last:row.last_name||row.last||'',empId:row.employee_id||row.empId||'',upId:row.up_id||row.upId||'',password:row.password||'',email:row.email||'',shift:row.shift||'Day',phone:row.phone||'',daysOff:row.days_off||row.daysOff||'',status:row.status||'active',password_edited_at:row.password_edited_at||'',password_edited_by:row.password_edited_by||'',email_edited_at:row.email_edited_at||'',email_edited_by:row.email_edited_by||'',phone_edited_at:row.phone_edited_at||'',phone_edited_by:row.phone_edited_by||'',notes:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',note:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',employee_notes:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',employeeNotes:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',notes_edited_at:row.notes_edited_at||'',notes_edited_by:row.notes_edited_by||''}); });
       if(rows.length){ employees=rows; normalizeEmployeeRoster(); if(typeof rosterLooksBroken==='function'&&rosterLooksBroken()){ seedData(); normalizeEmployeeRoster(); saveEmployeesToCache(); await window.saveEmployees(); } else { saveEmployeesToCache(); } if(typeof hideEmployeeSyncWarning==='function') hideEmployeeSyncWarning(); return; }
       seedData(); normalizeEmployeeRoster(); saveEmployeesToCache(); await window.saveEmployees();
     }catch(err){ console.error('Employee global load failed:',err); if(!loadEmployeesFromCache()) seedData(); if(typeof showEmployeeSyncWarning==='function') showEmployeeSyncWarning('Employee ID failed to load globally from Supabase. Using local cache until connection is fixed.'); }
@@ -17619,6 +17689,891 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     }catch(err){ console.error('Employee global save failed:',err); if(typeof showEmployeeSyncWarning==='function') showEmployeeSyncWarning('Employee ID failed to save globally. Check the employees Supabase table/policy.'); }
   };
   document.addEventListener('DOMContentLoaded',function(){ syncCardModeUI(); });
+})();
+</script>
+
+
+<script id="employee-password-update-and-notes-restore-js">
+(function(){
+  function clean(v){ return String(v || '').trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function softenPasswordButtons(root){
+    (root || document).querySelectorAll('#page-employees .missing-password').forEach(function(btn){
+      btn.textContent = 'Update';
+      btn.setAttribute('title','Update password');
+      btn.classList.add('password-update-btn');
+    });
+    (root || document).querySelectorAll('#page-employees .employee-card-field').forEach(function(field){
+      var label = field.querySelector('.employee-card-label');
+      var value = field.querySelector('.employee-card-value');
+      if(label && value && /password/i.test(label.textContent || '') && /missing password|update/i.test(value.textContent || '')){
+        value.textContent = 'Update';
+        value.classList.add('employee-password-update-card');
+      }
+    });
+  }
+
+  function findEmployeeById(id){
+    try{
+      return (window.employees || employees || []).find(function(e){ return String(e.id) === String(id); }) || null;
+    }catch(e){ return null; }
+  }
+
+  function getEmployeeNotesOpen(){
+    if(typeof window.employeeNotesOpen === 'object' && window.employeeNotesOpen) return window.employeeNotesOpen;
+    try{
+      if(typeof employeeNotesOpen === 'object' && employeeNotesOpen){
+        window.employeeNotesOpen = employeeNotesOpen;
+        return employeeNotesOpen;
+      }
+    }catch(e){}
+    window.employeeNotesOpen = {};
+    return window.employeeNotesOpen;
+  }
+
+  function employeeNoteText(e){
+    e = e || {};
+    return String(e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments || '');
+  }
+
+  function employeeNotesMeta(e){
+    try{
+      if(typeof fmtMeta === 'function') return fmtMeta(e.notes_edited_at, e.notes_edited_by);
+    }catch(err){}
+    return e.notes_edited_at ? ('Last edited: ' + e.notes_edited_at) : 'No note edits yet';
+  }
+
+  function notesPanelHtmlSafe(e, tableMode){
+    var inner = '<div class="employee-notes-panel">'
+      + '<div class="employee-notes-title">Employee Notes</div>'
+      + '<textarea class="employee-notes-box" data-notes-save-eid="'+esc(e.id)+'" placeholder="Type employee notes here...">'+esc(employeeNoteText(e))+'</textarea>'
+      + '<div class="employee-notes-meta">'+esc(employeeNotesMeta(e))+'</div>'
+      + '</div>';
+    return tableMode ? '<tr class="employee-notes-row" data-note-row-for="'+esc(e.id)+'"><td colspan="9">'+inner+'</td></tr>' : '<div class="employee-card-notes" data-note-card-for="'+esc(e.id)+'">'+inner+'</div>';
+  }
+
+  function bindNoteBox(box){
+    if(!box || box.__employeeNoteBoxBound) return;
+    box.__employeeNoteBoxBound = true;
+    box.addEventListener('input', function(){
+      if(typeof window.scheduleEmployeeNoteSave === 'function') window.scheduleEmployeeNoteSave(this.dataset.notesSaveEid, this.value);
+    });
+    box.addEventListener('change', function(){
+      if(typeof window.flushEmployeeNoteSave === 'function') window.flushEmployeeNoteSave(this.dataset.notesSaveEid, this.value);
+    });
+    box.addEventListener('blur', function(){
+      if(typeof window.flushEmployeeNoteSave === 'function') window.flushEmployeeNoteSave(this.dataset.notesSaveEid, this.value);
+    });
+  }
+
+  function insertNotesPanelWithoutFullRefresh(id){
+    var e = findEmployeeById(id);
+    if(!e) return false;
+
+    var row = document.querySelector('#page-employees tbody tr:not(.employee-notes-row) [data-notes-eid="'+CSS.escape(String(id))+'"]');
+    if(row){
+      var tr = row.closest('tr');
+      var existing = tr && tr.nextElementSibling && tr.nextElementSibling.classList.contains('employee-notes-row') ? tr.nextElementSibling : null;
+      if(existing){ existing.remove(); return true; }
+      if(tr){
+        tr.insertAdjacentHTML('afterend', notesPanelHtmlSafe(e, true));
+        bindNoteBox(tr.nextElementSibling ? tr.nextElementSibling.querySelector('[data-notes-save-eid]') : null);
+        return true;
+      }
+    }
+
+    var cardBtn = document.querySelector('#employee-card-list [data-notes-eid="'+CSS.escape(String(id))+'"]');
+    if(cardBtn){
+      var card = cardBtn.closest('.employee-card');
+      var existingCard = card ? card.querySelector('.employee-card-notes') : null;
+      if(existingCard){ existingCard.remove(); return true; }
+      if(card){
+        card.insertAdjacentHTML('beforeend', notesPanelHtmlSafe(e, false));
+        bindNoteBox(card.querySelector('[data-notes-save-eid="'+CSS.escape(String(id))+'"]'));
+        return true;
+      }
+    }
+    return false;
+  }
+
+  window.toggleEmployeeNotes = function(id){
+    if(!id) return false;
+    var openMap = getEmployeeNotesOpen();
+    openMap[id] = !openMap[id];
+
+    var buttons = document.querySelectorAll('#page-employees [data-notes-eid="'+CSS.escape(String(id))+'"]');
+    buttons.forEach(function(btn){
+      btn.textContent = openMap[id] ? 'Hide Notes' : 'Show Notes';
+      btn.setAttribute('aria-expanded', openMap[id] ? 'true' : 'false');
+    });
+
+    if(insertNotesPanelWithoutFullRefresh(id)) return false;
+
+    try{ if(typeof render === 'function') render(); }catch(e){ console.error('Employee notes render failed:', e); }
+    return false;
+  };
+
+  function ensureNotesControls(root){
+    var scope = root || document;
+    scope.querySelectorAll('#page-employees tbody tr').forEach(function(row){
+      if(row.classList.contains('employee-notes-row')) return;
+      var editBtn = row.querySelector('button.action-btn[data-eid], button[data-eid]');
+      if(!editBtn) return;
+      var id = editBtn.dataset.eid;
+      var actionCell = row.querySelector('td:last-child');
+      if(id && actionCell && !actionCell.querySelector('[data-notes-eid]')){
+        var btn=document.createElement('button');
+        btn.className='action-btn employee-notes-toggle';
+        btn.type='button';
+        btn.dataset.notesEid=id;
+        btn.textContent=(getEmployeeNotesOpen()[id] ? 'Hide Notes' : 'Show Notes');
+        btn.setAttribute('aria-expanded', getEmployeeNotesOpen()[id] ? 'true' : 'false');
+        btn.addEventListener('click', function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          ev.stopImmediatePropagation();
+          window.toggleEmployeeNotes(id);
+          return false;
+        });
+        actionCell.appendChild(btn);
+      }
+    });
+
+    scope.querySelectorAll('#page-employees [data-notes-eid]').forEach(function(btn){
+      if(btn.__employeeNotesReliableBound) return;
+      btn.__employeeNotesReliableBound = true;
+      btn.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+        window.toggleEmployeeNotes(this.dataset.notesEid);
+        return false;
+      });
+    });
+
+    scope.querySelectorAll('#page-employees [data-notes-save-eid]').forEach(bindNoteBox);
+    softenPasswordButtons(scope);
+  }
+
+  var oldRender = window.render;
+  if(typeof oldRender === 'function' && !oldRender.__employeeNotesRestoreWrappedV2){
+    var wrapped = function(){
+      var result = oldRender.apply(this, arguments);
+      try{ ensureNotesControls(document); }catch(e){}
+      return result;
+    };
+    wrapped.__employeeNotesRestoreWrappedV2 = true;
+    window.render = wrapped;
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){ ensureNotesControls(document); });
+  setTimeout(function(){ try{ ensureNotesControls(document); }catch(e){} }, 250);
+  setTimeout(function(){ try{ ensureNotesControls(document); }catch(e){} }, 1000);
+})();
+</script>
+
+
+
+<script id="employee-notes-stable-controller-final">
+(function(){
+  'use strict';
+  var noteTimers = Object.create(null);
+  window.employeeNotesOpenStable = window.employeeNotesOpenStable || Object.create(null);
+
+  function esc(v){
+    return String(v == null ? '' : v)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+  function getEmployees(){
+    try{
+      if(Array.isArray(window.employees)) return window.employees;
+    }catch(e){}
+    try{
+      if(Array.isArray(employees)) return employees;
+    }catch(e){}
+    return [];
+  }
+  function findEmployee(id){
+    id = String(id || '');
+    return getEmployees().find(function(e){ return String(e && e.id) === id; }) || null;
+  }
+  function noteText(e){
+    e = e || {};
+    return String(e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments || '');
+  }
+  function setNoteText(e, value){
+    if(!e) return;
+    value = String(value == null ? '' : value);
+    e.notes = value;
+    e.note = value;
+    e.employee_notes = value;
+    e.employeeNotes = value;
+    e.notes_edited_at = new Date().toISOString();
+    try{
+      e.notes_edited_by = (typeof eqLoginUsername !== 'undefined' && eqLoginUsername) ? eqLoginUsername : 'CONGLOBAL';
+    }catch(err){
+      e.notes_edited_by = 'CONGLOBAL';
+    }
+  }
+  function fmtMeta(e){
+    if(!e || !e.notes_edited_at) return 'Last edited: not recorded yet';
+    var d = new Date(e.notes_edited_at);
+    var stamp = isNaN(d.getTime()) ? e.notes_edited_at : d.toLocaleString([], {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'});
+    return 'Last edited: ' + stamp + (e.notes_edited_by ? ' by ' + e.notes_edited_by : '');
+  }
+  function updateNoteFlag(id, value){
+    var has = String(value || '').trim().length > 0;
+    document.querySelectorAll('#page-employees [data-employee-name-id="'+CSS.escape(String(id))+'"]').forEach(function(nameEl){
+      var flag = nameEl.querySelector('.employee-note-flag');
+      if(has && !flag){
+        var span = document.createElement('span');
+        span.className = 'employee-note-flag';
+        span.title = 'This employee has notes';
+        span.textContent = 'Note';
+        nameEl.appendChild(span);
+      }
+      if(!has && flag) flag.remove();
+    });
+  }
+  function panelHtml(e, mode){
+    return ''
+      + '<div class="employee-notes-panel employee-notes-panel-stable" data-stable-note-panel="'+esc(e.id)+'" data-note-mode="'+esc(mode || 'table')+'">'
+      +   '<div class="employee-notes-title">Employee Notes</div>'
+      +   '<textarea class="employee-notes-box" data-notes-save-eid="'+esc(e.id)+'" placeholder="Type employee notes here...">'+esc(noteText(e))+'</textarea>'
+      +   '<div class="employee-notes-meta">'+esc(fmtMeta(e))+'</div>'
+      + '</div>';
+  }
+  function removePanels(id){
+    document.querySelectorAll('#page-employees [data-stable-note-wrapper="'+CSS.escape(String(id))+'"], #page-employees [data-note-row-for="'+CSS.escape(String(id))+'"], #page-employees [data-note-card-for="'+CSS.escape(String(id))+'"]').forEach(function(el){ el.remove(); });
+  }
+  function setButtons(id, open){
+    document.querySelectorAll('#page-employees [data-notes-eid="'+CSS.escape(String(id))+'"]').forEach(function(btn){
+      btn.textContent = open ? 'Hide Notes' : 'Show Notes';
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.classList.toggle('notes-open', !!open);
+    });
+  }
+  function openPanel(id){
+    var e = findEmployee(id);
+    if(!e) return false;
+    removePanels(id);
+
+    var tableBtn = document.querySelector('#page-employees #emp-table [data-notes-eid="'+CSS.escape(String(id))+'"]');
+    if(tableBtn){
+      var tr = tableBtn.closest('tr');
+      if(tr){
+        var row = document.createElement('tr');
+        row.className = 'employee-notes-row employee-notes-row-stable';
+        row.setAttribute('data-stable-note-wrapper', String(id));
+        row.setAttribute('data-note-row-for', String(id));
+        var td = document.createElement('td');
+        td.colSpan = Math.max(1, (tr.children && tr.children.length) || 9);
+        td.innerHTML = panelHtml(e, 'table');
+        row.appendChild(td);
+        tr.parentNode.insertBefore(row, tr.nextSibling);
+        bindTextarea(row.querySelector('[data-notes-save-eid]'));
+        return true;
+      }
+    }
+
+    var cardBtn = document.querySelector('#page-employees #employee-card-list [data-notes-eid="'+CSS.escape(String(id))+'"]');
+    if(cardBtn){
+      var card = cardBtn.closest('.employee-card');
+      if(card){
+        var wrap = document.createElement('div');
+        wrap.className = 'employee-card-notes employee-card-notes-stable';
+        wrap.setAttribute('data-stable-note-wrapper', String(id));
+        wrap.setAttribute('data-note-card-for', String(id));
+        wrap.innerHTML = panelHtml(e, 'card');
+        card.appendChild(wrap);
+        bindTextarea(wrap.querySelector('[data-notes-save-eid]'));
+        return true;
+      }
+    }
+    return false;
+  }
+  function toggleNotes(id){
+    if(!id) return;
+    var open = !window.employeeNotesOpenStable[id];
+    window.employeeNotesOpenStable[id] = open;
+    if(open){
+      openPanel(id);
+    }else{
+      removePanels(id);
+    }
+    setButtons(id, open);
+  }
+  function saveNote(id, value, immediate){
+    var e = findEmployee(id);
+    if(!e) return;
+    setNoteText(e, value);
+    updateNoteFlag(id, value);
+    var panel = document.querySelector('#page-employees [data-stable-note-panel="'+CSS.escape(String(id))+'"]');
+    if(panel){
+      var meta = panel.querySelector('.employee-notes-meta');
+      if(meta) meta.textContent = fmtMeta(e);
+    }
+    clearTimeout(noteTimers[id]);
+    noteTimers[id] = setTimeout(function(){
+      try{
+        if(typeof window.save === 'function') window.save();
+        else if(typeof save === 'function') save();
+      }catch(err){ console.error('Employee note save failed:', err); }
+    }, immediate ? 0 : 850);
+  }
+  function bindTextarea(box){
+    if(!box || box.__stableEmployeeNotesBound) return;
+    box.__stableEmployeeNotesBound = true;
+    box.addEventListener('input', function(ev){
+      saveNote(ev.currentTarget.dataset.notesSaveEid, ev.currentTarget.value, false);
+    });
+    box.addEventListener('change', function(ev){
+      saveNote(ev.currentTarget.dataset.notesSaveEid, ev.currentTarget.value, true);
+    });
+    box.addEventListener('blur', function(ev){
+      saveNote(ev.currentTarget.dataset.notesSaveEid, ev.currentTarget.value, true);
+    });
+  }
+  function ensureButtonsAndPanels(){
+    document.querySelectorAll('#page-employees [data-notes-eid]').forEach(function(btn){
+      var id = btn.dataset.notesEid;
+      setButtons(id, !!window.employeeNotesOpenStable[id]);
+    });
+    Object.keys(window.employeeNotesOpenStable).forEach(function(id){
+      if(window.employeeNotesOpenStable[id] && !document.querySelector('#page-employees [data-stable-note-wrapper="'+CSS.escape(String(id))+'"]')){
+        openPanel(id);
+        setButtons(id, true);
+      }
+    });
+    document.querySelectorAll('#page-employees [data-notes-save-eid]').forEach(bindTextarea);
+  }
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-eid]') : null;
+    if(!btn) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+    toggleNotes(btn.dataset.notesEid);
+  }, true);
+
+  document.addEventListener('input', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    saveNote(box.dataset.notesSaveEid, box.value, false);
+  }, true);
+
+  var priorRender = window.render;
+  if(typeof priorRender === 'function' && !priorRender.__employeeNotesStableWrapped){
+    var stableWrappedRender = function(){
+      var active = document.activeElement;
+      var activeNote = active && active.matches && active.matches('#page-employees [data-notes-save-eid]');
+      var activeId = activeNote ? active.dataset.notesSaveEid : null;
+      var activeValue = activeNote ? active.value : null;
+      var result = priorRender.apply(this, arguments);
+      try{
+        ensureButtonsAndPanels();
+        if(activeId && window.employeeNotesOpenStable[activeId]){
+          var box = document.querySelector('#page-employees [data-notes-save-eid="'+CSS.escape(String(activeId))+'"]');
+          if(box){
+            box.value = activeValue;
+            box.focus();
+          }
+        }
+      }catch(err){ console.error('Employee notes stable render recovery failed:', err); }
+      return result;
+    };
+    stableWrappedRender.__employeeNotesStableWrapped = true;
+    window.render = stableWrappedRender;
+  }
+
+  document.addEventListener('DOMContentLoaded', ensureButtonsAndPanels);
+  setTimeout(ensureButtonsAndPanels, 100);
+  setTimeout(ensureButtonsAndPanels, 800);
+  window.fixEmployeeNotesNow = ensureButtonsAndPanels;
+})();
+</script>
+
+
+
+<style id="employee-note-indicator-visibility-final">
+/* FINAL EMPLOYEE NOTE INDICATOR — always visible next to employee name */
+#page-employees .employee-note-flag{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:4px !important;
+  margin-left:8px !important;
+  padding:3px 8px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(245,158,11,.55) !important;
+  background:rgba(245,158,11,.20) !important;
+  color:#fcd34d !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  letter-spacing:.7px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+  vertical-align:middle !important;
+  box-shadow:0 0 0 1px rgba(245,158,11,.10),0 8px 18px rgba(0,0,0,.22) !important;
+}
+#page-employees .employee-note-flag::before{
+  content:'📝' !important;
+  font-size:12px !important;
+  line-height:1 !important;
+}
+#page-employees .employee-card-name .employee-note-flag{
+  margin-left:7px !important;
+  font-size:9px !important;
+  padding:3px 7px !important;
+}
+</style>
+
+<script id="employee-note-indicator-final-fix">
+(function(){
+  'use strict';
+  function getEmployeesList(){
+    try{ if(Array.isArray(window.employees)) return window.employees; }catch(e){}
+    try{ if(Array.isArray(employees)) return employees; }catch(e){}
+    return [];
+  }
+  function noteValue(emp){
+    emp = emp || {};
+    return String(emp.notes || emp.note || emp.employee_notes || emp.employeeNotes || emp.comments || '').trim();
+  }
+  function findEmployeeById(id){
+    id = String(id || '');
+    return getEmployeesList().find(function(emp){ return String(emp && emp.id) === id; }) || null;
+  }
+  function ensureFlagForName(nameEl, hasNote){
+    if(!nameEl) return;
+    var flag = nameEl.querySelector('.employee-note-flag');
+    if(hasNote && !flag){
+      flag = document.createElement('span');
+      flag.className = 'employee-note-flag';
+      flag.title = 'This employee has notes';
+      flag.textContent = 'Note';
+      nameEl.appendChild(flag);
+    }else if(hasNote && flag){
+      flag.title = 'This employee has notes';
+      flag.textContent = 'Note';
+    }else if(!hasNote && flag){
+      flag.remove();
+    }
+  }
+  function refreshOneEmployeeNoteIndicator(id, overrideValue){
+    id = String(id || '');
+    if(!id) return;
+    var emp = findEmployeeById(id);
+    var value = overrideValue != null ? String(overrideValue) : noteValue(emp);
+    var hasNote = value.trim().length > 0;
+    var selector = '#page-employees [data-employee-name-id="' + (window.CSS && CSS.escape ? CSS.escape(id) : id.replace(/"/g,'\\"')) + '"]';
+    document.querySelectorAll(selector).forEach(function(nameEl){ ensureFlagForName(nameEl, hasNote); });
+  }
+  function refreshAllEmployeeNoteIndicators(){
+    var ids = Object.create(null);
+    document.querySelectorAll('#page-employees [data-employee-name-id]').forEach(function(nameEl){
+      ids[String(nameEl.getAttribute('data-employee-name-id') || '')] = true;
+    });
+    Object.keys(ids).forEach(function(id){ refreshOneEmployeeNoteIndicator(id); });
+  }
+
+  window.refreshEmployeeNoteIndicators = refreshAllEmployeeNoteIndicators;
+  window.refreshEmployeeNoteIndicator = refreshOneEmployeeNoteIndicator;
+
+  var previousRender = window.render;
+  if(typeof previousRender === 'function' && !previousRender.__employeeNoteIndicatorFinalWrapped){
+    var wrappedRender = function(){
+      var result = previousRender.apply(this, arguments);
+      try{ refreshAllEmployeeNoteIndicators(); }catch(err){ console.error('Employee note indicator refresh failed:', err); }
+      return result;
+    };
+    wrappedRender.__employeeNoteIndicatorFinalWrapped = true;
+    window.render = wrappedRender;
+  }
+
+  document.addEventListener('input', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOneEmployeeNoteIndicator(box.dataset.notesSaveEid, box.value);
+  }, true);
+  document.addEventListener('change', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOneEmployeeNoteIndicator(box.dataset.notesSaveEid, box.value);
+  }, true);
+  document.addEventListener('DOMContentLoaded', refreshAllEmployeeNoteIndicators);
+  setTimeout(refreshAllEmployeeNoteIndicators, 150);
+  setTimeout(refreshAllEmployeeNoteIndicators, 900);
+  setTimeout(refreshAllEmployeeNoteIndicators, 1800);
+})();
+</script>
+
+
+
+<style id="employee-note-indicator-hard-restore">
+  #page-employees .employee-note-flag,
+  #page-employees .employee-note-indicator{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin-left:8px !important;
+    padding:3px 8px !important;
+    border-radius:999px !important;
+    border:1px solid rgba(245,158,11,.55) !important;
+    background:rgba(245,158,11,.20) !important;
+    color:#fcd34d !important;
+    font-size:10px !important;
+    font-weight:900 !important;
+    letter-spacing:.65px !important;
+    line-height:1 !important;
+    text-transform:uppercase !important;
+    white-space:nowrap !important;
+    vertical-align:middle !important;
+  }
+  #page-employees .employee-note-flag::before,
+  #page-employees .employee-note-indicator::before{
+    content:'📝';
+    margin-right:4px;
+    font-size:12px;
+  }
+</style>
+<script id="employee-note-indicator-hard-restore">
+(function(){
+  'use strict';
+
+  function employeesList(){
+    try{ if(Array.isArray(window.employees)) return window.employees; }catch(e){}
+    try{ if(Array.isArray(employees)) return employees; }catch(e){}
+    return [];
+  }
+  function normalizeId(v){ return String(v == null ? '' : v); }
+  function noteText(emp){
+    emp = emp || {};
+    return String(
+      emp.notes != null ? emp.notes :
+      emp.note != null ? emp.note :
+      emp.employee_notes != null ? emp.employee_notes :
+      emp.employeeNotes != null ? emp.employeeNotes :
+      emp.comments != null ? emp.comments : ''
+    );
+  }
+  function findEmp(id){
+    id = normalizeId(id);
+    return employeesList().find(function(emp){ return normalizeId(emp && emp.id) === id; }) || null;
+  }
+  function cssAttrEscape(v){
+    v = normalizeId(v);
+    if(window.CSS && typeof CSS.escape === 'function') return CSS.escape(v);
+    return v.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  }
+  function visibleTextareaValue(id){
+    var box = document.querySelector('#page-employees [data-notes-save-eid="' + cssAttrEscape(id) + '"]');
+    return box ? box.value : null;
+  }
+  function hasNoteForId(id, override){
+    if(override != null) return String(override).trim().length > 0;
+    var live = visibleTextareaValue(id);
+    if(live != null) return String(live).trim().length > 0;
+    return noteText(findEmp(id)).trim().length > 0;
+  }
+  function setIndicator(nameEl, hasNote){
+    if(!nameEl) return;
+    var indicator = nameEl.querySelector(':scope > .employee-note-flag, :scope > .employee-note-indicator');
+    if(hasNote){
+      if(!indicator){
+        indicator = document.createElement('span');
+        indicator.className = 'employee-note-flag employee-note-indicator';
+        nameEl.appendChild(indicator);
+      }
+      indicator.textContent = 'Note';
+      indicator.title = 'This employee has a note';
+      indicator.setAttribute('aria-label','Employee has a note');
+    }else if(indicator){
+      indicator.remove();
+    }
+  }
+  function refreshOne(id, override){
+    id = normalizeId(id);
+    if(!id) return;
+    var hasNote = hasNoteForId(id, override);
+    document.querySelectorAll('#page-employees [data-employee-name-id="' + cssAttrEscape(id) + '"]').forEach(function(nameEl){
+      setIndicator(nameEl, hasNote);
+    });
+  }
+  function refreshAll(){
+    document.querySelectorAll('#page-employees [data-employee-name-id]').forEach(function(nameEl){
+      refreshOne(nameEl.getAttribute('data-employee-name-id'));
+    });
+  }
+  function syncEmployeeNoteData(id, value){
+    var emp = findEmp(id);
+    if(emp){
+      emp.notes = value;
+      emp.note = value;
+      emp.employee_notes = value;
+      emp.employeeNotes = value;
+    }
+    refreshOne(id, value);
+  }
+
+  window.refreshEmployeeNoteIndicator = refreshOne;
+  window.refreshEmployeeNoteIndicators = refreshAll;
+
+  document.addEventListener('input', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    syncEmployeeNoteData(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+  document.addEventListener('change', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    syncEmployeeNoteData(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+
+  var oldRender = window.render;
+  if(typeof oldRender === 'function' && !oldRender.__employeeNoteIndicatorHardRestoreV3){
+    var wrapped = function(){
+      var result = oldRender.apply(this, arguments);
+      setTimeout(refreshAll, 0);
+      setTimeout(refreshAll, 75);
+      return result;
+    };
+    wrapped.__employeeNoteIndicatorHardRestoreV3 = true;
+    window.render = wrapped;
+  }
+
+  var obs = new MutationObserver(function(){
+    clearTimeout(window.__employeeNoteIndicatorObserverTimer);
+    window.__employeeNoteIndicatorObserverTimer = setTimeout(refreshAll, 50);
+  });
+  function startObserver(){
+    var page = document.getElementById('page-employees');
+    if(page && !page.__employeeNoteIndicatorObserved){
+      page.__employeeNoteIndicatorObserved = true;
+      obs.observe(page, {childList:true, subtree:true});
+    }
+    refreshAll();
+  }
+
+  document.addEventListener('DOMContentLoaded', startObserver);
+  setTimeout(startObserver, 100);
+  setTimeout(refreshAll, 500);
+  setTimeout(refreshAll, 1200);
+  setTimeout(refreshAll, 2500);
+})();
+</script>
+
+
+
+<style id="employee-note-indicator-reliable-fix-css">
+/* RELIABLE EMPLOYEE NOTE FLAG — driven by actual note text/cache */
+#page-employees .employee-note-flag,
+#page-employees .employee-note-indicator{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:4px !important;
+  margin-left:8px !important;
+  padding:3px 8px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(245,158,11,.55) !important;
+  background:rgba(245,158,11,.20) !important;
+  color:#fcd34d !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  letter-spacing:.65px !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+  vertical-align:middle !important;
+}
+#page-employees .employee-note-flag::before,
+#page-employees .employee-note-indicator::before{
+  content:'📝' !important;
+  margin-right:4px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+}
+#page-employees .employee-notes-toggle.has-employee-note::after{
+  content:'NOTE' !important;
+  margin-left:7px !important;
+  padding:2px 6px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(245,158,11,.45) !important;
+  background:rgba(245,158,11,.14) !important;
+  color:#fcd34d !important;
+  font-size:9px !important;
+  font-weight:900 !important;
+  letter-spacing:.5px !important;
+}
+</style>
+<script id="employee-note-indicator-reliable-fix">
+(function(){
+  'use strict';
+
+  var CACHE_KEY = 'employee_note_indicator_cache_v2';
+  var refreshTimer = null;
+
+  function escAttr(v){
+    v = String(v == null ? '' : v);
+    if(window.CSS && typeof CSS.escape === 'function') return CSS.escape(v);
+    return v.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  }
+  function getEmployees(){
+    try{ if(Array.isArray(window.employees)) return window.employees; }catch(e){}
+    try{ if(Array.isArray(employees)) return employees; }catch(e){}
+    return [];
+  }
+  function noteText(emp){
+    emp = emp || {};
+    return String(
+      emp.notes != null ? emp.notes :
+      emp.note != null ? emp.note :
+      emp.employee_notes != null ? emp.employee_notes :
+      emp.employeeNotes != null ? emp.employeeNotes :
+      emp.comments != null ? emp.comments : ''
+    );
+  }
+  function readCache(){
+    try{ return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}') || {}; }catch(e){ return {}; }
+  }
+  function writeCache(cache){
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify(cache || {})); }catch(e){}
+  }
+  function setCachedNote(id, value){
+    id = String(id == null ? '' : id);
+    if(!id) return;
+    var cache = readCache();
+    var val = String(value == null ? '' : value);
+    if(val.trim()) cache[id] = val;
+    else delete cache[id];
+    writeCache(cache);
+  }
+  function getLiveTextareaValue(id){
+    var box = document.querySelector('#page-employees [data-notes-save-eid="' + escAttr(id) + '"]');
+    return box ? box.value : null;
+  }
+  function employeeById(id){
+    id = String(id == null ? '' : id);
+    return getEmployees().find(function(emp){ return String(emp && emp.id) === id; }) || null;
+  }
+  function hasNote(id){
+    id = String(id == null ? '' : id);
+    if(!id) return false;
+    var live = getLiveTextareaValue(id);
+    if(live != null) return String(live).trim().length > 0;
+    var emp = employeeById(id);
+    if(noteText(emp).trim()) return true;
+    var cache = readCache();
+    return String(cache[id] || '').trim().length > 0;
+  }
+  function paintName(nameEl, shouldShow){
+    if(!nameEl) return;
+    var flag = nameEl.querySelector(':scope > .employee-note-flag, :scope > .employee-note-indicator');
+    if(shouldShow){
+      if(!flag){
+        flag = document.createElement('span');
+        flag.className = 'employee-note-flag employee-note-indicator';
+        flag.title = 'This employee has a note';
+        flag.setAttribute('aria-label','Employee has a note');
+        flag.textContent = 'Note';
+        nameEl.appendChild(flag);
+      }else{
+        flag.className = 'employee-note-flag employee-note-indicator';
+        flag.title = 'This employee has a note';
+        flag.setAttribute('aria-label','Employee has a note');
+        flag.textContent = 'Note';
+      }
+    }else if(flag){
+      flag.remove();
+    }
+  }
+  function refreshOne(id, value){
+    id = String(id == null ? '' : id);
+    if(!id) return;
+    if(value !== undefined) setCachedNote(id, value);
+    var show = value !== undefined ? String(value || '').trim().length > 0 : hasNote(id);
+    document.querySelectorAll('#page-employees [data-employee-name-id="' + escAttr(id) + '"]').forEach(function(nameEl){
+      paintName(nameEl, show);
+    });
+    document.querySelectorAll('#page-employees [data-notes-eid="' + escAttr(id) + '"]').forEach(function(btn){
+      btn.classList.toggle('has-employee-note', show);
+    });
+  }
+  function refreshAll(){
+    document.querySelectorAll('#page-employees [data-employee-name-id]').forEach(function(nameEl){
+      refreshOne(nameEl.getAttribute('data-employee-name-id'));
+    });
+    document.querySelectorAll('#page-employees [data-notes-eid]').forEach(function(btn){
+      refreshOne(btn.getAttribute('data-notes-eid'));
+    });
+  }
+  function scheduleRefresh(){
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(refreshAll, 35);
+  }
+
+  window.refreshEmployeeNoteIndicator = refreshOne;
+  window.refreshEmployeeNoteIndicators = refreshAll;
+
+  document.addEventListener('input', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOne(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+  document.addEventListener('change', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOne(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+
+  ['scheduleEmployeeNoteSave','flushEmployeeNoteSave','saveEmployeeNote'].forEach(function(fnName){
+    var original = window[fnName];
+    if(typeof original === 'function' && !original.__noteIndicatorReliableWrapped){
+      var wrapped = function(id, value){
+        var result = original.apply(this, arguments);
+        try{ refreshOne(id, value); }catch(e){}
+        setTimeout(function(){ try{ refreshOne(id); }catch(e){} }, 80);
+        return result;
+      };
+      wrapped.__noteIndicatorReliableWrapped = true;
+      window[fnName] = wrapped;
+    }
+  });
+
+  var oldRender = window.render;
+  if(typeof oldRender === 'function' && !oldRender.__noteIndicatorReliableWrapped){
+    var renderWrapped = function(){
+      var result = oldRender.apply(this, arguments);
+      scheduleRefresh();
+      setTimeout(refreshAll, 100);
+      return result;
+    };
+    renderWrapped.__noteIndicatorReliableWrapped = true;
+    window.render = renderWrapped;
+  }
+
+  var observer = new MutationObserver(scheduleRefresh);
+  function start(){
+    var page = document.getElementById('page-employees');
+    if(page && !page.__employeeNoteReliableObserver){
+      page.__employeeNoteReliableObserver = true;
+      observer.observe(page, {childList:true, subtree:true});
+    }
+    refreshAll();
+    setTimeout(refreshAll, 250);
+    setTimeout(refreshAll, 1000);
+  }
+  document.addEventListener('DOMContentLoaded', start);
+  setTimeout(start, 100);
+  setTimeout(refreshAll, 1500);
+  setInterval(refreshAll, 2500);
 })();
 </script>
 
