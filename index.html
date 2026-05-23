@@ -17394,12 +17394,11 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
         + cardField('Email', e.email, 'Missing Email', 'employee-hover-meta', fmtMeta(e.email_edited_at, e.email_edited_by))
         + cardField('Phone', e.phone, 'Missing Phone', 'employee-hover-meta', fmtMeta(e.phone_edited_at, e.phone_edited_by))
         + cardField('Days Off', e.daysOff, 'Missing Days Off')
-        + '</div><div class="employee-card-actions"><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+deleteActionHtml(e.id, pendingEmployeeDeleteId===e.id)+'</div>'
+        + '</div><div class="employee-card-actions"><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+'</div>'
         + notesPanelHtml(e, false)
         + '</div>';
     }).join('');
     wrap.querySelectorAll('.action-btn[data-eid]').forEach(function(btn){btn.addEventListener('click',function(){pendingEmployeeDeleteId=null;openModal(this.dataset.eid);});});
-    bindEmployeeDeleteButtons(wrap);
     bindEmployeeNotes(wrap);
   }
   var oldSetTab = window.setTab;
@@ -17490,12 +17489,11 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       return '<tr class="'+(pendingEmployeeDeleteId===e.id?'employee-delete-pending':'')+'">'
         +'<td><div class="emp-name emp-table-value">'+esc(personName(e))+'</div></td>'
         +'<td>'+empCell+'</td><td>'+upCell+'</td><td>'+pwCell+'</td><td>'+emailCell+'</td><td>'+shiftBadge(e.shift)+'</td><td><span class="days-off emp-table-value">'+esc(e.daysOff||'—')+'</span></td><td>'+phoneCell+'</td>'
-        +'<td><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+deleteActionHtml(e.id, pendingEmployeeDeleteId===e.id)+'</td></tr>'
+        +'<td><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+'</td></tr>'
         + notesPanelHtml(e, true);
     }).join('');
     tbody.querySelectorAll('.action-btn[data-eid]').forEach(function(btn){btn.addEventListener('click',function(){pendingEmployeeDeleteId=null;openModal(this.dataset.eid);});});
     tbody.querySelectorAll('.missing-field-btn[data-eid]').forEach(function(el){el.addEventListener('click',function(){pendingEmployeeDeleteId=null;openModal(this.dataset.eid);});});
-    bindEmployeeDeleteButtons(tbody);
     bindEmployeeNotes(tbody);
     renderCards(list,maps);
     updateStats(); updateBanner(); updateTabCounts(); updateEmployeeNeedsAttentionButton();
