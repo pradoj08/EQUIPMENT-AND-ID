@@ -15503,5 +15503,449 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
 })();
 </script>
 
+
+
+<script>
+/* HARD FIX — Audit / Monthly Training import
+   The previous import path saved, then immediately re-synced from Supabase.
+   If Supabase was stale, unavailable, or the audit tables were missing, the pasted
+   names vanished and it looked like Import did nothing. This override renders the
+   pasted names immediately, saves local cache first, then pushes Supabase in the
+   background without letting a stale refresh overwrite the import. */
+(function(){
+  var ROSTER_IMPORT_SUPPRESS_MS = 20000;
+  window.__rosterImportNoSyncUntil = window.__rosterImportNoSyncUntil || { audits:0, trainings:0 };
+
+  function nowIso(){ return new Date().toISOString(); }
+
+  function safeNormalizeType(type){
+    try{ return typeof normalizeRosterType === 'function' ? normalizeRosterType(type) : (type === 'trainings' ? 'trainings' : 'audits'); }
+    catch(e){ return type === 'trainings' ? 'trainings' : 'audits'; }
+  }
+
+  function safeTitleCase(text){
+    if(typeof titleCaseName === 'function') return titleCaseName(text);
+    return String(text || '').trim().replace(/\s+/g,' ').split(' ').filter(Boolean).map(function(p){return p.charAt(0).toUpperCase()+p.slice(1).toLowerCase();}).join(' ');
+  }
+
+  function safeParseNames(text){
+    if(typeof parseNameList === 'function') return parseNameList(text);
+    var seen = {};
+    return String(text || '').split(/\n+/).map(function(line){
+      return line.replace(/^\s*[\-\*\u2022\d\.\)\(]+\s*/,'').trim();
+    }).filter(Boolean).map(safeTitleCase).filter(function(name){
+      var key = name.toLowerCase().replace(/[^a-z\s]/g,' ').replace(/\s+/g,' ').trim();
+      if(!key || seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+  }
+
+  function safeBuildItems(names){
+    if(typeof buildRosterItems === 'function') return buildRosterItems(names);
+    return names.map(function(name){
+      return {
+        id:'rs_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+        name:safeTitleCase(name),
+        shift:'Other',
+        matched:false,
+        employee:''
+      };
+    });
+  }
+
+  function updateRosterBannerHard(){
+    try{
+      var auditData = typeof loadRosterList === 'function' ? loadRosterList('audits') : {items:[]};
+      var trainData = typeof loadRosterList === 'function' ? loadRosterList('trainings') : {items:[]};
+      var latest = (window.rosterLastUpdated && (rosterLastUpdated.audits || rosterLastUpdated.trainings)) || auditData.updated_at || trainData.updated_at || null;
+      var txt = document.getElementById('roster-updated-banner-text');
+      if(txt){
+        var label = typeof formatRosterTimestamp === 'function' ? formatRosterTimestamp(latest).replace('Last updated: ','') : (latest ? new Date(latest).toLocaleString() : '—');
+        txt.textContent = label + ' · Audits ' + ((auditData.items || []).length) + ' · Training ' + ((trainData.items || []).length);
+      }
+      var top = document.getElementById('roster-updated');
+      if(top){
+        top.textContent = typeof formatRosterTimestamp === 'function' ? formatRosterTimestamp(latest) : ('Last updated: ' + (latest ? new Date(latest).toLocaleString() : '—'));
+      }
+    }catch(e){}
+  }
+
+  async function saveRosterPayloadNoStaleSync(type, payload){
+    type = safeNormalizeType(type);
+    payload.updated_at = payload.updated_at || nowIso();
+    try{ if(typeof saveRosterCacheOnly === 'function') saveRosterCacheOnly(type, payload); }catch(e){}
+    try{ if(window.rosterLastUpdated) rosterLastUpdated[type] = payload.updated_at; }catch(e){}
+    window.__rosterImportNoSyncUntil[type] = Date.now() + ROSTER_IMPORT_SUPPRESS_MS;
+    try{ if(typeof renderRosterTable === 'function') renderRosterTable(type); }catch(e){}
+
+    // Push Supabase after the screen updates. Do not block the import UI.
+    try{
+      if(typeof saveRosterList === 'function'){
+        Promise.resolve(saveRosterList(type, payload)).catch(function(err){
+          console.error('Audit/training roster Supabase save failed:', err);
+          alert('Names imported on this browser, but Supabase save failed. Check that audit_roster_lists and training_roster_lists exist.');
+        });
+      }
+    }catch(err){
+      console.error('Audit/training roster save failed:', err);
+    }
+  }
+
+  window.importRosterLists = async function(){
+    try{
+      if(typeof pushRosterUndo === 'function') pushRosterUndo('Imported audit/training roster names');
+    }catch(e){}
+
+    var auditInput = document.getElementById('audit-paste');
+    var trainInput = document.getElementById('train-paste');
+    var auditNames = safeParseNames(auditInput ? auditInput.value : '');
+    var trainNames = safeParseNames(trainInput ? trainInput.value : '');
+
+    if(!auditNames.length && !trainNames.length){
+      alert('Paste at least one name into Audit Names or Monthly Training Names before importing.');
+      return;
+    }
+
+    var stamp = nowIso();
+    var auditPayload = { items: safeBuildItems(auditNames), updated_at: stamp };
+    var trainPayload = { items: safeBuildItems(trainNames), updated_at: stamp };
+
+    await saveRosterPayloadNoStaleSync('audits', auditPayload);
+    await saveRosterPayloadNoStaleSync('trainings', trainPayload);
+
+    try{
+      if(window.rosterFilters){
+        rosterFilters.audits = { shift:'all', working:false };
+        rosterFilters.trainings = { shift:'all', working:false };
+      }
+    }catch(e){}
+
+    try{ if(typeof closeRosterModal === 'function') closeRosterModal(); }catch(e){
+      var bg = document.getElementById('roster-modal-bg');
+      if(bg) bg.classList.remove('open');
+    }
+
+    try{ if(typeof renderRosterTable === 'function'){ renderRosterTable('audits'); renderRosterTable('trainings'); } }catch(e){}
+    try{ if(typeof updateRosterUndoButton === 'function') updateRosterUndoButton(); }catch(e){}
+    updateRosterBannerHard();
+    try{ if(typeof logActivity === 'function') logActivity('notes','Imported <strong>Audits & Monthly Training</strong> names','Audits '+auditNames.length+' · Training '+trainNames.length); }catch(e){}
+  };
+
+  // Import button fallback in case inline onclick gets blocked or overwritten.
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('#roster-modal-bg .btn-primary') : null;
+    if(!btn) return;
+    if((btn.textContent || '').toLowerCase().indexOf('import') === -1) return;
+    e.preventDefault();
+    e.stopPropagation();
+    window.importRosterLists();
+  }, true);
+})();
+</script>
+
+
+
+<script id="employee-global-save-hard-fix">
+(function(){
+  var EMPLOYEE_REMOTE_TABLE = 'employees';
+  var employeeRealtimeChannel = null;
+  var employeePollTimer = null;
+  var employeeSyncBusy = false;
+  var lastEmployeeLocalEditAt = 0;
+  var lastEmployeeRemoteSaveAt = 0;
+
+  function markEmployeeLocalEdit(){
+    lastEmployeeLocalEditAt = Date.now();
+  }
+  function employeeEditCoolingDown(){
+    return Date.now() - lastEmployeeLocalEditAt < 4500;
+  }
+  function normalizeRemoteEmployeeRow(row){
+    row = row || {};
+    return normalizeEmployeeRecord({
+      id: row.id || row.employee_id || uid(),
+      first: row.first_name || row.first || '',
+      last: row.last_name || row.last || '',
+      empId: row.employee_id || row.empId || '',
+      upId: row.up_id || row.upId || '',
+      shift: row.shift || 'Day',
+      phone: row.phone || '',
+      daysOff: row.days_off || row.daysOff || '',
+      status: row.status || 'active'
+    });
+  }
+  function employeeToRemoteRow(e){
+    e = normalizeEmployeeRecord(e || {});
+    return {
+      id: e.id || uid(),
+      first_name: e.first || '',
+      last_name: e.last || '',
+      employee_id: e.empId || '',
+      up_id: e.upId || '',
+      shift: e.shift || 'Day',
+      phone: e.phone || '',
+      days_off: e.daysOff || '',
+      status: e.status || 'active',
+      updated_at: new Date().toISOString(),
+      last_edited_by: (typeof eqLoginUsername !== 'undefined' && eqLoginUsername) ? eqLoginUsername : 'CONGLOBAL'
+    };
+  }
+  async function upsertRowsWithFallback(rows){
+    if(typeof supabaseUpsertWithColumnFallback === 'function'){
+      return await supabaseUpsertWithColumnFallback(EMPLOYEE_REMOTE_TABLE, rows, { onConflict:'id' });
+    }
+    return await window.supabaseClient.from(EMPLOYEE_REMOTE_TABLE).upsert(rows, { onConflict:'id' });
+  }
+  async function deleteRemoteEmployeesNotIn(localIds){
+    if(!window.supabaseClient) return;
+    var existing = await window.supabaseClient.from(EMPLOYEE_REMOTE_TABLE).select('id');
+    if(existing.error) throw existing.error;
+    var keep = new Set(localIds || []);
+    var stale = (existing.data || []).map(function(r){ return r && r.id; }).filter(function(id){ return id && !keep.has(id); });
+    for(var i=0;i<stale.length;i++){
+      var del = await window.supabaseClient.from(EMPLOYEE_REMOTE_TABLE).delete().eq('id', stale[i]);
+      if(del.error) throw del.error;
+    }
+  }
+  function renderEmployeeGlobals(){
+    try{ if(typeof render === 'function') render(); }catch(e){}
+    try{ if(typeof renderEquipment === 'function') renderEquipment(); }catch(e){}
+    try{ if(typeof renderRosterPanels === 'function') renderRosterPanels(); }catch(e){}
+  }
+  function showEmployeeSyncWarning(message){
+    var existing = document.getElementById('employee-sync-warning-banner');
+    if(!existing){
+      existing = document.createElement('div');
+      existing.id = 'employee-sync-warning-banner';
+      existing.style.cssText = 'margin:10px 24px 0;padding:10px 12px;border-radius:10px;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.10);color:#fca5a5;font-family:var(--mono);font-size:11px;letter-spacing:.4px;';
+      var page = document.getElementById('page-employees');
+      if(page) page.insertBefore(existing, page.firstChild);
+    }
+    existing.textContent = message || 'Employee ID global save is not connected.';
+    existing.style.display = 'block';
+  }
+  function hideEmployeeSyncWarning(){
+    var existing = document.getElementById('employee-sync-warning-banner');
+    if(existing) existing.style.display = 'none';
+  }
+
+  window.loadEmployees = async function(){
+    if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn){
+      employees = [];
+      return;
+    }
+
+    // Do not let remote polling overwrite a change that was just made locally.
+    if(employeeEditCoolingDown() && Array.isArray(employees) && employees.length){
+      return;
+    }
+
+    try{
+      if(!window.supabaseClient){
+        if(!loadEmployeesFromCache()) seedData();
+        showEmployeeSyncWarning('Employee ID is using browser cache only because Supabase is not connected.');
+        return;
+      }
+
+      var res = await window.supabaseClient
+        .from(EMPLOYEE_REMOTE_TABLE)
+        .select('*')
+        .order('updated_at', { ascending: true });
+
+      if(res.error) throw res.error;
+
+      var rows = (res.data || []).map(normalizeRemoteEmployeeRow);
+      if(rows.length){
+        employees = rows;
+        normalizeEmployeeRoster();
+        if(typeof rosterLooksBroken === 'function' && rosterLooksBroken()){
+          console.warn('Employee Supabase roster is incomplete/broken. Restoring the full default roster and pushing it globally.');
+          seedData();
+          normalizeEmployeeRoster();
+          saveEmployeesToCache();
+          await window.saveEmployees();
+          hideEmployeeSyncWarning();
+          return;
+        }
+        saveEmployeesToCache();
+        hideEmployeeSyncWarning();
+        return;
+      }
+
+      // Empty remote table: seed once, then push the seeded roster globally.
+      seedData();
+      normalizeEmployeeRoster();
+      saveEmployeesToCache();
+      await window.saveEmployees();
+    }catch(err){
+      console.error('Employee global load failed:', err);
+      if(!loadEmployeesFromCache()) seedData();
+      showEmployeeSyncWarning('Employee ID failed to load globally from Supabase. Using local cache until connection is fixed.');
+    }
+  };
+
+  window.saveEmployees = async function(){
+    if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn) return;
+    normalizeEmployeeRoster();
+    saveEmployeesToCache();
+
+    if(!Array.isArray(employees) || !employees.length){
+      showEmployeeSyncWarning('Employee ID save blocked because the local roster is empty.');
+      return;
+    }
+
+    try{
+      if(!window.supabaseClient){
+        showEmployeeSyncWarning('Employee ID saved locally only because Supabase is not connected.');
+        return;
+      }
+      employeeSyncBusy = true;
+      var rows = employees.map(employeeToRemoteRow);
+      var result = await upsertRowsWithFallback(rows);
+      if(result && result.error) throw result.error;
+
+      // This is the part the old code was missing: deleted Employee ID rows are now removed globally too.
+      await deleteRemoteEmployeesNotIn(rows.map(function(r){ return r.id; }));
+
+      lastEmployeeRemoteSaveAt = Date.now();
+      hideEmployeeSyncWarning();
+      try{ saveEmployeesToCache(); }catch(e){}
+    }catch(err){
+      console.error('Employee global save failed:', err);
+      showEmployeeSyncWarning('Employee ID failed to save globally. Check the employees Supabase table/policy.');
+    }finally{
+      employeeSyncBusy = false;
+    }
+  };
+
+  window.save = function(){
+    markEmployeeLocalEdit();
+    try{ if(typeof pushHistory === 'function') pushHistory(); }catch(e){}
+    try{ saveEmployeesToCache(); }catch(e){}
+    window.saveEmployees().catch(function(err){ console.error('Employee save pipeline failed:', err); });
+    try{ if(typeof showSaveToast === 'function') showSaveToast(); }catch(e){}
+  };
+
+  // Patch employee modal actions so they mark a local edit before save.
+  var oldSaveEmp = window.saveEmp;
+  window.saveEmp = function(){
+    markEmployeeLocalEdit();
+    return oldSaveEmp.apply(this, arguments);
+  };
+  var oldDeleteEmp = window.deleteEmp;
+  window.deleteEmp = function(){
+    markEmployeeLocalEdit();
+    return oldDeleteEmp.apply(this, arguments);
+  };
+  var oldRestoreSnapshot = window.restoreSnapshot;
+  if(typeof oldRestoreSnapshot === 'function'){
+    window.restoreSnapshot = function(){
+      markEmployeeLocalEdit();
+      return oldRestoreSnapshot.apply(this, arguments);
+    };
+  }
+
+  async function refreshEmployeesFromRemote(){
+    if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn) return;
+    if(employeeSyncBusy || employeeEditCoolingDown()) return;
+    employeeSyncBusy = true;
+    try{
+      await window.loadEmployees();
+      renderEmployeeGlobals();
+    }catch(err){
+      console.warn('Employee remote refresh failed:', err);
+    }finally{
+      employeeSyncBusy = false;
+    }
+  }
+
+  window.startEmployeeRealtimeSync = function(){
+    if(!window.supabaseClient || employeeRealtimeChannel || employeePollTimer) return;
+    try{
+      employeeRealtimeChannel = window.supabaseClient
+        .channel('employees-live-sync')
+        .on('postgres_changes', { event:'*', schema:'public', table:EMPLOYEE_REMOTE_TABLE }, function(){
+          if(Date.now() - lastEmployeeRemoteSaveAt < 2500) return;
+          refreshEmployeesFromRemote();
+        })
+        .subscribe();
+    }catch(err){
+      console.warn('Employee realtime unavailable:', err);
+    }
+    employeePollTimer = setInterval(refreshEmployeesFromRemote, 20000);
+  };
+
+  window.stopEmployeeRealtimeSync = function(){
+    try{
+      if(employeeRealtimeChannel && window.supabaseClient && typeof window.supabaseClient.removeChannel === 'function'){
+        window.supabaseClient.removeChannel(employeeRealtimeChannel);
+      }
+    }catch(e){}
+    employeeRealtimeChannel = null;
+    if(employeePollTimer){ clearInterval(employeePollTimer); employeePollTimer = null; }
+  };
+
+  // Add employee sync to the existing sign-in/sign-out flow without replacing the app-user login logic.
+  var priorSignInEq = window.signInEq;
+  if(typeof priorSignInEq === 'function'){
+    window.signInEq = async function(){
+      var result = await priorSignInEq.apply(this, arguments);
+      try{ await window.loadEmployees(); renderEmployeeGlobals(); window.startEmployeeRealtimeSync(); }catch(e){}
+      return result;
+    };
+  }
+  var priorPopupLogin = window.handlePopupLogin;
+  if(typeof priorPopupLogin === 'function'){
+    window.handlePopupLogin = async function(){
+      var result = await priorPopupLogin.apply(this, arguments);
+      try{ await window.loadEmployees(); renderEmployeeGlobals(); window.startEmployeeRealtimeSync(); }catch(e){}
+      return result;
+    };
+  }
+  var priorSignOutEq = window.signOutEq;
+  if(typeof priorSignOutEq === 'function'){
+    window.signOutEq = async function(){
+      try{ window.stopEmployeeRealtimeSync(); }catch(e){}
+      return priorSignOutEq.apply(this, arguments);
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if(typeof eqLoggedIn !== 'undefined' && eqLoggedIn){
+      window.loadEmployees().then(function(){ renderEmployeeGlobals(); window.startEmployeeRealtimeSync(); });
+    }
+  });
+})();
+</script>
+
+
+<script>
+/* HARD RESTORE: if Employee ID data was wiped or partially synced, restore full default roster and save it globally. */
+(function(){
+  async function restoreEmployeeNamesIfMissing(){
+    try{
+      if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn) return;
+      if(typeof employees === 'undefined' || !Array.isArray(employees)) return;
+      if(typeof rosterLooksBroken === 'function' && rosterLooksBroken()){
+        console.warn('Employee roster missing names. Restoring default employee roster.');
+        if(typeof seedData === 'function') seedData();
+        if(typeof normalizeEmployeeRoster === 'function') normalizeEmployeeRoster();
+        if(typeof saveEmployeesToCache === 'function') saveEmployeesToCache();
+        if(typeof window.saveEmployees === 'function') await window.saveEmployees();
+        if(typeof render === 'function') render();
+        if(typeof renderEquipment === 'function') renderEquipment();
+        if(typeof renderRosterPanels === 'function') renderRosterPanels();
+      }
+    }catch(err){ console.error('Employee roster restore failed:', err); }
+  }
+  window.restoreEmployeeNamesIfMissing = restoreEmployeeNamesIfMissing;
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(restoreEmployeeNamesIfMissing, 1600);
+    setTimeout(restoreEmployeeNamesIfMissing, 4200);
+  });
+})();
+</script>
+
 </body>
 </html>
