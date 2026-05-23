@@ -21412,8 +21412,17 @@ body.app-authenticated #auth-signed-in.nav-auth-chip{
 #page-employees .emp-attn-shift-gate{background:rgba(16,185,129,.16);color:#86efac;border-color:rgba(16,185,129,.34);}
 #page-employees .emp-attn-shift-other{background:rgba(148,163,184,.12);color:#cbd5e1;border-color:rgba(148,163,184,.28);}
 #page-employees .emp-attn-mini-row{gap:7px;}
+#page-employees .emp-attn-mini-person{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+  overflow:hidden;
+  flex:1 1 auto;
+}
 #page-employees .emp-attn-mini-row .emp-attn-shift-badge{flex:0 0 auto;}
-#page-employees .emp-attn-drawer-name-line{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;margin-bottom:7px;}
+#page-employees .emp-attn-mini-row .emp-mt-flag{flex:0 0 auto;}
+#page-employees .emp-attn-drawer-name-line{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap;margin-bottom:7px;}
 #page-employees .emp-attn-drawer-name-line .emp-attn-drawer-name{margin-bottom:0!important;}
 #page-employees .banner-row-attn .bchip .emp-attn-chip-shift{
   margin-left:5px;padding:1px 5px;border-radius:999px;background:rgba(255,255,255,.10);
@@ -21473,7 +21482,7 @@ body.app-authenticated #auth-signed-in.nav-auth-chip{
   function renderPreview(rows){
     var preview=document.getElementById('s-out-preview'); if(!preview) return;
     if(!rows.length){ preview.innerHTML='<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">ALL CLEAR</span><span class="emp-attn-mini-need">DONE</span></div>'; return; }
-    preview.innerHTML=rows.slice(0,2).map(function(r){ return '<div class="emp-attn-mini-row" title="'+esc(r.name+' · '+shiftText(r.employee)+' shift · needs: '+r.needs.join(', '))+'"><span class="emp-attn-mini-name">'+esc(r.name)+mobileTokenFlag(r.employee)+'</span>'+attentionShiftBadge(r.employee)+'<span class="emp-attn-mini-need">'+esc(r.needs[0])+'</span></div>'; }).join('') + (rows.length>2 ? '<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">+'+(rows.length-2)+' MORE</span><span class="emp-attn-mini-need">OPEN</span></div>' : '');
+    preview.innerHTML=rows.slice(0,2).map(function(r){ return '<div class="emp-attn-mini-row" title="'+esc(r.name+' · '+shiftText(r.employee)+' shift · needs: '+r.needs.join(', '))+'"><span class="emp-attn-mini-person"><span class="emp-attn-mini-name">'+esc(r.name)+'</span>'+attentionShiftBadge(r.employee)+mobileTokenFlag(r.employee)+'</span><span class="emp-attn-mini-need">'+esc(r.needs[0])+'</span></div>'; }).join('') + (rows.length>2 ? '<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">+'+(rows.length-2)+' MORE</span><span class="emp-attn-mini-need">OPEN</span></div>' : '');
   }
   function renderDrawer(rows){
     var drawer=document.getElementById('employee-attn-drawer'); if(!drawer) return;
@@ -21481,7 +21490,7 @@ body.app-authenticated #auth-signed-in.nav-auth-chip{
     if(!drawerOpen){ drawer.innerHTML=''; return; }
     if(!rows.length){ drawer.innerHTML='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List</div><button type="button" class="emp-attn-drawer-close" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer(false);">Close</button></div><div class="emp-attn-empty">All required info complete</div>'; return; }
     drawer.innerHTML='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List · '+rows.length+'</div><button type="button" class="emp-attn-drawer-close" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer(false);">Close</button></div><div class="emp-attn-drawer-list">'
-      + rows.map(function(r){ return '<div class="emp-attn-drawer-ticket" title="'+esc(r.name+' · '+shiftText(r.employee)+' shift')+'"><div class="emp-attn-drawer-name-line"><div class="emp-attn-drawer-name">'+esc(r.name)+mobileTokenFlag(r.employee)+'</div>'+attentionShiftBadge(r.employee)+'</div><div class="emp-attn-drawer-pills">'+r.needs.map(function(n){ return '<span class="emp-attn-drawer-pill" data-need="'+esc(n)+'">'+esc(n)+'</span>'; }).join('')+'</div></div>'; }).join('')
+      + rows.map(function(r){ return '<div class="emp-attn-drawer-ticket" title="'+esc(r.name+' · '+shiftText(r.employee)+' shift')+'"><div class="emp-attn-drawer-name-line"><div class="emp-attn-drawer-name">'+esc(r.name)+'</div>'+attentionShiftBadge(r.employee)+mobileTokenFlag(r.employee)+'</div><div class="emp-attn-drawer-pills">'+r.needs.map(function(n){ return '<span class="emp-attn-drawer-pill" data-need="'+esc(n)+'">'+esc(n)+'</span>'; }).join('')+'</div></div>'; }).join('')
       + '</div>';
   }
   window.toggleEmployeeAttentionDrawer=function(force){ drawerOpen = typeof force==='boolean' ? force : !drawerOpen; try{ renderDrawer(buildRows()); }catch(e){} return false; };
