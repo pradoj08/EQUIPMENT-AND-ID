@@ -5053,6 +5053,84 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
   }
 }
 </style>
+
+<style id="employee-core-metric-text-larger">
+/* Larger text for the main Employee ID metric cards only. */
+#page-employees .stat-card-total .emp-metric-kicker,
+#page-employees .stat-card-day .emp-metric-kicker,
+#page-employees .stat-card-night .emp-metric-kicker,
+#page-employees .stat-card-gate .emp-metric-kicker{
+  font-size:15px !important;
+  line-height:1.05 !important;
+  letter-spacing:.12em !important;
+  font-weight:950 !important;
+}
+#page-employees .stat-card-total .emp-metric-number,
+#page-employees .stat-card-day .emp-metric-number,
+#page-employees .stat-card-night .emp-metric-number,
+#page-employees .stat-card-gate .emp-metric-number{
+  font-size:56px !important;
+  line-height:.88 !important;
+  font-weight:950 !important;
+  letter-spacing:-.05em !important;
+}
+#page-employees .stat-card-total .emp-metric-number small,
+#page-employees .stat-card-day .emp-metric-number small,
+#page-employees .stat-card-night .emp-metric-number small,
+#page-employees .stat-card-gate .emp-metric-number small{
+  font-size:.55em !important;
+  font-weight:900 !important;
+}
+#page-employees .stat-card-total .emp-metric-sub,
+#page-employees .stat-card-day .emp-metric-sub,
+#page-employees .stat-card-night .emp-metric-sub,
+#page-employees .stat-card-gate .emp-metric-sub{
+  font-size:13px !important;
+  line-height:1.2 !important;
+  font-weight:850 !important;
+}
+#page-employees .stat-card-total,
+#page-employees .stat-card-day,
+#page-employees .stat-card-night,
+#page-employees .stat-card-gate{
+  min-height:132px !important;
+  padding:22px 20px !important;
+}
+@media(max-width:900px){
+  #page-employees .stat-card-total .emp-metric-number,
+  #page-employees .stat-card-day .emp-metric-number,
+  #page-employees .stat-card-night .emp-metric-number,
+  #page-employees .stat-card-gate .emp-metric-number{
+    font-size:46px !important;
+  }
+  #page-employees .stat-card-total,
+  #page-employees .stat-card-day,
+  #page-employees .stat-card-night,
+  #page-employees .stat-card-gate{
+    min-height:118px !important;
+  }
+}
+@media(max-width:520px){
+  #page-employees .stat-card-total .emp-metric-kicker,
+  #page-employees .stat-card-day .emp-metric-kicker,
+  #page-employees .stat-card-night .emp-metric-kicker,
+  #page-employees .stat-card-gate .emp-metric-kicker{
+    font-size:12px !important;
+  }
+  #page-employees .stat-card-total .emp-metric-number,
+  #page-employees .stat-card-day .emp-metric-number,
+  #page-employees .stat-card-night .emp-metric-number,
+  #page-employees .stat-card-gate .emp-metric-number{
+    font-size:40px !important;
+  }
+  #page-employees .stat-card-total .emp-metric-sub,
+  #page-employees .stat-card-day .emp-metric-sub,
+  #page-employees .stat-card-night .emp-metric-sub,
+  #page-employees .stat-card-gate .emp-metric-sub{
+    font-size:11px !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
