@@ -4418,6 +4418,23 @@ function clearEqNotesInline(btn){
 }
 </style>
 
+
+<style id="employee-password-email-columns">
+#page-employees .table-wrap table{table-layout:fixed;min-width:1180px;}
+#page-employees .table-wrap th,#page-employees .table-wrap td{text-align:center;vertical-align:middle;}
+#page-employees .table-wrap th:nth-child(1),#page-employees .table-wrap td:nth-child(1){width:16%;text-align:left;}
+#page-employees .table-wrap th:nth-child(2),#page-employees .table-wrap td:nth-child(2){width:11%;}
+#page-employees .table-wrap th:nth-child(3),#page-employees .table-wrap td:nth-child(3){width:11%;}
+#page-employees .table-wrap th:nth-child(4),#page-employees .table-wrap td:nth-child(4){width:11%;}
+#page-employees .table-wrap th:nth-child(5),#page-employees .table-wrap td:nth-child(5){width:17%;}
+#page-employees .table-wrap th:nth-child(6),#page-employees .table-wrap td:nth-child(6){width:10%;}
+#page-employees .table-wrap th:nth-child(7),#page-employees .table-wrap td:nth-child(7){width:10%;}
+#page-employees .table-wrap th:nth-child(8),#page-employees .table-wrap td:nth-child(8){width:10%;}
+#page-employees .table-wrap th:nth-child(9),#page-employees .table-wrap td:nth-child(9){width:8%;}
+#page-employees .emp-password-cell{letter-spacing:.14em;font-weight:700;color:#c7d2fe;}
+#page-employees .table-wrap{overflow-x:auto;}
+</style>
+
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
@@ -9263,7 +9280,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 </div>
 <div class="table-wrap">
   <table><thead><tr>
-    <th>Name</th><th>Employee ID</th><th>UP ID</th><th>Shift</th><th>Days Off</th><th>Phone</th><th>Actions</th>
+    <th>Name</th><th>Employee ID</th><th>UP ID</th><th>Password</th><th>Email</th><th>Shift</th><th>Days Off</th><th>Phone</th><th>Actions</th>
   </tr></thead><tbody id="emp-table"></tbody></table>
   <div id="no-data" class="no-data" style="display:none;">No employees found.</div>
 </div>
@@ -9425,6 +9442,8 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
       <div class="form-group"><label>Last Name</label><input type="text" id="f-last" placeholder="Smith"></div>
       <div class="form-group"><label>Employee ID</label><input type="text" id="f-empid" placeholder="EMP-0001"></div>
       <div class="form-group"><label>UP ID</label><input type="text" id="f-upid" placeholder="UP-0001"></div>
+      <div class="form-group"><label>Password</label><input type="text" id="f-password" placeholder="Set password"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="name@example.com"></div>
       <div class="form-group"><label>Shift</label><select id="f-shift"><option value="Day">Day Shift</option><option value="Night">Night Shift</option><option value="Gate">Gate</option></select></div>
       <div class="form-group"><label>Phone Number</label><input type="tel" id="f-phone" placeholder="555-000-0000"></div>
       <div class="form-group full"><label>Days Off</label><input type="text" id="f-days" placeholder="e.g. Sat, Sun or Mon-Wed"></div>
@@ -9659,6 +9678,8 @@ function normalizeEmployeeRecord(e){
     last: last,
     empId: String(e.empId || '').trim(),
     upId: String(e.upId || '').trim(),
+    password: String(e.password || e.userPassword || '').trim(),
+    email: String(e.email || '').trim(),
     shift: e.shift || 'Day',
     phone: String(e.phone || '').trim(),
     daysOff: String(e.daysOff || '').trim(),
@@ -9818,6 +9839,8 @@ async function loadEmployees(){
         last: row.last_name || '',
         empId: row.employee_id || '',
         upId: row.up_id || '',
+        password: row.password || '',
+        email: row.email || '',
         shift: row.shift || 'Day',
         phone: row.phone || '',
         daysOff: row.days_off || '',
@@ -9856,6 +9879,8 @@ async function saveEmployees(){
         last_name: e.last,
         employee_id: e.empId,
         up_id: e.upId,
+        password: e.password || '',
+        email: e.email || '',
         shift: e.shift,
         phone: e.phone,
         days_off: e.daysOff,
@@ -10093,6 +10118,17 @@ function toggleNeedsAttention(){
   updateBanner();
 }
 
+
+function canViewEmployeePasswords(){
+  try{
+    var raw = sessionStorage.getItem('conglobal_current_user_v1');
+    var u = raw ? JSON.parse(raw) : null;
+    if(!u) return String(window.eqLoginUsername || '').toLowerCase() === 'admin';
+    if(String(u.role || '').toLowerCase() === 'admin') return true;
+    return !!(u.permissions && u.permissions.employees && u.permissions.employees.passwords);
+  }catch(e){ return false; }
+}
+
 function render(){
   normalizeEmployeeRoster();
   var list=getFiltered();
@@ -10120,10 +10156,20 @@ function render(){
     var phoneCell=(e.phone&&String(e.phone).trim())
       ?'<span class="phone-cell emp-table-value">'+e.phone+'</span>'
       :'<button type="button" class="missing-field-btn missing-phone" data-eid="'+e.id+'" title="Add phone number">Missing Phone</button>';
+    var canSeePw = (typeof canViewEmployeePasswords === 'function') ? canViewEmployeePasswords() : false;
+    var pwText = e.password && String(e.password).trim() ? String(e.password).trim() : '';
+    var pwCell = pwText
+      ? '<span class="emp-id emp-table-value emp-password-cell" title="'+(canSeePw ? pwText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : 'Password hidden')+'">'+(canSeePw ? pwText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '••••••')+'</span>'
+      : '<button type="button" class="missing-field-btn missing-password" data-eid="'+e.id+'" title="Add password">Missing Password</button>';
+    var emailCell=(e.email&&String(e.email).trim())
+      ?'<span class="phone-cell emp-table-value">'+String(e.email).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>'
+      :'<button type="button" class="missing-field-btn missing-email" data-eid="'+e.id+'" title="Add email">Missing Email</button>';
     return '<tr>'
       +'<td><div class="emp-name emp-table-value">'+e.first+' '+e.last+'</div></td>'
       +'<td>'+empCell+'</td>'
       +'<td>'+upCell+'</td>'
+      +'<td>'+pwCell+'</td>'
+      +'<td>'+emailCell+'</td>'
       +'<td>'+shiftBadge(e.shift)+'</td>'
       +'<td><span class="days-off emp-table-value">'+(e.daysOff||'—')+'</span></td>'
       +'<td>'+phoneCell+'</td>'
@@ -10148,13 +10194,15 @@ function openModal(id){
     document.getElementById('f-last').value=e.last;
     document.getElementById('f-empid').value=e.empId;
     document.getElementById('f-upid').value=e.upId;
+    document.getElementById('f-password').value=e.password || '';
+    document.getElementById('f-email').value=e.email || '';
     document.getElementById('f-shift').value=e.shift;
     document.getElementById('f-phone').value=e.phone;
     document.getElementById('f-days').value=e.daysOff;
     document.querySelector('input[name="status"][value="'+e.status+'"]').checked=true;
   } else {
     title.textContent='Add Employee'; delBtn.style.display='none';
-    ['f-first','f-last','f-empid','f-upid','f-phone','f-days'].forEach(function(i){document.getElementById(i).value='';});
+    ['f-first','f-last','f-empid','f-upid','f-password','f-email','f-phone','f-days'].forEach(function(i){document.getElementById(i).value='';});
     document.getElementById('f-shift').value='Day';
     document.getElementById('s-active').checked=true;
   }
@@ -10166,7 +10214,7 @@ function saveEmp(){
   var first=document.getElementById('f-first').value.trim();
   var last=document.getElementById('f-last').value.trim();
   if(!first||!last){alert('First and last name required.');return;}
-  var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:document.querySelector('input[name="status"]:checked').value};
+  var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:document.getElementById('f-password').value.trim(),email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:document.querySelector('input[name="status"]:checked').value};
   if(editId){
     var idx=employees.findIndex(function(x){return x.id===editId;});
     if(idx>-1){ employees[idx]=Object.assign({},employees[idx],data); logActivity('employee','<strong>'+data.first+' '+data.last+'</strong> updated','Shift: '+data.shift+' · Emp ID: '+(data.empId||'—')); }
@@ -10187,8 +10235,8 @@ function deleteEmp(){
 }
 
 function exportCSV(){
-  var rows=employees.map(function(e){return[e.first,e.last,e.empId,e.upId,e.shift,e.daysOff,e.phone,e.status].map(function(v){return'"'+(v||'')+'"';}).join(',');});
-  var csv=['First,Last,Employee ID,UP ID,Shift,Days Off,Phone,Status'].concat(rows).join('\n');
+  var rows=employees.map(function(e){return[e.first,e.last,e.empId,e.upId,e.password,e.email,e.shift,e.daysOff,e.phone,e.status].map(function(v){return'"'+(v||'')+'"';}).join(',');});
+  var csv=['First,Last,Employee ID,UP ID,Password,Email,Shift,Days Off,Phone,Status'].concat(rows).join('\n');
   var a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='employees.csv';a.click();
 }
 
@@ -12630,7 +12678,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
       <div class="admin-permission-table-wrap">
         <table class="admin-permission-table">
-          <thead><tr><th>Page</th><th>Can View</th><th>Can Edit</th></tr></thead>
+          <thead><tr><th>Page</th><th>Can View</th><th>Can Edit</th><th>Password Access</th></tr></thead>
           <tbody id="admin-permission-rows"></tbody>
         </table>
       </div>
@@ -15060,6 +15108,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
         if(perms[p]){
           base[p].view = !!perms[p].view;
           base[p].edit = !!perms[p].edit && !!perms[p].view;
+          if(p === 'employees') base[p].passwords = !!perms[p].passwords && !!perms[p].view;
         }
       });
     }
@@ -15223,8 +15272,9 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     tbody.innerHTML = PAGE_ORDER.map(p => `
       <tr>
         <td>${PAGE_LABELS[p]}</td>
-        <td><input type="checkbox" id="perm-${p}-view" onchange="if(!this.checked)document.getElementById('perm-${p}-edit').checked=false"></td>
+        <td><input type="checkbox" id="perm-${p}-view" onchange="if(!this.checked){document.getElementById('perm-${p}-edit').checked=false; var pw=document.getElementById('perm-${p}-passwords'); if(pw) pw.checked=false;}"></td>
         <td><input type="checkbox" id="perm-${p}-edit" onchange="if(this.checked)document.getElementById('perm-${p}-view').checked=true"></td>
+        <td>${p === 'employees' ? '<input type="checkbox" id="perm-employees-passwords" onchange="if(this.checked)document.getElementById(\'perm-employees-view\').checked=true">' : '<span style="color:var(--muted);">—</span>'}</td>
       </tr>
     `).join('');
   }
@@ -15235,6 +15285,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       const v = document.getElementById('perm-'+p+'-view');
       const e = document.getElementById('perm-'+p+'-edit');
       perms[p] = { view:!!(v && v.checked), edit:!!(e && e.checked && v && v.checked) };
+      if(p === 'employees'){ var pw = document.getElementById('perm-employees-passwords'); perms[p].passwords = !!(pw && pw.checked && v && v.checked); }
     });
     perms.admin = { view:false, edit:false };
     return perms;
@@ -15251,6 +15302,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       const e = document.getElementById('perm-'+p+'-edit');
       if(v) v.checked = !!(u.permissions && u.permissions[p] && u.permissions[p].view);
       if(e) e.checked = !!(u.permissions && u.permissions[p] && u.permissions[p].edit);
+      if(p === 'employees'){ var pw = document.getElementById('perm-employees-passwords'); if(pw) pw.checked = !!(u.permissions && u.permissions[p] && u.permissions[p].passwords); }
     });
   }
   async function saveAdminUserFromForm(){
@@ -15279,7 +15331,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       const perms = PAGE_ORDER.map(p=>{
         const pp = u.permissions && u.permissions[p] || {};
         if(!pp.view) return '';
-        return `<span class="admin-perm-chip ${pp.edit?'edit':''}">${PAGE_LABELS[p]} ${pp.edit?'EDIT':'VIEW'}</span>`;
+        return `<span class="admin-perm-chip ${pp.edit?'edit':''}">${PAGE_LABELS[p]} ${pp.edit?'EDIT':'VIEW'}${(p==='employees' && pp.passwords)?' + PW':''}</span>`;
       }).join('') || '<span class="admin-perm-chip">No page access</span>';
       const safeId = String(u.id).replace(/'/g,"\\'");
       return `<div class="admin-user-card">
