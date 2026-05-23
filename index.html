@@ -19268,6 +19268,533 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
   #page-employees #s-gate small{font-size:20px!important;}
 }
 </style>
+
+
+<style id="employee-metric-cards-stretch-full-width">
+/* Stretch Employee ID metric cards across the available screen width. */
+#page-employees .stats-row.employee-metrics-overhauled{
+  width:100%!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  align-items:stretch!important;
+}
+#page-employees .stats-row.employee-metrics-overhauled .stat-card{
+  width:100%!important;
+  min-width:0!important;
+}
+@media(max-width:1100px){
+  #page-employees .stats-row.employee-metrics-overhauled{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:850px){
+  #page-employees .stats-row.employee-metrics-overhauled{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:520px){
+  #page-employees .stats-row.employee-metrics-overhauled{
+    grid-template-columns:1fr!important;
+  }
+}
+</style>
+
+
+
+<style id="employee-needs-attention-card-list-css">
+/* Employee ID: list names + reasons inside the Needs Attention metric card. */
+#page-employees .stat-card.stat-card-attn-metric{
+  min-height:172px!important;
+  align-content:start!important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-metric-sub{
+  margin-bottom:8px!important;
+}
+#page-employees .emp-attn-list{
+  margin-top:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  max-height:132px;
+  overflow:auto;
+  padding-right:3px;
+}
+#page-employees .emp-attn-item{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:2px;
+  padding:6px 7px;
+  border-radius:10px;
+  background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.18);
+}
+#page-employees .emp-attn-name{
+  font-size:11px;
+  font-weight:950;
+  letter-spacing:.04em;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-transform:uppercase;
+}
+#page-employees .emp-attn-why{
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.05em;
+  color:#fecaca;
+  text-transform:uppercase;
+  line-height:1.25;
+}
+#page-employees .emp-attn-empty{
+  margin-top:8px;
+  padding:8px;
+  border-radius:10px;
+  background:rgba(34,197,94,.08);
+  border:1px solid rgba(34,197,94,.18);
+  color:#bbf7d0;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+#page-employees .emp-attn-more{
+  font-size:9px;
+  font-weight:900;
+  color:#fca5a5;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  padding:3px 2px 0;
+}
+@media(max-width:900px){
+  #page-employees .emp-attn-list{max-height:180px;}
+  #page-employees .emp-attn-name{font-size:12px;}
+  #page-employees .emp-attn-why{font-size:10px;}
+}
+</style>
+<script id="employee-needs-attention-card-list-js">
+(function(){
+  if(window.__employeeNeedsAttentionCardList) return;
+  window.__employeeNeedsAttentionCardList = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function hasNote(e){
+    return !!clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || '');
+  }
+  function personName(e){
+    return ((clean(e && e.first) + ' ' + clean(e && e.last)).replace(/\s+/g,' ').trim() || 'UNNAMED EMPLOYEE').toUpperCase();
+  }
+  function missingRequired(e){
+    e = e || {};
+    var out = [];
+    if(typeof window.missingItems === 'function'){
+      try{ out = (window.missingItems(e) || []).slice(); }catch(_e){ out = []; }
+    }
+    if(!out.length){
+      if(!clean(e.empId)) out.push('CONGLOBAL ID');
+      if(!resolvedUp(e.upId)) out.push('UP ID');
+      if(!clean(e.email)) out.push('EMAIL');
+      if(!clean(e.phone)) out.push('PHONE');
+      if(!clean(e.daysOff)) out.push('DAYS OFF');
+    }
+    // Required-note workflow: if UP ID is unresolved, a note must be attached.
+    // This explains the red card/highlight without making duplicate flags part of Needs Attention.
+    if(!resolvedUp(e.upId) && !hasNote(e) && out.map(function(x){return clean(x).toUpperCase();}).indexOf('MISSING NOTE') === -1){
+      out.push('MISSING NOTE');
+    }
+    return out.map(function(x){ return clean(x).toUpperCase(); }).filter(Boolean);
+  }
+  function isComplete(e){
+    if(typeof window.isComplete === 'function'){ try{ return !!window.isComplete(e || {}); }catch(_e){} }
+    e = e || {};
+    return !!(clean(e.first) && clean(e.last) && clean(e.empId) && resolvedUp(e.upId) && clean(e.phone) && clean(e.daysOff));
+  }
+  function pct(done,total){ return total ? Math.max(0, Math.min(100, (done/total)*100)) : 0; }
+  function pctClass(v){ if(v >= 98) return 'emp-metric-green'; if(v >= 90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n > 0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function setHtml(id, html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green');
+    el.classList.add(cls || 'emp-metric-neutral');
+  }
+  function setFill(id, value, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.style.width = Math.max(0, Math.min(100, value || 0)) + '%';
+    el.className = 'emp-metric-fill ' + (cls || 'emp-metric-neutral');
+    if(cls === 'emp-metric-red') el.style.background = '#ef4444';
+    else if(cls === 'emp-metric-yellow' || cls === 'emp-metric-gold') el.style.background = '#f59e0b';
+    else if(cls === 'emp-metric-green') el.style.background = '#22c55e';
+    else el.style.background = 'rgba(229,231,235,.55)';
+  }
+  function renderMetricShell(){
+    var row = document.querySelector('#page-employees .stats-row');
+    if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    if(document.getElementById('s-out-list')) return;
+    row.innerHTML = ''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Missing required info</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-out-bar"></div></div><div class="emp-attn-list" id="s-out-list"></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>';
+  }
+  function renderAttentionList(rows){
+    var el = document.getElementById('s-out-list');
+    if(!el) return;
+    if(!rows.length){
+      el.innerHTML = '<div class="emp-attn-empty">All required info complete</div>';
+      return;
+    }
+    var max = 8;
+    var html = rows.slice(0, max).map(function(item){
+      return '<div class="emp-attn-item" title="' + esc(item.name + ': ' + item.reasons.join(', ')) + '">'
+        + '<div class="emp-attn-name">' + esc(item.name) + '</div>'
+        + '<div class="emp-attn-why">' + esc(item.reasons.join(' • ')) + '</div>'
+        + '</div>';
+    }).join('');
+    if(rows.length > max) html += '<div class="emp-attn-more">+' + (rows.length - max) + ' more need attention</div>';
+    el.innerHTML = html;
+  }
+
+  window.updateStats = function(){
+    renderMetricShell();
+    var list = Array.isArray(window.employees) ? window.employees : [];
+    var total = list.length;
+    var complete = list.filter(isComplete).length;
+    var completionPct = pct(complete,total);
+    var completionCls = pctClass(completionPct);
+    var attentionRows = list.map(function(e){ return {employee:e, name:personName(e), reasons:missingRequired(e)}; })
+      .filter(function(x){ return x.reasons.length > 0; })
+      .sort(function(a,b){ return a.name.localeCompare(b.name); });
+    var attention = attentionRows.length;
+    var attentionPct = total ? (attention / total) * 100 : 0;
+    var attentionCls = countClass(attention);
+
+    setHtml('s-total', Math.round(completionPct) + '<small>%</small>');
+    setText('s-total-sub', complete + '/' + total + ' profiles complete');
+    setMetricClass('s-total', completionCls);
+    setFill('s-total-bar', completionPct, completionCls);
+
+    setText('s-out', attention);
+    setText('s-out-sub', attention ? 'Who + why listed below' : 'All required info complete');
+    setMetricClass('s-out', attentionCls);
+    setFill('s-out-bar', attentionPct, attentionCls);
+    renderAttentionList(attentionRows);
+
+    function shiftStats(name){
+      var rows = list.filter(function(e){ return clean(e && e.shift).toUpperCase() === name; });
+      var done = rows.filter(isComplete).length;
+      return {done:done,total:rows.length,pct:pct(done, rows.length)};
+    }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){
+      var x = shiftStats(pair[0]);
+      var cls = pctClass(x.pct);
+      setHtml(pair[1], x.done + '<small>/' + x.total + '</small>');
+      setText(pair[1] + '-sub', 'Complete');
+      setMetricClass(pair[1], cls);
+      setFill(pair[1] + '-bar', x.pct, cls);
+      var el = document.getElementById(pair[1]);
+      if(el) el.title = x.done + '/' + x.total + ' complete';
+    });
+  };
+
+  function boot(){
+    try{ renderMetricShell(); }catch(e){}
+    try{ if(typeof window.updateStats === 'function') window.updateStats(); }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 80); setTimeout(boot, 600); });
+  setTimeout(boot, 120);
+  setTimeout(boot, 1000);
+})();
+</script>
+
+
+<style id="employee-needs-attention-action-board-css">
+/* Employee ID: Needs Attention card redesigned as an action board instead of a two-column user/needs list. */
+#page-employees .stat-card.stat-card-attn-metric{
+  min-height:230px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+  overflow:hidden!important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-metric-sub{
+  margin:0!important;
+}
+#page-employees .emp-attn-board{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+  min-height:0!important;
+  flex:1 1 auto!important;
+}
+#page-employees .emp-attn-summary{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+#page-employees .emp-attn-summary-chip{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:6px!important;
+  padding:7px 8px!important;
+  border-radius:12px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  background:rgba(255,255,255,.055)!important;
+  min-width:0!important;
+}
+#page-employees .emp-attn-summary-chip strong{
+  font-size:14px!important;
+  font-weight:1000!important;
+  line-height:1!important;
+  color:#fff!important;
+}
+#page-employees .emp-attn-summary-chip span{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:8.5px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  letter-spacing:.075em!important;
+  color:rgba(255,255,255,.70)!important;
+  text-transform:uppercase!important;
+}
+#page-employees .emp-attn-summary-chip.attn-red{
+  border-color:rgba(239,68,68,.34)!important;
+  background:rgba(239,68,68,.12)!important;
+}
+#page-employees .emp-attn-summary-chip.attn-gold{
+  border-color:rgba(245,158,11,.38)!important;
+  background:rgba(245,158,11,.13)!important;
+}
+#page-employees .emp-attn-summary-chip.attn-neutral{
+  border-color:rgba(148,163,184,.20)!important;
+  background:rgba(148,163,184,.08)!important;
+}
+#page-employees .emp-attn-queue{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:6px!important;
+  overflow:auto!important;
+  max-height:154px!important;
+  padding-right:2px!important;
+}
+#page-employees .emp-attn-ticket{
+  display:grid!important;
+  grid-template-columns:minmax(95px,1fr) minmax(0,1.8fr)!important;
+  gap:8px!important;
+  align-items:center!important;
+  padding:8px 9px!important;
+  border-radius:14px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  background:linear-gradient(90deg,rgba(239,68,68,.11),rgba(255,255,255,.045))!important;
+}
+#page-employees .emp-attn-ticket.is-gold{
+  background:linear-gradient(90deg,rgba(245,158,11,.14),rgba(255,255,255,.045))!important;
+  border-color:rgba(245,158,11,.28)!important;
+}
+#page-employees .emp-attn-ticket-name{
+  color:#fff!important;
+  font-size:12px!important;
+  line-height:1.1!important;
+  font-weight:1000!important;
+  letter-spacing:.045em!important;
+  text-transform:uppercase!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+#page-employees .emp-attn-pills{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:flex-end!important;
+  gap:4px!important;
+  min-width:0!important;
+}
+#page-employees .emp-attn-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  border-radius:999px!important;
+  padding:4px 6px!important;
+  font-size:8.5px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  background:rgba(255,255,255,.08)!important;
+  white-space:nowrap!important;
+}
+#page-employees .emp-attn-pill.pill-red{background:rgba(239,68,68,.20)!important;border-color:rgba(239,68,68,.38)!important;color:#fecaca!important;}
+#page-employees .emp-attn-pill.pill-gold{background:rgba(245,158,11,.18)!important;border-color:rgba(245,158,11,.36)!important;color:#fde68a!important;}
+#page-employees .emp-attn-pill.pill-neutral{background:rgba(148,163,184,.12)!important;border-color:rgba(148,163,184,.24)!important;color:#e5e7eb!important;}
+#page-employees .emp-attn-empty{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:1 1 auto!important;
+  margin-top:4px!important;
+  min-height:74px!important;
+  border-radius:14px!important;
+  background:rgba(34,197,94,.09)!important;
+  border:1px solid rgba(34,197,94,.22)!important;
+  color:#bbf7d0!important;
+  font-size:12px!important;
+  font-weight:1000!important;
+  letter-spacing:.06em!important;
+  text-transform:uppercase!important;
+}
+#page-employees .emp-attn-more{
+  padding:2px 1px 0!important;
+  font-size:10px!important;
+  font-weight:1000!important;
+  color:#fca5a5!important;
+  letter-spacing:.06em!important;
+  text-transform:uppercase!important;
+}
+@media(max-width:980px){
+  #page-employees .emp-attn-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:720px){
+  #page-employees .stat-card.stat-card-attn-metric{min-height:260px!important;}
+  #page-employees .emp-attn-ticket{grid-template-columns:1fr!important;gap:7px!important;}
+  #page-employees .emp-attn-pills{justify-content:flex-start!important;}
+  #page-employees .emp-attn-ticket-name{font-size:13px!important;white-space:normal!important;}
+  #page-employees .emp-attn-queue{max-height:190px!important;}
+}
+</style>
+<script id="employee-needs-attention-action-board-js">
+(function(){
+  window.__employeeNeedsAttentionActionBoard = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function hasNote(e){ return !!clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || ''); }
+  function personName(e){ e=e||{}; return ((clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || clean(e.name) || 'UNNAMED EMPLOYEE').toUpperCase(); }
+  function missingList(e){
+    e=e||{};
+    var out=[];
+    if(!clean(e.empId)) out.push('CONGLOBAL ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('EMAIL');
+    if(!clean(e.phone)) out.push('PHONE');
+    if(!clean(e.daysOff)) out.push('DAYS OFF');
+    if(!resolvedUp(e.upId) && !hasNote(e)) out.push('MISSING NOTE');
+    var seen={};
+    return out.map(function(x){return clean(x).toUpperCase();}).filter(function(x){ if(!x || seen[x]) return false; seen[x]=true; return true; });
+  }
+  function completeEmployee(e){ return missingList(e).length===0; }
+  function pct(done,total){ return total ? Math.max(0,Math.min(100,(done/total)*100)) : 0; }
+  function pctClass(v){ if(v>=98) return 'emp-metric-green'; if(v>=90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n>0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function setHtml(id,html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id,text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id,cls){ var el=document.getElementById(id); if(!el) return; el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green'); el.classList.add(cls||'emp-metric-neutral'); }
+  function setFill(id,value,cls){ var el=document.getElementById(id); if(!el) return; el.style.width=Math.max(0,Math.min(100,value||0))+'%'; el.className='emp-metric-fill '+(cls||'emp-metric-neutral'); if(cls==='emp-metric-red') el.style.background='#ef4444'; else if(cls==='emp-metric-yellow'||cls==='emp-metric-gold') el.style.background='#f59e0b'; else if(cls==='emp-metric-green') el.style.background='#22c55e'; else el.style.background='rgba(229,231,235,.55)'; }
+
+  function renderMetricShell(){
+    var row=document.querySelector('#page-employees .stats-row');
+    if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    row.innerHTML=''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Action board</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-out-bar"></div></div><div class="emp-attn-board" id="s-out-list"></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>';
+  }
+
+  function needClass(need){
+    need=clean(need).toUpperCase();
+    if(need==='MISSING NOTE') return 'pill-red';
+    if(need==='UP ID') return 'pill-gold';
+    return 'pill-neutral';
+  }
+  function chipClass(label){
+    label=clean(label).toUpperCase();
+    if(label==='MISSING NOTE') return 'attn-red';
+    if(label==='UP ID') return 'attn-gold';
+    return 'attn-neutral';
+  }
+  function renderAttentionBoard(rows){
+    var el=document.getElementById('s-out-list');
+    if(!el) return;
+    if(!rows.length){ el.innerHTML='<div class="emp-attn-empty">All required info complete</div>'; return; }
+    var order=['MISSING NOTE','UP ID','EMAIL','PHONE','DAYS OFF','CONGLOBAL ID'];
+    var counts={};
+    rows.forEach(function(r){ r.needs.forEach(function(n){ counts[n]=(counts[n]||0)+1; }); });
+    var summary=order.filter(function(n){ return counts[n]; }).slice(0,6).map(function(n){
+      return '<div class="emp-attn-summary-chip '+chipClass(n)+'"><strong>'+counts[n]+'</strong><span>'+esc(n)+'</span></div>';
+    }).join('');
+    var sorted=rows.slice().sort(function(a,b){
+      var ap=a.needs.indexOf('MISSING NOTE')>-1 ? 0 : (a.needs.indexOf('UP ID')>-1 ? 1 : 2);
+      var bp=b.needs.indexOf('MISSING NOTE')>-1 ? 0 : (b.needs.indexOf('UP ID')>-1 ? 1 : 2);
+      if(ap!==bp) return ap-bp;
+      return a.name.localeCompare(b.name);
+    });
+    var max=8;
+    var tickets=sorted.slice(0,max).map(function(item){
+      var goldOnly=item.needs.indexOf('MISSING NOTE')===-1 && item.needs.indexOf('UP ID')>-1;
+      return '<div class="emp-attn-ticket '+(goldOnly?'is-gold':'')+'" title="'+esc(item.name+' needs: '+item.needs.join(', '))+'">'
+        + '<div class="emp-attn-ticket-name">'+esc(item.name)+'</div>'
+        + '<div class="emp-attn-pills">'+item.needs.map(function(n){ return '<span class="emp-attn-pill '+needClass(n)+'">'+esc(n)+'</span>'; }).join('')+'</div>'
+        + '</div>';
+    }).join('');
+    if(sorted.length>max) tickets += '<div class="emp-attn-more">+'+(sorted.length-max)+' more need attention</div>';
+    el.innerHTML='<div class="emp-attn-summary">'+summary+'</div><div class="emp-attn-queue">'+tickets+'</div>';
+  }
+
+  window.updateStats=function(){
+    renderMetricShell();
+    var list=Array.isArray(window.employees) ? window.employees : [];
+    var total=list.length;
+    var complete=list.filter(completeEmployee).length;
+    var completionPct=pct(complete,total);
+    var completionCls=pctClass(completionPct);
+    var attentionRows=list.map(function(e){ return {employee:e,name:personName(e),needs:missingList(e)}; }).filter(function(x){ return x.needs.length>0; });
+    var attention=attentionRows.length;
+
+    setHtml('s-total',Math.round(completionPct)+'<small>%</small>');
+    setText('s-total-sub',complete+'/'+total+' profiles complete');
+    setMetricClass('s-total',completionCls);
+    setFill('s-total-bar',completionPct,completionCls);
+
+    setText('s-out',attention);
+    setText('s-out-sub',attention ? 'Grouped by issue + priority' : 'All required info complete');
+    setMetricClass('s-out',countClass(attention));
+    setFill('s-out-bar',total ? (attention/total)*100 : 0,countClass(attention));
+    renderAttentionBoard(attentionRows);
+
+    function shiftStats(name){ var rows=list.filter(function(e){ return clean(e&&e.shift).toUpperCase()===name; }); var done=rows.filter(completeEmployee).length; return {done:done,total:rows.length,pct:pct(done,rows.length)}; }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){
+      var x=shiftStats(pair[0]); var cls=pctClass(x.pct);
+      setHtml(pair[1],x.done+'<small>/'+x.total+'</small>');
+      setText(pair[1]+'-sub','Complete');
+      setMetricClass(pair[1],cls);
+      setFill(pair[1]+'-bar',x.pct,cls);
+      var el=document.getElementById(pair[1]); if(el) el.title=x.done+'/'+x.total+' complete';
+    });
+  };
+
+  function boot(){ try{ window.updateStats(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ setTimeout(boot,60); setTimeout(boot,450); });
+  else { setTimeout(boot,30); setTimeout(boot,400); }
+  setTimeout(boot,1000);
+})();
+</script>
+
 </body>
 </html>
 <style id="employee-missing-up-red-column-line-fix">
@@ -19616,5 +20143,916 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 50); setTimeout(boot, 500); });
   setTimeout(boot, 100);
   setTimeout(boot, 1000);
+})();
+</script>
+
+
+<style id="employee-needs-attention-metric-no-banner-css">
+/* Employee ID: convert Needs Attention from top banner into a metric card. */
+#page-employees .stats-row.employee-metrics-overhauled{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+}
+#page-employees .stat-card.stat-card-attn-metric{
+  background:linear-gradient(135deg,#1a0a0a,#100505)!important;
+  border:1px solid rgba(239,68,68,.25)!important;
+}
+#page-employees .stat-card.stat-card-attn-metric::before{
+  background:linear-gradient(90deg,#dc2626,#ef4444)!important;
+}
+#page-employees #needs-attn-btn{display:none!important;}
+#page-employees #callout-banner .banner-row-attn{display:none!important;}
+@media(max-width:1100px){
+  #page-employees .stats-row.employee-metrics-overhauled{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+}
+@media(max-width:900px){
+  #page-employees .stats-row.employee-metrics-overhauled{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:520px){
+  #page-employees .stats-row.employee-metrics-overhauled{grid-template-columns:1fr!important;}
+}
+</style>
+<script id="employee-needs-attention-metric-no-banner-js">
+(function(){
+  if(window.__employeeNeedsAttentionMetricNoBanner) return;
+  window.__employeeNeedsAttentionMetricNoBanner = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function pct(done,total){ return total ? Math.max(0, Math.min(100, (done/total)*100)) : 0; }
+  function pctClass(v){ if(v >= 98) return 'emp-metric-green'; if(v >= 90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n > 0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function completeEmployee(e){
+    if(typeof window.isComplete === 'function') return !!window.isComplete(e || {});
+    e = e || {};
+    return !!(clean(e.first) && clean(e.last) && clean(e.empId) && resolvedUp(e.upId) && clean(e.phone) && clean(e.daysOff));
+  }
+  function missingList(e){
+    if(typeof window.missingItems === 'function') return window.missingItems(e || {}) || [];
+    e = e || {};
+    var out=[];
+    if(!clean(e.empId)) out.push('Conglobal ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('Email');
+    if(!clean(e.phone)) out.push('Phone');
+    if(!clean(e.daysOff)) out.push('Days Off');
+    return out;
+  }
+  function setHtml(id, html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green');
+    el.classList.add(cls || 'emp-metric-neutral');
+  }
+  function setFill(id, value, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.style.width = Math.max(0, Math.min(100, value || 0)) + '%';
+    el.className = 'emp-metric-fill ' + (cls || 'emp-metric-neutral');
+    if(cls === 'emp-metric-red') el.style.background = '#ef4444';
+    else if(cls === 'emp-metric-yellow' || cls === 'emp-metric-gold') el.style.background = '#f59e0b';
+    else if(cls === 'emp-metric-green') el.style.background = '#22c55e';
+    else el.style.background = 'rgba(229,231,235,.55)';
+  }
+  function renderMetricShell(){
+    var row = document.querySelector('#page-employees .stats-row');
+    if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    var needsCard = row.querySelector('#s-out');
+    if(needsCard) return;
+    row.innerHTML = ''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Missing required info</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-out-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>';
+  }
+
+  window.updateStats = function(){
+    renderMetricShell();
+    var list = Array.isArray(window.employees) ? window.employees : [];
+    var total = list.length;
+    var complete = list.filter(completeEmployee).length;
+    var completionPct = pct(complete,total);
+    var completionCls = pctClass(completionPct);
+    var attention = list.filter(function(e){ return missingList(e).length > 0; }).length;
+    var attentionPct = total ? (attention / total) * 100 : 0;
+    var attentionCls = countClass(attention);
+
+    setHtml('s-total', Math.round(completionPct) + '<small>%</small>');
+    setText('s-total-sub', complete + '/' + total + ' profiles complete');
+    setMetricClass('s-total', completionCls);
+    setFill('s-total-bar', completionPct, completionCls);
+
+    setText('s-out', attention);
+    setText('s-out-sub', attention ? 'Missing required info' : 'All required info complete');
+    setMetricClass('s-out', attentionCls);
+    setFill('s-out-bar', attentionPct, attentionCls);
+
+    function shiftStats(name){
+      var rows = list.filter(function(e){ return clean(e && e.shift).toUpperCase() === name; });
+      var done = rows.filter(completeEmployee).length;
+      return {done:done,total:rows.length,pct:pct(done, rows.length)};
+    }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){
+      var x = shiftStats(pair[0]);
+      var cls = pctClass(x.pct);
+      setHtml(pair[1], x.done + '<small>/' + x.total + '</small>');
+      setText(pair[1] + '-sub', 'Complete');
+      setMetricClass(pair[1], cls);
+      setFill(pair[1] + '-bar', x.pct, cls);
+      var el = document.getElementById(pair[1]);
+      if(el) el.title = x.done + '/' + x.total + ' complete';
+    });
+  };
+
+  window.updateBanner = function(){
+    var banner=document.getElementById('callout-banner');
+    if(!banner) return;
+    var callouts=(window.employees||[]).filter(function(e){return e && e.status==='callout';});
+    var waiting=(window.employees||[]).filter(function(e){return e && e.status==='waiting';});
+    var html='';
+    function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function personName(e){ return ((clean(e && e.first)+' '+clean(e && e.last)).replace(/\s+/g,' ').trim() || 'Unnamed Employee').toUpperCase(); }
+    function chip(e){
+      var sc={Day:'bchip-day',Night:'bchip-night',Gate:'bchip-gate'}[e.shift]||'bchip-day';
+      return '<span class="bchip '+sc+'" style="cursor:pointer;" data-eid="'+esc(e.id)+'">'+esc(personName(e))+'</span>';
+    }
+    if(callouts.length) html += '<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Called Out</div><div class="banner-chips">'+callouts.map(chip).join('')+'</div></div>';
+    if(waiting.length) html += '<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>Waiting On</div><div class="banner-chips">'+waiting.map(chip).join('')+'</div></div>';
+    banner.innerHTML=html;
+    banner.querySelectorAll('[data-eid]').forEach(function(el){el.addEventListener('click',function(){ if(typeof window.openModal === 'function') window.openModal(this.dataset.eid); });});
+    var btn=document.getElementById('needs-attn-btn'); if(btn) btn.style.display='none';
+  };
+
+  function boot(){
+    try{ renderMetricShell(); }catch(e){}
+    try{ if(typeof window.updateStats === 'function') window.updateStats(); }catch(e){}
+    try{ if(typeof window.updateBanner === 'function') window.updateBanner(); }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 50); setTimeout(boot, 500); });
+  setTimeout(boot, 100);
+  setTimeout(boot, 1000);
+})();
+</script>
+
+
+<style id="employee-needs-attention-user-need-list-final-css">
+/* Employee ID: Needs Attention metric card now lists the user and the exact item(s) needed. */
+#page-employees .stat-card.stat-card-attn-metric{
+  min-height:210px!important;
+  align-content:start!important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-metric-sub{
+  margin-bottom:8px!important;
+}
+#page-employees .emp-attn-list{
+  margin-top:8px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:7px!important;
+  max-height:166px!important;
+  overflow:auto!important;
+  padding-right:3px!important;
+}
+#page-employees .emp-attn-item{
+  display:grid!important;
+  grid-template-columns:minmax(92px,.9fr) minmax(0,1.4fr)!important;
+  gap:8px!important;
+  align-items:start!important;
+  padding:8px 9px!important;
+  border-radius:12px!important;
+  background:rgba(239,68,68,.09)!important;
+  border:1px solid rgba(239,68,68,.22)!important;
+}
+#page-employees .emp-attn-user-label,
+#page-employees .emp-attn-need-label{
+  display:block!important;
+  font-size:8px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  letter-spacing:.12em!important;
+  color:rgba(255,255,255,.48)!important;
+  text-transform:uppercase!important;
+  margin-bottom:3px!important;
+}
+#page-employees .emp-attn-name{
+  font-size:12px!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+  letter-spacing:.035em!important;
+  color:#fff!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  text-transform:uppercase!important;
+}
+#page-employees .emp-attn-why{
+  font-size:11px!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  letter-spacing:.045em!important;
+  color:#fecaca!important;
+  text-transform:uppercase!important;
+}
+#page-employees .emp-attn-empty{
+  margin-top:8px!important;
+  padding:9px 10px!important;
+  border-radius:12px!important;
+  background:rgba(34,197,94,.09)!important;
+  border:1px solid rgba(34,197,94,.22)!important;
+  color:#bbf7d0!important;
+  font-size:11px!important;
+  font-weight:950!important;
+  letter-spacing:.06em!important;
+  text-transform:uppercase!important;
+}
+#page-employees .emp-attn-more{
+  font-size:10px!important;
+  font-weight:950!important;
+  color:#fca5a5!important;
+  text-transform:uppercase!important;
+  letter-spacing:.06em!important;
+  padding:3px 2px 0!important;
+}
+@media(max-width:720px){
+  #page-employees .emp-attn-item{grid-template-columns:1fr!important;gap:5px!important;}
+  #page-employees .emp-attn-list{max-height:220px!important;}
+  #page-employees .emp-attn-name{font-size:13px!important;}
+  #page-employees .emp-attn-why{font-size:11px!important;}
+}
+</style>
+<script id="employee-needs-attention-user-need-list-final-js">
+(function(){
+  window.__employeeNeedsAttentionUserNeedListFinal = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function hasNote(e){ return !!clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || ''); }
+  function personName(e){
+    e = e || {};
+    return ((clean(e.first) + ' ' + clean(e.last)).replace(/\s+/g,' ').trim() || clean(e.name) || 'UNNAMED EMPLOYEE').toUpperCase();
+  }
+  function missingList(e){
+    e = e || {};
+    var out = [];
+    if(!clean(e.empId)) out.push('CONGLOBAL ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('EMAIL');
+    if(!clean(e.phone)) out.push('PHONE');
+    if(!clean(e.daysOff)) out.push('DAYS OFF');
+    if(!resolvedUp(e.upId) && !hasNote(e)) out.push('MISSING NOTE');
+    var seen = {};
+    return out.map(function(x){ return clean(x).toUpperCase(); }).filter(function(x){ if(!x || seen[x]) return false; seen[x]=true; return true; });
+  }
+  function completeEmployee(e){ return missingList(e).length === 0; }
+  function pct(done,total){ return total ? Math.max(0, Math.min(100, (done/total)*100)) : 0; }
+  function pctClass(v){ if(v >= 98) return 'emp-metric-green'; if(v >= 90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n > 0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function setHtml(id, html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green');
+    el.classList.add(cls || 'emp-metric-neutral');
+  }
+  function setFill(id, value, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.style.width = Math.max(0, Math.min(100, value || 0)) + '%';
+    el.className = 'emp-metric-fill ' + (cls || 'emp-metric-neutral');
+    if(cls === 'emp-metric-red') el.style.background = '#ef4444';
+    else if(cls === 'emp-metric-yellow' || cls === 'emp-metric-gold') el.style.background = '#f59e0b';
+    else if(cls === 'emp-metric-green') el.style.background = '#22c55e';
+    else el.style.background = 'rgba(229,231,235,.55)';
+  }
+  function renderMetricShell(){
+    var row = document.querySelector('#page-employees .stats-row');
+    if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    row.innerHTML = ''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">User + needed item listed below</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-out-bar"></div></div><div class="emp-attn-list" id="s-out-list"></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>';
+  }
+  function renderAttentionList(rows){
+    var el = document.getElementById('s-out-list');
+    if(!el) return;
+    if(!rows.length){
+      el.innerHTML = '<div class="emp-attn-empty">All required info complete</div>';
+      return;
+    }
+    var max = 10;
+    var html = rows.slice(0,max).map(function(item){
+      return '<div class="emp-attn-item" title="' + esc(item.name + ' needs: ' + item.needs.join(', ')) + '">'
+        + '<div class="emp-attn-user"><span class="emp-attn-user-label">User</span><div class="emp-attn-name">' + esc(item.name) + '</div></div>'
+        + '<div class="emp-attn-need"><span class="emp-attn-need-label">Needs</span><div class="emp-attn-why">' + esc(item.needs.join(' • ')) + '</div></div>'
+        + '</div>';
+    }).join('');
+    if(rows.length > max) html += '<div class="emp-attn-more">+' + (rows.length - max) + ' more users need attention</div>';
+    el.innerHTML = html;
+  }
+
+  window.updateStats = function(){
+    renderMetricShell();
+    var list = Array.isArray(window.employees) ? window.employees : [];
+    var total = list.length;
+    var complete = list.filter(completeEmployee).length;
+    var completionPct = pct(complete,total);
+    var completionCls = pctClass(completionPct);
+    var attentionRows = list.map(function(e){ return {employee:e, name:personName(e), needs:missingList(e)}; })
+      .filter(function(x){ return x.needs.length > 0; })
+      .sort(function(a,b){ return a.name.localeCompare(b.name); });
+    var attention = attentionRows.length;
+
+    setHtml('s-total', Math.round(completionPct) + '<small>%</small>');
+    setText('s-total-sub', complete + '/' + total + ' profiles complete');
+    setMetricClass('s-total', completionCls);
+    setFill('s-total-bar', completionPct, completionCls);
+
+    setText('s-out', attention);
+    setText('s-out-sub', attention ? 'User + needed item listed below' : 'All required info complete');
+    setMetricClass('s-out', countClass(attention));
+    setFill('s-out-bar', total ? (attention / total) * 100 : 0, countClass(attention));
+    renderAttentionList(attentionRows);
+
+    function shiftStats(name){
+      var rows = list.filter(function(e){ return clean(e && e.shift).toUpperCase() === name; });
+      var done = rows.filter(completeEmployee).length;
+      return {done:done,total:rows.length,pct:pct(done, rows.length)};
+    }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){
+      var x = shiftStats(pair[0]);
+      var cls = pctClass(x.pct);
+      setHtml(pair[1], x.done + '<small>/' + x.total + '</small>');
+      setText(pair[1] + '-sub', 'Complete');
+      setMetricClass(pair[1], cls);
+      setFill(pair[1] + '-bar', x.pct, cls);
+      var el = document.getElementById(pair[1]);
+      if(el) el.title = x.done + '/' + x.total + ' complete';
+    });
+  };
+
+  function boot(){ try{ window.updateStats(); }catch(e){} }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot,60); setTimeout(boot,450); });
+  else { setTimeout(boot,30); setTimeout(boot,400); }
+  setTimeout(boot,1000);
+})();
+</script>
+
+<style id="employee-needs-attention-queue-card-css">
+/* Employee ID: updated Needs Attention card presentation - compact priority queue. */
+#page-employees .employee-metrics-overhauled .stat-card-attn-metric{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:minmax(130px,.72fr) minmax(220px,1.28fr);
+  grid-template-rows:auto 1fr;
+  gap:12px 16px;
+  align-items:stretch;
+  padding:18px !important;
+  border-left:0 !important;
+  box-shadow:0 16px 34px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.08) !important;
+}
+#page-employees .stat-card-attn-metric::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:5px;
+  background:linear-gradient(90deg,#ef4444,#f59e0b,#ef4444);
+  opacity:.95;
+}
+#page-employees .stat-card-attn-metric .emp-metric-topline{
+  grid-column:1 / -1;
+  margin:0 !important;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+#page-employees .stat-card-attn-metric .emp-metric-kicker{
+  letter-spacing:.18em !important;
+  font-size:.82rem !important;
+  font-weight:950 !important;
+}
+#page-employees .stat-card-attn-metric .emp-metric-icon{
+  width:30px;
+  height:30px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:rgba(239,68,68,.18);
+  border:1px solid rgba(239,68,68,.45);
+  color:#fff;
+  font-weight:950;
+}
+#page-employees .stat-card-attn-metric .emp-attn-scorebox{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:10px;
+  min-height:150px;
+  padding:14px;
+  border-radius:20px;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.10);
+}
+#page-employees .stat-card-attn-metric .emp-metric-number{
+  font-size:clamp(3rem,6vw,5.4rem) !important;
+  line-height:.88 !important;
+  font-weight:1000 !important;
+  letter-spacing:-.08em !important;
+  margin:0 !important;
+}
+#page-employees .stat-card-attn-metric .emp-metric-sub{
+  font-size:1rem !important;
+  font-weight:900 !important;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  opacity:.92;
+}
+#page-employees .stat-card-attn-metric .emp-metric-bar{
+  height:11px !important;
+  margin-top:2px !important;
+  border-radius:999px;
+  background:rgba(255,255,255,.10) !important;
+}
+#page-employees .stat-card-attn-metric .emp-attn-board{
+  min-height:150px;
+  max-height:236px;
+  overflow:auto;
+  padding-right:4px;
+}
+#page-employees .emp-attn-summary-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:0 0 10px;
+}
+#page-employees .emp-attn-summary-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(245,158,11,.12);
+  border:1px solid rgba(245,158,11,.28);
+  font-size:.74rem;
+  font-weight:950;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:inherit;
+}
+#page-employees .emp-attn-summary-chip strong{
+  font-size:.9rem;
+}
+#page-employees .emp-attn-ticket{
+  display:grid;
+  grid-template-columns:26px 1fr;
+  gap:10px;
+  align-items:start;
+  margin:8px 0;
+  padding:10px;
+  border-radius:16px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.11);
+}
+#page-employees .emp-attn-ticket:first-of-type{
+  margin-top:0;
+}
+#page-employees .emp-attn-rank{
+  width:26px;
+  height:26px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(239,68,68,.18);
+  border:1px solid rgba(239,68,68,.32);
+  font-weight:1000;
+  font-size:.72rem;
+}
+#page-employees .emp-attn-ticket-name{
+  font-size:.98rem;
+  font-weight:1000;
+  letter-spacing:.035em;
+  line-height:1.15;
+  margin-bottom:7px;
+  text-transform:uppercase;
+}
+#page-employees .emp-attn-pill-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+#page-employees .emp-attn-pill{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:.68rem;
+  font-weight:950;
+  letter-spacing:.035em;
+  text-transform:uppercase;
+  background:rgba(239,68,68,.14);
+  border:1px solid rgba(239,68,68,.28);
+}
+#page-employees .emp-attn-pill[data-need="UP ID"]{
+  background:rgba(245,158,11,.15);
+  border-color:rgba(245,158,11,.34);
+}
+#page-employees .emp-attn-pill[data-need="MISSING NOTE"]{
+  background:rgba(239,68,68,.20);
+  border-color:rgba(239,68,68,.44);
+}
+#page-employees .emp-attn-empty{
+  height:100%;
+  min-height:140px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:8px;
+  border-radius:18px;
+  background:rgba(34,197,94,.10);
+  border:1px solid rgba(34,197,94,.25);
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+#page-employees .emp-attn-more{
+  margin-top:10px;
+  padding:9px 10px;
+  border-radius:14px;
+  text-align:center;
+  font-weight:950;
+  background:rgba(255,255,255,.08);
+  border:1px dashed rgba(255,255,255,.20);
+}
+@media (max-width:900px){
+  #page-employees .employee-metrics-overhauled .stat-card-attn-metric{
+    grid-template-columns:1fr;
+  }
+  #page-employees .stat-card-attn-metric .emp-attn-scorebox{
+    min-height:auto;
+  }
+  #page-employees .stat-card-attn-metric .emp-attn-board{
+    max-height:270px;
+  }
+}
+</style>
+<script id="employee-needs-attention-queue-card-js">
+(function(){
+  window.__employeeNeedsAttentionQueueCard = true;
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function hasNote(e){ return !!clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || ''); }
+  function personName(e){ e=e||{}; return ((clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || clean(e.name) || 'UNNAMED EMPLOYEE').toUpperCase(); }
+  function missingList(e){
+    e=e||{}; var out=[];
+    if(!clean(e.empId)) out.push('CONGLOBAL ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('EMAIL');
+    if(!clean(e.phone)) out.push('PHONE');
+    if(!clean(e.daysOff)) out.push('DAYS OFF');
+    if(!resolvedUp(e.upId) && !hasNote(e)) out.push('MISSING NOTE');
+    var seen={};
+    return out.map(function(x){ return clean(x).toUpperCase(); }).filter(function(x){ if(!x || seen[x]) return false; seen[x]=1; return true; });
+  }
+  function completeEmployee(e){ return missingList(e).length===0; }
+  function pct(done,total){ return total ? Math.max(0,Math.min(100,(done/total)*100)) : 0; }
+  function pctClass(v){ if(v>=98) return 'emp-metric-green'; if(v>=90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n>0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function setHtml(id,html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id,text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id,cls){ var el=document.getElementById(id); if(!el) return; el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green'); el.classList.add(cls||'emp-metric-neutral'); }
+  function setFill(id,value,cls){ var el=document.getElementById(id); if(!el) return; el.style.width=Math.max(0,Math.min(100,value||0))+'%'; el.className='emp-metric-fill '+(cls||'emp-metric-neutral'); if(cls==='emp-metric-red') el.style.background='#ef4444'; else if(cls==='emp-metric-yellow'||cls==='emp-metric-gold') el.style.background='#f59e0b'; else if(cls==='emp-metric-green') el.style.background='#22c55e'; else el.style.background='rgba(229,231,235,.55)'; }
+  function renderMetricShell(){
+    var row=document.querySelector('#page-employees .stats-row'); if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    row.innerHTML=''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-attn-scorebox"><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Open items</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-out-bar"></div></div></div><div class="emp-attn-board" id="s-out-list"></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>';
+  }
+  function priority(needs){ if(needs.indexOf('MISSING NOTE')>-1) return 0; if(needs.indexOf('UP ID')>-1) return 1; return 2; }
+  function renderAttentionQueue(rows){
+    var el=document.getElementById('s-out-list'); if(!el) return;
+    if(!rows.length){ el.innerHTML='<div class="emp-attn-empty"><div>✓</div><div>All required info complete</div></div>'; return; }
+    var counts={}; rows.forEach(function(r){ r.needs.forEach(function(n){ counts[n]=(counts[n]||0)+1; }); });
+    var order=['MISSING NOTE','UP ID','EMAIL','PHONE','DAYS OFF','CONGLOBAL ID'];
+    var chips=order.filter(function(k){ return counts[k]; }).map(function(k){ return '<span class="emp-attn-summary-chip"><strong>'+counts[k]+'</strong> '+esc(k)+'</span>'; }).join('');
+    var max=8;
+    var tickets=rows.slice(0,max).map(function(r,i){
+      return '<div class="emp-attn-ticket" title="'+esc(r.name+' needs: '+r.needs.join(', '))+'"><div class="emp-attn-rank">'+(i+1)+'</div><div><div class="emp-attn-ticket-name">'+esc(r.name)+'</div><div class="emp-attn-pill-row">'+r.needs.map(function(n){ return '<span class="emp-attn-pill" data-need="'+esc(n)+'">'+esc(n)+'</span>'; }).join('')+'</div></div></div>';
+    }).join('');
+    if(rows.length>max) tickets+='<div class="emp-attn-more">+'+(rows.length-max)+' more need attention</div>';
+    el.innerHTML='<div class="emp-attn-summary-strip">'+chips+'</div>'+tickets;
+  }
+  window.updateStats=function(){
+    renderMetricShell();
+    var list=Array.isArray(window.employees)?window.employees:[];
+    var total=list.length;
+    var complete=list.filter(completeEmployee).length;
+    var completionPct=pct(complete,total);
+    var completionCls=pctClass(completionPct);
+    var rows=list.map(function(e){ return {employee:e,name:personName(e),needs:missingList(e)}; }).filter(function(x){ return x.needs.length>0; }).sort(function(a,b){ return priority(a.needs)-priority(b.needs) || a.name.localeCompare(b.name); });
+    var attention=rows.length;
+    setHtml('s-total',Math.round(completionPct)+'<small>%</small>');
+    setText('s-total-sub',complete+'/'+total+' profiles complete');
+    setMetricClass('s-total',completionCls); setFill('s-total-bar',completionPct,completionCls);
+    setText('s-out',attention);
+    setText('s-out-sub',attention ? 'Open action items' : 'All clear');
+    setMetricClass('s-out',countClass(attention)); setFill('s-out-bar',total ? (attention/total)*100 : 0,countClass(attention));
+    renderAttentionQueue(rows);
+    function shiftStats(name){ var r=list.filter(function(e){ return clean(e&&e.shift).toUpperCase()===name; }); var d=r.filter(completeEmployee).length; return {done:d,total:r.length,pct:pct(d,r.length)}; }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){ var x=shiftStats(pair[0]); var cls=pctClass(x.pct); setHtml(pair[1],x.done+'<small>/'+x.total+'</small>'); setText(pair[1]+'-sub','Complete'); setMetricClass(pair[1],cls); setFill(pair[1]+'-bar',x.pct,cls); var el=document.getElementById(pair[1]); if(el) el.title=x.done+'/'+x.total+' complete'; });
+  };
+  function boot(){ try{ window.updateStats(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ setTimeout(boot,60); setTimeout(boot,450); }); else { setTimeout(boot,30); setTimeout(boot,400); }
+  setTimeout(boot,1000);
+})();
+</script>
+
+<style id="employee-needs-attention-compact-card-css">
+/* Employee ID: compact Needs Attention card - keeps the metric row tight and moves the full list into a small expandable drawer. */
+#page-employees .employee-metrics-overhauled{
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  gap:14px !important;
+  align-items:stretch !important;
+}
+#page-employees .employee-metrics-overhauled .stat-card-attn-metric{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  min-height:0 !important;
+  padding:18px !important;
+  overflow:hidden !important;
+  border-left:0 !important;
+  box-shadow:0 14px 28px rgba(0,0,0,.24), inset 0 0 0 1px rgba(255,255,255,.08) !important;
+}
+#page-employees .stat-card-attn-metric::before{
+  height:4px !important;
+}
+#page-employees .stat-card-attn-metric .emp-metric-topline{
+  margin:0 !important;
+  padding:0 !important;
+  border-bottom:0 !important;
+}
+#page-employees .stat-card-attn-metric .emp-attn-compact-body{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height:84px;
+}
+#page-employees .stat-card-attn-metric .emp-metric-number{
+  font-size:clamp(2.8rem,4.2vw,4.4rem) !important;
+  line-height:.9 !important;
+  margin:0 !important;
+  letter-spacing:-.06em !important;
+}
+#page-employees .stat-card-attn-metric .emp-metric-sub{
+  font-size:.86rem !important;
+  font-weight:950 !important;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  opacity:.92;
+}
+#page-employees .emp-attn-mini-preview{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-height:42px;
+  max-height:58px;
+  overflow:hidden;
+}
+#page-employees .emp-attn-mini-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:5px 7px;
+  border-radius:10px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.10);
+  font-size:.72rem;
+  font-weight:950;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  overflow:hidden;
+}
+#page-employees .emp-attn-mini-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#page-employees .emp-attn-mini-need{
+  flex:0 0 auto;
+  max-width:42%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  padding:3px 6px;
+  border-radius:999px;
+  background:rgba(239,68,68,.14);
+  border:1px solid rgba(239,68,68,.24);
+}
+#page-employees .emp-attn-open-btn{
+  width:100%;
+  min-height:34px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);
+  color:inherit;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+#page-employees .emp-attn-open-btn:hover{
+  background:rgba(255,255,255,.13);
+}
+#page-employees .emp-attn-drawer{
+  grid-column:1 / -1;
+  display:none;
+  margin-top:-6px;
+  padding:14px;
+  border-radius:22px;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 14px 30px rgba(0,0,0,.22);
+}
+#page-employees .emp-attn-drawer.is-open{
+  display:block;
+}
+#page-employees .emp-attn-drawer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+#page-employees .emp-attn-drawer-title{
+  font-size:.95rem;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+#page-employees .emp-attn-drawer-close{
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.08);
+  color:inherit;
+  border-radius:10px;
+  min-height:32px;
+  padding:0 12px;
+  font-weight:950;
+  cursor:pointer;
+}
+#page-employees .emp-attn-drawer-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:8px;
+  max-height:260px;
+  overflow:auto;
+  padding-right:4px;
+}
+#page-employees .emp-attn-drawer-ticket{
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.11);
+}
+#page-employees .emp-attn-drawer-name{
+  font-size:.88rem;
+  font-weight:1000;
+  letter-spacing:.04em;
+  margin-bottom:7px;
+  text-transform:uppercase;
+}
+#page-employees .emp-attn-drawer-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+#page-employees .emp-attn-drawer-pill{
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:.68rem;
+  font-weight:950;
+  background:rgba(239,68,68,.14);
+  border:1px solid rgba(239,68,68,.26);
+  text-transform:uppercase;
+}
+#page-employees .emp-attn-drawer-pill[data-need="UP ID"]{
+  background:rgba(245,158,11,.15);
+  border-color:rgba(245,158,11,.32);
+}
+#page-employees .emp-attn-drawer-pill[data-need="MISSING NOTE"]{
+  background:rgba(239,68,68,.20);
+  border-color:rgba(239,68,68,.42);
+}
+@media (max-width:1180px){
+  #page-employees .employee-metrics-overhauled{ grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+}
+@media (max-width:760px){
+  #page-employees .employee-metrics-overhauled{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  #page-employees .stat-card-attn-metric{ grid-column:span 2; }
+}
+@media (max-width:480px){
+  #page-employees .employee-metrics-overhauled{ grid-template-columns:1fr !important; }
+  #page-employees .stat-card-attn-metric{ grid-column:auto; }
+}
+</style>
+<script id="employee-needs-attention-compact-card-js">
+(function(){
+  window.__employeeNeedsAttentionCompactCard = true;
+  var drawerOpen = false;
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function hasNote(e){ return !!clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || ''); }
+  function personName(e){ e=e||{}; return ((clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || clean(e.name) || 'UNNAMED EMPLOYEE').toUpperCase(); }
+  function missingList(e){
+    e=e||{}; var out=[];
+    if(!clean(e.empId)) out.push('CONGLOBAL ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('EMAIL');
+    if(!clean(e.phone)) out.push('PHONE');
+    if(!clean(e.daysOff)) out.push('DAYS OFF');
+    if(!resolvedUp(e.upId) && !hasNote(e)) out.push('MISSING NOTE');
+    var seen={};
+    return out.map(function(x){ return clean(x).toUpperCase(); }).filter(function(x){ if(!x || seen[x]) return false; seen[x]=1; return true; });
+  }
+  function completeEmployee(e){ return missingList(e).length===0; }
+  function pct(done,total){ return total ? Math.max(0,Math.min(100,(done/total)*100)) : 0; }
+  function pctClass(v){ if(v>=98) return 'emp-metric-green'; if(v>=90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n>0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function setHtml(id,html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id,text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id,cls){ var el=document.getElementById(id); if(!el) return; el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green'); el.classList.add(cls||'emp-metric-neutral'); }
+  function setFill(id,value,cls){ var el=document.getElementById(id); if(!el) return; el.style.width=Math.max(0,Math.min(100,value||0))+'%'; el.className='emp-metric-fill '+(cls||'emp-metric-neutral'); if(cls==='emp-metric-red') el.style.background='#ef4444'; else if(cls==='emp-metric-yellow'||cls==='emp-metric-gold') el.style.background='#f59e0b'; else if(cls==='emp-metric-green') el.style.background='#22c55e'; else el.style.background='rgba(229,231,235,.55)'; }
+  function priority(needs){ if(needs.indexOf('MISSING NOTE')>-1) return 0; if(needs.indexOf('UP ID')>-1) return 1; return 2; }
+  function renderMetricShell(){
+    var row=document.querySelector('#page-employees .stats-row'); if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    row.innerHTML=''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-attn-compact-body"><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Open items</div><div class="emp-attn-mini-preview" id="s-out-preview"></div></div><button type="button" class="emp-attn-open-btn" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer();">View List</button></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>'
+      + '<div class="emp-attn-drawer" id="employee-attn-drawer"></div>';
+  }
+  function buildRows(){
+    var list=Array.isArray(window.employees)?window.employees:[];
+    return list.map(function(e){ return {employee:e,name:personName(e),needs:missingList(e)}; }).filter(function(x){ return x.needs.length>0; }).sort(function(a,b){ return priority(a.needs)-priority(b.needs) || a.name.localeCompare(b.name); });
+  }
+  function renderPreview(rows){
+    var preview=document.getElementById('s-out-preview'); if(!preview) return;
+    if(!rows.length){ preview.innerHTML='<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">ALL CLEAR</span><span class="emp-attn-mini-need">DONE</span></div>'; return; }
+    preview.innerHTML=rows.slice(0,2).map(function(r){ return '<div class="emp-attn-mini-row" title="'+esc(r.name+' needs: '+r.needs.join(', '))+'"><span class="emp-attn-mini-name">'+esc(r.name)+'</span><span class="emp-attn-mini-need">'+esc(r.needs[0])+'</span></div>'; }).join('') + (rows.length>2 ? '<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">+'+(rows.length-2)+' MORE</span><span class="emp-attn-mini-need">OPEN</span></div>' : '');
+  }
+  function renderDrawer(rows){
+    var drawer=document.getElementById('employee-attn-drawer'); if(!drawer) return;
+    drawer.classList.toggle('is-open',!!drawerOpen);
+    if(!drawerOpen){ drawer.innerHTML=''; return; }
+    if(!rows.length){ drawer.innerHTML='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List</div><button type="button" class="emp-attn-drawer-close" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer(false);">Close</button></div><div class="emp-attn-empty">All required info complete</div>'; return; }
+    drawer.innerHTML='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List · '+rows.length+'</div><button type="button" class="emp-attn-drawer-close" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer(false);">Close</button></div><div class="emp-attn-drawer-list">'
+      + rows.map(function(r){ return '<div class="emp-attn-drawer-ticket"><div class="emp-attn-drawer-name">'+esc(r.name)+'</div><div class="emp-attn-drawer-pills">'+r.needs.map(function(n){ return '<span class="emp-attn-drawer-pill" data-need="'+esc(n)+'">'+esc(n)+'</span>'; }).join('')+'</div></div>'; }).join('')
+      + '</div>';
+  }
+  window.toggleEmployeeAttentionDrawer=function(force){ drawerOpen = typeof force==='boolean' ? force : !drawerOpen; try{ renderDrawer(buildRows()); }catch(e){} return false; };
+  window.updateStats=function(){
+    renderMetricShell();
+    var list=Array.isArray(window.employees)?window.employees:[];
+    var total=list.length;
+    var complete=list.filter(completeEmployee).length;
+    var completionPct=pct(complete,total);
+    var completionCls=pctClass(completionPct);
+    var rows=buildRows();
+    var attention=rows.length;
+    setHtml('s-total',Math.round(completionPct)+'<small>%</small>');
+    setText('s-total-sub',complete+'/'+total+' profiles complete');
+    setMetricClass('s-total',completionCls); setFill('s-total-bar',completionPct,completionCls);
+    setText('s-out',attention);
+    setText('s-out-sub',attention ? 'Tap to review' : 'All clear');
+    setMetricClass('s-out',countClass(attention));
+    renderPreview(rows);
+    renderDrawer(rows);
+    function shiftStats(name){ var r=list.filter(function(e){ return clean(e&&e.shift).toUpperCase()===name; }); var d=r.filter(completeEmployee).length; return {done:d,total:r.length,pct:pct(d,r.length)}; }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){ var x=shiftStats(pair[0]); var cls=pctClass(x.pct); setHtml(pair[1],x.done+'<small>/'+x.total+'</small>'); setText(pair[1]+'-sub','Complete'); setMetricClass(pair[1],cls); setFill(pair[1]+'-bar',x.pct,cls); var el=document.getElementById(pair[1]); if(el) el.title=x.done+'/'+x.total+' complete'; });
+  };
+  function boot(){ try{ window.updateStats(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ setTimeout(boot,60); setTimeout(boot,450); }); else { setTimeout(boot,30); setTimeout(boot,400); }
+  setTimeout(boot,1000);
 })();
 </script>
