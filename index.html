@@ -4670,6 +4670,279 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
 }
 </style>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+
+<style id="employee-id-modern-sleek-overhaul">
+/* Employee ID visual overhaul only: typography, spacing, polish. Existing color palette is preserved. */
+#page-employees{
+  --emp-font:'Inter',var(--sans),system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --emp-display:'Space Grotesk','Inter',var(--sans),system-ui,sans-serif;
+  font-family:var(--emp-font) !important;
+  letter-spacing:-.015em;
+}
+#page-employees *{
+  font-family:var(--emp-font) !important;
+}
+#page-employees .header{
+  align-items:center;
+  gap:18px;
+  padding:18px 20px;
+  border-bottom-width:1px;
+}
+#page-employees .header-title{
+  font-family:var(--emp-display) !important;
+  font-size:22px;
+  font-weight:800 !important;
+  letter-spacing:-.035em;
+  line-height:1.05;
+}
+#page-employees .header-sub{
+  font-size:12px;
+  font-weight:650 !important;
+  letter-spacing:.01em;
+  line-height:1.35;
+  margin-top:5px;
+}
+#page-employees .employee-header-actions{
+  gap:10px;
+}
+#page-employees .employee-top-action,
+#page-employees .employee-attn-filter-btn,
+#page-employees .tab,
+#page-employees .action-btn,
+#page-employees .missing-field-btn,
+#page-employees .employee-notes-toggle,
+#page-employees button{
+  font-family:var(--emp-font) !important;
+  font-weight:800 !important;
+  letter-spacing:.025em;
+  border-radius:999px;
+  min-height:34px;
+  padding-inline:13px;
+  transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+}
+#page-employees .employee-top-action:hover,
+#page-employees .employee-attn-filter-btn:hover,
+#page-employees .action-btn:hover,
+#page-employees .missing-field-btn:hover,
+#page-employees .employee-notes-toggle:hover{
+  transform:translateY(-1px);
+}
+#page-employees .tabs-row{
+  gap:8px;
+  padding-top:14px;
+  padding-bottom:10px;
+}
+#page-employees .tab{
+  font-size:11px;
+  text-transform:uppercase;
+  min-height:36px;
+  padding:8px 13px;
+}
+#page-employees .tab-count,
+#page-employees .employee-top-count{
+  font-family:var(--emp-font) !important;
+  font-weight:900 !important;
+  letter-spacing:-.02em;
+}
+#page-employees .toolbar{
+  gap:12px;
+  padding:14px 20px;
+}
+#page-employees .employee-search-actions{
+  gap:10px;
+}
+#page-employees .search-wrap,
+#page-employees .toolbar input,
+#page-employees .toolbar select,
+#page-employees input,
+#page-employees select,
+#page-employees textarea{
+  font-family:var(--emp-font) !important;
+  font-weight:700 !important;
+  border-radius:14px;
+  letter-spacing:-.01em;
+}
+#page-employees .search-wrap input,
+#page-employees input,
+#page-employees select{
+  min-height:38px;
+}
+#page-employees .table-wrap{
+  padding:0 18px 22px;
+}
+#page-employees .table-wrap table,
+#employee-table-main{
+  border-collapse:separate !important;
+  border-spacing:0 8px !important;
+}
+#page-employees thead th{
+  font-family:var(--emp-font) !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  letter-spacing:.085em !important;
+  text-transform:uppercase;
+  padding:11px 10px !important;
+  white-space:nowrap;
+}
+#page-employees tbody tr:not(.employee-notes-row){
+  transform:translateZ(0);
+}
+#page-employees tbody tr:not(.employee-notes-row) td{
+  padding:12px 10px !important;
+  line-height:1.25;
+  border-top:1px solid var(--border) !important;
+  border-bottom:1px solid var(--border) !important;
+}
+#page-employees tbody tr:not(.employee-notes-row) td:first-child{
+  border-left:1px solid var(--border) !important;
+  border-top-left-radius:14px;
+  border-bottom-left-radius:14px;
+  padding-left:14px !important;
+}
+#page-employees tbody tr:not(.employee-notes-row) td:last-child{
+  border-right:1px solid var(--border) !important;
+  border-top-right-radius:14px;
+  border-bottom-right-radius:14px;
+}
+#page-employees tbody tr:not(.employee-notes-row):hover td{
+  box-shadow:inset 0 0 0 9999px rgba(255,255,255,.025);
+}
+#page-employees .emp-name,
+#page-employees .employee-card-name{
+  font-family:var(--emp-display) !important;
+  font-weight:800 !important;
+  letter-spacing:-.025em;
+}
+#page-employees .emp-id,
+#page-employees .phone-cell,
+#page-employees .days-off,
+#page-employees .emp-password-cell,
+#page-employees .emp-table-value,
+#page-employees .employee-card-value{
+  font-family:var(--emp-font) !important;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.015em;
+}
+#page-employees .shift-badge,
+#page-employees .employee-import-status,
+#page-employees .emp-flag{
+  font-family:var(--emp-font) !important;
+  font-weight:900 !important;
+  letter-spacing:.055em;
+  border-radius:999px;
+}
+#page-employees .emp-flags{
+  margin-top:7px;
+  gap:5px;
+}
+#page-employees .employee-notes-row td{
+  border-radius:14px;
+  padding:0 12px 12px !important;
+}
+#page-employees .employee-notes-panel{
+  border-radius:16px;
+  padding:12px;
+}
+#page-employees .employee-notes-title,
+#page-employees .employee-notes-meta,
+#page-employees .employee-card-label,
+#page-employees .employee-import-help,
+#page-employees .employee-delete-hint{
+  font-family:var(--emp-font) !important;
+  font-weight:800 !important;
+  letter-spacing:.055em;
+}
+#page-employees .employee-notes-box{
+  font-family:var(--emp-font) !important;
+  font-weight:650 !important;
+  line-height:1.45;
+  border-radius:14px;
+}
+#page-employees .employee-card-list{
+  gap:14px;
+  margin-top:14px;
+}
+#page-employees .employee-card{
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 14px 32px rgba(0,0,0,.24);
+}
+#page-employees .employee-card-head{
+  margin-bottom:12px;
+}
+#page-employees .employee-card-name{
+  font-size:16px;
+  line-height:1.12;
+}
+#page-employees .employee-card-grid{
+  gap:10px;
+}
+#page-employees .employee-card-field{
+  border-radius:14px;
+  padding:10px;
+}
+#page-employees .employee-card-label{
+  font-size:9px;
+  margin-bottom:5px;
+}
+#page-employees .employee-card-value{
+  font-size:13px;
+  font-weight:800 !important;
+  line-height:1.25;
+}
+#page-employees .employee-card-actions{
+  gap:8px;
+  margin-top:12px;
+}
+#page-employees .employee-bulk-textarea,
+#page-employees .employee-bulk-preview{
+  border-radius:16px;
+}
+#page-employees .stat-card,
+#page-employees .metric-card,
+#page-employees .card{
+  border-radius:18px;
+}
+@media(max-width:700px){
+  #page-employees .header{
+    padding:16px 14px;
+    gap:12px;
+  }
+  #page-employees .header-title{
+    font-size:20px;
+  }
+  #page-employees .header-sub{
+    font-size:11px;
+  }
+  #page-employees .employee-header-actions{
+    gap:8px;
+  }
+  #page-employees .employee-top-action{
+    min-height:38px;
+    font-size:10px;
+  }
+  #page-employees .toolbar{
+    padding:12px;
+  }
+  #page-employees .tabs-row{
+    padding-left:12px;
+    padding-right:12px;
+  }
+  #page-employees .table-wrap{
+    padding:0 12px 18px;
+  }
+  #page-employees .employee-card{
+    border-radius:18px;
+    padding:13px;
+  }
+  #page-employees .employee-card-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
