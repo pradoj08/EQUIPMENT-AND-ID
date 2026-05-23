@@ -11179,15 +11179,23 @@ function syncEqLoginUI(){
   var signedIn   = document.getElementById('auth-signed-in');
   var authBar    = document.getElementById('auth-bar');
   var st         = document.getElementById('eq-auth-status');
+
+  // Keep the top command bar width stable during login/refresh.
+  // Do not remove the signed-in chip from layout; hide it visually until authenticated.
+  document.body.classList.toggle('app-authenticated', !!eqLoggedIn);
+  if(signedIn){
+    signedIn.style.display = 'flex';
+    signedIn.style.visibility = eqLoggedIn ? 'visible' : 'hidden';
+    signedIn.style.pointerEvents = eqLoggedIn ? 'auto' : 'none';
+  }
+
   if(eqLoggedIn){
     if(signinForm) signinForm.style.display = 'none';
-    if(signedIn)   signedIn.style.display   = 'flex';
     if(st)         st.textContent = '\u2713 Signed in as ' + eqLoginUsername;
     // Hide auth bar after sign-in to reclaim space
     if(authBar)    authBar.style.display = 'none';
   } else {
     if(signinForm) signinForm.style.display = 'flex';
-    if(signedIn)   signedIn.style.display   = 'none';
     if(authBar)    authBar.style.display    = 'flex';
   }
 }
@@ -19866,7 +19874,7 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
     var tickets=sorted.slice(0,max).map(function(item){
       var goldOnly=item.needs.indexOf('MISSING NOTE')===-1 && item.needs.indexOf('UP ID')>-1;
       return '<div class="emp-attn-ticket '+(goldOnly?'is-gold':'')+'" title="'+esc(item.name+' needs: '+item.needs.join(', '))+'">'
-        + '<div class="emp-attn-ticket-top"><div class="emp-attn-ticket-name">'+esc(item.name)+mobileTokenFlag(item.employee)+'</div><div class="emp-attn-ticket-meta">'+attentionShiftBadge(item.employee)+'</div></div>'
+        + '<div class="emp-attn-ticket-top"><div class="emp-attn-name-line"><span class="emp-attn-ticket-name">'+esc(item.name)+'</span>'+attentionShiftBadge(item.employee)+mobileTokenFlag(item.employee)+'</div></div>'
         + '<div class="emp-attn-pills">'+item.needs.map(function(n){ return '<span class="emp-attn-pill '+needClass(n)+'">'+esc(n)+'</span>'; }).join('')+'</div>'
         + '</div>';
     }).join('');
@@ -19949,6 +19957,238 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
   }
   document.addEventListener('DOMContentLoaded', moveNeedsAttentionLast);
   setTimeout(moveNeedsAttentionLast, 0);
+})();
+</script>
+
+
+
+<style id="topbar-shake-and-attn-shift-final-fix">
+/* Reserve the signed-in chip space so the top command bar does not jump during login or refresh. */
+#auth-signed-in.nav-auth-chip{
+  display:flex !important;
+  visibility:hidden;
+  pointer-events:none;
+  min-width:238px;
+  flex:0 0 238px;
+}
+body.app-authenticated #auth-signed-in.nav-auth-chip{
+  visibility:visible;
+  pointer-events:auto;
+}
+.app-command-nav.page-nav{
+  contain:layout paint;
+  min-height:64px !important;
+}
+.nav-tools-panel{
+  min-width:330px !important;
+  flex:0 0 auto;
+}
+@media(max-width:1180px){
+  #auth-signed-in.nav-auth-chip{min-width:220px;flex-basis:220px;}
+  .nav-tools-panel{min-width:300px !important;}
+}
+@media(max-width:640px){
+  #auth-signed-in.nav-auth-chip{min-width:0;flex:1 1 0;}
+  .nav-tools-panel{min-width:0 !important;}
+}
+
+/* Needs Attention metric: keep shift immediately beside employee name. */
+#page-employees .emp-attn-ticket-top{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+  min-width:0!important;
+  margin-bottom:0!important;
+}
+#page-employees .emp-attn-name-line{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:6px!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+}
+#page-employees .emp-attn-name-line .emp-attn-ticket-name{
+  display:inline-block!important;
+  flex:0 1 auto!important;
+  min-width:0!important;
+  max-width:calc(100% - 78px)!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+#page-employees .emp-attn-name-line .emp-attn-shift-badge,
+#page-employees .emp-attn-name-line .emp-mt-flag{
+  flex:0 0 auto!important;
+  margin-left:0!important;
+}
+#page-employees .emp-attn-ticket-meta{display:none!important;}
+</style>
+
+
+
+<!-- EMPLOYEE RESTORE BIN / SAFE DELETE PATCH -->
+<style id="employee-restore-bin-css">
+.employee-restore-btn{border-color:rgba(245,158,11,.45)!important;background:rgba(245,158,11,.10)!important;color:#fde68a!important;}
+.employee-restore-btn:hover{background:rgba(245,158,11,.18)!important;color:#fff!important;}
+.employee-restore-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 6px;margin-left:4px;border-radius:999px;background:rgba(245,158,11,.22);border:1px solid rgba(245,158,11,.38);font-size:10px;color:#fde68a;}
+.deleted-employee-list{display:flex;flex-direction:column;gap:10px;max-height:58vh;overflow:auto;padding-right:4px;}
+.deleted-employee-card{border:1px solid rgba(245,158,11,.22);background:linear-gradient(180deg,rgba(30,35,51,.98),rgba(17,24,39,.98));border-radius:12px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;}
+.deleted-employee-name{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--text);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.deleted-employee-meta{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.55;margin-top:6px;}
+.deleted-employee-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;}
+.deleted-employee-restore{font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;padding:6px 10px;border-radius:6px;border:1px solid rgba(34,197,94,.45);background:rgba(34,197,94,.11);color:#86efac;cursor:pointer;}
+.deleted-employee-restore:hover{background:rgba(34,197,94,.18);color:#fff;}
+.deleted-employee-purge{font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;padding:6px 10px;border-radius:6px;border:1px solid rgba(239,68,68,.45);background:rgba(239,68,68,.10);color:#fca5a5;cursor:pointer;}
+.deleted-employee-purge.confirm{background:rgba(239,68,68,.24);border-color:#ef4444;color:#fff;animation:employeeDeletePulse 1.2s infinite;}
+.deleted-employee-empty{padding:30px;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px dashed var(--border2);border-radius:12px;background:rgba(255,255,255,.02);}
+.deleted-employee-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.deleted-employee-warning{font-family:var(--mono);font-size:11px;color:#fde68a;background:rgba(245,158,11,.09);border:1px solid rgba(245,158,11,.24);border-radius:8px;padding:8px 10px;line-height:1.45;margin-bottom:12px;}
+@media(max-width:640px){.deleted-employee-card{grid-template-columns:1fr}.deleted-employee-actions{justify-content:flex-start}.deleted-employee-list{max-height:62vh}}
+</style>
+<script id="employee-restore-bin-js">
+(function(){
+  var DELETED_KEY='employee_deleted_bin_v2';
+  var purgePendingId=null;
+  function arr(){
+    try{ return Array.isArray(window.employees) ? window.employees : (Array.isArray(employees) ? employees : []); }catch(e){ return []; }
+  }
+  function setEmployees(next){ window.employees=next; try{ employees=next; }catch(e){} }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function clean(v){ return String(v || '').trim(); }
+  function uidSafe(){ try{ return typeof uid==='function' ? uid() : ('id_'+Date.now()+'_'+Math.random().toString(36).slice(2)); }catch(e){ return 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2); } }
+  function nowIso(){ return new Date().toISOString(); }
+  function editor(){
+    try{ if(typeof currentEditor==='function') return currentEditor(); }catch(e){}
+    try{ return window.eqLoginUsername || 'admin'; }catch(e){ return 'admin'; }
+  }
+  function person(e){
+    try{ if(typeof personName==='function') return personName(e); }catch(err){}
+    return ((e&&e.first)||'')+' '+((e&&e.last)||'');
+  }
+  function shift(e){ return (e && e.shift) ? e.shift : 'No Shift'; }
+  function badge(e){ try{ return typeof shiftBadge==='function' ? shiftBadge(shift(e)) : '<span class="shift-badge">'+esc(shift(e))+'</span>'; }catch(err){ return '<span class="shift-badge">'+esc(shift(e))+'</span>'; } }
+  function log(title, sub){ try{ if(typeof logActivity==='function') logActivity('employee',title,sub); }catch(e){} }
+  function saveCache(bin){ localStorage.setItem(DELETED_KEY, JSON.stringify(bin||[])); }
+  function loadCache(){ try{return JSON.parse(localStorage.getItem(DELETED_KEY)||'[]')||[];}catch(e){return [];} }
+  window.deletedEmployeesBin=Array.isArray(window.deletedEmployeesBin)?window.deletedEmployeesBin:loadCache();
+  function getBin(){ if(!Array.isArray(window.deletedEmployeesBin)) window.deletedEmployeesBin=loadCache(); return window.deletedEmployeesBin; }
+  function normalizeDeletedRecord(record){
+    var e=Object.assign({}, record||{});
+    if(!e.id) e.id=uidSafe();
+    e.deleted_at=e.deleted_at||nowIso();
+    e.deleted_by=e.deleted_by||editor();
+    e.original_employee_id=e.original_employee_id||e.id;
+    return e;
+  }
+  function dateText(iso){ var d=new Date(iso); return isNaN(d.getTime()) ? (iso||'—') : d.toLocaleString([], {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'}); }
+  function updateDeletedCount(){ var el=document.getElementById('deleted-employees-count'); if(el) el.textContent=getBin().length; }
+  async function saveDeletedRemote(){
+    var bin=getBin(); saveCache(bin); updateDeletedCount();
+    if(!window.supabaseClient) return;
+    try{
+      var rows=bin.map(function(e){return {id:e.id,first_name:e.first||'',last_name:e.last||'',employee_id:e.empId||'',up_id:e.upId||'',password:e.password||'',email:e.email||'',shift:e.shift||'Day',phone:e.phone||'',days_off:e.daysOff||'',status:e.status||'active',notes:e.notes||e.note||e.employee_notes||e.employeeNotes||'',mobile_token:!!e.mobileToken,deleted_at:e.deleted_at||nowIso(),deleted_by:e.deleted_by||'',original_employee_id:e.original_employee_id||e.id,updated_at:nowIso()};});
+      if(rows.length){ var up=await window.supabaseClient.from('deleted_employees').upsert(rows,{onConflict:'id'}); if(up&&up.error) throw up.error; }
+      var existing=await window.supabaseClient.from('deleted_employees').select('id');
+      if(!existing.error){ var keep=new Set(rows.map(function(r){return String(r.id);})); for(var i=0;i<(existing.data||[]).length;i++){ var id=existing.data[i].id; if(id&&!keep.has(String(id))) await window.supabaseClient.from('deleted_employees').delete().eq('id',id); } }
+    }catch(err){ console.warn('Deleted Employees bin saved locally only. Add deleted_employees table for global restore bin.', err); }
+  }
+  async function loadDeletedRemote(){
+    var local=loadCache(); window.deletedEmployeesBin=local;
+    if(!window.supabaseClient){ updateDeletedCount(); return; }
+    try{
+      var res=await window.supabaseClient.from('deleted_employees').select('*').order('deleted_at',{ascending:false});
+      if(res.error) throw res.error;
+      window.deletedEmployeesBin=(res.data||[]).map(function(r){return normalizeDeletedRecord({id:r.id,original_employee_id:r.original_employee_id||r.id,first:r.first_name||'',last:r.last_name||'',empId:r.employee_id||'',upId:r.up_id||'',password:r.password||'',email:r.email||'',shift:r.shift||'Day',phone:r.phone||'',daysOff:r.days_off||'',status:r.status||'active',notes:r.notes||'',mobileToken:!!r.mobile_token,deleted_at:r.deleted_at||'',deleted_by:r.deleted_by||''});});
+      saveCache(window.deletedEmployeesBin); updateDeletedCount();
+    }catch(err){ updateDeletedCount(); }
+  }
+  window.softDeleteEmployee=function(id){
+    if(!id) return;
+    var roster=arr(); var target=roster.find(function(x){return String(x.id)===String(id);});
+    if(!target) return;
+    var deleted=normalizeDeletedRecord(Object.assign({}, target, {deleted_at:nowIso(),deleted_by:editor(),original_employee_id:target.id}));
+    var bin=getBin().filter(function(x){return String(x.id)!==String(deleted.id);});
+    bin.unshift(deleted); window.deletedEmployeesBin=bin; saveCache(bin);
+    setEmployees(roster.filter(function(x){return String(x.id)!==String(id);}));
+    purgePendingId=null;
+    log('<strong>'+esc(person(target))+'</strong> moved to Deleted Employees','Deleted by '+deleted.deleted_by+' · Restore Bin');
+    if(typeof save==='function') save(); else if(typeof saveEmployees==='function') saveEmployees();
+    saveDeletedRemote();
+    if(typeof render==='function') render();
+    if(typeof closeModal==='function') closeModal();
+  };
+  window.protectedDeleteEmployee=function(id){
+    if(!id) return;
+    if(window.pendingEmployeeDeleteId !== id){ window.pendingEmployeeDeleteId=id; try{ pendingEmployeeDeleteId=id; }catch(e){} if(typeof render==='function') render(); return; }
+    window.softDeleteEmployee(id);
+  };
+  window.deleteEmp=function(){
+    try{ if(!editId) return; }catch(e){ return; }
+    var id=editId;
+    var delBtn=document.getElementById('del-btn');
+    var cancelBtn=document.getElementById('cancel-del-btn');
+    var currentPending=false; try{ currentPending=(pendingEmployeeDeleteId===id); }catch(e){ currentPending=(window.pendingEmployeeDeleteId===id); }
+    if(!currentPending){
+      window.pendingEmployeeDeleteId=id; try{ pendingEmployeeDeleteId=id; }catch(e){}
+      if(delBtn){ delBtn.textContent='Move to Deleted Employees'; delBtn.classList.add('emp-delete-btn','confirm'); }
+      if(cancelBtn){ cancelBtn.style.display=''; cancelBtn.textContent='Cancel'; }
+      if(typeof render==='function') render();
+      return;
+    }
+    window.softDeleteEmployee(id);
+  };
+  window.restoreDeletedEmployee=function(id){
+    var bin=getBin(); var found=bin.find(function(x){return String(x.id)===String(id);}); if(!found) return;
+    var restore=Object.assign({}, found); delete restore.deleted_at; delete restore.deleted_by; delete restore.original_employee_id;
+    var roster=arr();
+    if(roster.some(function(e){return String(e.id)===String(restore.id);})){ restore.id=uidSafe(); }
+    roster.push(restore); setEmployees(roster);
+    window.deletedEmployeesBin=bin.filter(function(x){return String(x.id)!==String(id);}); saveCache(window.deletedEmployeesBin); saveDeletedRemote();
+    log('<strong>'+esc(person(restore))+'</strong> restored from Deleted Employees','Restored by '+editor()+' · Shift: '+shift(restore));
+    if(typeof save==='function') save(); else if(typeof saveEmployees==='function') saveEmployees();
+    renderDeletedEmployeesBin(); if(typeof render==='function') render();
+  };
+  window.permanentlyDeleteEmployee=function(id){
+    if(purgePendingId!==id){ purgePendingId=id; renderDeletedEmployeesBin(); return; }
+    var bin=getBin(); var found=bin.find(function(x){return String(x.id)===String(id);});
+    window.deletedEmployeesBin=bin.filter(function(x){return String(x.id)!==String(id);}); saveCache(window.deletedEmployeesBin); saveDeletedRemote();
+    if(found) log('<strong>'+esc(person(found))+'</strong> permanently deleted','Deleted by '+editor()+' · Restore no longer available');
+    purgePendingId=null; renderDeletedEmployeesBin(); updateDeletedCount();
+  };
+  window.openDeletedEmployeesBin=function(){ purgePendingId=null; ensureDeletedBinModal(); renderDeletedEmployeesBin(); document.getElementById('deleted-employees-modal').classList.add('open'); };
+  window.closeDeletedEmployeesBin=function(){ var m=document.getElementById('deleted-employees-modal'); if(m) m.classList.remove('open'); purgePendingId=null; };
+  window.renderDeletedEmployeesBin=function(){
+    ensureDeletedBinModal(); updateDeletedCount();
+    var list=document.getElementById('deleted-employees-list'); if(!list) return;
+    var bin=getBin();
+    if(!bin.length){ list.innerHTML='<div class="deleted-employee-empty">No deleted employees. Deleted records will appear here instead of disappearing permanently.</div>'; return; }
+    list.innerHTML=bin.map(function(e){
+      var purgeText=(purgePendingId===e.id)?'Confirm Permanent Delete':'Permanently Delete';
+      return '<div class="deleted-employee-card"><div><div class="deleted-employee-name">'+esc(person(e))+(e.mobileToken?'<span class="emp-mt-flag">MT</span>':'')+badge(e)+'</div><div class="deleted-employee-meta">Conglobal ID: '+esc(e.empId||'—')+' · UP ID: '+esc(e.upId||'—')+'<br>Deleted: '+esc(dateText(e.deleted_at))+' by '+esc(e.deleted_by||'—')+'</div></div><div class="deleted-employee-actions"><button class="deleted-employee-restore" onclick="restoreDeletedEmployee(\''+esc(e.id)+'\')">Restore</button><button class="deleted-employee-purge '+(purgePendingId===e.id?'confirm':'')+'" onclick="permanentlyDeleteEmployee(\''+esc(e.id)+'\')">'+purgeText+'</button></div></div>';
+    }).join('');
+  };
+  function ensureDeletedBinModal(){
+    if(!document.getElementById('deleted-employees-modal')){
+      document.body.insertAdjacentHTML('beforeend','<div class="modal-bg" id="deleted-employees-modal" onclick="if(event.target===this)closeDeletedEmployeesBin()"><div class="modal" style="width:820px;max-width:96vw;"><div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;gap:12px;"><span>Deleted Employees</span><button onclick="closeDeletedEmployeesBin()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">&#x2715;</button></div><div class="deleted-employee-warning">Delete now moves employees here first. Restore puts the record back on the active roster. Permanent Delete removes it from this bin.</div><div class="deleted-employee-toolbar"><div style="font-family:var(--mono);font-size:11px;color:var(--muted);">Deleted records: <strong id="deleted-employees-modal-count" style="color:var(--text);">0</strong></div></div><div id="deleted-employees-list" class="deleted-employee-list"></div></div></div>');
+    }
+    var c=document.getElementById('deleted-employees-modal-count'); if(c) c.textContent=getBin().length;
+  }
+  function ensureDeletedButton(){
+    if(document.getElementById('deleted-employees-btn')){ updateDeletedCount(); return; }
+    var actions=document.querySelector('#page-employees .toolbar > div:last-child');
+    if(actions){ actions.insertAdjacentHTML('afterbegin','<button id="deleted-employees-btn" class="btn btn-ghost employee-restore-btn" onclick="openDeletedEmployeesBin()" type="button">Deleted Employees <span id="deleted-employees-count" class="employee-restore-count">0</span></button>'); }
+    updateDeletedCount();
+  }
+  var oldLoad=window.loadEmployees;
+  if(typeof oldLoad==='function' && !oldLoad.__restoreBinWrapped){
+    var wrappedLoad=async function(){ var r=await oldLoad.apply(this, arguments); await loadDeletedRemote(); ensureDeletedButton(); return r; };
+    wrappedLoad.__restoreBinWrapped=true; window.loadEmployees=wrappedLoad;
+  }
+  document.addEventListener('DOMContentLoaded',function(){ ensureDeletedButton(); ensureDeletedBinModal(); loadDeletedRemote(); });
+  setTimeout(function(){ ensureDeletedButton(); updateDeletedCount(); },300);
 })();
 </script>
 
