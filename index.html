@@ -19795,6 +19795,45 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
 })();
 </script>
 
+
+
+<!-- Employee ID: move Needs Attention metric card to the last card position -->
+<style id="employee-needs-attention-last-card-css">
+#page-employees .employee-metrics-overhauled .stat-card-total{order:1!important;}
+#page-employees .employee-metrics-overhauled .stat-card-day{order:2!important;}
+#page-employees .employee-metrics-overhauled .stat-card-night{order:3!important;}
+#page-employees .employee-metrics-overhauled .stat-card-gate{order:4!important;}
+#page-employees .employee-metrics-overhauled .stat-card-attn-metric{order:5!important;}
+#page-employees .employee-metrics-overhauled .emp-attn-drawer{order:6!important;}
+</style>
+<script id="employee-needs-attention-last-card-js">
+(function(){
+  if(window.__employeeNeedsAttentionLastCard) return;
+  window.__employeeNeedsAttentionLastCard = true;
+  function moveNeedsAttentionLast(){
+    var row=document.querySelector('#page-employees .employee-metrics-overhauled, #page-employees .stats-row');
+    if(!row) return;
+    var attn=row.querySelector('.stat-card-attn-metric');
+    var drawer=row.querySelector('#employee-attn-drawer');
+    if(attn && drawer && attn.nextElementSibling !== drawer){
+      row.insertBefore(attn, drawer);
+    }else if(attn && !drawer && attn !== row.lastElementChild){
+      row.appendChild(attn);
+    }
+  }
+  var originalUpdateStats=window.updateStats;
+  if(typeof originalUpdateStats==='function'){
+    window.updateStats=function(){
+      var result=originalUpdateStats.apply(this, arguments);
+      moveNeedsAttentionLast();
+      return result;
+    };
+  }
+  document.addEventListener('DOMContentLoaded', moveNeedsAttentionLast);
+  setTimeout(moveNeedsAttentionLast, 0);
+})();
+</script>
+
 </body>
 </html>
 <style id="employee-missing-up-red-column-line-fix">
