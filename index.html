@@ -18412,6 +18412,29 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   font-weight:900 !important;
   letter-spacing:.5px !important;
 }
+
+
+/* LOGIN TOP-BAR SHAKE FIX */
+.app-command-nav.page-nav{
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+.nav-tools-panel{
+  min-height:42px;
+}
+body.auth-transition-lock .app-command-nav.page-nav,
+body.auth-transition-lock .app-command-nav.page-nav *,
+body.auth-transition-lock .nav-metric-pulse{
+  transition:none !important;
+  animation:none !important;
+}
+body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
+  transform:none !important;
+}
+@media (max-width:640px){
+  .nav-tools-panel{min-height:38px;}
+  .app-command-nav.page-nav{scroll-margin-top:0;}
+}
 </style>
 <script id="employee-note-indicator-reliable-fix">
 (function(){
@@ -18577,5 +18600,55 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
 })();
 </script>
 
+
+<script>
+/* Login top-bar shake guard: locks header height briefly during sign-in re-render. */
+(function(){
+  if(window.__loginTopShakeFixInstalled) return;
+  window.__loginTopShakeFixInstalled = true;
+
+  function lockLoginTopbar(){
+    try{
+      var nav = document.querySelector('.app-command-nav.page-nav');
+      if(!nav) return;
+      var h = Math.ceil(nav.getBoundingClientRect().height || nav.offsetHeight || 0);
+      if(h > 0) nav.style.minHeight = h + 'px';
+      document.body.classList.add('auth-transition-lock');
+      if(document.activeElement && typeof document.activeElement.blur === 'function'){
+        document.activeElement.blur();
+      }
+      clearTimeout(window.__loginTopShakeTimer);
+      window.__loginTopShakeTimer = setTimeout(function(){
+        document.body.classList.remove('auth-transition-lock');
+        if(nav) nav.style.minHeight = '';
+      }, 900);
+    }catch(e){}
+  }
+
+  var install = function(){
+    if(typeof window.unlockApplication === 'function' && !window.unlockApplication.__topShakeWrapped){
+      var originalUnlock = window.unlockApplication;
+      window.unlockApplication = function(){
+        lockLoginTopbar();
+        return originalUnlock.apply(this, arguments);
+      };
+      window.unlockApplication.__topShakeWrapped = true;
+    }
+    if(typeof window.handlePopupLogin === 'function' && !window.handlePopupLogin.__topShakeWrapped){
+      var originalLogin = window.handlePopupLogin;
+      window.handlePopupLogin = function(){
+        lockLoginTopbar();
+        return originalLogin.apply(this, arguments);
+      };
+      window.handlePopupLogin.__topShakeWrapped = true;
+    }
+  };
+
+  install();
+  window.addEventListener('DOMContentLoaded', install);
+  setTimeout(install, 0);
+  setTimeout(install, 250);
+})();
+</script>
 </body>
 </html>
