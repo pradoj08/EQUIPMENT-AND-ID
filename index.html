@@ -15947,5 +15947,684 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
 })();
 </script>
 
+
+
+<style id="audit-reset-no-popup-polish">
+/* Audit / Monthly Training reset + no-popup status polish */
+#page-audits .roster-inline-notice{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,.28);
+  background:rgba(34,197,94,.10);
+  color:#bbf7d0;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+#page-audits .roster-inline-notice.warn{
+  border-color:rgba(245,158,11,.35);
+  background:rgba(245,158,11,.12);
+  color:#fcd34d;
+}
+#page-audits .roster-inline-notice.bad{
+  border-color:rgba(239,68,68,.35);
+  background:rgba(239,68,68,.12);
+  color:#fca5a5;
+}
+#page-audits .roster-inline-notice::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 10px currentColor;
+}
+</style>
+
+<script id="audit-reset-no-popups-hard-fix">
+(function(){
+  var ROSTER_NO_SYNC_MS = 30000;
+  window.__rosterImportNoSyncUntil = window.__rosterImportNoSyncUntil || { audits:0, trainings:0 };
+
+  function pageAuditsActive(){
+    var p = document.getElementById('page-audits');
+    return !!(p && p.classList.contains('active'));
+  }
+
+  function typeKey(type){
+    try{ return typeof normalizeRosterType === 'function' ? normalizeRosterType(type) : (type === 'trainings' ? 'trainings' : 'audits'); }
+    catch(e){ return type === 'trainings' ? 'trainings' : 'audits'; }
+  }
+
+  function emptyPayload(){
+    return { items: [], updated_at: new Date().toISOString() };
+  }
+
+  function cacheOnly(type, payload){
+    var key = typeKey(type);
+    try{
+      if(typeof saveRosterCacheOnly === 'function') saveRosterCacheOnly(key, payload);
+      else localStorage.setItem(key === 'trainings' ? 'eit_train_roster_v3' : 'eit_audit_roster_v3', JSON.stringify(payload));
+    }catch(e){}
+    try{ if(window.rosterLastUpdated) rosterLastUpdated[key] = payload.updated_at; }catch(e){}
+  }
+
+  function getCount(type){
+    try{
+      var data = typeof loadRosterList === 'function' ? loadRosterList(typeKey(type)) : {items:[]};
+      return Array.isArray(data.items) ? data.items.length : 0;
+    }catch(e){ return 0; }
+  }
+
+  function inlineNotice(message, level){
+    level = level || 'ok';
+    try{
+      var banner = document.getElementById('roster-updated-banner');
+      var text = document.getElementById('roster-updated-banner-text');
+      if(text){
+        text.innerHTML = '<span class="roster-inline-notice '+(level === 'bad' ? 'bad' : level === 'warn' ? 'warn' : '')+'">'+String(message || '').replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];})+'</span>';
+      }
+      if(banner) banner.style.display = '';
+      window.clearTimeout(window.__rosterNoticeTimer);
+      window.__rosterNoticeTimer = window.setTimeout(function(){ refreshBanner(); }, 2200);
+    }catch(e){}
+  }
+
+  function refreshBanner(){
+    try{
+      var auditCount = getCount('audits');
+      var trainCount = getCount('trainings');
+      var latest = (window.rosterLastUpdated && (rosterLastUpdated.audits || rosterLastUpdated.trainings)) || new Date().toISOString();
+      var label = typeof formatRosterTimestamp === 'function' ? formatRosterTimestamp(latest).replace('Last updated: ','') : new Date(latest).toLocaleString();
+      var text = document.getElementById('roster-updated-banner-text');
+      if(text) text.textContent = label + ' · Audits ' + auditCount + ' · Training ' + trainCount;
+      var top = document.getElementById('roster-updated');
+      if(top) top.textContent = 'Last updated: ' + label;
+    }catch(e){}
+  }
+
+  async function saveRemote(type, payload){
+    var key = typeKey(type);
+    try{
+      if(!(window.eqLoggedIn && typeof supabaseClient !== 'undefined')) return {ok:false, skipped:true};
+      var table = key === 'trainings' ? 'training_roster_lists' : 'audit_roster_lists';
+      var res = await supabaseClient.from(table).upsert({
+        id: key,
+        items: payload.items || [],
+        updated_at: payload.updated_at,
+        updated_by: (window.eqLoginUsername || 'CONGLOBAL')
+      });
+      if(res && res.error) return {ok:false, error:res.error};
+      return {ok:true};
+    }catch(err){
+      return {ok:false, error:err};
+    }
+  }
+
+  function renderBoth(){
+    try{ if(typeof renderRosterTable === 'function'){ renderRosterTable('audits'); renderRosterTable('trainings'); } }catch(e){}
+    try{ if(typeof updateRosterUndoButton === 'function') updateRosterUndoButton(); }catch(e){}
+    refreshBanner();
+  }
+
+  async function hardSaveBoth(auditPayload, trainPayload, reason){
+    var now = Date.now();
+    window.__rosterImportNoSyncUntil.audits = now + ROSTER_NO_SYNC_MS;
+    window.__rosterImportNoSyncUntil.trainings = now + ROSTER_NO_SYNC_MS;
+
+    cacheOnly('audits', auditPayload);
+    cacheOnly('trainings', trainPayload);
+    try{
+      if(window.rosterFilters){
+        rosterFilters.audits = { shift:'all', working:false };
+        rosterFilters.trainings = { shift:'all', working:false };
+      }
+    }catch(e){}
+    renderBoth();
+
+    var auditSave = await saveRemote('audits', auditPayload);
+    var trainSave = await saveRemote('trainings', trainPayload);
+    renderBoth();
+
+    if((auditSave.ok || auditSave.skipped) && (trainSave.ok || trainSave.skipped)){
+      inlineNotice(reason || 'Updated', 'ok');
+    }else{
+      inlineNotice('Saved on screen; Supabase table check needed', 'warn');
+    }
+    return {auditSave:auditSave, trainSave:trainSave};
+  }
+
+  // Hard override: reset clears Audit + Monthly Training immediately, then saves remote.
+  window.resetRosterData = async function(){
+    try{ if(typeof pushRosterUndo === 'function') pushRosterUndo('Reset audits and monthly training lists'); }catch(e){}
+    var stamp = new Date().toISOString();
+    var auditPayload = { items: [], updated_at: stamp };
+    var trainPayload = { items: [], updated_at: stamp };
+    await hardSaveBoth(auditPayload, trainPayload, 'Audit and Monthly Training lists reset');
+    try{ if(typeof logActivity === 'function') logActivity('notes','Reset <strong>Audits & Monthly Training</strong> lists','Both lists cleared'); }catch(e){}
+  };
+
+  // Hard override: remove popup from import with empty boxes and use the banner instead.
+  var priorImport = window.importRosterLists;
+  window.importRosterLists = async function(){
+    var auditInput = document.getElementById('audit-paste');
+    var trainInput = document.getElementById('train-paste');
+    var auditText = auditInput ? auditInput.value : '';
+    var trainText = trainInput ? trainInput.value : '';
+    var auditNames = [];
+    var trainNames = [];
+    try{ auditNames = typeof parseNameList === 'function' ? parseNameList(auditText) : auditText.split(/\n+/).filter(Boolean); }catch(e){}
+    try{ trainNames = typeof parseNameList === 'function' ? parseNameList(trainText) : trainText.split(/\n+/).filter(Boolean); }catch(e){}
+
+    if(!auditNames.length && !trainNames.length){
+      inlineNotice('Paste names before importing', 'warn');
+      return;
+    }
+
+    try{ if(typeof pushRosterUndo === 'function') pushRosterUndo('Imported audit/training roster names'); }catch(e){}
+    var stamp = new Date().toISOString();
+    var auditPayload = { items: (typeof buildRosterItems === 'function' ? buildRosterItems(auditNames) : auditNames.map(function(n){return {id:'rs_'+Date.now()+Math.random(),name:n,shift:'Other',matched:false,employee:''};})), updated_at: stamp };
+    var trainPayload = { items: (typeof buildRosterItems === 'function' ? buildRosterItems(trainNames) : trainNames.map(function(n){return {id:'rs_'+Date.now()+Math.random(),name:n,shift:'Other',matched:false,employee:''};})), updated_at: stamp };
+    try{ if(typeof closeRosterModal === 'function') closeRosterModal(); }catch(e){}
+    await hardSaveBoth(auditPayload, trainPayload, 'Names imported');
+    try{ if(typeof logActivity === 'function') logActivity('notes','Imported <strong>Audits & Monthly Training</strong> names','Audits '+auditNames.length+' · Training '+trainNames.length); }catch(e){}
+  };
+
+  // Make undo quiet too when there is nothing to undo.
+  var priorUndo = window.undoRosterChange;
+  window.undoRosterChange = async function(){
+    try{
+      if(!window.rosterUndoStack || !rosterUndoStack.length){ inlineNotice('Nothing to undo', 'warn'); return; }
+      return priorUndo ? priorUndo.apply(this, arguments) : null;
+    }catch(e){ inlineNotice('Undo could not complete', 'warn'); }
+  };
+
+  // Remove alert popups only while the Audits / Monthly Training page is active.
+  if(!window.__auditTrainingAlertSuppressed){
+    window.__auditTrainingAlertSuppressed = true;
+    var nativeAlert = window.alert;
+    window.alert = function(message){
+      if(pageAuditsActive()){
+        inlineNotice(message || 'Notice', 'warn');
+        return;
+      }
+      return nativeAlert.apply(window, arguments);
+    };
+  }
+})();
+</script>
+
+
+
+<script id="audit-import-final-hard-fix">
+(function(){
+  var SUPPRESS_MS = 45000;
+  window.__rosterImportNoSyncUntil = window.__rosterImportNoSyncUntil || { audits:0, trainings:0 };
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
+  function normType(type){ return type === 'trainings' || type === 'training' || type === 'train' ? 'trainings' : 'audits'; }
+  function storageKey(type){ return normType(type) === 'trainings' ? 'eit_train_roster_v3' : 'eit_audit_roster_v3'; }
+  function nowIso(){ return new Date().toISOString(); }
+
+  function notice(msg, level){
+    try{
+      level = level || 'ok';
+      var text = document.getElementById('roster-updated-banner-text');
+      var banner = document.getElementById('roster-updated-banner');
+      if(text){
+        text.innerHTML = '<span class="roster-inline-notice '+(level==='bad'?'bad':level==='warn'?'warn':'')+'">'+esc(msg)+'</span>';
+      }
+      if(banner) banner.style.display = '';
+      clearTimeout(window.__auditImportNoticeTimer);
+      window.__auditImportNoticeTimer = setTimeout(function(){ updateBanner(); }, 2500);
+    }catch(e){}
+  }
+
+  function parseNames(text){
+    var raw = String(text || '')
+      .replace(/\r/g,'\n')
+      .split(/\n|;/g)
+      .map(function(line){
+        return line
+          .replace(/^\s*[-*•]+\s*/,'')
+          .replace(/^\s*\d+[\.)-]?\s*/,'')
+          .replace(/\s+/g,' ')
+          .trim();
+      })
+      .filter(Boolean);
+    var seen = Object.create(null);
+    var out = [];
+    raw.forEach(function(name){
+      var cleaned;
+      try{ cleaned = typeof titleCaseName === 'function' ? titleCaseName(name) : name.replace(/\b\w/g,function(m){return m.toUpperCase();}); }
+      catch(e){ cleaned = name; }
+      var key;
+      try{ key = typeof normalizeRosterName === 'function' ? normalizeRosterName(cleaned) : cleaned.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+      catch(e){ key = cleaned.toLowerCase(); }
+      if(!key || seen[key]) return;
+      seen[key] = true;
+      out.push(cleaned);
+    });
+    return out;
+  }
+
+  function makeItem(name, idx){
+    var emp = null;
+    try{ emp = typeof bestEmployeeMatch === 'function' ? bestEmployeeMatch(name) : null; }catch(e){}
+    var shift = 'Other';
+    try{ shift = typeof bucketFromShift === 'function' ? bucketFromShift(emp ? emp.shift : 'Other') : (emp && (emp.shift === 'Day' || emp.shift === 'Night') ? emp.shift : 'Other'); }catch(e){}
+    return {
+      id: 'rs_' + Date.now().toString(36) + '_' + idx + '_' + Math.random().toString(36).slice(2,8),
+      name: name,
+      shift: shift,
+      matched: !!emp,
+      employee: emp ? ((emp.first || '') + ' ' + (emp.last || '')).trim() : ''
+    };
+  }
+
+  function readPayload(type){
+    try{
+      if(typeof loadRosterList === 'function'){
+        var p = loadRosterList(normType(type));
+        if(p && Array.isArray(p.items)) return p;
+      }
+    }catch(e){}
+    try{
+      var raw = localStorage.getItem(storageKey(type));
+      var parsed = raw ? JSON.parse(raw) : null;
+      if(parsed && Array.isArray(parsed.items)) return parsed;
+    }catch(e){}
+    return { items: [], updated_at: null };
+  }
+
+  function writePayload(type, payload){
+    var key = normType(type);
+    payload = payload || { items: [], updated_at: nowIso() };
+    if(!Array.isArray(payload.items)) payload.items = [];
+    if(!payload.updated_at) payload.updated_at = nowIso();
+    try{ if(typeof saveRosterCacheOnly === 'function') saveRosterCacheOnly(key, payload); }catch(e){}
+    try{ localStorage.setItem(storageKey(key), JSON.stringify(payload)); }catch(e){}
+    try{ if(window.rosterLastUpdated) window.rosterLastUpdated[key] = payload.updated_at; }catch(e){}
+  }
+
+  async function pushRemote(type, payload){
+    var key = normType(type);
+    try{
+      if(!(window.eqLoggedIn && typeof supabaseClient !== 'undefined')) return { ok:false, skipped:true };
+      var table = key === 'trainings' ? 'training_roster_lists' : 'audit_roster_lists';
+      var res = await supabaseClient.from(table).upsert({
+        id: key,
+        items: payload.items || [],
+        updated_at: payload.updated_at,
+        updated_by: window.eqLoginUsername || 'CONGLOBAL'
+      });
+      if(res && res.error) return { ok:false, error:res.error };
+      return { ok:true };
+    }catch(err){ return { ok:false, error:err }; }
+  }
+
+  function updateBanner(){
+    try{
+      var a = readPayload('audits');
+      var t = readPayload('trainings');
+      var latest = (a.updated_at && t.updated_at) ? (new Date(a.updated_at) > new Date(t.updated_at) ? a.updated_at : t.updated_at) : (a.updated_at || t.updated_at || nowIso());
+      var label;
+      try{ label = typeof formatRosterTimestamp === 'function' ? formatRosterTimestamp(latest).replace('Last updated: ','') : new Date(latest).toLocaleString(); }
+      catch(e){ label = new Date().toLocaleString(); }
+      var text = document.getElementById('roster-updated-banner-text');
+      if(text) text.textContent = label + ' · Audits ' + ((a.items || []).length) + ' · Training ' + ((t.items || []).length);
+      var top = document.getElementById('roster-updated');
+      if(top) top.textContent = 'Last updated: ' + label;
+      var ac = document.getElementById('audit-total-count');
+      var tc = document.getElementById('train-total-count');
+      if(ac) ac.textContent = String((a.items || []).length);
+      if(tc) tc.textContent = String((t.items || []).length);
+    }catch(e){}
+  }
+
+  function renderNow(){
+    try{ if(window.rosterFilters){ window.rosterFilters.audits = {shift:'all', working:false}; window.rosterFilters.trainings = {shift:'all', working:false}; } }catch(e){}
+    try{ if(typeof renderRosterTable === 'function'){ renderRosterTable('audits'); renderRosterTable('trainings'); } }catch(e){ console.warn('Roster render failed', e); }
+    try{ if(typeof updateRosterUndoButton === 'function') updateRosterUndoButton(); }catch(e){}
+    updateBanner();
+  }
+
+  async function finalImportRosterLists(){
+    var auditInput = document.getElementById('audit-paste');
+    var trainInput = document.getElementById('train-paste');
+    var auditText = auditInput ? auditInput.value : '';
+    var trainText = trainInput ? trainInput.value : '';
+    var auditNames = parseNames(auditText);
+    var trainNames = parseNames(trainText);
+
+    if(!auditNames.length && !trainNames.length){
+      notice('Paste names before importing', 'warn');
+      return;
+    }
+
+    try{ if(typeof pushRosterUndo === 'function') pushRosterUndo('Imported audit/training roster names'); }catch(e){}
+
+    var stamp = nowIso();
+    var auditPayload = auditNames.length
+      ? { items: auditNames.map(makeItem), updated_at: stamp }
+      : readPayload('audits');
+    var trainPayload = trainNames.length
+      ? { items: trainNames.map(makeItem), updated_at: stamp }
+      : readPayload('trainings');
+
+    // Blank side no longer wipes the other list. It preserves the current list.
+    if(auditNames.length) auditPayload.updated_at = stamp;
+    if(trainNames.length) trainPayload.updated_at = stamp;
+
+    window.__rosterImportNoSyncUntil.audits = Date.now() + SUPPRESS_MS;
+    window.__rosterImportNoSyncUntil.trainings = Date.now() + SUPPRESS_MS;
+
+    writePayload('audits', auditPayload);
+    writePayload('trainings', trainPayload);
+
+    try{
+      var bg = document.getElementById('roster-modal-bg');
+      if(bg) bg.classList.remove('open');
+    }catch(e){}
+
+    renderNow();
+
+    var aSave = await pushRemote('audits', auditPayload);
+    var tSave = await pushRemote('trainings', trainPayload);
+    renderNow();
+
+    if((aSave.ok || aSave.skipped) && (tSave.ok || tSave.skipped)){
+      notice('Names imported · Audits ' + (auditPayload.items || []).length + ' · Training ' + (trainPayload.items || []).length, 'ok');
+    }else{
+      notice('Names imported on screen; Supabase table may need checking', 'warn');
+    }
+    try{ if(typeof logActivity === 'function') logActivity('notes','Imported <strong>Audits & Monthly Training</strong> names','Audits '+auditNames.length+' · Training '+trainNames.length); }catch(e){}
+  }
+
+  window.importRosterLists = finalImportRosterLists;
+
+  // Capture the import button before old inline handlers can double-fire or override the fixed path.
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('#roster-modal-bg button') : null;
+    if(!btn) return;
+    var txt = (btn.textContent || '').toLowerCase();
+    if(txt.indexOf('import') === -1) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    finalImportRosterLists();
+  }, true);
+
+  // Suppress stale remote sync during the import cooldown.
+  if(typeof window.syncRosterFromSupabase === 'function' && !window.__auditImportWrappedSync){
+    window.__auditImportWrappedSync = true;
+    var oldSync = window.syncRosterFromSupabase;
+    window.syncRosterFromSupabase = async function(type){
+      var key = normType(type);
+      if(window.__rosterImportNoSyncUntil && Date.now() < (window.__rosterImportNoSyncUntil[key] || 0)){
+        return readPayload(key);
+      }
+      return oldSync.apply(this, arguments);
+    };
+  }
+})();
+</script>
+
+
+
+<script id="final-employee-global-and-roster-undo-fix">
+(function(){
+  // =============================================================
+  // FINAL FIX: Audits / Monthly Training Undo + Employee global save
+  // =============================================================
+
+  // ---- Audits / Training undo stack: previous builds referenced this
+  // without defining it, so the button could never restore a snapshot.
+  window.rosterUndoStack = window.rosterUndoStack || [];
+  window.rosterUndoLimit = window.rosterUndoLimit || 20;
+  var rosterUndoStack = window.rosterUndoStack;
+  var rosterUndoLimit = window.rosterUndoLimit;
+
+  function normRosterType(type){
+    return (type === 'trainings' || type === 'training' || type === 'train') ? 'trainings' : 'audits';
+  }
+  function rosterKey(type){
+    return normRosterType(type) === 'trainings' ? 'eit_train_roster_v3' : 'eit_audit_roster_v3';
+  }
+  function readRosterPayload(type){
+    type = normRosterType(type);
+    try{
+      if(typeof loadRosterList === 'function'){
+        var loaded = loadRosterList(type);
+        if(loaded && Array.isArray(loaded.items)) return JSON.parse(JSON.stringify(loaded));
+      }
+    }catch(e){}
+    try{
+      var raw = localStorage.getItem(rosterKey(type));
+      var parsed = raw ? JSON.parse(raw) : null;
+      if(parsed && Array.isArray(parsed.items)) return JSON.parse(JSON.stringify(parsed));
+    }catch(e){}
+    return { items: [], updated_at: null };
+  }
+  function writeRosterPayload(type, payload){
+    type = normRosterType(type);
+    payload = payload || { items: [], updated_at: new Date().toISOString() };
+    if(!Array.isArray(payload.items)) payload.items = [];
+    if(!payload.updated_at) payload.updated_at = new Date().toISOString();
+    try{ if(typeof saveRosterCacheOnly === 'function') saveRosterCacheOnly(type, payload); }catch(e){}
+    try{ localStorage.setItem(rosterKey(type), JSON.stringify(payload)); }catch(e){}
+    try{ if(window.rosterLastUpdated) window.rosterLastUpdated[type] = payload.updated_at; }catch(e){}
+  }
+  async function pushRosterRemote(type, payload){
+    type = normRosterType(type);
+    try{
+      if(!(window.eqLoggedIn && typeof supabaseClient !== 'undefined' && supabaseClient)) return {ok:false, skipped:true};
+      var table = type === 'trainings' ? 'training_roster_lists' : 'audit_roster_lists';
+      var res = await supabaseClient.from(table).upsert({
+        id: type,
+        items: payload.items || [],
+        updated_at: payload.updated_at || new Date().toISOString(),
+        updated_by: window.eqLoginUsername || 'CONGLOBAL'
+      });
+      return res && res.error ? {ok:false, error:res.error} : {ok:true};
+    }catch(err){
+      console.error('Roster remote undo save failed:', err);
+      return {ok:false, error:err};
+    }
+  }
+  function rosterNotice(msg, level){
+    try{
+      if(typeof inlineNotice === 'function') return inlineNotice(msg, level || 'ok');
+      var text = document.getElementById('roster-updated-banner-text');
+      if(text) text.textContent = msg;
+    }catch(e){}
+  }
+  function rerenderRosters(){
+    try{ if(typeof renderRosterTable === 'function'){ renderRosterTable('audits'); renderRosterTable('trainings'); } }catch(e){}
+    try{ if(typeof updateRosterUndoButton === 'function') updateRosterUndoButton(); }catch(e){}
+    try{
+      var a = readRosterPayload('audits');
+      var t = readRosterPayload('trainings');
+      var text = document.getElementById('roster-updated-banner-text');
+      if(text){
+        var latest = a.updated_at || t.updated_at || new Date().toISOString();
+        var label = (typeof formatRosterTimestamp === 'function') ? formatRosterTimestamp(latest).replace('Last updated: ','') : new Date(latest).toLocaleString();
+        text.textContent = label + ' · Audits ' + ((a.items||[]).length) + ' · Training ' + ((t.items||[]).length);
+      }
+    }catch(e){}
+  }
+
+  window.updateRosterUndoButton = function(){
+    var btn = document.getElementById('roster-undo-btn');
+    if(btn) btn.disabled = !window.rosterUndoStack.length;
+  };
+
+  window.pushRosterUndo = function(reason){
+    window.rosterUndoStack.push({
+      ts: Date.now(),
+      reason: reason || 'audit/training change',
+      audits: readRosterPayload('audits'),
+      trainings: readRosterPayload('trainings')
+    });
+    if(window.rosterUndoStack.length > rosterUndoLimit) window.rosterUndoStack.shift();
+    window.updateRosterUndoButton();
+  };
+
+  window.undoRosterChange = async function(){
+    if(!window.rosterUndoStack.length){
+      rosterNotice('Nothing to undo', 'warn');
+      return;
+    }
+    var snap = window.rosterUndoStack.pop();
+    var audits = snap.audits || {items:[], updated_at:new Date().toISOString()};
+    var trainings = snap.trainings || {items:[], updated_at:new Date().toISOString()};
+    audits.updated_at = new Date().toISOString();
+    trainings.updated_at = audits.updated_at;
+
+    // Stop a stale Supabase read from undoing the undo.
+    window.__rosterImportNoSyncUntil = window.__rosterImportNoSyncUntil || {audits:0, trainings:0};
+    window.__rosterImportNoSyncUntil.audits = Date.now() + 45000;
+    window.__rosterImportNoSyncUntil.trainings = Date.now() + 45000;
+
+    writeRosterPayload('audits', audits);
+    writeRosterPayload('trainings', trainings);
+    rerenderRosters();
+
+    var aSave = await pushRosterRemote('audits', audits);
+    var tSave = await pushRosterRemote('trainings', trainings);
+    rerenderRosters();
+    window.updateRosterUndoButton();
+
+    if((aSave.ok || aSave.skipped) && (tSave.ok || tSave.skipped)){
+      rosterNotice('Undo applied', 'ok');
+    }else{
+      rosterNotice('Undo applied on screen; Supabase table check needed', 'warn');
+    }
+    try{ if(typeof logActivity === 'function') logActivity('notes','Undo applied on <strong>Audits & Monthly Training</strong>', snap.reason || 'Previous state restored'); }catch(e){}
+  };
+
+  // Make sure existing page buttons call the fixed undo.
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('#roster-undo-btn') : null;
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    window.undoRosterChange();
+  }, true);
+
+  // ---- Employee ID global save fallback.
+  // If the public.employees table schema is incomplete, this saves the full roster
+  // to the already-created ppe_compliance_state table under id='employee_roster'.
+  // That keeps Employee ID global across devices even while the employee table is being fixed.
+  var oldLoadEmployees = window.loadEmployees;
+  var oldSaveEmployees = window.saveEmployees;
+  var EMPLOYEE_ROSTER_GLOBAL_ID = 'employee_roster';
+
+  function employeeSnapshot(){
+    try{
+      if(typeof normalizeEmployeeRoster === 'function') normalizeEmployeeRoster();
+    }catch(e){}
+    return {
+      employees: Array.isArray(window.employees) ? window.employees : (typeof employees !== 'undefined' && Array.isArray(employees) ? employees : []),
+      updated_at: new Date().toISOString(),
+      updated_by: window.eqLoginUsername || 'CONGLOBAL'
+    };
+  }
+
+  async function saveEmployeeRosterState(){
+    try{
+      if(!(window.eqLoggedIn && typeof supabaseClient !== 'undefined' && supabaseClient)) return {ok:false, skipped:true};
+      var snap = employeeSnapshot();
+      var res = await supabaseClient.from('ppe_compliance_state').upsert({
+        id: EMPLOYEE_ROSTER_GLOBAL_ID,
+        state: snap,
+        history: { source: 'employee_id_global_roster' },
+        updated_at: snap.updated_at,
+        last_edited_by: snap.updated_by
+      });
+      if(res && res.error) return {ok:false, error:res.error};
+      return {ok:true};
+    }catch(err){
+      console.error('Employee roster state save failed:', err);
+      return {ok:false, error:err};
+    }
+  }
+
+  async function loadEmployeeRosterState(){
+    try{
+      if(!(window.eqLoggedIn && typeof supabaseClient !== 'undefined' && supabaseClient)) return false;
+      var res = await supabaseClient.from('ppe_compliance_state').select('state,updated_at,last_edited_by').eq('id', EMPLOYEE_ROSTER_GLOBAL_ID).maybeSingle();
+      if(res && res.error) return false;
+      var list = res && res.data && res.data.state && res.data.state.employees;
+      if(!Array.isArray(list) || !list.length) return false;
+      window.employees = list;
+      try{ employees = list; }catch(e){}
+      try{ if(typeof normalizeEmployeeRoster === 'function') normalizeEmployeeRoster(); }catch(e){}
+      try{ if(typeof rosterLooksBroken === 'function' && rosterLooksBroken()) return false; }catch(e){}
+      try{ if(typeof saveEmployeesToCache === 'function') saveEmployeesToCache(); }catch(e){}
+      return true;
+    }catch(err){
+      console.error('Employee roster state load failed:', err);
+      return false;
+    }
+  }
+
+  window.saveEmployees = async function(){
+    // Always save the full roster JSON first so every device has the complete Employee ID page.
+    try{ if(typeof saveEmployeesToCache === 'function') saveEmployeesToCache(); }catch(e){}
+    var globalSave = await saveEmployeeRosterState();
+
+    // Keep the original employees table save too, but do not let its schema errors block global saving.
+    try{
+      if(typeof oldSaveEmployees === 'function') await oldSaveEmployees.apply(this, arguments);
+    }catch(err){
+      console.warn('Employee table save failed; global roster fallback already attempted.', err);
+    }
+
+    if(!globalSave.ok && !globalSave.skipped){
+      console.error('Employee ID global save fallback failed:', globalSave.error);
+      try{
+        var b = document.getElementById('employee-sync-warning');
+        if(b) b.style.display = '';
+      }catch(e){}
+    }
+  };
+
+  window.loadEmployees = async function(){
+    var loadedGlobal = await loadEmployeeRosterState();
+    if(loadedGlobal){
+      try{ if(typeof render === 'function') render(); }catch(e){}
+      return;
+    }
+    try{
+      if(typeof oldLoadEmployees === 'function') await oldLoadEmployees.apply(this, arguments);
+    }catch(err){
+      console.warn('Original employee load failed:', err);
+    }
+    // If the normal employees table returns missing/generic data, try the global JSON row again.
+    try{
+      if(typeof rosterLooksBroken === 'function' && rosterLooksBroken()){
+        var retry = await loadEmployeeRosterState();
+        if(retry && typeof render === 'function') render();
+      }
+    }catch(e){}
+  };
+
+  // If the page was already loaded before this patch initialized, pull the global roster once.
+  setTimeout(function(){
+    try{
+      if(window.eqLoggedIn && typeof window.loadEmployees === 'function'){
+        window.loadEmployees().then(function(){ try{ if(typeof render === 'function') render(); }catch(e){} });
+      }
+    }catch(e){}
+  }, 1200);
+})();
+</script>
+
 </body>
 </html>
