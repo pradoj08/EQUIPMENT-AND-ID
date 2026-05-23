@@ -9870,7 +9870,6 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   <div class="stat-card stat-card-day"><span class="stat-icon">☀</span><div class="stat-label">Day Shift Complete</div><div class="stat-val stat-day" id="s-day">0</div><div class="stat-bar"><div class="stat-bar-fill" id="s-day-bar" style="background:var(--day);width:0%"></div></div></div>
   <div class="stat-card stat-card-night"><span class="stat-icon">☾</span><div class="stat-label">Night Shift Complete</div><div class="stat-val stat-night" id="s-night">0</div><div class="stat-bar"><div class="stat-bar-fill" id="s-night-bar" style="background:var(--night);width:0%"></div></div></div>
   <div class="stat-card stat-card-gate"><span class="stat-icon">⬡</span><div class="stat-label">Gate Complete</div><div class="stat-val stat-gate" id="s-gate">0</div><div class="stat-bar"><div class="stat-bar-fill" id="s-gate-bar" style="background:var(--gate);width:0%"></div></div></div>
-  <div class="stat-card stat-card-attn"><span class="stat-icon">⚠</span><div class="stat-label">Needs Attention</div><div class="stat-val stat-out" id="s-out">0</div><div class="stat-bar"><div class="stat-bar-fill" id="s-out-bar" style="background:#ef4444;width:0%"></div></div></div>
 </div>
 <div class="tabs-row">
   <button class="tab active" onclick="setTab('all')"><span class="dot dot-all"></span>All Employees<span class="tab-count" id="tc-all">0</span></button>
@@ -10704,12 +10703,10 @@ function updateStats(){
   document.getElementById('s-day').innerHTML=fmt(dc,day.length);
   document.getElementById('s-night').innerHTML=fmt(nc,night.length);
   document.getElementById('s-gate').innerHTML=fmt(gc,gate.length);
-  document.getElementById('s-out').textContent=noUp;
   setBar('s-total-bar',employees.length?(tc/employees.length)*100:0);
   setBar('s-day-bar',day.length?(dc/day.length)*100:0);
   setBar('s-night-bar',night.length?(nc/night.length)*100:0);
   setBar('s-gate-bar',gate.length?(gc/gate.length)*100:0);
-  setBar('s-out-bar',employees.length?(noUp/employees.length)*100:0);
 }
 
 function updateTabCounts(){
@@ -17593,7 +17590,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       if(currentTab==='all') matchTab=true;
       else if(currentTab==='today') matchTab=!isOffToday(e)&&e.status!=='off';
       else if(currentTab==='missingUp') matchTab=!isResolvedUpId(e.upId);
-      else if(currentTab==='attention') matchTab=missingItems(e).length>0 || duplicateFields(e,maps).length>0;
+      else if(currentTab==='attention') matchTab=missingItems(e).length>0;
       else matchTab=e.shift===currentTab;
       var hay=[e.first,e.last,e.empId,e.upId||'',e.email||'',e.phone,e.daysOff].join(' ').toLowerCase();
       return matchTab && (!q || hay.indexOf(q)>-1);
@@ -17606,7 +17603,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var gate=list.filter(function(e){return e.shift==='Gate';});
     var dc=day.filter(isComplete).length,nc=night.filter(isComplete).length,gc=gate.filter(isComplete).length,tc=list.filter(isComplete).length;
     var maps=buildDuplicateMaps();
-    var attn=list.filter(function(e){return missingItems(e).length>0 || duplicateFields(e,maps).length>0;}).length;
+    var attn=list.filter(function(e){return missingItems(e).length>0;}).length;
     function fmt(c,t){return c+'<span style="color:var(--muted);font-size:16px;font-weight:400;">/'+t+'</span>';}
     var el;
     if((el=document.getElementById('s-total'))) el.innerHTML=fmt(tc,list.length);
@@ -17619,7 +17616,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   window.updateTabCounts = function(){
     var list=employees||[]; var maps=buildDuplicateMaps();
     var set=function(id,val){var el=document.getElementById(id); if(el) el.textContent=val;};
-    set('tc-all',list.length); set('tc-today',workingToday().length); set('tc-day',list.filter(function(e){return e.shift==='Day';}).length); set('tc-night',list.filter(function(e){return e.shift==='Night';}).length); set('tc-gate',list.filter(function(e){return e.shift==='Gate';}).length); set('tc-missing-up',list.filter(function(e){return !isResolvedUpId(e.upId);}).length); set('tc-attn',list.filter(function(e){return missingItems(e).length>0 || duplicateFields(e,maps).length>0;}).length);
+    set('tc-all',list.length); set('tc-today',workingToday().length); set('tc-day',list.filter(function(e){return e.shift==='Day';}).length); set('tc-night',list.filter(function(e){return e.shift==='Night';}).length); set('tc-gate',list.filter(function(e){return e.shift==='Gate';}).length); set('tc-missing-up',list.filter(function(e){return !isResolvedUpId(e.upId);}).length); set('tc-attn',list.filter(function(e){return missingItems(e).length>0;}).length);
   };
   window.updateBanner = function(){
     var banner=document.getElementById('callout-banner'); if(!banner) return;
@@ -17627,14 +17624,14 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var callouts=(employees||[]).filter(function(e){return e.status==='callout';});
     var waiting=(employees||[]).filter(function(e){return e.status==='waiting';});
     var missingUp=(employees||[]).filter(function(e){return !isResolvedUpId(e.upId);});
-    var attn=(employees||[]).filter(function(e){return missingItems(e).length>0 || duplicateFields(e,maps).length>0;});
+    var attn=(employees||[]).filter(function(e){return missingItems(e).length>0;});
     var html='';
     if(callouts.length) html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Called Out</div><div class="banner-chips">'+callouts.map(shiftChip).join('')+'</div></div>';
     if(waiting.length) html+='<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>Waiting On</div><div class="banner-chips">'+waiting.map(shiftChip).join('')+'</div></div>';
     if(needsAttnVisible && (missingUp.length || attn.length)){
       var chips=attn.slice(0,80).map(function(e){
         var sc={Day:'bchip-day',Night:'bchip-night',Gate:'bchip-gate'}[e.shift]||'bchip-day';
-        var items=missingItems(e).concat(duplicateFields(e,maps)).join(', ');
+        var items=missingItems(e).join(', ');
         return '<span class="bchip '+sc+'" style="cursor:pointer;" data-eid="'+esc(e.id)+'" title="'+esc(items)+'">'+esc(personName(e))+' <strong style="margin-left:4px;color:#fff;">'+esc(items || 'Review')+'</strong></span>';
       }).join('');
       html+='<div class="banner-row banner-row-attn"><div class="banner-label banner-label-attn"><span class="pulse"></span>Needs Attention</div><div class="banner-chips">'+chips+'</div></div>';
@@ -18925,6 +18922,352 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
 })();
 </script>
 
+
+<style id="employee-table-bigger-readable-text">
+/* Employee ID page: larger table/card text for easier reading. */
+#page-employees .table-wrap table.employee-table,
+#page-employees .table-wrap table{
+  font-size:15px;
+}
+#page-employees .table-wrap th{
+  font-size:13px !important;
+  line-height:1.25 !important;
+  letter-spacing:.95px !important;
+}
+#page-employees .table-wrap td{
+  font-size:15px !important;
+  line-height:1.35 !important;
+}
+#page-employees .emp-name,
+#page-employees .emp-id,
+#page-employees .phone-cell,
+#page-employees .days-off,
+#page-employees .emp-table-value,
+#page-employees .shift-badge,
+#page-employees .missing-field-btn,
+#page-employees .upid-preset-chip,
+#page-employees .action-btn{
+  font-size:15px !important;
+  line-height:1.25 !important;
+}
+#page-employees .shift-badge,
+#page-employees .missing-field-btn,
+#page-employees .upid-preset-chip{
+  padding:6px 12px !important;
+}
+#page-employees .action-btn{
+  padding:8px 13px !important;
+}
+#page-employees .employee-note-flag{
+  font-size:10px !important;
+  padding:3px 8px !important;
+}
+#page-employees .employee-card-name{
+  font-size:16px !important;
+}
+#page-employees .employee-card-label{
+  font-size:11px !important;
+}
+#page-employees .employee-card-value,
+#page-employees .employee-card-field{
+  font-size:14px !important;
+}
+@media(max-width:700px){
+  #page-employees .table-wrap th{font-size:12px !important;}
+  #page-employees .table-wrap td{font-size:14px !important;}
+  #page-employees .emp-name,
+  #page-employees .emp-id,
+  #page-employees .phone-cell,
+  #page-employees .days-off,
+  #page-employees .emp-table-value,
+  #page-employees .shift-badge,
+  #page-employees .missing-field-btn,
+  #page-employees .upid-preset-chip,
+  #page-employees .action-btn{font-size:14px !important;}
+}
+</style>
+
+
+
+<style id="employee-missing-up-gold-highlight-css">
+/* Gold highlight for any employee with an unresolved UP ID. Red Missing Note highlight still wins. */
+#page-employees tr.employee-missing-up-highlight > td{
+  background:rgba(245,158,11,.16)!important;
+}
+#page-employees tr.employee-missing-up-highlight:hover > td{
+  background:rgba(245,158,11,.22)!important;
+}
+#page-employees tr.employee-missing-up-highlight > td:first-child{
+  box-shadow:inset 4px 0 0 rgba(245,158,11,.95)!important;
+}
+#page-employees .employee-card.employee-missing-up-highlight{
+  border-color:rgba(245,158,11,.65)!important;
+  border-left-color:#f59e0b!important;
+  background:linear-gradient(180deg,rgba(55,38,12,.98),rgba(26,20,12,.98))!important;
+  box-shadow:0 14px 30px rgba(245,158,11,.16),0 10px 24px rgba(0,0,0,.22)!important;
+}
+#page-employees tr.employee-up-note-required > td{
+  background:rgba(239,68,68,.18)!important;
+}
+#page-employees tr.employee-up-note-required:hover > td{
+  background:rgba(239,68,68,.24)!important;
+}
+#page-employees tr.employee-up-note-required > td:first-child{
+  box-shadow:inset 4px 0 0 rgba(239,68,68,.95)!important;
+}
+#page-employees .employee-card.employee-up-note-required{
+  border-color:rgba(239,68,68,.75)!important;
+  border-left-color:#ef4444!important;
+  background:linear-gradient(180deg,rgba(69,18,22,.98),rgba(30,13,16,.98))!important;
+  box-shadow:0 14px 30px rgba(239,68,68,.18),0 10px 24px rgba(0,0,0,.22)!important;
+}
+</style>
+<script id="employee-missing-up-gold-highlight-js">
+(function(){
+  if(window.__employeeMissingUpGoldHighlight) return;
+  window.__employeeMissingUpGoldHighlight = true;
+  var unresolvedUpValues = ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'];
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function norm(v){ return clean(v).replace(/\s+/g,' ').toUpperCase(); }
+  function hasResolvedUpId(e){
+    var v = clean(e && e.upId);
+    return !!v && unresolvedUpValues.indexOf(norm(v)) === -1;
+  }
+  function cssEscape(value){
+    if(window.CSS && typeof CSS.escape === 'function') return CSS.escape(String(value));
+    return String(value).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  }
+  function applyGoldMissingUpHighlight(){
+    try{
+      (window.employees || []).forEach(function(e){
+        if(!e || e.id == null) return;
+        var missingUp = !hasResolvedUpId(e);
+        var selector = '[data-employee-name-id="' + cssEscape(e.id) + '"]';
+        document.querySelectorAll(selector).forEach(function(nameEl){
+          var row = nameEl.closest('tr');
+          if(row) row.classList.toggle('employee-missing-up-highlight', missingUp);
+          var card = nameEl.closest('.employee-card');
+          if(card) card.classList.toggle('employee-missing-up-highlight', missingUp);
+        });
+      });
+    }catch(err){}
+  }
+  var priorRender = window.render;
+  if(typeof priorRender === 'function' && !priorRender.__missingUpGoldWrapped){
+    window.render = function(){
+      var result = priorRender.apply(this, arguments);
+      setTimeout(applyGoldMissingUpHighlight, 0);
+      return result;
+    };
+    window.render.__missingUpGoldWrapped = true;
+  }
+  document.addEventListener('input', function(evt){
+    if(evt.target && (evt.target.id === 'f-upid' || evt.target.closest('[data-notes-save-eid]'))){
+      setTimeout(applyGoldMissingUpHighlight, 0);
+    }
+  }, true);
+  document.addEventListener('change', function(evt){
+    if(evt.target && evt.target.id === 'f-upid') setTimeout(applyGoldMissingUpHighlight, 0);
+  }, true);
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(applyGoldMissingUpHighlight, 200); });
+  setTimeout(applyGoldMissingUpHighlight, 300);
+  setTimeout(applyGoldMissingUpHighlight, 1300);
+  window.applyEmployeeMissingUpGoldHighlight = applyGoldMissingUpHighlight;
+})();
+</script>
+
+
+
+<!-- Employee note indicator strict fix: remove stale cached note flags -->
+<script id="employee-note-indicator-strict-cache-fix">
+(function(){
+  'use strict';
+  var CACHE_KEY = 'employee_note_indicator_cache_v2';
+  var strictTimer = null;
+
+  function escAttr(v){
+    v = String(v == null ? '' : v);
+    if(window.CSS && typeof CSS.escape === 'function') return CSS.escape(v);
+    return v.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  }
+  function getEmployees(){
+    try{ if(Array.isArray(window.employees)) return window.employees; }catch(e){}
+    try{ if(Array.isArray(employees)) return employees; }catch(e){}
+    return [];
+  }
+  function findEmployee(id){
+    id = String(id == null ? '' : id);
+    return getEmployees().find(function(emp){ return String(emp && emp.id) === id; }) || null;
+  }
+  function recordNoteText(emp){
+    emp = emp || {};
+    return String(
+      emp.notes != null ? emp.notes :
+      emp.note != null ? emp.note :
+      emp.employee_notes != null ? emp.employee_notes :
+      emp.employeeNotes != null ? emp.employeeNotes :
+      emp.comments != null ? emp.comments : ''
+    );
+  }
+  function liveTextareaValue(id){
+    var box = document.querySelector('#page-employees [data-notes-save-eid="' + escAttr(id) + '"]');
+    return box ? box.value : null;
+  }
+  function actualHasNote(id){
+    var live = liveTextareaValue(id);
+    if(live !== null) return String(live).trim().length > 0;
+    return recordNoteText(findEmployee(id)).trim().length > 0;
+  }
+  function clearStaleCacheFor(id){
+    try{
+      var emp = findEmployee(id);
+      var live = liveTextareaValue(id);
+      var shouldKeep = (live !== null ? String(live).trim() : recordNoteText(emp).trim());
+      if(!shouldKeep){
+        var cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}') || {};
+        if(Object.prototype.hasOwnProperty.call(cache, String(id))){
+          delete cache[String(id)];
+          localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+        }
+      }
+    }catch(e){}
+  }
+  function setEmployeeNoteFields(id, value){
+    var emp = findEmployee(id);
+    if(!emp) return;
+    value = String(value == null ? '' : value);
+    emp.notes = value;
+    emp.note = value;
+    emp.employee_notes = value;
+    emp.employeeNotes = value;
+  }
+  function paintNameEl(nameEl, show){
+    if(!nameEl) return;
+    var flags = nameEl.querySelectorAll(':scope > .employee-note-flag, :scope > .employee-note-indicator');
+    if(show){
+      if(flags.length === 0){
+        var flag = document.createElement('span');
+        flag.className = 'employee-note-flag employee-note-indicator';
+        flag.title = 'This employee has a note';
+        flag.setAttribute('aria-label','Employee has a note');
+        flag.textContent = 'Note';
+        nameEl.appendChild(flag);
+      }else{
+        flags.forEach(function(flag, idx){
+          if(idx > 0){ flag.remove(); return; }
+          flag.className = 'employee-note-flag employee-note-indicator';
+          flag.title = 'This employee has a note';
+          flag.setAttribute('aria-label','Employee has a note');
+          flag.textContent = 'Note';
+        });
+      }
+    }else{
+      flags.forEach(function(flag){ flag.remove(); });
+    }
+  }
+  function refreshOneStrict(id, overrideValue){
+    id = String(id == null ? '' : id);
+    if(!id) return;
+    if(overrideValue !== undefined) setEmployeeNoteFields(id, overrideValue);
+    clearStaleCacheFor(id);
+    var show = overrideValue !== undefined ? String(overrideValue || '').trim().length > 0 : actualHasNote(id);
+    document.querySelectorAll('#page-employees [data-employee-name-id="' + escAttr(id) + '"]').forEach(function(nameEl){
+      paintNameEl(nameEl, show);
+    });
+    document.querySelectorAll('#page-employees [data-notes-eid="' + escAttr(id) + '"]').forEach(function(btn){
+      btn.classList.toggle('has-employee-note', show);
+    });
+  }
+  function refreshAllStrict(){
+    var ids = Object.create(null);
+    document.querySelectorAll('#page-employees [data-employee-name-id], #page-employees [data-notes-eid], #page-employees [data-notes-save-eid]').forEach(function(el){
+      var id = el.getAttribute('data-employee-name-id') || el.getAttribute('data-notes-eid') || el.getAttribute('data-notes-save-eid') || '';
+      if(id) ids[String(id)] = true;
+    });
+    Object.keys(ids).forEach(function(id){ refreshOneStrict(id); });
+  }
+  function scheduleStrictRefresh(){
+    clearTimeout(strictTimer);
+    strictTimer = setTimeout(refreshAllStrict, 40);
+  }
+
+  window.refreshEmployeeNoteIndicator = refreshOneStrict;
+  window.refreshEmployeeNoteIndicators = refreshAllStrict;
+
+  document.addEventListener('input', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOneStrict(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+  document.addEventListener('change', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOneStrict(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+  document.addEventListener('blur', function(ev){
+    var box = ev.target && ev.target.closest ? ev.target.closest('#page-employees [data-notes-save-eid]') : null;
+    if(!box) return;
+    refreshOneStrict(box.getAttribute('data-notes-save-eid'), box.value);
+  }, true);
+
+  var priorRender = window.render;
+  if(typeof priorRender === 'function' && !priorRender.__employeeNoteIndicatorStrictCacheFix){
+    var wrappedRender = function(){
+      var result = priorRender.apply(this, arguments);
+      scheduleStrictRefresh();
+      setTimeout(refreshAllStrict, 120);
+      return result;
+    };
+    wrappedRender.__employeeNoteIndicatorStrictCacheFix = true;
+    window.render = wrappedRender;
+  }
+
+  function startStrict(){
+    try{
+      // The previous note indicator used localStorage as a backup. That caused stale flags after notes were erased.
+      // Remove it and let the flag follow only the actual employee note text or the currently open textarea.
+      localStorage.removeItem(CACHE_KEY);
+    }catch(e){}
+    var page = document.getElementById('page-employees');
+    if(page && !page.__employeeNoteStrictObserver){
+      page.__employeeNoteStrictObserver = true;
+      new MutationObserver(scheduleStrictRefresh).observe(page, {childList:true, subtree:true});
+    }
+    refreshAllStrict();
+    setTimeout(refreshAllStrict, 250);
+    setTimeout(refreshAllStrict, 1100);
+  }
+  document.addEventListener('DOMContentLoaded', startStrict);
+  setTimeout(startStrict, 100);
+  setTimeout(refreshAllStrict, 750);
+  setInterval(refreshAllStrict, 2000);
+})();
+</script>
+
+
+<style id="employee-shift-count-metric-size-patch">
+#page-employees #s-day,
+#page-employees #s-night,
+#page-employees #s-gate{
+  font-size:48px!important;
+  letter-spacing:-.055em!important;
+}
+#page-employees #s-day small,
+#page-employees #s-night small,
+#page-employees #s-gate small{
+  font-size:24px!important;
+  font-weight:950!important;
+  opacity:.9!important;
+}
+@media(max-width:700px){
+  #page-employees #s-day,
+  #page-employees #s-night,
+  #page-employees #s-gate{font-size:40px!important;}
+  #page-employees #s-day small,
+  #page-employees #s-night small,
+  #page-employees #s-gate small{font-size:20px!important;}
+}
+</style>
 </body>
 </html>
 <style id="employee-missing-up-red-column-line-fix">
@@ -19027,5 +19370,251 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
 
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){ if(typeof window.updateStats === 'function') window.updateStats(); }, 250); });
   setTimeout(function(){ if(typeof window.updateStats === 'function') window.updateStats(); }, 500);
+})();
+</script>
+
+
+<style id="employee-id-metrics-overhaul-css">
+/* Employee ID metrics overhaul: focused on profile health, UP ID workflow, missing-note requirement, duplicates, and shift health. */
+#page-employees .stats-row.employee-metrics-overhauled{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(145px,1fr))!important;
+  gap:12px!important;
+  padding:16px 24px!important;
+}
+#page-employees .stats-row.employee-metrics-overhauled .stat-card{
+  min-height:112px!important;
+  padding:16px 16px 14px!important;
+  border-radius:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.22)!important;
+}
+#page-employees .stats-row.employee-metrics-overhauled .stat-card::after{
+  content:"";
+  position:absolute;
+  inset:auto 10px 9px 10px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  pointer-events:none;
+}
+#page-employees .emp-metric-topline{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+}
+#page-employees .emp-metric-kicker{
+  font-size:10px!important;
+  line-height:1.1!important;
+  letter-spacing:1.4px!important;
+  text-transform:uppercase!important;
+  font-weight:900!important;
+  color:var(--muted)!important;
+}
+#page-employees .emp-metric-icon{
+  font-size:18px!important;
+  opacity:.7!important;
+  line-height:1!important;
+}
+#page-employees .emp-metric-number{
+  font-size:42px!important;
+  line-height:.92!important;
+  font-weight:950!important;
+  letter-spacing:-.04em!important;
+  font-family:var(--emp-display, var(--mono))!important;
+}
+#page-employees .emp-metric-number small{
+  font-size:16px!important;
+  font-weight:850!important;
+  letter-spacing:-.02em!important;
+  color:inherit!important;
+  opacity:.82!important;
+}
+#page-employees .emp-metric-sub{
+  min-height:28px!important;
+  font-size:10.5px!important;
+  line-height:1.25!important;
+  letter-spacing:.5px!important;
+  text-transform:uppercase!important;
+  color:var(--text3)!important;
+  font-weight:850!important;
+}
+#page-employees .emp-metric-bar{
+  height:6px!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.08)!important;
+  overflow:hidden!important;
+  margin-top:2px!important;
+}
+#page-employees .emp-metric-fill{
+  height:100%!important;
+  width:0%;
+  border-radius:999px!important;
+  transition:width .25s ease!important;
+}
+#page-employees .emp-metric-red{color:#ef4444!important;}
+#page-employees .emp-metric-yellow{color:#f59e0b!important;}
+#page-employees .emp-metric-green{color:#22c55e!important;}
+#page-employees .emp-metric-gold{color:#f59e0b!important;}
+#page-employees .emp-metric-neutral{color:#e5e7eb!important;}
+#page-employees .stat-card.stat-card-upid{background:linear-gradient(135deg,#1f1500,#160f00)!important;border:1px solid rgba(245,158,11,.28)!important;}
+#page-employees .stat-card.stat-card-upid::before{background:linear-gradient(90deg,#b45309,#f59e0b)!important;}
+#page-employees .stat-card.stat-card-note{background:linear-gradient(135deg,#1a0a0a,#100505)!important;border:1px solid rgba(239,68,68,.25)!important;}
+#page-employees .stat-card.stat-card-note::before{background:linear-gradient(90deg,#dc2626,#ef4444)!important;}
+#page-employees .stat-card.stat-card-dupes{background:linear-gradient(135deg,#111827,#0b1120)!important;border:1px solid rgba(148,163,184,.22)!important;}
+#page-employees .stat-card.stat-card-dupes::before{background:linear-gradient(90deg,#64748b,#cbd5e1)!important;}
+#page-employees .stat-card.stat-card-shifts{background:linear-gradient(135deg,#001f12,#00150c)!important;border:1px solid rgba(16,185,129,.20)!important;}
+#page-employees .stat-card.stat-card-shifts::before{background:linear-gradient(90deg,#065f46,#10b981)!important;}
+#page-employees .emp-shift-mini{
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:6px!important;
+  margin-top:2px!important;
+}
+#page-employees .emp-shift-pill{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  background:rgba(255,255,255,.045)!important;
+  border-radius:12px!important;
+  padding:7px 6px!important;
+  text-align:center!important;
+}
+#page-employees .emp-shift-pill b{
+  font-size:9px!important;
+  letter-spacing:1px!important;
+  color:var(--text3)!important;
+}
+#page-employees .emp-shift-pill span{
+  font-size:16px!important;
+  font-weight:950!important;
+  line-height:1!important;
+}
+@media(max-width:1100px){
+  #page-employees .stats-row.employee-metrics-overhauled{grid-template-columns:repeat(3,minmax(150px,1fr))!important;}
+}
+@media(max-width:700px){
+  #page-employees .stats-row.employee-metrics-overhauled{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    padding:12px!important;
+    gap:10px!important;
+  }
+  #page-employees .stats-row.employee-metrics-overhauled .stat-card{
+    min-width:0!important;
+    min-height:104px!important;
+    padding:14px 12px!important;
+  }
+  #page-employees .emp-metric-number{font-size:36px!important;}
+  #page-employees .emp-metric-kicker{font-size:9px!important;letter-spacing:1.1px!important;}
+  #page-employees .emp-metric-sub{font-size:9px!important;}
+}
+</style>
+<script id="employee-id-metrics-overhaul-js">
+(function(){
+  if(window.__employeeIdMetricsOverhaul) return;
+  window.__employeeIdMetricsOverhaul = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function pct(done,total){ return total ? Math.max(0, Math.min(100, (done/total)*100)) : 0; }
+  function pctClass(v){ if(v >= 98) return 'emp-metric-green'; if(v >= 90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(v, warn){ return v > 0 ? (warn || 'emp-metric-red') : 'emp-metric-green'; }
+  function isPreset(v){
+    var x = clean(v).toUpperCase();
+    return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(x) > -1;
+  }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function noteText(e){ return clean(e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments || '')); }
+  function completeEmployee(e){
+    if(typeof window.isComplete === 'function') return !!window.isComplete(e || {});
+    e = e || {};
+    return !!(clean(e.first) && clean(e.last) && clean(e.empId) && resolvedUp(e.upId) && clean(e.phone) && clean(e.daysOff));
+  }
+  function missingList(e){
+    if(typeof window.missingItems === 'function') return window.missingItems(e || []) || [];
+    e = e || {};
+    var out=[];
+    if(!clean(e.empId)) out.push('Conglobal ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('Email');
+    if(!clean(e.phone)) out.push('Phone');
+    if(!clean(e.daysOff)) out.push('Days Off');
+    return out;
+  }
+  function dupList(e, maps){
+    if(typeof window.duplicateFields === 'function') return window.duplicateFields(e || {}, maps || (typeof window.buildDuplicateMaps === 'function' ? window.buildDuplicateMaps() : {})) || [];
+    return [];
+  }
+  function setHtml(id, html){ var el=document.getElementById(id); if(el) el.innerHTML=html; }
+  function setText(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; }
+  function setMetricClass(id, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.classList.remove('emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral');
+    el.classList.add(cls || 'emp-metric-neutral');
+  }
+  function setFill(id, value, cls){
+    var el=document.getElementById(id); if(!el) return;
+    el.style.width = Math.max(0, Math.min(100, value || 0)) + '%';
+    el.className = 'emp-metric-fill ' + (cls || 'emp-metric-neutral');
+    if(cls === 'emp-metric-red') el.style.background = '#ef4444';
+    else if(cls === 'emp-metric-yellow' || cls === 'emp-metric-gold') el.style.background = '#f59e0b';
+    else if(cls === 'emp-metric-green') el.style.background = '#22c55e';
+    else el.style.background = 'rgba(229,231,235,.55)';
+  }
+  function renderMetricShell(){
+    var row = document.querySelector('#page-employees .stats-row');
+    if(!row || row.__employeeMetricsOverhauled) return;
+    row.__employeeMetricsOverhauled = true;
+    row.classList.add('employee-metrics-overhauled');
+    row.innerHTML = ''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">Complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>';
+  }
+
+  window.updateStats = function(){
+    renderMetricShell();
+    var list = Array.isArray(window.employees) ? window.employees : [];
+    var maps = (typeof window.buildDuplicateMaps === 'function') ? window.buildDuplicateMaps() : null;
+    var total = list.length;
+    var complete = list.filter(completeEmployee).length;
+    var completionPct = pct(complete,total);
+    var completionCls = pctClass(completionPct);
+
+    setHtml('s-total', Math.round(completionPct) + '<small>%</small>');
+    setText('s-total-sub', complete + '/' + total + ' profiles complete');
+    setMetricClass('s-total', completionCls);
+    setFill('s-total-bar', completionPct, completionCls);
+
+    function shiftPct(name){
+      var rows = list.filter(function(e){ return clean(e && e.shift).toUpperCase() === name; });
+      var done = rows.filter(completeEmployee).length;
+      return {done: done, total: rows.length, pct: pct(done, rows.length)};
+    }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){
+      var x = shiftPct(pair[0]);
+      var cls = pctClass(x.pct);
+      setHtml(pair[1], x.done + '<small>/' + x.total + '</small>');
+      setText(pair[1] + '-sub', 'Complete');
+      setMetricClass(pair[1], cls);
+      setFill(pair[1] + '-bar', x.pct, cls);
+      var el = document.getElementById(pair[1]);
+      if(el) el.title = x.done + '/' + x.total + ' complete';
+    });
+  };
+
+  function boot(){
+    renderMetricShell();
+    if(typeof window.updateStats === 'function') window.updateStats();
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 50); setTimeout(boot, 500); });
+  setTimeout(boot, 100);
+  setTimeout(boot, 1000);
 })();
 </script>
