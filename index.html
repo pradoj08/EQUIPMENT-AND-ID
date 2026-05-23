@@ -4517,6 +4517,10 @@ function clearEqNotesInline(btn){
 .emp-flag{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:999px;border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.10);color:#fecaca!important;font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.45px;text-transform:uppercase;white-space:nowrap;}
 .emp-flag.dup{border-color:rgba(245,158,11,.38);background:rgba(245,158,11,.12);color:#fcd34d!important;}
 .emp-flag.good{border-color:rgba(34,197,94,.30);background:rgba(34,197,94,.10);color:#86efac!important;}
+.employee-note-flag{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;padding:2px 7px;border-radius:999px;border:1px solid rgba(245,158,11,.42);background:rgba(245,158,11,.16);color:#fcd34d!important;font-family:var(--mono);font-size:9px;font-weight:900;letter-spacing:.65px;text-transform:uppercase;vertical-align:middle;box-shadow:0 0 0 1px rgba(245,158,11,.05),0 6px 14px rgba(0,0,0,.18);white-space:nowrap;}
+.employee-note-flag::before{content:'📝';font-size:11px;margin-right:4px;line-height:1;}
+#page-employees .employee-card-name .employee-note-flag{font-size:8px;padding:2px 6px;margin-left:6px;transform:translateY(-1px);}
+
 tr.employee-delete-pending td{background:rgba(127,29,29,.48)!important;box-shadow:inset 0 0 0 9999px rgba(239,68,68,.08);}
 .emp-delete-btn{border-color:rgba(239,68,68,.4)!important;color:#fca5a5!important;}
 .emp-delete-btn.confirm{background:rgba(239,68,68,.24)!important;color:#fff!important;border-color:#ef4444!important;animation:employeeDeletePulse 1.2s infinite;}
@@ -16469,7 +16473,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
 
   async function refreshEmployeesFromRemote(){
     if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn) return;
-    if(employeeSyncBusy || employeeEditCoolingDown()) return;
+    if(employeeSyncBusy || employeeEditCoolingDown() || (typeof window.employeeNotesHasFocus==='function' && window.employeeNotesHasFocus())) return;
     employeeSyncBusy = true;
     try{
       await window.loadEmployees();
@@ -17219,7 +17223,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   window.loadEmployees = async function(){
     var loadedGlobal = await loadEmployeeRosterState();
     if(loadedGlobal){
-      try{ if(typeof render === 'function') render(); }catch(e){}
+      try{ if(!employeeNotesHasFocus() && typeof render === 'function') render(); }catch(e){}
       return;
     }
     try{
@@ -17231,7 +17235,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     try{
       if(typeof rosterLooksBroken === 'function' && rosterLooksBroken()){
         var retry = await loadEmployeeRosterState();
-        if(retry && typeof render === 'function') render();
+        if(retry && !employeeNotesHasFocus() && typeof render === 'function') render();
       }
     }catch(e){}
   };
@@ -17240,7 +17244,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   setTimeout(function(){
     try{
       if(window.eqLoggedIn && typeof window.loadEmployees === 'function'){
-        window.loadEmployees().then(function(){ try{ if(typeof render === 'function') render(); }catch(e){} });
+        window.loadEmployees().then(function(){ try{ if(!employeeNotesHasFocus() && typeof render === 'function') render(); }catch(e){} });
       }
     }catch(e){}
   }, 1200);
@@ -17252,8 +17256,15 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
 (function(){
   var pendingEmployeeDeleteId = null;
   var employeeNotesOpen = {};
+  var employeeNoteSaveTimers = {};
+  var employeeNoteDirty = {};
   var employeeCardMode = localStorage.getItem('employee_card_mode_v1') === '1';
   var employeeBulkPreviewRows = [];
+  function employeeNotesHasFocus(){
+    var a = document.activeElement;
+    return !!(a && a.classList && a.classList.contains('employee-notes-box'));
+  }
+  window.employeeNotesHasFocus = employeeNotesHasFocus;
   function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function clean(v){ return String(v || '').trim(); }
   function lower(v){ return clean(v).toLowerCase(); }
@@ -17269,7 +17280,8 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var out=[];
     if(!clean(e.empId)) out.push('Conglobal ID');
     if(!clean(e.upId)) out.push('UP ID');
-    if(!clean(e.password)) out.push('Password');
+    // Password is intentionally NOT included in Needs Attention.
+    // The Password column can still show Missing Password, but it will not drive the Needs Attention tab/count/banner.
     if(!clean(e.email)) out.push('Email');
     if(!clean(e.phone)) out.push('Phone');
     if(!clean(e.daysOff)) out.push('Days Off');
@@ -17291,6 +17303,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   function buildDuplicateMaps(){ return {empId:duplicateMap('empId'),upId:duplicateMap('upId'),email:duplicateMap('email'),phone:duplicateMap('phone')}; }
   function needsAttention(e){ return missingItems(e).length > 0 || duplicateFields(e, buildDuplicateMaps()).length > 0; }
   function personName(e){ return (clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || 'Unnamed Employee'; }
+  function noteFlagHtml(e){ return clean(e && e.notes) ? '<span class="employee-note-flag" title="This employee has notes">Note</span>' : ''; }
   function metaSpan(value, cls, title, textOverride){ return '<span class="'+cls+' emp-table-value employee-hover-meta" title="'+esc(title)+'">'+esc(textOverride != null ? textOverride : (value || '—'))+'</span>'; }
   function flagsHtml(e, maps){
     var miss = missingItems(e).map(function(m){ return '<span class="emp-flag">Missing '+esc(m)+'</span>'; }).join('');
@@ -17340,8 +17353,9 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     if(!root) return;
     root.querySelectorAll('[data-notes-eid]').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();toggleEmployeeNotes(this.dataset.notesEid);});});
     root.querySelectorAll('[data-notes-save-eid]').forEach(function(box){
-      box.addEventListener('change',function(){saveEmployeeNote(this.dataset.notesSaveEid, this.value);});
-      box.addEventListener('blur',function(){saveEmployeeNote(this.dataset.notesSaveEid, this.value);});
+      box.addEventListener('input',function(){scheduleEmployeeNoteSave(this.dataset.notesSaveEid, this.value);});
+      box.addEventListener('change',function(){flushEmployeeNoteSave(this.dataset.notesSaveEid, this.value);});
+      box.addEventListener('blur',function(){flushEmployeeNoteSave(this.dataset.notesSaveEid, this.value);});
     });
   }
   window.toggleEmployeeNotes = function(id){
@@ -17349,17 +17363,35 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     employeeNotesOpen[id] = !employeeNotesOpen[id];
     if(typeof render === 'function') render();
   };
-  window.saveEmployeeNote = function(id, value){
+  function applyEmployeeNoteValue(id, value){
     var e=(employees||[]).find(function(x){return x.id===id;});
-    if(!e) return;
-    var next=String(value||'').trim();
-    if(String(e.notes||'')===next) return;
+    if(!e) return false;
+    var next=String(value == null ? '' : value);
+    if(String(e.notes||'')===next && !employeeNoteDirty[id]) return false;
     e.notes=next;
     e.notes_edited_at=nowIso();
     e.notes_edited_by=currentEditor();
-    if(typeof logActivity==='function') logActivity('employee','<strong>'+personName(e)+'</strong> notes updated','Employee ID notes changed');
+    employeeNoteDirty[id]=true;
+    return true;
+  }
+  window.scheduleEmployeeNoteSave = function(id, value){
+    if(!id) return;
+    applyEmployeeNoteValue(id, value);
+    clearTimeout(employeeNoteSaveTimers[id]);
+    employeeNoteSaveTimers[id]=setTimeout(function(){
+      flushEmployeeNoteSave(id, value);
+    }, 900);
+  };
+  window.flushEmployeeNoteSave = function(id, value){
+    if(!id) return;
+    clearTimeout(employeeNoteSaveTimers[id]);
+    applyEmployeeNoteValue(id, value);
+    if(!employeeNoteDirty[id]) return;
+    employeeNoteDirty[id]=false;
+    if(typeof logActivity==='function') logActivity('employee','<strong>'+personName((employees||[]).find(function(x){return x.id===id;})||{})+'</strong> notes updated','Employee ID notes changed');
     save();
   };
+  window.saveEmployeeNote = window.flushEmployeeNoteSave;
   function bindEmployeeDeleteButtons(root){
     if(!root) return;
     root.querySelectorAll('[data-delete-eid]').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();protectedDeleteEmployee(this.dataset.deleteEid);});});
@@ -17386,7 +17418,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       var pw=clean(e.password);
       var pwShown = pw ? (canSeePw ? pw : '••••••') : '';
       return '<div class="employee-card '+(pendingEmployeeDeleteId===e.id?'delete-pending':'')+'" data-eid="'+esc(e.id)+'">'
-        + '<div class="employee-card-head"><div><div class="employee-card-name">'+esc(personName(e))+'</div></div>'+shiftBadge(e.shift)+'</div>'
+        + '<div class="employee-card-head"><div><div class="employee-card-name">'+esc(personName(e))+noteFlagHtml(e)+'</div></div>'+shiftBadge(e.shift)+'</div>'
         + '<div class="employee-card-grid">'
         + cardField('Conglobal ID', e.empId, 'Missing Conglobal ID')
         + cardField('UP ID', e.upId, 'Missing UP ID')
@@ -17457,7 +17489,6 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     if(callouts.length) html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Called Out</div><div class="banner-chips">'+callouts.map(shiftChip).join('')+'</div></div>';
     if(waiting.length) html+='<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>Waiting On</div><div class="banner-chips">'+waiting.map(shiftChip).join('')+'</div></div>';
     if(needsAttnVisible && (missingUp.length || attn.length)){
-      html+='<div class="employee-attn-tabs"><button class="employee-attn-tab '+(currentTab==='missingUp'?'active':'')+'" onclick="setTab(\'missingUp\')" type="button">Missing UP ID '+missingUp.length+'</button><button class="employee-attn-tab '+(currentTab==='attention'?'active':'')+'" onclick="setTab(\'attention\')" type="button">Needs Attention '+attn.length+'</button></div>';
       var chips=attn.slice(0,80).map(function(e){
         var sc={Day:'bchip-day',Night:'bchip-night',Gate:'bchip-gate'}[e.shift]||'bchip-day';
         var items=missingItems(e).concat(duplicateFields(e,maps)).join(', ');
@@ -17487,7 +17518,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       var pw=clean(e.password); var pwCell=pw?metaSpan(canSeePw?pw:'••••••','emp-id emp-password-cell',fmtMeta(e.password_edited_at,e.password_edited_by),canSeePw?pw:'••••••'):'<button type="button" class="missing-field-btn missing-password" data-eid="'+esc(e.id)+'" title="Add password">Missing Password</button>';
       var emailCell=clean(e.email)?metaSpan(e.email,'phone-cell',fmtMeta(e.email_edited_at,e.email_edited_by),e.email)+(duplicateFields(e,maps).indexOf('Duplicate Email')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-email" data-eid="'+esc(e.id)+'" title="Add email">Missing Email</button>';
       return '<tr class="'+(pendingEmployeeDeleteId===e.id?'employee-delete-pending':'')+'">'
-        +'<td><div class="emp-name emp-table-value">'+esc(personName(e))+'</div></td>'
+        +'<td><div class="emp-name emp-table-value">'+esc(personName(e))+noteFlagHtml(e)+'</div></td>'
         +'<td>'+empCell+'</td><td>'+upCell+'</td><td>'+pwCell+'</td><td>'+emailCell+'</td><td>'+shiftBadge(e.shift)+'</td><td><span class="days-off emp-table-value">'+esc(e.daysOff||'—')+'</span></td><td>'+phoneCell+'</td>'
         +'<td><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+'</td></tr>'
         + notesPanelHtml(e, true);
