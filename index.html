@@ -4999,6 +4999,12 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
 }
 </style>
 
+
+<style id="employee-hide-password-list-css">
+/* Employee ID: passwords are only shown/edited inside the Edit Employee popup. */
+#page-employees #employee-table-main .emp-password-cell,
+#page-employees #employee-table-main .missing-password{display:none!important;}
+</style>
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
@@ -9851,7 +9857,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 </div>
 <div class="table-wrap">
   <table id="employee-table-main"><thead><tr>
-    <th>Name</th><th>Conglobal ID</th><th>UP ID</th><th>Password</th><th>Email</th><th>Shift</th><th>Days Off</th><th>Phone</th><th>Actions</th>
+    <th>Name</th><th>Conglobal ID</th><th>UP ID</th><th>Email</th><th>Shift</th><th>Days Off</th><th>Phone</th><th>Actions</th>
   </tr></thead><tbody id="emp-table"></tbody></table>
   <div id="employee-card-list" class="employee-card-list" style="display:none;"></div>
   <div id="no-data" class="no-data" style="display:none;">No employees found.</div>
@@ -10761,7 +10767,6 @@ function render(){
       +'<td><div class="emp-name emp-table-value">'+e.first+' '+e.last+'</div></td>'
       +'<td>'+empCell+'</td>'
       +'<td>'+upCell+'</td>'
-      +'<td>'+pwCell+'</td>'
       +'<td>'+emailCell+'</td>'
       +'<td>'+shiftBadge(e.shift)+'</td>'
       +'<td><span class="days-off emp-table-value">'+(e.daysOff||'—')+'</span></td>'
@@ -10839,7 +10844,7 @@ function saveEmp(){
   var safePassword = canSeePw
     ? (pwInput ? pwInput.value.trim() : '')
     : (currentEmp ? (currentEmp.password || '') : '');
-  var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:safePassword,email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:(currentEmp && currentEmp.status) ? currentEmp.status : 'active'};
+  var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:safePassword,email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:formatEmployeePhone(document.getElementById('f-phone').value.trim()),daysOff:document.getElementById('f-days').value.trim(),status:(currentEmp && currentEmp.status) ? currentEmp.status : 'active'};
   if(editId){
     var idx=employees.findIndex(function(x){return x.id===editId;});
     if(idx>-1){ employees[idx]=Object.assign({},employees[idx],data); logActivity('employee','<strong>'+data.first+' '+data.last+'</strong> updated','Shift: '+data.shift+' · Emp ID: '+(data.empId||'—')); }
@@ -17319,6 +17324,14 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   window.employeeNotesHasFocus = employeeNotesHasFocus;
   function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function clean(v){ return String(v || '').trim(); }
+  function formatEmployeePhone(value){
+    var raw = String(value == null ? '' : value).trim();
+    if(!raw) return '';
+    var digits = raw.replace(/\D/g,'');
+    if(digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+    if(digits.length === 10) return '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+    return raw.toUpperCase();
+  }
   var UP_ID_PRESET_VALUES = ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'];
   function normalizeUpIdValue(v){ return clean(v).toUpperCase(); }
   function isUpIdPreset(v){ return UP_ID_PRESET_VALUES.indexOf(normalizeUpIdValue(v)) > -1; }
@@ -17426,7 +17439,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var inner = '<div class="employee-notes-panel"><div class="employee-notes-title">Employee Notes</div>'
       + '<textarea class="employee-notes-box" data-notes-save-eid="'+esc(e.id)+'" placeholder="Type employee notes here...">'+esc(employeeNoteValue(e))+'</textarea>'
       + '<div class="employee-notes-meta">'+esc(meta)+'</div></div>';
-    return tableMode ? '<tr class="employee-notes-row"><td colspan="9">'+inner+'</td></tr>' : '<div class="employee-card-notes">'+inner+'</div>';
+    return tableMode ? '<tr class="employee-notes-row"><td colspan="8">'+inner+'</td></tr>' : '<div class="employee-card-notes">'+inner+'</div>';
   }
   function bindEmployeeNotes(root){
     if(!root) return;
@@ -17505,9 +17518,8 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
         + '<div class="employee-card-grid">'
         + cardField('Conglobal ID', e.empId, 'Missing Conglobal ID')
         + cardField('UP ID', e.upId, 'Missing UP ID', isUpIdPreset(e.upId) ? 'upid-preset-status' : '', null, !isResolvedUpId(e.upId))
-        + cardField('Password', pwShown, 'Update', 'employee-hover-meta employee-password-update-card', fmtMeta(e.password_edited_at, e.password_edited_by))
         + cardField('Email', e.email, 'Missing Email', 'employee-hover-meta', fmtMeta(e.email_edited_at, e.email_edited_by))
-        + cardField('Phone', e.phone, 'Missing Phone', 'employee-hover-meta', fmtMeta(e.phone_edited_at, e.phone_edited_by))
+        + cardField('Phone', formatEmployeePhone(e.phone), 'Missing Phone', 'employee-hover-meta', fmtMeta(e.phone_edited_at, e.phone_edited_by))
         + cardField('Days Off', e.daysOff, 'Missing Days Off')
         + '</div><div class="employee-card-actions"><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+'</div>'
         + notesPanelHtml(e, false)
@@ -17601,12 +17613,13 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       var upCell = upIsResolved
         ? '<span class="emp-id emp-table-value">'+esc(e.upId)+'</span>'+(duplicateFields(e,maps).indexOf('Duplicate UP ID')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':'')
         : '<button type="button" class="missing-field-btn missing-upid '+(upIsPreset?'upid-preset-status':'')+'" data-eid="'+esc(e.id)+'" title="Update UP ID">'+esc(upIsPreset ? e.upId : 'Missing UP')+'</button>';
-      var phoneCell=clean(e.phone)?metaSpan(e.phone,'phone-cell',fmtMeta(e.phone_edited_at,e.phone_edited_by),e.phone)+(duplicateFields(e,maps).indexOf('Duplicate Phone')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-phone" data-eid="'+esc(e.id)+'" title="Add phone number">Missing Phone</button>';
+      var phoneDisplay=formatEmployeePhone(e.phone);
+      var phoneCell=clean(e.phone)?metaSpan(phoneDisplay,'phone-cell',fmtMeta(e.phone_edited_at,e.phone_edited_by),phoneDisplay)+(duplicateFields(e,maps).indexOf('Duplicate Phone')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-phone" data-eid="'+esc(e.id)+'" title="Add phone number">Missing Phone</button>';
       var pw=clean(e.password); var pwCell=pw?metaSpan(canSeePw?pw:'••••••','emp-id emp-password-cell',fmtMeta(e.password_edited_at,e.password_edited_by),canSeePw?pw:'••••••'):'<button type="button" class="missing-field-btn missing-password" data-eid="'+esc(e.id)+'" title="Update password">Update</button>';
       var emailCell=clean(e.email)?metaSpan(e.email,'phone-cell',fmtMeta(e.email_edited_at,e.email_edited_by),e.email)+(duplicateFields(e,maps).indexOf('Duplicate Email')>-1?'<div class="emp-flags"><span class="emp-flag dup">Duplicate</span></div>':''):'<button type="button" class="missing-field-btn missing-email" data-eid="'+esc(e.id)+'" title="Add email">Missing Email</button>';
       return '<tr class="'+(pendingEmployeeDeleteId===e.id?'employee-delete-pending':'')+'">'
         +'<td><div class="emp-name emp-table-value" data-employee-name-id="'+esc(e.id)+'">'+esc(personName(e))+noteFlagHtml(e)+'</div></td>'
-        +'<td>'+empCell+'</td><td>'+upCell+'</td><td>'+pwCell+'</td><td>'+emailCell+'</td><td>'+shiftBadge(e.shift)+'</td><td><span class="days-off emp-table-value">'+esc(e.daysOff||'—')+'</span></td><td>'+phoneCell+'</td>'
+        +'<td>'+empCell+'</td><td>'+upCell+'</td><td>'+emailCell+'</td><td>'+shiftBadge(e.shift)+'</td><td><span class="days-off emp-table-value">'+esc(e.daysOff||'—')+'</span></td><td>'+phoneCell+'</td>'
         +'<td><button class="action-btn" data-eid="'+esc(e.id)+'">Edit</button>'+notesButtonHtml(e.id)+'</td></tr>'
         + notesPanelHtml(e, true);
     }).join('');
@@ -17651,7 +17664,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     var first=document.getElementById('f-first').value.trim(); var last=document.getElementById('f-last').value.trim(); if(!first||!last){alert('First and last name required.');return;}
     var pwInput=document.getElementById('f-password'); var canSeePw=(typeof canViewEmployeePasswords==='function')?canViewEmployeePasswords():false; var currentEmp=editId?(employees||[]).find(function(x){return x.id===editId;}):null;
     var safePassword=canSeePw?(pwInput?pwInput.value.trim():''):(currentEmp?(currentEmp.password||''):'');
-    var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:safePassword,email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:document.getElementById('f-phone').value.trim(),daysOff:document.getElementById('f-days').value.trim(),status:(currentEmp&&currentEmp.status)?currentEmp.status:'active',notes:(currentEmp?employeeNoteValue(currentEmp):''),note:(currentEmp?employeeNoteValue(currentEmp):''),employee_notes:(currentEmp?employeeNoteValue(currentEmp):''),employeeNotes:(currentEmp?employeeNoteValue(currentEmp):''),notes_edited_at:(currentEmp&&currentEmp.notes_edited_at)?currentEmp.notes_edited_at:'',notes_edited_by:(currentEmp&&currentEmp.notes_edited_by)?currentEmp.notes_edited_by:''};
+    var data={first:first,last:last,empId:document.getElementById('f-empid').value.trim(),upId:document.getElementById('f-upid').value.trim(),password:safePassword,email:document.getElementById('f-email').value.trim(),shift:document.getElementById('f-shift').value,phone:formatEmployeePhone(document.getElementById('f-phone').value.trim()),daysOff:document.getElementById('f-days').value.trim(),status:(currentEmp&&currentEmp.status)?currentEmp.status:'active',notes:(currentEmp?employeeNoteValue(currentEmp):''),note:(currentEmp?employeeNoteValue(currentEmp):''),employee_notes:(currentEmp?employeeNoteValue(currentEmp):''),employeeNotes:(currentEmp?employeeNoteValue(currentEmp):''),notes_edited_at:(currentEmp&&currentEmp.notes_edited_at)?currentEmp.notes_edited_at:'',notes_edited_by:(currentEmp&&currentEmp.notes_edited_by)?currentEmp.notes_edited_by:''};
     var stamp=nowIso(), editor=currentEditor();
     if(currentEmp){
       if(canSeePw && clean(currentEmp.password)!==clean(data.password)){ data.password_edited_at=stamp; data.password_edited_by=editor; } else { data.password_edited_at=currentEmp.password_edited_at||''; data.password_edited_by=currentEmp.password_edited_by||''; }
@@ -17667,7 +17680,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
   function parseImportLine(line){
     var parts=String(line||'').split(/[\t,|]+/).map(function(x){return x.trim();});
     if(parts.length===1){ var n=parts[0].split(/\s+/); return {first:n.slice(0,-1).join(' ')||n[0]||'', last:n.length>1?n[n.length-1]:'', raw:line}; }
-    var name=parts[0]||''; var bits=name.split(/\s+/); return {first:bits.slice(0,-1).join(' ')||bits[0]||'', last:bits.length>1?bits[bits.length-1]:'', empId:parts[1]||'', upId:parts[2]||'', password:parts[3]||'', email:parts[4]||'', shift:parts[5]||'Day', phone:parts[6]||'', daysOff:parts[7]||'', raw:line};
+    var name=parts[0]||''; var bits=name.split(/\s+/); return {first:bits.slice(0,-1).join(' ')||bits[0]||'', last:bits.length>1?bits[bits.length-1]:'', empId:parts[1]||'', upId:parts[2]||'', password:parts[3]||'', email:parts[4]||'', shift:parts[5]||'Day', phone:formatEmployeePhone(parts[6]||''), daysOff:parts[7]||'', raw:line};
   }
   function findImportMatch(row){
     var name=(lower(row.first)+' '+lower(row.last)).trim();
@@ -17773,7 +17786,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
       + '<textarea class="employee-notes-box" data-notes-save-eid="'+esc(e.id)+'" placeholder="Type employee notes here...">'+esc(employeeNoteText(e))+'</textarea>'
       + '<div class="employee-notes-meta">'+esc(employeeNotesMeta(e))+'</div>'
       + '</div>';
-    return tableMode ? '<tr class="employee-notes-row" data-note-row-for="'+esc(e.id)+'"><td colspan="9">'+inner+'</td></tr>' : '<div class="employee-card-notes" data-note-card-for="'+esc(e.id)+'">'+inner+'</div>';
+    return tableMode ? '<tr class="employee-notes-row" data-note-row-for="'+esc(e.id)+'"><td colspan="8">'+inner+'</td></tr>' : '<div class="employee-card-notes" data-note-card-for="'+esc(e.id)+'">'+inner+'</div>';
   }
 
   function bindNoteBox(box){
@@ -18673,5 +18686,208 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
   setTimeout(install, 250);
 })();
 </script>
+
+
+<style id="employee-missing-up-note-required-fix-css">
+/* Missing-UP records must have a note: highlight until note is attached or UP ID is resolved. */
+#page-employees tr.employee-up-note-required > td{
+  background:rgba(239,68,68,.18)!important;
+  box-shadow:inset 4px 0 0 rgba(239,68,68,.95);
+}
+#page-employees tr.employee-up-note-required:hover > td{
+  background:rgba(239,68,68,.24)!important;
+}
+#page-employees .employee-card.employee-up-note-required{
+  border-color:rgba(239,68,68,.75)!important;
+  border-left-color:#ef4444!important;
+  background:linear-gradient(180deg,rgba(69,18,22,.98),rgba(30,13,16,.98))!important;
+  box-shadow:0 14px 30px rgba(239,68,68,.18),0 10px 24px rgba(0,0,0,.22)!important;
+}
+#page-employees .employee-note-required-flag{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-left:6px;
+  padding:2px 7px;
+  border-radius:999px;
+  border:1px solid rgba(239,68,68,.75);
+  background:rgba(239,68,68,.20);
+  color:#fecaca!important;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+#page-employees .employee-note-required-flag::before{
+  content:'!';
+  display:inline-grid;
+  place-items:center;
+  width:13px;
+  height:13px;
+  border-radius:999px;
+  background:#ef4444;
+  color:#fff;
+  font-size:9px;
+  line-height:1;
+}
+#page-employees .employee-notes-toggle.note-required{
+  border-color:rgba(239,68,68,.7)!important;
+  background:rgba(239,68,68,.16)!important;
+  color:#fecaca!important;
+  box-shadow:0 0 0 1px rgba(239,68,68,.18),0 8px 18px rgba(239,68,68,.12)!important;
+}
+</style>
+
+<script id="employee-missing-up-note-required-fix">
+(function(){
+  if(window.__employeeMissingUpNoteRequiredFix) return;
+  window.__employeeMissingUpNoteRequiredFix = true;
+
+  var unresolvedUpValues = ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'];
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function norm(v){ return clean(v).replace(/\s+/g,' ').toUpperCase(); }
+  function hasResolvedUpId(e){
+    var v = clean(e && e.upId);
+    return !!v && unresolvedUpValues.indexOf(norm(v)) === -1;
+  }
+  function noteText(e){
+    return clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || '');
+  }
+  function needsRequiredNote(e){
+    return !!e && !hasResolvedUpId(e) && !noteText(e);
+  }
+  function cssEscape(value){
+    if(window.CSS && typeof CSS.escape === 'function') return CSS.escape(String(value));
+    return String(value).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  }
+  function ensureRequiredFlag(nameEl){
+    if(!nameEl || nameEl.querySelector(':scope > .employee-note-required-flag')) return;
+    var flag = document.createElement('span');
+    flag.className = 'employee-note-required-flag';
+    flag.textContent = 'Missing Note';
+    flag.title = 'Missing UP ID requires a note until it is completed.';
+    nameEl.appendChild(flag);
+  }
+  function removeRequiredFlag(nameEl){
+    if(!nameEl) return;
+    nameEl.querySelectorAll(':scope > .employee-note-required-flag').forEach(function(el){ el.remove(); });
+  }
+  function employeeById(id){
+    return (window.employees || []).find(function(e){ return String(e && e.id) === String(id); });
+  }
+  function applyOne(id){
+    var e = employeeById(id);
+    var required = needsRequiredNote(e);
+    var sel = '[data-employee-name-id="' + cssEscape(id) + '"]';
+    document.querySelectorAll(sel).forEach(function(nameEl){
+      var row = nameEl.closest('tr');
+      if(row) row.classList.toggle('employee-up-note-required', required);
+      var card = nameEl.closest('.employee-card');
+      if(card) card.classList.toggle('employee-up-note-required', required);
+      if(required) ensureRequiredFlag(nameEl); else removeRequiredFlag(nameEl);
+    });
+    document.querySelectorAll('[data-notes-eid="' + cssEscape(id) + '"]').forEach(function(btn){
+      btn.classList.toggle('note-required', required);
+      if(required && /^show notes$/i.test(clean(btn.textContent))){ btn.textContent = 'Missing Note'; }
+    });
+  }
+  function applyAll(){
+    try{
+      (window.employees || []).forEach(function(e){ if(e && e.id != null) applyOne(e.id); });
+    }catch(e){}
+  }
+
+  var priorRender = window.render;
+  if(typeof priorRender === 'function' && !priorRender.__missingUpNoteRequiredWrapped){
+    window.render = function(){
+      var result = priorRender.apply(this, arguments);
+      setTimeout(applyAll, 0);
+      return result;
+    };
+    window.render.__missingUpNoteRequiredWrapped = true;
+  }
+
+  document.addEventListener('input', function(evt){
+    var box = evt.target && evt.target.closest && evt.target.closest('[data-notes-save-eid]');
+    if(!box) return;
+    var id = box.getAttribute('data-notes-save-eid');
+    var e = employeeById(id);
+    if(e){
+      e.notes = box.value;
+      e.note = box.value;
+      e.employee_notes = box.value;
+      e.employeeNotes = box.value;
+    }
+    applyOne(id);
+  }, true);
+
+  document.addEventListener('change', function(evt){
+    var up = evt.target && evt.target.closest && evt.target.closest('#f-upid');
+    if(up) setTimeout(applyAll, 250);
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(applyAll, 200); });
+  setTimeout(applyAll, 250);
+  setTimeout(applyAll, 1200);
+  window.applyEmployeeMissingUpNoteRequirement = applyAll;
+})();
+</script>
+
+
+<style id="employee-caps-phone-polish-css">
+#page-employees #emp-table,
+#page-employees #emp-table th,
+#page-employees #emp-table td,
+#page-employees .emp-table-value,
+#page-employees .emp-name,
+#page-employees .employee-card-name,
+#page-employees .employee-card-label,
+#page-employees .employee-card-value,
+#page-employees .emp-flag,
+#page-employees .missing-field-btn,
+#page-employees .action-btn,
+#page-employees .employee-note-flag,
+#page-employees .employee-note-required-flag{
+  text-transform:uppercase!important;
+}
+#page-employees .employee-notes-box,
+#page-employees .employee-notes-box::placeholder{
+  text-transform:none!important;
+}
+</style>
+<script id="employee-phone-format-input-fix">
+(function(){
+  if(window.__employeePhoneFormatInputFix) return;
+  window.__employeePhoneFormatInputFix = true;
+  function formatPhone(value){
+    var raw = String(value == null ? '' : value).trim();
+    if(!raw) return '';
+    var digits = raw.replace(/\D/g,'');
+    if(digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+    if(digits.length === 10) return '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+    return raw.toUpperCase();
+  }
+  window.formatEmployeePhone = window.formatEmployeePhone || formatPhone;
+  document.addEventListener('blur', function(evt){
+    var input = evt.target && evt.target.closest && evt.target.closest('#f-phone');
+    if(input) input.value = formatPhone(input.value);
+  }, true);
+})();
+</script>
+
 </body>
 </html>
+<style id="employee-missing-up-red-column-line-fix">
+/* Keep the required-note red row highlight, but remove the unintended red divider on every column. */
+#page-employees tr.employee-up-note-required > td{
+  box-shadow:none!important;
+}
+#page-employees tr.employee-up-note-required > td:first-child{
+  box-shadow:inset 4px 0 0 rgba(239,68,68,.95)!important;
+}
+#page-employees tr.employee-up-note-required > td + td{
+  border-left-color:rgba(255,255,255,.06)!important;
+}
+</style>
