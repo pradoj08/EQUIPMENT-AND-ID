@@ -31705,30 +31705,56 @@ body.employee-card-mode #page-employees .employee-card-actions{
 })();
 </script>
 
-<script id="admin-diagnostic-panel-click-hotfix">
+
+<!-- removed stale admin-diagnostic-panel-click-hotfix: replaced by no-kick save test v3 -->
+
+
+
+
+<script id="admin-diagnostic-save-test-no-kick-v3">
 (function(){
   'use strict';
   var lastDiagnosticResults = [];
+  var running = false;
+  var DIAG_PREFIX = '__diag_save_test__';
 
   function esc(v){
     return String(v == null ? '' : v).replace(/[&<>\"']/g, function(ch){
       return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch];
     });
   }
-
+  function nowIso(){ return new Date().toISOString(); }
+  function swallow(ev){
+    if(ev){
+      try{ ev.preventDefault(); }catch(e){}
+      try{ ev.stopPropagation(); }catch(e){}
+      try{ ev.stopImmediatePropagation(); }catch(e){}
+    }
+  }
   function getClient(){
-    try{
-      if(window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
-    }catch(e){}
+    try{ if(window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient; }catch(e){}
     try{
       if(typeof supabaseClient !== 'undefined' && supabaseClient && typeof supabaseClient.from === 'function'){
         window.supabaseClient = supabaseClient;
         return supabaseClient;
       }
     }catch(e){}
+    try{
+      if(window.supabase && typeof window.supabase.createClient === 'function' && window.SUPABASE_URL && window.SUPABASE_ANON_KEY){
+        window.supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+        return window.supabaseClient;
+      }
+    }catch(e){}
     return null;
   }
-
+  function friendlyError(err){
+    var raw = String((err && (err.message || err.details || err.hint || err.code)) || err || 'Unknown error');
+    if(/does not exist|schema cache|not find|PGRST205|42P01/i.test(raw)) return 'TABLE MISSING X: ' + raw;
+    if(/permission denied|row-level security|RLS|401|403/i.test(raw)) return 'PERMISSION / RLS ERROR: ' + raw;
+    if(/duplicate key/i.test(raw)) return 'DUPLICATE KEY ERROR: ' + raw;
+    if(/column .* does not exist|Could not find the .* column|PGRST204/i.test(raw)) return 'COLUMN / SCHEMA MISMATCH: ' + raw;
+    return raw;
+  }
   function localCount(name){
     try{
       if(Array.isArray(window[name])) return window[name].length;
@@ -31738,126 +31764,146 @@ body.employee-card-mode #page-employees .employee-card-actions{
     }catch(e){}
     return null;
   }
-
-  function friendlyError(err){
-    var raw = String((err && (err.message || err.details || err.hint || err.code)) || err || 'Unknown error');
-    if(/does not exist|schema cache|not find|PGRST205|42P01/i.test(raw)) return 'TABLE MISSING X: ' + raw;
-    if(/permission denied|row-level security|RLS|401|403/i.test(raw)) return 'PERMISSION / RLS ERROR: ' + raw;
-    return raw;
+  function pageState(pageId){
+    var page = document.getElementById(pageId);
+    if(!page) return 'page element missing';
+    if(page.classList.contains('no-view')) return 'page exists but current user cannot view';
+    if(page.classList.contains('view-only')) return 'page exists but current user is view-only';
+    return 'page exists';
   }
-
-  async function tableCheck(table, title, localName){
-    var client = getClient();
-    var local = localName ? localCount(localName) : null;
-    if(!client){
-      return {name:title,status:'bad',label:'No Client',detail:'Supabase client was not found. Loaded in app: ' + (local == null ? 'n/a' : local)};
-    }
+  function keepAdminPage(){
     try{
-      var res = await client.from(table).select('*', {count:'exact', head:true});
+      var admin = document.getElementById('page-admin');
+      var nav = document.getElementById('nav-admin');
+      if(!admin) return;
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+      admin.classList.add('active');
+      document.querySelectorAll('.page-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+      if(nav){
+        nav.style.display = '';
+        nav.classList.add('active');
+      }
+      var panel = document.getElementById('admin-diagnostic-panel');
+      if(panel) panel.scrollIntoView({block:'nearest'});
+    }catch(e){}
+  }
+  async function rowCount(client, table){
+    try{
+      var res = await client.from(table).select('*', { count:'exact', head:true });
       if(res && res.error) throw res.error;
-      var remote = res && typeof res.count === 'number' ? res.count : 0;
-      var status = remote > 0 ? 'ok' : 'warn';
-      var detail = table + ' reachable. Supabase rows: ' + remote;
-      if(local != null) detail += '\nLoaded in app: ' + local;
-      if(remote === 0) detail += '\nWarning: table exists but returned zero rows.';
-      return {name:title,status:status,label:status === 'ok' ? 'Synced' : 'Empty',detail:detail};
-    }catch(err){
-      return {name:title,status:'bad',label:'Missing / Error',detail:table + ' check failed.\n' + friendlyError(err)};
-    }
+      return typeof res.count === 'number' ? res.count : null;
+    }catch(e){ return null; }
   }
-
-  async function rosterCheck(kind, table, title){
-    var res = await tableCheck(table, title, null);
+  async function writeRow(client, table, row, insertOnly){
     try{
-      var payload = typeof loadPayload === 'function' ? loadPayload(kind) : null;
-      if(payload && Array.isArray(payload.items)) res.detail += '\nLoaded in app: ' + payload.items.length;
-      if(res.status === 'bad') res.label = 'Table Missing X';
-    }catch(e){
-      res.detail += '\nLocal roster check failed: ' + (e && e.message ? e.message : e);
-    }
-    return res;
+      if(insertOnly) return await client.from(table).insert([row]);
+      return await client.from(table).upsert([row], {onConflict:'id'});
+    }catch(err){ return {error:err}; }
   }
-
-  async function ppeCheck(){
-    var res = await tableCheck('ppe_compliance_state', 'PPE Sync Check', null);
+  async function readBack(client, table, id){
+    try{
+      var res = await client.from(table).select('id').eq('id', id).maybeSingle();
+      if(res && res.error) return {ok:false, error:res.error};
+      return {ok:!!(res && res.data && res.data.id), data:res && res.data};
+    }catch(err){ return {ok:false, error:err}; }
+  }
+  async function cleanup(client, table, id){
+    try{
+      var res = await client.from(table).delete().eq('id', id);
+      if(res && res.error) return {ok:false, error:res.error};
+      return {ok:true};
+    }catch(err){ return {ok:false, error:err}; }
+  }
+  async function verifySave(config){
+    keepAdminPage();
+    var client = getClient();
+    var local = config.localName ? localCount(config.localName) : null;
+    if(!client){
+      return {name:config.name,status:'bad',label:'No Client',detail:'Cannot run live save test. Supabase client was not found.' + (local == null ? '' : '\nLoaded in app: ' + local)};
+    }
+    var id = DIAG_PREFIX + '_' + config.key + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+    var before = await rowCount(client, config.table);
+    var detail = 'Page: ' + pageState(config.pageId) + '\nTable: ' + config.table + (before == null ? '' : '\nRows before test: ' + before);
+    if(local != null) detail += '\nLoaded in app: ' + local;
+    var row = config.row(id);
+    var save = await writeRow(client, config.table, row, !!config.insertOnly);
+    if(save && save.error){
+      return {name:config.name,status:'bad',label:'Save Failed',detail:detail + '\nSAVE TEST FAILED. Nothing was changed on this page by the diagnostic.\n' + friendlyError(save.error)};
+    }
+    keepAdminPage();
+    var read = await readBack(client, config.table, id);
+    if(!read.ok){
+      return {name:config.name,status:'bad',label:'Readback Failed',detail:detail + '\nTemporary row was submitted, but could not be read back.\n' + friendlyError(read.error || 'No row returned')};
+    }
+    var clean = await cleanup(client, config.table, id);
+    if(!clean.ok){
+      return {name:config.name,status:'warn',label:'Save OK / Cleanup Warning',detail:detail + '\nSAVE TEST PASSED: wrote and read back temporary row.\nCleanup warning: temporary row may remain: ' + id + '\n' + friendlyError(clean.error)};
+    }
+    return {name:config.name,status:'ok',label:'Save Verified',detail:detail + '\nSAVE TEST PASSED: wrote temporary row, read it back, then cleaned it up.'};
+  }
+  function loginCheck(){
+    var client = getClient();
+    var who = '';
+    var signed = null;
+    try{ if(typeof activeAppUser !== 'undefined' && activeAppUser){ signed = true; who = activeAppUser.display_name || activeAppUser.username || activeAppUser.id || ''; } }catch(e){}
+    try{ if(signed === null && typeof eqLoggedIn !== 'undefined') signed = !!eqLoggedIn; }catch(e){}
+    return {name:'Supabase / Login',status:client ? 'ok' : 'bad',label:client ? 'Client Found' : 'No Client',detail:'Supabase client: ' + (client ? 'detected' : 'missing') + '\nSigned in: ' + (signed === null ? 'unknown' : (signed ? 'yes' : 'no')) + (who ? '\nUser: ' + who : '') + '\nNavigation: diagnostic test is locked to Admin page.'};
+  }
+  async function ppeSaveTest(){
+    var base = await verifySave({
+      key:'ppe', name:'PPE Page Save Test', pageId:'page-ppe', table:'ppe_compliance_state',
+      row:function(id){ return { id:id, state:{diagnostic:true,page:'ppe',ts:nowIso()}, updated_at:nowIso(), last_edited_by:'ADMIN_DIAGNOSTIC' }; }
+    });
     try{
       var frame = document.querySelector('#page-ppe iframe');
       var win = frame && frame.contentWindow ? frame.contentWindow : null;
-      if(win){
-        res.detail += '\nPPE page iframe: loaded';
-        res.detail += '\nPPE sync ready: ' + (win.ppeGlobalSyncReady ? 'yes' : 'no');
-      }else{
-        res.detail += '\nPPE page iframe: not loaded yet';
-        if(res.status === 'ok'){ res.status = 'warn'; res.label = 'Page Not Open'; }
-      }
-    }catch(e){
-      res.detail += '\nPPE page check blocked/unavailable: ' + (e && e.message ? e.message : e);
-    }
-    return res;
+      base.detail += '\nPPE iframe: ' + (win ? 'loaded' : 'not loaded yet');
+      if(win) base.detail += '\nPPE sync ready flag: ' + (win.ppeGlobalSyncReady ? 'yes' : 'no');
+      if(base.status === 'ok' && !win){ base.status = 'warn'; base.label = 'Save OK / Page Not Open'; }
+    }catch(e){ base.detail += '\nPPE iframe status unavailable: ' + ((e && e.message) || e); }
+    return base;
   }
-
-  function loginCheck(){
-    var client = getClient();
-    var signed = null;
-    var who = '';
-    try{
-      if(typeof activeAppUser !== 'undefined' && activeAppUser){
-        signed = true;
-        who = activeAppUser.display_name || activeAppUser.username || activeAppUser.id || '';
-      }
-    }catch(e){}
-    try{ if(signed === null && typeof eqLoggedIn !== 'undefined') signed = !!eqLoggedIn; }catch(e){}
-    return {
-      name:'Supabase / Login',
-      status:client ? 'ok' : 'bad',
-      label:client ? 'Client Found' : 'No Client',
-      detail:'Supabase client: ' + (client ? 'detected' : 'missing') + '\nSigned in: ' + (signed === null ? 'unknown' : (signed ? 'yes' : 'no')) + (who ? '\nUser: ' + who : '')
-    };
+  async function build(){
+    var stamp = nowIso();
+    var rows = [loginCheck()];
+    rows.push(await verifySave({key:'employees', name:'Employee Page Save Test', pageId:'page-employees', table:'employees', localName:'employees', row:function(id){ return {id:id, first_name:'Diagnostic', last_name:'Test', employee_id:id.slice(-12), up_id:'DIAG', password:'', password_status:'Diagnostic', email:'', shift:'Day', phone:'', days_off:'', status:'active', notes:'Temporary diagnostic save test row', mobile_token:false, updated_at:stamp, last_edited_by:'ADMIN_DIAGNOSTIC'}; }}));
+    rows.push(await verifySave({key:'equipment', name:'Equipment Page Save Test', pageId:'page-equipment', table:'equipment', localName:'equipment', row:function(id){ return {id:id, type:'Diagnostic', unit:'DIAG-' + id.slice(-6), name:'Diagnostic Test Unit', tablet_assigned:'', assigned_to:'', stays_charged:'pending', status:'operational', notes:'Temporary diagnostic save test row', updated_at:stamp, status_changed_at:null, status_changed_day:null}; }}));
+    rows.push(await ppeSaveTest());
+    rows.push(await verifySave({key:'training', name:'Monthly Training Page Save Test', pageId:'page-audits', table:'training_roster_lists', row:function(id){ return {id:id, items:[{id:id + '_item', name:'Diagnostic Training Test', shift:'Day', matched:false}], updated_at:stamp, updated_by:'ADMIN_DIAGNOSTIC'}; }}));
+    rows.push(await verifySave({key:'audit', name:'Audit Page Save Test', pageId:'page-audits', table:'audit_roster_lists', row:function(id){ return {id:id, items:[{id:id + '_item', name:'Diagnostic Audit Test', shift:'Day', matched:false}], updated_at:stamp, updated_by:'ADMIN_DIAGNOSTIC'}; }}));
+    rows.push(await verifySave({key:'admin_users', name:'Admin Users Page Save Test', pageId:'page-admin', table:'app_users', localName:'appUsers', row:function(id){ return {id:id, username:id, display_name:'Diagnostic Test User', password:'diagnostic-only', role:'user', permissions:{employees:{view:false,edit:false},equipment:{view:false,edit:false},audits:{view:false,edit:false},ppe:{view:false,edit:false},activity:{view:false,edit:false},admin:{view:false,edit:false}}, updated_at:stamp, last_edited_by:'ADMIN_DIAGNOSTIC'}; }}));
+    rows.push(await verifySave({key:'activity', name:'Activity Feed Page Save Test', pageId:'page-activity', table:'activity_log', insertOnly:true, row:function(id){ return {id:id, category:'system', message:'Diagnostic save test', details:{diagnostic:true, ts:Date.now()}, created_at:stamp, last_edited_by:'ADMIN_DIAGNOSTIC'}; }}));
+    return rows;
   }
-
   function ensureOpen(){
     var panel = document.getElementById('admin-diagnostic-panel');
     if(panel) panel.classList.add('open');
     var toggle = document.getElementById('admin-diag-toggle');
     if(toggle) toggle.textContent = 'Hide Diagnostics';
   }
-
-  function render(results, running){
-    var panel = document.getElementById('admin-diagnostic-panel');
+  function render(results, isRunning){
     var body = document.getElementById('admin-diag-results');
     var summary = document.getElementById('admin-diag-summary');
-    if(!panel || !body || !summary) return;
-    if(running){
-      ensureOpen();
-      body.innerHTML = '<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running checks</div><div class="admin-diag-status">Checking</div></div><div class="admin-diag-detail">Running live Supabase/table diagnostics now...</div></div>';
-      summary.innerHTML = '<span class="admin-diag-chip warn">Checking...</span>';
+    if(!body || !summary) return;
+    ensureOpen();
+    if(isRunning){
+      summary.innerHTML = '<span class="admin-diag-chip warn">Running save tests...</span>';
+      body.innerHTML = '<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running page save tests</div><div class="admin-diag-status">Testing</div></div><div class="admin-diag-detail">Testing is locked to the Admin page. The app will not switch pages while diagnostics run.</div></div>';
       return;
     }
     var ok = results.filter(function(r){ return r.status === 'ok'; }).length;
     var warn = results.filter(function(r){ return r.status === 'warn'; }).length;
     var bad = results.filter(function(r){ return r.status === 'bad'; }).length;
-    summary.innerHTML = '<span class="admin-diag-chip ok">OK ' + ok + '</span><span class="admin-diag-chip warn">Warnings ' + warn + '</span><span class="admin-diag-chip bad">Missing/Error ' + bad + '</span>';
-    body.innerHTML = results.map(function(r){
-      return '<div class="admin-diag-card ' + esc(r.status) + '"><div class="admin-diag-top"><div class="admin-diag-name">' + esc(r.name) + '</div><div class="admin-diag-status">' + esc(r.label || r.status) + '</div></div><div class="admin-diag-detail">' + esc(r.detail) + '</div></div>';
-    }).join('');
+    summary.innerHTML = '<span class="admin-diag-chip ok">Save OK ' + ok + '</span><span class="admin-diag-chip warn">Warnings ' + warn + '</span><span class="admin-diag-chip bad">Failed ' + bad + '</span>';
+    body.innerHTML = results.map(function(r){ return '<div class="admin-diag-card ' + esc(r.status) + '"><div class="admin-diag-top"><div class="admin-diag-name">' + esc(r.name) + '</div><div class="admin-diag-status">' + esc(r.label || r.status) + '</div></div><div class="admin-diag-detail">' + esc(r.detail) + '</div></div>'; }).join('');
     var last = document.getElementById('admin-diag-last-run');
-    if(last) last.textContent = 'Last checked: ' + new Date().toLocaleString();
+    if(last) last.textContent = 'Last save test: ' + new Date().toLocaleString();
   }
-
-  async function build(){
-    var rows = [loginCheck()];
-    rows.push(await tableCheck('employees', 'Employees Sync Check', 'employees'));
-    rows.push(await tableCheck('equipment', 'Equipment Sync Check', 'equipment'));
-    rows.push(await ppeCheck());
-    rows.push(await rosterCheck('trainings', 'training_roster_lists', 'Training Table Check'));
-    rows.push(await rosterCheck('audits', 'audit_roster_lists', 'Audit Roster Check'));
-    rows.push(await tableCheck('app_users', 'Admin Users Sync Check', 'appUsers'));
-    return rows;
-  }
-
   window.runAdminDiagnostics = async function(ev){
-    if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
-    if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    swallow(ev);
+    if(running) return false;
+    running = true;
+    keepAdminPage();
     render([], true);
     try{
       lastDiagnosticResults = await build();
@@ -31866,12 +31912,13 @@ body.employee-card-mode #page-employees .employee-card-actions{
       lastDiagnosticResults = [{name:'Diagnostic Runner',status:'bad',label:'Error',detail:String((err && err.message) || err)}];
       render(lastDiagnosticResults, false);
     }
+    keepAdminPage();
+    running = false;
     return false;
   };
-
   window.toggleAdminDiagnostics = function(ev){
-    if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
-    if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    swallow(ev);
+    keepAdminPage();
     var panel = document.getElementById('admin-diagnostic-panel');
     var toggle = document.getElementById('admin-diag-toggle');
     if(!panel) return false;
@@ -31881,35 +31928,201 @@ body.employee-card-mode #page-employees .employee-card-actions{
     if(willOpen && !lastDiagnosticResults.length) window.runAdminDiagnostics();
     return false;
   };
-
   function bind(){
     var run = document.getElementById('admin-diag-refresh');
     var tog = document.getElementById('admin-diag-toggle');
+    var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
+    if(sub) sub.textContent = 'Live save test: writes a temporary row for each page, reads it back, cleans it up, and stays on Admin.';
     if(run){
-      run.setAttribute('type','button');
-      run.setAttribute('onclick','return window.runAdminDiagnostics(event)');
+      run.type = 'button';
+      run.textContent = 'Run Save Tests';
       run.disabled = false;
       run.style.pointerEvents = 'auto';
+      run.onclick = function(ev){ return window.runAdminDiagnostics(ev || window.event); };
     }
     if(tog){
-      tog.setAttribute('type','button');
-      tog.setAttribute('onclick','return window.toggleAdminDiagnostics(event)');
+      tog.type = 'button';
+      tog.textContent = (document.getElementById('admin-diagnostic-panel') || {}).classList && document.getElementById('admin-diagnostic-panel').classList.contains('open') ? 'Hide Diagnostics' : 'Show Diagnostics';
       tog.disabled = false;
       tog.style.pointerEvents = 'auto';
+      tog.onclick = function(ev){ return window.toggleAdminDiagnostics(ev || window.event); };
     }
-    try{ if(typeof supabaseClient !== 'undefined' && supabaseClient) window.supabaseClient = supabaseClient; }catch(e){}
+    try{ var s = document.getElementById('admin-diag-summary'); if(s && /Not checked|Save tests not run|Checking/i.test(s.textContent || '')) s.innerHTML = '<span class="admin-diag-chip warn">Save tests not run</span>'; }catch(e){}
+  }
+  ['pointerdown','mousedown','click'].forEach(function(type){
+    document.addEventListener(type, function(ev){
+      var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
+      if(!target) return;
+      swallow(ev);
+      if(type === 'click'){
+        if(target.id === 'admin-diag-refresh') window.runAdminDiagnostics(ev);
+        if(target.id === 'admin-diag-toggle') window.toggleAdminDiagnostics(ev);
+      }
+      return false;
+    }, true);
+  });
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(bind, 50); setTimeout(bind, 500); setTimeout(bind, 1500); });
+  else { setTimeout(bind, 50); setTimeout(bind, 500); setTimeout(bind, 1500); }
+})();
+</script>
+
+<script id="admin-diagnostic-hard-page-lock-v2">
+(function(){
+  'use strict';
+  var previousRun = window.runAdminDiagnostics;
+  var previousToggle = window.toggleAdminDiagnostics;
+  var previousSwitch = window.switchPage;
+  var lockTimer = null;
+  var guardTimer = null;
+
+  function stopEvent(ev){
+    try{
+      if(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      }
+    }catch(e){}
+    return false;
   }
 
-  document.addEventListener('click', function(ev){
-    var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
-    if(!target) return;
-    if(target.id === 'admin-diag-refresh') window.runAdminDiagnostics(ev);
-    if(target.id === 'admin-diag-toggle') window.toggleAdminDiagnostics(ev);
-  }, true);
+  function setActiveAdmin(){
+    try{
+      var adminPage = document.getElementById('page-admin');
+      if(!adminPage) return;
+      document.querySelectorAll('.page').forEach(function(page){ page.classList.remove('active'); });
+      adminPage.classList.remove('no-view');
+      adminPage.classList.remove('view-only');
+      adminPage.classList.add('active');
 
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(bind, 50); setTimeout(bind, 600); });
-  setTimeout(bind, 100);
-  setTimeout(bind, 1200);
+      document.querySelectorAll('.page-nav-btn').forEach(function(btn){ btn.classList.remove('active'); });
+      var adminNav = document.getElementById('nav-admin');
+      if(adminNav){
+        adminNav.style.display = '';
+        adminNav.classList.add('active');
+      }
+
+      var overlay = document.getElementById('eq-login-overlay');
+      if(overlay && window.__ADMIN_DIAG_PAGE_LOCK){ overlay.style.display = 'none'; }
+
+      var panel = document.getElementById('admin-diagnostic-panel');
+      if(panel){ panel.classList.add('open'); }
+      var toggle = document.getElementById('admin-diag-toggle');
+      if(toggle){ toggle.textContent = 'Hide Diagnostics'; }
+    }catch(e){}
+  }
+
+  function bindButtons(){
+    try{
+      var run = document.getElementById('admin-diag-refresh');
+      var tog = document.getElementById('admin-diag-toggle');
+      var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
+      if(sub){ sub.textContent = 'Live save test. Page lock is active while diagnostics run so the app cannot jump back to the front page.'; }
+      if(run){
+        run.type = 'button';
+        run.textContent = 'Run Save Tests';
+        run.disabled = false;
+        run.style.pointerEvents = 'auto';
+        run.onclick = function(ev){ return window.runAdminDiagnostics(ev || window.event); };
+      }
+      if(tog){
+        tog.type = 'button';
+        tog.disabled = false;
+        tog.style.pointerEvents = 'auto';
+        tog.onclick = function(ev){ return window.toggleAdminDiagnostics(ev || window.event); };
+      }
+    }catch(e){}
+  }
+
+  function startLock(ms){
+    window.__ADMIN_DIAG_PAGE_LOCK = true;
+    setActiveAdmin();
+    bindButtons();
+    if(guardTimer) clearInterval(guardTimer);
+    guardTimer = setInterval(function(){
+      if(!window.__ADMIN_DIAG_PAGE_LOCK){ clearInterval(guardTimer); guardTimer = null; return; }
+      setActiveAdmin();
+    }, 150);
+    if(lockTimer) clearTimeout(lockTimer);
+    lockTimer = setTimeout(function(){
+      window.__ADMIN_DIAG_PAGE_LOCK = false;
+      if(guardTimer){ clearInterval(guardTimer); guardTimer = null; }
+      setActiveAdmin();
+    }, ms || 30000);
+  }
+
+  window.switchPage = function(pageName){
+    if(window.__ADMIN_DIAG_PAGE_LOCK && pageName !== 'admin'){
+      setActiveAdmin();
+      return false;
+    }
+    if(typeof previousSwitch === 'function'){
+      return previousSwitch.apply(this, arguments);
+    }
+    return undefined;
+  };
+
+  window.runAdminDiagnostics = async function(ev){
+    stopEvent(ev);
+    startLock(45000);
+    var result = false;
+    try{
+      if(typeof previousRun === 'function'){
+        result = await previousRun.call(this, ev || {preventDefault:function(){}, stopPropagation:function(){}, stopImmediatePropagation:function(){}});
+      }else{
+        var body = document.getElementById('admin-diag-results');
+        var summary = document.getElementById('admin-diag-summary');
+        if(summary) summary.innerHTML = '<span class="admin-diag-chip bad">Diagnostic runner missing</span>';
+        if(body) body.innerHTML = '<div class="admin-diag-card bad"><div class="admin-diag-top"><div class="admin-diag-name">Diagnostic Runner</div><div class="admin-diag-status">Missing</div></div><div class="admin-diag-detail">The diagnostic runner did not load. Reload this corrected file and try again.</div></div>';
+      }
+    }catch(err){
+      var errorText = String((err && err.message) || err || 'Unknown diagnostic error');
+      var out = document.getElementById('admin-diag-results');
+      var sum = document.getElementById('admin-diag-summary');
+      if(sum) sum.innerHTML = '<span class="admin-diag-chip bad">Diagnostic Error</span>';
+      if(out) out.innerHTML = '<div class="admin-diag-card bad"><div class="admin-diag-top"><div class="admin-diag-name">Diagnostic Runner</div><div class="admin-diag-status">Error</div></div><div class="admin-diag-detail">' + errorText.replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}) + '</div></div>';
+    }
+    setActiveAdmin();
+    /* Keep the lock briefly after Supabase returns. Some app save hooks rerender permissions/pages after async callbacks. */
+    setTimeout(setActiveAdmin, 250);
+    setTimeout(setActiveAdmin, 1000);
+    setTimeout(function(){
+      window.__ADMIN_DIAG_PAGE_LOCK = false;
+      if(guardTimer){ clearInterval(guardTimer); guardTimer = null; }
+      setActiveAdmin();
+    }, 2500);
+    return false;
+  };
+
+  window.toggleAdminDiagnostics = function(ev){
+    stopEvent(ev);
+    startLock(8000);
+    try{
+      if(typeof previousToggle === 'function') previousToggle.call(this, ev || {preventDefault:function(){}, stopPropagation:function(){}, stopImmediatePropagation:function(){}});
+      else setActiveAdmin();
+    }catch(e){ setActiveAdmin(); }
+    return false;
+  };
+
+  ['pointerdown','mousedown','mouseup','click','submit'].forEach(function(type){
+    document.addEventListener(type, function(ev){
+      var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle,#admin-diagnostic-panel') : null;
+      if(!target) return;
+      if(target.id === 'admin-diag-refresh' || target.id === 'admin-diag-toggle'){
+        stopEvent(ev);
+        if(type === 'click'){
+          if(target.id === 'admin-diag-refresh') window.runAdminDiagnostics(ev);
+          if(target.id === 'admin-diag-toggle') window.toggleAdminDiagnostics(ev);
+        }
+      }
+    }, true);
+  });
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(bindButtons, 50); setTimeout(bindButtons, 500); setTimeout(bindButtons, 1500); });
+  }else{
+    setTimeout(bindButtons, 50); setTimeout(bindButtons, 500); setTimeout(bindButtons, 1500);
+  }
 })();
 </script>
 
