@@ -24988,6 +24988,245 @@ body{
 })();
 </script>
 
+<script id="admin-diagnostic-live-save-test-v2">
+(function(){
+  'use strict';
+  var lastDiagnosticResults = [];
+  var DIAG_PREFIX = '__diag_save_test__';
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>\"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+  function getClient(){
+    try{ if(window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient; }catch(e){}
+    try{
+      if(typeof supabaseClient !== 'undefined' && supabaseClient && typeof supabaseClient.from === 'function'){
+        window.supabaseClient = supabaseClient;
+        return supabaseClient;
+      }
+    }catch(e){}
+    return null;
+  }
+  function friendlyError(err){
+    var raw = String((err && (err.message || err.details || err.hint || err.code)) || err || 'Unknown error');
+    if(/does not exist|schema cache|not find|PGRST205|42P01/i.test(raw)) return 'TABLE MISSING X: ' + raw;
+    if(/permission denied|row-level security|RLS|401|403/i.test(raw)) return 'PERMISSION / RLS ERROR: ' + raw;
+    if(/duplicate key/i.test(raw)) return 'DUPLICATE KEY ERROR: ' + raw;
+    return raw;
+  }
+  function nowIso(){ return new Date().toISOString(); }
+  function localCount(name){
+    try{
+      if(Array.isArray(window[name])) return window[name].length;
+      if(name === 'employees' && typeof employees !== 'undefined' && Array.isArray(employees)) return employees.length;
+      if(name === 'equipment' && typeof equipment !== 'undefined' && Array.isArray(equipment)) return equipment.length;
+      if(name === 'appUsers' && typeof appUsers !== 'undefined' && Array.isArray(appUsers)) return appUsers.length;
+    }catch(e){}
+    return null;
+  }
+  function pageState(pageId){
+    var page = document.getElementById(pageId);
+    if(!page) return 'page element missing';
+    if(page.classList.contains('no-view')) return 'page exists but current user cannot view';
+    if(page.classList.contains('view-only')) return 'page exists but current user is view-only';
+    return 'page exists';
+  }
+  async function rowCount(client, table){
+    try{
+      var res = await client.from(table).select('*', { count:'exact', head:true });
+      if(res && res.error) throw res.error;
+      return typeof res.count === 'number' ? res.count : null;
+    }catch(e){ return null; }
+  }
+  async function safeDelete(client, table, id){
+    try{
+      var del = await client.from(table).delete().eq('id', id);
+      if(del && del.error) return {ok:false, error:del.error};
+      return {ok:true};
+    }catch(err){ return {ok:false, error:err}; }
+  }
+  async function upsertRow(client, table, row, opts){
+    opts = opts || { onConflict:'id' };
+    try{
+      if(typeof supabaseUpsertWithColumnFallback === 'function' && Array.isArray(row)){
+        return await supabaseUpsertWithColumnFallback(table, row, opts);
+      }
+      var res = await client.from(table).upsert(Array.isArray(row) ? row : [row], opts);
+      return res || { error:null };
+    }catch(err){ return { error:err }; }
+  }
+  async function insertRow(client, table, row){
+    try{
+      var res = await client.from(table).insert([row]);
+      return res || { error:null };
+    }catch(err){ return { error:err }; }
+  }
+  async function readBack(client, table, id){
+    try{
+      var res = await client.from(table).select('id').eq('id', id).maybeSingle();
+      if(res && res.error) return {ok:false, error:res.error};
+      return {ok:!!(res && res.data && res.data.id), data:res && res.data};
+    }catch(err){ return {ok:false, error:err}; }
+  }
+  async function verifySave(config){
+    var client = getClient();
+    var local = config.localName ? localCount(config.localName) : null;
+    if(!client){
+      return {name:config.name,status:'bad',label:'No Client',detail:'Cannot test save. Supabase client was not found. ' + (local == null ? '' : '\nLoaded in app: ' + local)};
+    }
+    var id = DIAG_PREFIX + '_' + config.key + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    var before = await rowCount(client, config.table);
+    var detail = 'Page: ' + pageState(config.pageId) + '\nTable: ' + config.table + (before == null ? '' : '\nRows before test: ' + before);
+    if(local != null) detail += '\nLoaded in app: ' + local;
+    var row = config.row(id);
+    var save = config.insertOnly ? await insertRow(client, config.table, row) : await upsertRow(client, config.table, row, config.options || {onConflict:'id'});
+    if(save && save.error){
+      return {name:config.name,status:'bad',label:'Save Failed',detail:detail + '\nSAVE TEST FAILED.\n' + friendlyError(save.error)};
+    }
+    var read = await readBack(client, config.table, id);
+    if(!read.ok){
+      return {name:config.name,status:'bad',label:'Readback Failed',detail:detail + '\nTemporary diagnostic row was submitted, but could not be read back.\n' + friendlyError(read.error || 'No row returned')};
+    }
+    var cleanup = await safeDelete(client, config.table, id);
+    if(!cleanup.ok){
+      return {name:config.name,status:'warn',label:'Save OK / Cleanup Warning',detail:detail + '\nSAVE TEST PASSED: inserted/upserted and read back temporary row.\nCleanup warning: temporary row may remain: ' + id + '\n' + friendlyError(cleanup.error)};
+    }
+    return {name:config.name,status:'ok',label:'Save Verified',detail:detail + '\nSAVE TEST PASSED: wrote temporary row, read it back, then cleaned it up.'};
+  }
+  function loginCheck(){
+    var client = getClient();
+    var signed = null;
+    var who = '';
+    try{
+      if(typeof activeAppUser !== 'undefined' && activeAppUser){
+        signed = true;
+        who = activeAppUser.display_name || activeAppUser.username || activeAppUser.id || '';
+      }
+    }catch(e){}
+    try{ if(signed === null && typeof eqLoggedIn !== 'undefined') signed = !!eqLoggedIn; }catch(e){}
+    return {
+      name:'Supabase / Login',
+      status:client ? 'ok' : 'bad',
+      label:client ? 'Client Found' : 'No Client',
+      detail:'Supabase client: ' + (client ? 'detected' : 'missing') + '\nSigned in: ' + (signed === null ? 'unknown' : (signed ? 'yes' : 'no')) + (who ? '\nUser: ' + who : '')
+    };
+  }
+  async function ppeSaveTest(){
+    var base = await verifySave({
+      key:'ppe',
+      name:'PPE Page Save Test',
+      pageId:'page-ppe',
+      table:'ppe_compliance_state',
+      row:function(id){ return { id:id, state:{ diagnostic:true, page:'ppe', ts:nowIso() }, updated_at:nowIso(), last_edited_by:'ADMIN_DIAGNOSTIC' }; }
+    });
+    try{
+      var frame = document.querySelector('#page-ppe iframe');
+      var win = frame && frame.contentWindow ? frame.contentWindow : null;
+      base.detail += '\nPPE iframe: ' + (win ? 'loaded' : 'not loaded yet');
+      if(win) base.detail += '\nPPE sync ready flag: ' + (win.ppeGlobalSyncReady ? 'yes' : 'no');
+      if(base.status === 'ok' && !win){ base.status = 'warn'; base.label = 'Save OK / Page Not Open'; }
+    }catch(e){ base.detail += '\nPPE iframe status unavailable: ' + (e && e.message ? e.message : e); }
+    return base;
+  }
+  async function build(){
+    var stamp = nowIso();
+    var rows = [loginCheck()];
+    rows.push(await verifySave({
+      key:'employees', name:'Employee Page Save Test', pageId:'page-employees', table:'employees', localName:'employees',
+      row:function(id){ return {id:id, first_name:'Diagnostic', last_name:'Test', employee_id:id.slice(-12), up_id:'DIAG', password:'', password_status:'Diagnostic', email:'', shift:'Day', phone:'', days_off:'', status:'active', notes:'Temporary diagnostic save test row', mobile_token:false, updated_at:stamp, last_edited_by:'ADMIN_DIAGNOSTIC'}; }
+    }));
+    rows.push(await verifySave({
+      key:'equipment', name:'Equipment Page Save Test', pageId:'page-equipment', table:'equipment', localName:'equipment',
+      row:function(id){ return {id:id, type:'Diagnostic', unit:'DIAG-' + id.slice(-6), name:'Diagnostic Test Unit', tablet_assigned:'', assigned_to:'', stays_charged:'pending', status:'operational', notes:'Temporary diagnostic save test row', updated_at:stamp, status_changed_at:null, status_changed_day:null}; }
+    }));
+    rows.push(await ppeSaveTest());
+    rows.push(await verifySave({
+      key:'trainings', name:'Monthly Training Page Save Test', pageId:'page-audits', table:'training_roster_lists',
+      row:function(id){ return {id:id, items:[{id:id + '_item', name:'Diagnostic Training Test', shift:'Day', matched:false}], updated_at:stamp, updated_by:'ADMIN_DIAGNOSTIC'}; }
+    }));
+    rows.push(await verifySave({
+      key:'audits', name:'Audit Page Save Test', pageId:'page-audits', table:'audit_roster_lists',
+      row:function(id){ return {id:id, items:[{id:id + '_item', name:'Diagnostic Audit Test', shift:'Day', matched:false}], updated_at:stamp, updated_by:'ADMIN_DIAGNOSTIC'}; }
+    }));
+    rows.push(await verifySave({
+      key:'app_users', name:'Admin Users Page Save Test', pageId:'page-admin', table:'app_users', localName:'appUsers',
+      row:function(id){ return {id:id, username:id, display_name:'Diagnostic Test User', password:'diagnostic-only', role:'user', permissions:{employees:{view:false,edit:false},equipment:{view:false,edit:false},audits:{view:false,edit:false},ppe:{view:false,edit:false},activity:{view:false,edit:false},admin:{view:false,edit:false}}, updated_at:stamp, last_edited_by:'ADMIN_DIAGNOSTIC'}; }
+    }));
+    rows.push(await verifySave({
+      key:'activity', name:'Activity Feed Page Save Test', pageId:'page-activity', table:'activity_log', insertOnly:true,
+      row:function(id){ return {id:id, category:'system', message:'Diagnostic save test', details:{diagnostic:true, ts:Date.now()}, created_at:stamp, last_edited_by:'ADMIN_DIAGNOSTIC'}; }
+    }));
+    return rows;
+  }
+  function ensureOpen(){
+    var panel = document.getElementById('admin-diagnostic-panel');
+    if(panel) panel.classList.add('open');
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(toggle) toggle.textContent = 'Hide Diagnostics';
+  }
+  function render(results, running){
+    var panel = document.getElementById('admin-diagnostic-panel');
+    var body = document.getElementById('admin-diag-results');
+    var summary = document.getElementById('admin-diag-summary');
+    if(!panel || !body || !summary) return;
+    if(running){
+      ensureOpen();
+      body.innerHTML = '<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running page save tests</div><div class="admin-diag-status">Testing</div></div><div class="admin-diag-detail">Writing temporary diagnostic rows, reading them back, and cleaning them up. This verifies whether each page can actually save globally to Supabase.</div></div>';
+      summary.innerHTML = '<span class="admin-diag-chip warn">Testing saves...</span>';
+      return;
+    }
+    var ok = results.filter(function(r){ return r.status === 'ok'; }).length;
+    var warn = results.filter(function(r){ return r.status === 'warn'; }).length;
+    var bad = results.filter(function(r){ return r.status === 'bad'; }).length;
+    summary.innerHTML = '<span class="admin-diag-chip ok">Save OK ' + ok + '</span><span class="admin-diag-chip warn">Warnings ' + warn + '</span><span class="admin-diag-chip bad">Failed ' + bad + '</span>';
+    body.innerHTML = results.map(function(r){
+      return '<div class="admin-diag-card ' + esc(r.status) + '"><div class="admin-diag-top"><div class="admin-diag-name">' + esc(r.name) + '</div><div class="admin-diag-status">' + esc(r.label || r.status) + '</div></div><div class="admin-diag-detail">' + esc(r.detail) + '</div></div>';
+    }).join('');
+    var last = document.getElementById('admin-diag-last-run');
+    if(last) last.textContent = 'Last save test: ' + new Date().toLocaleString();
+  }
+  window.runAdminDiagnostics = async function(ev){
+    if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+    if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    render([], true);
+    try{ lastDiagnosticResults = await build(); render(lastDiagnosticResults, false); }
+    catch(err){ lastDiagnosticResults = [{name:'Diagnostic Runner',status:'bad',label:'Error',detail:String((err && err.message) || err)}]; render(lastDiagnosticResults, false); }
+    return false;
+  };
+  window.toggleAdminDiagnostics = function(ev){
+    if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+    if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    var panel = document.getElementById('admin-diagnostic-panel');
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(!panel) return false;
+    var willOpen = !panel.classList.contains('open');
+    panel.classList.toggle('open', willOpen);
+    if(toggle) toggle.textContent = willOpen ? 'Hide Diagnostics' : 'Show Diagnostics';
+    return false;
+  };
+  function bind(){
+    var run = document.getElementById('admin-diag-refresh');
+    var tog = document.getElementById('admin-diag-toggle');
+    var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
+    if(sub) sub.textContent = 'Live save test: writes a temporary row for each page, reads it back from Supabase, then cleans it up.';
+    if(run){ run.type = 'button'; run.textContent = 'Run Save Tests'; run.disabled = false; run.style.pointerEvents = 'auto'; run.setAttribute('onclick','return window.runAdminDiagnostics(event)'); }
+    if(tog){ tog.type = 'button'; tog.disabled = false; tog.style.pointerEvents = 'auto'; tog.setAttribute('onclick','return window.toggleAdminDiagnostics(event)'); }
+    try{ var s = document.getElementById('admin-diag-summary'); if(s && /Not checked/i.test(s.textContent || '')) s.innerHTML = '<span class="admin-diag-chip warn">Save tests not run</span>'; }catch(e){}
+  }
+  document.addEventListener('click', function(ev){
+    var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
+    if(!target) return;
+    if(target.id === 'admin-diag-refresh') window.runAdminDiagnostics(ev);
+    if(target.id === 'admin-diag-toggle') window.toggleAdminDiagnostics(ev);
+  }, true);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(bind, 50); setTimeout(bind, 500); });
+  else { setTimeout(bind, 50); setTimeout(bind, 500); }
+  setTimeout(bind, 1200);
+})();
+</script>
+
 </body>
 
 
