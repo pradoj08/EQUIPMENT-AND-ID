@@ -11972,7 +11972,8 @@ async function loadEmployees(){
     const { data, error } = await supabaseClient
       .from('employees')
       .select('*')
-      .order('updated_at', { ascending: true });
+      .order('last_name', { ascending: true })
+      .order('first_name', { ascending: true });
 
     if(error){
       console.error('Supabase employee load error:', error);
@@ -19478,7 +19479,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn){ employees=[]; return; }
     try{
       if(!window.supabaseClient){ if(!loadEmployeesFromCache()) seedData(); if(typeof showEmployeeSyncWarning==='function') showEmployeeSyncWarning('Employee ID is using browser cache only because Supabase is not connected.'); return; }
-      var res=await window.supabaseClient.from('employees').select('*').order('updated_at',{ascending:true}); if(res.error) throw res.error;
+      var res=await window.supabaseClient.from('employees').select('*').order('last_name',{ascending:true}).order('first_name',{ascending:true}); if(res.error) throw res.error;
       var rows=(res.data||[]).map(function(row){ return normalizeEmployeeRecord({id:row.id||row.employee_id||uid(),first:row.first_name||row.first||'',last:row.last_name||row.last||'',empId:row.employee_id||row.empId||'',upId:row.up_id||row.upId||'',password:row.password||'',email:row.email||'',shift:row.shift||'Day',phone:row.phone||'',daysOff:row.days_off||row.daysOff||'',status:row.status||'active',password_edited_at:row.password_edited_at||'',password_edited_by:row.password_edited_by||'',email_edited_at:row.email_edited_at||'',email_edited_by:row.email_edited_by||'',phone_edited_at:row.phone_edited_at||'',phone_edited_by:row.phone_edited_by||'',notes:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',note:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',employee_notes:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',employeeNotes:row.notes||row.note||row.employee_notes||row.employeeNotes||row.comments||'',mobileToken:!!(row.mobile_token||row.mobileToken),notes_edited_at:row.notes_edited_at||'',notes_edited_by:row.notes_edited_by||''}); });
       if(rows.length){ employees=rows; normalizeEmployeeRoster(); if(typeof rosterLooksBroken==='function'&&rosterLooksBroken()){ seedData(); normalizeEmployeeRoster(); saveEmployeesToCache(); await window.saveEmployees(); } else { saveEmployeesToCache(); } if(typeof hideEmployeeSyncWarning==='function') hideEmployeeSyncWarning(); return; }
       seedData(); normalizeEmployeeRoster(); saveEmployeesToCache(); await window.saveEmployees();
@@ -23331,7 +23332,7 @@ body{
         if(typeof showEmployeeSyncWarning==='function') showEmployeeSyncWarning('Employee ID is using browser cache only because Supabase is not connected.');
         return;
       }
-      var res=await window.supabaseClient.from('employees').select('*').order('updated_at',{ascending:true});
+      var res=await window.supabaseClient.from('employees').select('*').order('last_name',{ascending:true}).order('first_name',{ascending:true});
       if(res.error) throw res.error;
       var rows=(res.data||[]).map(function(row){
         return (typeof normalizeEmployeeRecord==='function'?normalizeEmployeeRecord:migrate)({
@@ -25227,6 +25228,355 @@ body{
 })();
 </script>
 
+
+
+<!-- REAL EMPLOYEE PAGE SAVE PATH PATCH: replaces false-positive diagnostics -->
+<script id="real-employee-page-save-path-diagnostics-v1">
+(function(){
+  'use strict';
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+  function sleep(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
+  function client(){
+    try{ if(window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient; }catch(e){}
+    try{ if(typeof supabaseClient !== 'undefined' && supabaseClient && typeof supabaseClient.from === 'function'){ window.supabaseClient = supabaseClient; return supabaseClient; } }catch(e){}
+    return null;
+  }
+  function localEmployees(){
+    try{ if(typeof employees !== 'undefined' && Array.isArray(employees)) return employees; }catch(e){}
+    return Array.isArray(window.employees) ? window.employees : [];
+  }
+  function setLocalEmployees(next){
+    window.employees = next;
+    try{ employees = next; }catch(e){}
+  }
+  function toast(kind,msg){
+    var id='employee-global-save-status-banner';
+    var page=document.getElementById('page-employees');
+    var el=document.getElementById(id);
+    if(!el && page){
+      el=document.createElement('div'); el.id=id;
+      page.insertBefore(el,page.firstChild);
+    }
+    if(!el) return;
+    var css='margin:10px 24px 0;padding:10px 12px;border-radius:10px;font-family:var(--mono);font-size:11px;letter-spacing:.35px;white-space:pre-wrap;';
+    if(kind==='bad') css+='border:1px solid rgba(239,68,68,.40);background:rgba(239,68,68,.11);color:#fca5a5;';
+    else if(kind==='warn') css+='border:1px solid rgba(245,158,11,.38);background:rgba(245,158,11,.10);color:#fcd34d;';
+    else css+='border:1px solid rgba(34,197,94,.32);background:rgba(34,197,94,.10);color:#bbf7d0;';
+    el.style.cssText=css; el.textContent=msg; el.style.display='block';
+    if(kind==='ok') setTimeout(function(){ try{ el.style.display='none'; }catch(e){} },3000);
+  }
+
+  // Make Employee ID page saves awaitable and loud. The old save() fired Supabase in the background,
+  // which allowed the screen to look saved while the global save failed or had not finished yet.
+  var previousSaveEmployees = window.saveEmployees;
+  window.save = function(){
+    try{ if(typeof pushHistory === 'function') pushHistory(); }catch(e){}
+    try{ if(typeof saveEmployeesToCache === 'function') saveEmployeesToCache(); }catch(e){}
+    var p = (typeof window.saveEmployees === 'function') ? window.saveEmployees() : Promise.resolve({ok:false,error:'saveEmployees missing'});
+    Promise.resolve(p).then(function(res){
+      if(res && res.ok === false) toast('bad','Employee page did not save globally: ' + clean(res.error || 'unknown error'));
+      else toast('ok','Employee page saved globally to Supabase.');
+    }).catch(function(err){
+      console.error('Employee page save failed:', err);
+      toast('bad','Employee page failed to save globally: ' + clean(err && (err.message || err.details || err.hint) || err));
+    });
+    try{ if(typeof showSaveToast === 'function') showSaveToast(); }catch(e){}
+    return p;
+  };
+  try{ save = window.save; }catch(e){}
+
+  var originalSaveEmp = window.saveEmp;
+  window.saveEmp = async function(){
+    var firstEl=document.getElementById('f-first'), lastEl=document.getElementById('f-last');
+    if(!firstEl || !lastEl){ return originalSaveEmp ? originalSaveEmp.apply(this,arguments) : undefined; }
+    var first=clean(firstEl.value), last=clean(lastEl.value);
+    if(!first || !last){ alert('First and last name required.'); return {ok:false,error:'first/last required'}; }
+
+    // Use the app's original saveEmp if present, but then force an awaited global save and verify errors.
+    var before = localEmployees().map(function(e){ return e && e.id; });
+    var out;
+    if(originalSaveEmp && originalSaveEmp !== window.saveEmp){
+      out = originalSaveEmp.apply(this, arguments);
+    }else{
+      return {ok:false,error:'original saveEmp missing'};
+    }
+    await Promise.resolve(out).catch(function(e){ console.warn('Original saveEmp returned error:', e); });
+    await sleep(100);
+    var res = (typeof window.saveEmployees === 'function') ? await window.saveEmployees() : {ok:false,error:'saveEmployees missing'};
+    if(!res || res.ok === false){
+      toast('bad','Employee edit stayed local only. Supabase rejected the Employee ID page save: ' + clean(res && res.error || 'unknown error'));
+      return res || {ok:false,error:'unknown save failure'};
+    }
+    return res;
+  };
+  try{ saveEmp = window.saveEmp; }catch(e){}
+
+  var originalDeleteEmp = window.deleteEmp;
+  window.deleteEmp = async function(){
+    var out = originalDeleteEmp ? originalDeleteEmp.apply(this, arguments) : undefined;
+    await Promise.resolve(out).catch(function(e){ console.warn('Original deleteEmp returned error:', e); });
+    await sleep(100);
+    return (typeof window.saveEmployees === 'function') ? await window.saveEmployees() : out;
+  };
+  try{ deleteEmp = window.deleteEmp; }catch(e){}
+
+  async function readEmployeeById(c,id){
+    var r = await c.from('employees').select('*').eq('id', id).maybeSingle();
+    if(r && !r.error && r.data) return r.data;
+    return null;
+  }
+  function openEmployeeModal(id){
+    if(typeof window.openModal === 'function') return window.openModal(id);
+    try{ if(typeof openModal === 'function') return openModal(id); }catch(e){}
+    return null;
+  }
+  function activeAdminPage(){
+    try{ if(typeof switchPage === 'function') switchPage('admin'); }catch(e){}
+    try{
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+      var a=document.getElementById('page-admin'); if(a) a.classList.add('active');
+      document.querySelectorAll('.page-nav-btn').forEach(function(b){ b.classList.toggle('active', b.dataset && b.dataset.page==='admin'); });
+    }catch(e){}
+  }
+
+  async function employeeExactPagePathTest(){
+    var c=client();
+    if(!c) return {name:'Employee ID Page Save Path',status:'bad',label:'No Supabase',detail:'Supabase client is missing. Employee page cannot globally save.'};
+    var list=localEmployees().filter(function(e){ return e && e.id && (clean(e.first)||clean(e.last)); });
+    if(!list.length) return {name:'Employee ID Page Save Path',status:'bad',label:'No Local Roster',detail:'No employee row is loaded in the Employee ID page, so the real edit/save path cannot be tested.'};
+
+    var emp=list[0];
+    var id=emp.id;
+    var originalDays=clean(emp.daysOff || emp.days_off || '');
+    var marker='DIAG-' + Date.now();
+    var testDays=(originalDays ? originalDays + ' ' : '') + '[' + marker + ']';
+    var restoreOk=false;
+    var writeOk=false;
+    var detail=[];
+
+    try{
+      openEmployeeModal(id);
+      await sleep(100);
+      var days=document.getElementById('f-days');
+      if(!days) throw new Error('Employee edit modal field f-days was not found. The page edit path could not be tested.');
+      days.value=testDays;
+      var saveResult = await window.saveEmp();
+      if(saveResult && saveResult.ok === false) throw new Error('Employee saveEmp returned failure: ' + clean(saveResult.error || 'unknown error'));
+      await sleep(700);
+      var row=await readEmployeeById(c,id);
+      var remoteDays=clean(row && row.days_off);
+      if(remoteDays !== testDays){
+        throw new Error('False-save detected. The Employee page appeared to save, but Supabase still has days_off="' + remoteDays + '" instead of the test value.');
+      }
+      writeOk=true;
+      detail.push('WRITE VERIFIED: Employee edit modal changed a real employee field and Supabase readback matched exactly.');
+
+      openEmployeeModal(id);
+      await sleep(100);
+      var days2=document.getElementById('f-days');
+      if(!days2) throw new Error('Restore failed: f-days field missing after write verification.');
+      days2.value=originalDays;
+      var restoreResult=await window.saveEmp();
+      if(restoreResult && restoreResult.ok === false) throw new Error('Restore save failed: ' + clean(restoreResult.error || 'unknown error'));
+      await sleep(700);
+      var restored=await readEmployeeById(c,id);
+      var restoredDays=clean(restored && restored.days_off);
+      if(restoredDays !== originalDays){
+        throw new Error('Restore readback failed. Supabase has days_off="' + restoredDays + '" but original was "' + originalDays + '".');
+      }
+      restoreOk=true;
+      detail.push('RESTORE VERIFIED: Diagnostic change was cleaned up and original value was restored in Supabase.');
+      return {name:'Employee ID Page Save Path',status:'ok',label:'Real Page Save OK',detail:detail.join('\n')};
+    }catch(err){
+      // Best-effort restore if the test wrote but later failed.
+      try{
+        var current=localEmployees();
+        var target=current.find(function(e){return e && e.id===id;});
+        if(target){ target.daysOff=originalDays; target.days_off=originalDays; setLocalEmployees(current); }
+        if(typeof window.saveEmployees === 'function') await window.saveEmployees();
+      }catch(e){ console.error('Diagnostic restore attempt failed:', e); }
+      return {name:'Employee ID Page Save Path',status:'bad',label:writeOk && !restoreOk ? 'Restore Failed' : 'False Save / Failed',detail:'This is the REAL Employee page path test, not a generic table write.\n' + clean(err && (err.message || err.details || err.hint) || err)};
+    }finally{
+      try{ var mb=document.getElementById('modal-bg'); if(mb) mb.classList.remove('open'); }catch(e){}
+      activeAdminPage();
+    }
+  }
+
+  async function directDbTest(name, table, rowMaker){
+    var c=client(); var stamp=new Date().toISOString(); var id='__diag_direct__' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    if(!c) return {name:name,status:'bad',label:'No Supabase',detail:'Supabase client is missing.'};
+    try{
+      var row=rowMaker(id,stamp);
+      var up=await c.from(table).upsert([row],{onConflict:'id'});
+      if(up.error) throw up.error;
+      var read=await c.from(table).select('*').eq('id',id).maybeSingle();
+      if(read.error || !read.data) throw (read.error || new Error('No readback row returned.'));
+      await c.from(table).delete().eq('id',id);
+      return {name:name,status:'warn',label:'DB Write OK / Page Path Not Proven',detail:'Supabase accepted a direct temporary row for table "' + table + '". This proves the table/policy can write, but it does NOT prove the visible page save button/edit path is working.'};
+    }catch(err){
+      try{ await c.from(table).delete().eq('id',id); }catch(e){}
+      return {name:name,status:'bad',label:'DB Write Failed',detail:clean(err && (err.message || err.details || err.hint) || err)};
+    }
+  }
+
+  function renderDiag(results){
+    var body=document.getElementById('admin-diag-results');
+    var summary=document.getElementById('admin-diag-summary');
+    var ok=results.filter(function(r){return r.status==='ok';}).length;
+    var warn=results.filter(function(r){return r.status==='warn';}).length;
+    var bad=results.filter(function(r){return r.status==='bad';}).length;
+    if(summary) summary.innerHTML='<span class="admin-diag-chip ok">Real Page OK '+ok+'</span><span class="admin-diag-chip warn">Direct DB/Warnings '+warn+'</span><span class="admin-diag-chip bad">Failed '+bad+'</span>';
+    if(body) body.innerHTML=results.map(function(r){ return '<div class="admin-diag-card '+esc(r.status)+'"><div class="admin-diag-top"><div class="admin-diag-name">'+esc(r.name)+'</div><div class="admin-diag-status">'+esc(r.label||r.status)+'</div></div><div class="admin-diag-detail">'+esc(r.detail)+'</div></div>'; }).join('');
+    var last=document.getElementById('admin-diag-last-run'); if(last) last.textContent='Last real-path test: '+new Date().toLocaleTimeString();
+  }
+
+  window.runAdminDiagnostics = async function(ev){
+    if(ev){ try{ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); }catch(e){} }
+    window.__adminDiagnosticRunning=true;
+    activeAdminPage();
+    var panel=document.getElementById('admin-diagnostic-panel'); if(panel) panel.classList.add('open');
+    var tog=document.getElementById('admin-diag-toggle'); if(tog) tog.textContent='Hide Diagnostics';
+    var body=document.getElementById('admin-diag-results');
+    var summary=document.getElementById('admin-diag-summary');
+    if(summary) summary.innerHTML='<span class="admin-diag-chip warn">Running real page-path test...</span>';
+    if(body) body.innerHTML='<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running real diagnostics</div><div class="admin-diag-status">Testing</div></div><div class="admin-diag-detail">Employee ID is tested through the actual edit modal → saveEmp() → saveEmployees() → Supabase readback → restore path. Direct DB tests are warnings, not proof that a page saves.</div></div>';
+    try{
+      var results=[];
+      results.push(await employeeExactPagePathTest());
+      var stamp;
+      results.push(await directDbTest('Equipment Direct DB Test','equipment',function(id,ts){return {id:id,type:'Diagnostic',unit:'DIAG-'+id.slice(-5),name:'Diagnostic Unit',status:'operational',notes:'Temporary direct DB test',updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'};}));
+      results.push(await directDbTest('PPE Direct DB Test','ppe_audits',function(id,ts){return {id:id,state:{diagnostic:true,ts:ts},updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'};}));
+      results.push(await directDbTest('Monthly Training Direct DB Test','monthly_training',function(id,ts){return {id:id,state:{diagnostic:true,ts:ts},updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'};}));
+      results.push(await directDbTest('Audit Checklist Direct DB Test','audit_checklists',function(id,ts){return {id:id,state:{diagnostic:true,ts:ts},updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'};}));
+      results.push(await directDbTest('Admin Users Direct DB Test','app_users',function(id,ts){return {id:id,username:id,display_name:'Diagnostic Test User',password:'diagnostic-only',role:'user',permissions:{},updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'};}));
+      renderDiag(results);
+      return results;
+    }finally{
+      activeAdminPage();
+      setTimeout(function(){ window.__adminDiagnosticRunning=false; },1200);
+    }
+  };
+
+  window.toggleAdminDiagnostics = function(ev){
+    if(ev){ try{ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); }catch(e){} }
+    var panel=document.getElementById('admin-diagnostic-panel'); if(!panel) return false;
+    var open=!panel.classList.contains('open'); panel.classList.toggle('open',open);
+    var tog=document.getElementById('admin-diag-toggle'); if(tog) tog.textContent=open?'Hide Diagnostics':'Show Diagnostics';
+    return false;
+  };
+
+  function bindButtons(){
+    var run=document.getElementById('admin-diag-refresh');
+    var tog=document.getElementById('admin-diag-toggle');
+    if(run){ run.type='button'; run.textContent='Run Real Save Test'; run.onclick=function(ev){ return window.runAdminDiagnostics(ev || window.event); }; }
+    if(tog){ tog.type='button'; tog.onclick=function(ev){ return window.toggleAdminDiagnostics(ev || window.event); }; }
+    var sub=document.querySelector('#admin-diagnostic-panel .admin-sub');
+    if(sub) sub.textContent='Real-path diagnostics: Employee ID must pass edit modal → page save → Supabase readback → restore. Direct DB tests are shown as warnings, not page-save proof.';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bindButtons); else bindButtons();
+  document.addEventListener('click',function(ev){
+    var t=ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
+    if(!t) return;
+    ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+    if(t.id==='admin-diag-refresh') window.runAdminDiagnostics(ev);
+    if(t.id==='admin-diag-toggle') window.toggleAdminDiagnostics(ev);
+  },true);
+})();
+</script>
+
+
+
+
+
+<!-- SAFE FINAL PATCH: remove employee sync banner and stabilize Employee ID row order without blocking render -->
+<style id="employee-sync-banner-remove-css-final">
+#employee-sync-status-banner,
+#employee-sync-warning-banner{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+}
+</style>
+<script id="employee-display-stability-final-v2">
+(function(){
+  'use strict';
+  if(window.__employeeDisplayStabilityFinalV2) return;
+  window.__employeeDisplayStabilityFinalV2 = true;
+
+  function removeEmployeeSyncBanners(){
+    ['employee-sync-status-banner','employee-sync-warning-banner'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el && el.parentNode) el.parentNode.removeChild(el);
+    });
+  }
+
+  function stableEmployeeKey(emp){
+    emp = emp || {};
+    var last = String(emp.last || emp.last_name || '').trim().toLowerCase();
+    var first = String(emp.first || emp.first_name || '').trim().toLowerCase();
+    var id = String(emp.empId || emp.employee_id || emp.id || '').trim().toLowerCase();
+    return last + '\u0001' + first + '\u0001' + id;
+  }
+
+  function stabilizeEmployeesInPlace(){
+    try{
+      if(!Array.isArray(window.employees) || window.employees.length < 2) return;
+      window.employees.sort(function(a,b){
+        return stableEmployeeKey(a).localeCompare(stableEmployeeKey(b), undefined, {sensitivity:'base'});
+      });
+      try{ employees = window.employees; }catch(e){}
+    }catch(e){}
+  }
+
+  window.showEmployeeSyncWarning = function(){ removeEmployeeSyncBanners(); };
+  window.hideEmployeeSyncWarning = function(){ removeEmployeeSyncBanners(); };
+  window.showEmployeeSyncStatusBanner = function(){ removeEmployeeSyncBanners(); };
+
+  var originalRender = window.render;
+  if(typeof originalRender === 'function' && !originalRender.__employeeStableWrapped){
+    var wrappedRender = function(){
+      removeEmployeeSyncBanners();
+      stabilizeEmployeesInPlace();
+      return originalRender.apply(this, arguments);
+    };
+    wrappedRender.__employeeStableWrapped = true;
+    window.render = wrappedRender;
+    try{ render = wrappedRender; }catch(e){}
+  }
+
+  var originalLoadEmployees = window.loadEmployees;
+  if(typeof originalLoadEmployees === 'function' && !originalLoadEmployees.__employeeStableLoadWrapped){
+    var wrappedLoadEmployees = async function(){
+      var result = await originalLoadEmployees.apply(this, arguments);
+      stabilizeEmployeesInPlace();
+      removeEmployeeSyncBanners();
+      return result;
+    };
+    wrappedLoadEmployees.__employeeStableLoadWrapped = true;
+    window.loadEmployees = wrappedLoadEmployees;
+    try{ loadEmployees = wrappedLoadEmployees; }catch(e){}
+  }
+
+  removeEmployeeSyncBanners();
+  try{
+    new MutationObserver(function(){ removeEmployeeSyncBanners(); }).observe(document.documentElement, {childList:true, subtree:true});
+  }catch(e){}
+  document.addEventListener('DOMContentLoaded', function(){
+    removeEmployeeSyncBanners();
+    stabilizeEmployeesInPlace();
+  });
+  setTimeout(removeEmployeeSyncBanners, 100);
+  setTimeout(removeEmployeeSyncBanners, 750);
+  setTimeout(removeEmployeeSyncBanners, 2000);
+})();
+</script>
 </body>
 
 
