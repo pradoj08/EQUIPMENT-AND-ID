@@ -15027,8 +15027,8 @@ window.addEventListener('DOMContentLoaded', () => {
           <div id="admin-diag-summary" class="admin-diag-summary"><span class="admin-diag-chip warn">Not checked</span></div>
         </div>
         <div class="admin-diag-actions">
-          <button id="admin-diag-toggle" class="admin-btn" type="button">Show Diagnostics</button>
-          <button id="admin-diag-refresh" class="admin-btn primary" type="button">Run Checks</button>
+          <button id="admin-diag-toggle" class="admin-btn" type="button" onclick="return window.toggleAdminDiagnostics ? window.toggleAdminDiagnostics(event) : false">Show Diagnostics</button>
+          <button id="admin-diag-refresh" class="admin-btn primary" type="button" onclick="return window.runAdminDiagnostics ? window.runAdminDiagnostics(event) : false">Run Checks</button>
           <span id="admin-diag-last-run" class="admin-diag-last-run"></span>
         </div>
       </div>
@@ -31059,3 +31059,212 @@ body.employee-card-mode #page-employees .employee-card-actions{
   setTimeout(function(){ if(!isCsvRosterActive()) applyRoster('startup fallback'); else tidyEmployeePage(); }, 50);
 })();
 </script>
+
+<script id="admin-diagnostic-panel-click-hotfix">
+(function(){
+  'use strict';
+  var lastDiagnosticResults = [];
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>\"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function getClient(){
+    try{
+      if(window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    }catch(e){}
+    try{
+      if(typeof supabaseClient !== 'undefined' && supabaseClient && typeof supabaseClient.from === 'function'){
+        window.supabaseClient = supabaseClient;
+        return supabaseClient;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function localCount(name){
+    try{
+      if(Array.isArray(window[name])) return window[name].length;
+      if(name === 'employees' && typeof employees !== 'undefined' && Array.isArray(employees)) return employees.length;
+      if(name === 'equipment' && typeof equipment !== 'undefined' && Array.isArray(equipment)) return equipment.length;
+      if(name === 'appUsers' && typeof appUsers !== 'undefined' && Array.isArray(appUsers)) return appUsers.length;
+    }catch(e){}
+    return null;
+  }
+
+  function friendlyError(err){
+    var raw = String((err && (err.message || err.details || err.hint || err.code)) || err || 'Unknown error');
+    if(/does not exist|schema cache|not find|PGRST205|42P01/i.test(raw)) return 'TABLE MISSING X: ' + raw;
+    if(/permission denied|row-level security|RLS|401|403/i.test(raw)) return 'PERMISSION / RLS ERROR: ' + raw;
+    return raw;
+  }
+
+  async function tableCheck(table, title, localName){
+    var client = getClient();
+    var local = localName ? localCount(localName) : null;
+    if(!client){
+      return {name:title,status:'bad',label:'No Client',detail:'Supabase client was not found. Loaded in app: ' + (local == null ? 'n/a' : local)};
+    }
+    try{
+      var res = await client.from(table).select('*', {count:'exact', head:true});
+      if(res && res.error) throw res.error;
+      var remote = res && typeof res.count === 'number' ? res.count : 0;
+      var status = remote > 0 ? 'ok' : 'warn';
+      var detail = table + ' reachable. Supabase rows: ' + remote;
+      if(local != null) detail += '\nLoaded in app: ' + local;
+      if(remote === 0) detail += '\nWarning: table exists but returned zero rows.';
+      return {name:title,status:status,label:status === 'ok' ? 'Synced' : 'Empty',detail:detail};
+    }catch(err){
+      return {name:title,status:'bad',label:'Missing / Error',detail:table + ' check failed.\n' + friendlyError(err)};
+    }
+  }
+
+  async function rosterCheck(kind, table, title){
+    var res = await tableCheck(table, title, null);
+    try{
+      var payload = typeof loadPayload === 'function' ? loadPayload(kind) : null;
+      if(payload && Array.isArray(payload.items)) res.detail += '\nLoaded in app: ' + payload.items.length;
+      if(res.status === 'bad') res.label = 'Table Missing X';
+    }catch(e){
+      res.detail += '\nLocal roster check failed: ' + (e && e.message ? e.message : e);
+    }
+    return res;
+  }
+
+  async function ppeCheck(){
+    var res = await tableCheck('ppe_compliance_state', 'PPE Sync Check', null);
+    try{
+      var frame = document.querySelector('#page-ppe iframe');
+      var win = frame && frame.contentWindow ? frame.contentWindow : null;
+      if(win){
+        res.detail += '\nPPE page iframe: loaded';
+        res.detail += '\nPPE sync ready: ' + (win.ppeGlobalSyncReady ? 'yes' : 'no');
+      }else{
+        res.detail += '\nPPE page iframe: not loaded yet';
+        if(res.status === 'ok'){ res.status = 'warn'; res.label = 'Page Not Open'; }
+      }
+    }catch(e){
+      res.detail += '\nPPE page check blocked/unavailable: ' + (e && e.message ? e.message : e);
+    }
+    return res;
+  }
+
+  function loginCheck(){
+    var client = getClient();
+    var signed = null;
+    var who = '';
+    try{
+      if(typeof activeAppUser !== 'undefined' && activeAppUser){
+        signed = true;
+        who = activeAppUser.display_name || activeAppUser.username || activeAppUser.id || '';
+      }
+    }catch(e){}
+    try{ if(signed === null && typeof eqLoggedIn !== 'undefined') signed = !!eqLoggedIn; }catch(e){}
+    return {
+      name:'Supabase / Login',
+      status:client ? 'ok' : 'bad',
+      label:client ? 'Client Found' : 'No Client',
+      detail:'Supabase client: ' + (client ? 'detected' : 'missing') + '\nSigned in: ' + (signed === null ? 'unknown' : (signed ? 'yes' : 'no')) + (who ? '\nUser: ' + who : '')
+    };
+  }
+
+  function ensureOpen(){
+    var panel = document.getElementById('admin-diagnostic-panel');
+    if(panel) panel.classList.add('open');
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(toggle) toggle.textContent = 'Hide Diagnostics';
+  }
+
+  function render(results, running){
+    var panel = document.getElementById('admin-diagnostic-panel');
+    var body = document.getElementById('admin-diag-results');
+    var summary = document.getElementById('admin-diag-summary');
+    if(!panel || !body || !summary) return;
+    if(running){
+      ensureOpen();
+      body.innerHTML = '<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running checks</div><div class="admin-diag-status">Checking</div></div><div class="admin-diag-detail">Running live Supabase/table diagnostics now...</div></div>';
+      summary.innerHTML = '<span class="admin-diag-chip warn">Checking...</span>';
+      return;
+    }
+    var ok = results.filter(function(r){ return r.status === 'ok'; }).length;
+    var warn = results.filter(function(r){ return r.status === 'warn'; }).length;
+    var bad = results.filter(function(r){ return r.status === 'bad'; }).length;
+    summary.innerHTML = '<span class="admin-diag-chip ok">OK ' + ok + '</span><span class="admin-diag-chip warn">Warnings ' + warn + '</span><span class="admin-diag-chip bad">Missing/Error ' + bad + '</span>';
+    body.innerHTML = results.map(function(r){
+      return '<div class="admin-diag-card ' + esc(r.status) + '"><div class="admin-diag-top"><div class="admin-diag-name">' + esc(r.name) + '</div><div class="admin-diag-status">' + esc(r.label || r.status) + '</div></div><div class="admin-diag-detail">' + esc(r.detail) + '</div></div>';
+    }).join('');
+    var last = document.getElementById('admin-diag-last-run');
+    if(last) last.textContent = 'Last checked: ' + new Date().toLocaleString();
+  }
+
+  async function build(){
+    var rows = [loginCheck()];
+    rows.push(await tableCheck('employees', 'Employees Sync Check', 'employees'));
+    rows.push(await tableCheck('equipment', 'Equipment Sync Check', 'equipment'));
+    rows.push(await ppeCheck());
+    rows.push(await rosterCheck('trainings', 'training_roster_lists', 'Training Table Check'));
+    rows.push(await rosterCheck('audits', 'audit_roster_lists', 'Audit Roster Check'));
+    rows.push(await tableCheck('app_users', 'Admin Users Sync Check', 'appUsers'));
+    return rows;
+  }
+
+  window.runAdminDiagnostics = async function(ev){
+    if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+    if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    render([], true);
+    try{
+      lastDiagnosticResults = await build();
+      render(lastDiagnosticResults, false);
+    }catch(err){
+      lastDiagnosticResults = [{name:'Diagnostic Runner',status:'bad',label:'Error',detail:String((err && err.message) || err)}];
+      render(lastDiagnosticResults, false);
+    }
+    return false;
+  };
+
+  window.toggleAdminDiagnostics = function(ev){
+    if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+    if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    var panel = document.getElementById('admin-diagnostic-panel');
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(!panel) return false;
+    var willOpen = !panel.classList.contains('open');
+    panel.classList.toggle('open', willOpen);
+    if(toggle) toggle.textContent = willOpen ? 'Hide Diagnostics' : 'Show Diagnostics';
+    if(willOpen && !lastDiagnosticResults.length) window.runAdminDiagnostics();
+    return false;
+  };
+
+  function bind(){
+    var run = document.getElementById('admin-diag-refresh');
+    var tog = document.getElementById('admin-diag-toggle');
+    if(run){
+      run.setAttribute('type','button');
+      run.setAttribute('onclick','return window.runAdminDiagnostics(event)');
+      run.disabled = false;
+      run.style.pointerEvents = 'auto';
+    }
+    if(tog){
+      tog.setAttribute('type','button');
+      tog.setAttribute('onclick','return window.toggleAdminDiagnostics(event)');
+      tog.disabled = false;
+      tog.style.pointerEvents = 'auto';
+    }
+    try{ if(typeof supabaseClient !== 'undefined' && supabaseClient) window.supabaseClient = supabaseClient; }catch(e){}
+  }
+
+  document.addEventListener('click', function(ev){
+    var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
+    if(!target) return;
+    if(target.id === 'admin-diag-refresh') window.runAdminDiagnostics(ev);
+    if(target.id === 'admin-diag-toggle') window.toggleAdminDiagnostics(ev);
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(bind, 50); setTimeout(bind, 600); });
+  setTimeout(bind, 100);
+  setTimeout(bind, 1200);
+})();
+</script>
+
