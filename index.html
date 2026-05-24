@@ -6355,6 +6355,78 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
 #page-audits .roster-export-train-btn:hover{border-color:rgba(74,158,255,.68);background:rgba(74,158,255,.16);color:#fff;}
 @media(max-width:720px){#page-audits .roster-page-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;}#page-audits .roster-page-actions .roster-btn{width:100%;justify-content:center;}#page-audits .roster-page-actions .primary{grid-column:1/-1;}}
 </style>
+
+<style id="equipment-actions-space-final-override">
+/* Final equipment board width rebalance: shrink Equipment + Assigned, expand Actions. */
+#page-equipment .eq-board{
+  --eq-cols: 64px minmax(150px,.95fr) 132px 96px 100px minmax(145px,.92fr) 124px minmax(135px,.78fr) minmax(250px,1.45fr) !important;
+  overflow-x:auto !important;
+}
+#page-equipment .eq-board-head-v5,
+#page-equipment .eq-board-body,
+#page-equipment .eq-board-row{
+  min-width:1260px !important;
+}
+#page-equipment .eq-name .name-input{
+  padding-left:8px !important;
+  padding-right:8px !important;
+  font-size:10px !important;
+}
+#page-equipment .eq-assigned-cell .assigned-select,
+#page-equipment .eq-assigned-cell select{
+  padding-left:7px !important;
+  padding-right:7px !important;
+  font-size:10px !important;
+}
+#page-equipment .eq-action-cell{
+  justify-content:flex-start !important;
+  gap:8px !important;
+  padding-left:10px !important;
+  padding-right:10px !important;
+  overflow:visible !important;
+  min-width:0 !important;
+}
+#page-equipment .eq-action-cell .eq-history-btn,
+#page-equipment .eq-action-cell .eq-notes-toggle-v3,
+#page-equipment .eq-action-cell .equip-del-btn{
+  flex:0 0 auto !important;
+}
+#page-equipment .eq-action-cell .eq-history-btn{
+  min-width:82px !important;
+  max-width:none !important;
+  padding-left:10px !important;
+  padding-right:10px !important;
+  margin-right:0 !important;
+}
+#page-equipment .eq-action-cell .eq-notes-toggle-v3{
+  min-width:96px !important;
+  max-width:none !important;
+  padding-left:10px !important;
+  padding-right:10px !important;
+}
+#page-equipment .eq-action-cell .equip-del-btn{
+  width:34px !important;
+  min-width:34px !important;
+}
+#page-equipment .eq-board-hcell-v5:last-child{
+  align-items:flex-start !important;
+  text-align:left !important;
+}
+@media(max-width:1180px){
+  #page-equipment .eq-board,
+  #page-equipment .eq-board-head-v5,
+  #page-equipment .eq-board-body,
+  #page-equipment .eq-board-row{
+    min-width:0 !important;
+  }
+  #page-equipment .eq-action-cell{
+    justify-content:flex-start !important;
+    flex-wrap:wrap !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
@@ -13487,7 +13559,7 @@ function eqCardHtml(e, idx){
     +'<div class="eq-card-v2-top">'
       +'<div class="eq-card-v2-count">#'+(idx+1)+'</div>'
       +'<div class="eq-card-v2-title"><div class="eq-card-v2-kicker">Equipment / Unit Name</div><input class="name-input" type="text" value="'+name+'" placeholder="Name / ID" data-eid="'+e.id+'"></div>'
-      +'<div class="eq-card-v2-actions"><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></div>'
+      +'<div class="eq-card-v2-actions"><button type="button" class="eq-history-btn" data-eid="'+e.id+'">Timeline</button><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></div>'
     +'</div>'
     +'<div class="eq-card-v2-status-band">'
       +'<div class="eq-card-v2-field"><div class="eq-card-v2-field-label">Status</div><select class="eq-status-select '+sc+'" id="sel-'+e.id+'" data-eid="'+e.id+'"><option value="operational"'+(status==='operational'?' selected':'')+'>Operational</option><option value="down"'+(status==='down'?' selected':'')+'>Down</option><option value="maintenance"'+(status==='maintenance'?' selected':'')+'>Maintenance</option><option value="standby"'+(status==='standby'?' selected':'')+'>Standby</option></select></div>'
@@ -13543,7 +13615,7 @@ function eqBoardRowHtml(e, idx){
     +'<div class="eq-cell eq-tablet-cell" data-label="Tablet">'+tabletCell+'</div>'
     +'<div class="eq-cell eq-charged-cell" data-label="Stays Charged?"><select class="charged-select charged-'+(e.staysCharged||'pending')+'" data-eid="'+e.id+'" data-field="staysCharged"><option value="yes"'+(e.staysCharged==='yes'?' selected':'')+'>✓ Yes</option><option value="no"'+(e.staysCharged==='no'?' selected':'')+'>✕ No</option><option value="pending"'+((!e.staysCharged||e.staysCharged==='pending')?' selected':'')+'>– Pending</option></select></div>'
     +'<div class="eq-cell eq-assigned-cell" data-label="Assigned To">'+assignedCell+'</div>'
-    +'<div class="eq-cell eq-action-cell" data-label="Actions"><button type="button" class="eq-notes-toggle-v3'+(notesOpen ? ' is-open' : '')+'" data-eid="'+e.id+'" aria-expanded="'+(notesOpen ? 'true' : 'false')+'">'+notesBtnText+'</button><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></div>'
+    +'<div class="eq-cell eq-action-cell" data-label="Actions"><button type="button" class="eq-history-btn" data-eid="'+e.id+'">Timeline</button><button type="button" class="eq-notes-toggle-v3'+(notesOpen ? ' is-open' : '')+'" data-eid="'+e.id+'" aria-expanded="'+(notesOpen ? 'true' : 'false')+'">'+notesBtnText+'</button><button type="button" class="equip-del-btn" data-eid="'+e.id+'" title="Remove">✕</button></div>'
     +'<div class="eq-board-notes eq-card-notes '+notesOpenClass+'" data-eid="'+e.id+'" data-status="'+status+'" style="display:'+notesDisplay+';"><div class="eq-notes-shell"><div class="eq-notes-head"><span>Notes</span><button type="button" class="eq-notes-clear-btn" data-eid="'+e.id+'" onclick="return clearEqNotesInline(this);">Clear Note</button>'+notesBadge+'</div><textarea class="notes-input'+(needsAttention ? ' eq-note-alert' : '')+'" placeholder="Add maintenance, down-time, damage, tablet, or handoff notes..." data-eid="'+e.id+'">'+notes+'</textarea></div></div>'
     +'</div>';
 }
@@ -16658,7 +16730,8 @@ body:not(.is-admin) #nav-admin{display:none !important;}
 .page.no-view{display:none !important;}
 .page.view-only input:not([type="range"]),.page.view-only select,.page.view-only textarea{pointer-events:none !important;opacity:.75 !important;}
 .page.view-only button:not(.page-nav-btn):not(.admin-btn):not(.nav-signout-btn){pointer-events:none !important;opacity:.55 !important;}
-.page.view-only::before{content:'VIEW ONLY — editing disabled for this user';display:block;margin:10px 24px 0;padding:8px 12px;border-radius:8px;border:1px solid rgba(245,158,11,.35);background:rgba(245,158,11,.10);color:#fcd34d;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.page.view-only::before{content:'View only -- Contact Admin for edit access.';display:flex;align-items:center;gap:8px;margin:12px 24px 0;padding:10px 14px;border-radius:10px;border:1px solid rgba(245,158,11,.38);background:linear-gradient(90deg,rgba(245,158,11,.14),rgba(24,28,38,.92));color:#fde68a;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:none;box-shadow:0 10px 24px rgba(0,0,0,.18);} 
+.page.view-only::after{content:'';display:none;}
 #page-ppe.view-only .embedded-page-frame{pointer-events:none !important;filter:saturate(.85);}
 @media(max-width:700px){.admin-wrap{padding:12px}.admin-panel{padding:12px}.admin-form-grid{grid-template-columns:1fr}.admin-users-list{grid-template-columns:1fr}}
 
@@ -23693,6 +23766,767 @@ body{
 #page-audits .roster-table-no-match th:nth-child(2){width:18% !important;}
 #page-audits .roster-table-no-match th:nth-child(3){width:14% !important;}
 </style>
+
+<style id="read-only-banner-final-override">
+.page.view-only::before{
+  content:'View only -- Contact Admin for edit access.' !important;
+  display:flex !important;
+  align-items:center !important;
+  margin:12px 24px 0 !important;
+  padding:10px 14px !important;
+  border-radius:10px !important;
+  border:1px solid rgba(245,158,11,.38) !important;
+  background:linear-gradient(90deg,rgba(245,158,11,.14),rgba(24,28,38,.92)) !important;
+  color:#fde68a !important;
+  font-family:var(--mono) !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  letter-spacing:.4px !important;
+  text-transform:none !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.18) !important;
+}
+@media(max-width:640px){.page.view-only::before{margin:10px 12px 0 !important;font-size:10px !important;line-height:1.35 !important;}}
+</style>
+
+
+
+<!-- EQUIPMENT UNIT EDIT HISTORY / TIMELINE PATCH -->
+<style>
+  .eq-history-btn{
+    font-family:var(--mono);font-size:10px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;
+    padding:9px 12px;border-radius:999px;border:1px solid rgba(74,158,255,.42);
+    background:rgba(74,158,255,.10);color:#bfdbfe;cursor:pointer;white-space:nowrap;
+    box-shadow:0 0 0 1px rgba(255,255,255,.025) inset;transition:all .15s ease;
+  }
+  .eq-history-btn:hover{border-color:rgba(74,158,255,.72);background:rgba(74,158,255,.18);color:#fff;}
+  .eq-action-cell .eq-history-btn{margin-right:6px;}
+  .eq-card-v2-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+  .eq-history-modal-bg{position:fixed;inset:0;background:rgba(3,7,18,.78);backdrop-filter:blur(8px);z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;}
+  .eq-history-modal-bg.open{display:flex;}
+  .eq-history-modal{width:min(1040px,96vw);max-height:90vh;overflow:hidden;border:1px solid rgba(74,158,255,.28);border-radius:18px;background:linear-gradient(180deg,#111827,#090d16);box-shadow:0 30px 80px rgba(0,0,0,.55);display:flex;flex-direction:column;}
+  .eq-history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(148,163,184,.18);background:radial-gradient(circle at 0% 0%,rgba(74,158,255,.22),transparent 34%),rgba(15,23,42,.72);}
+  .eq-history-kicker{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#93c5fd;font-weight:900;margin-bottom:5px;}
+  .eq-history-title{font-family:var(--mono);font-size:22px;font-weight:1000;color:#fff;letter-spacing:.5px;}
+  .eq-history-sub{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
+  .eq-history-chip{font-family:var(--mono);font-size:10px;font-weight:800;color:#cbd5e1;border:1px solid rgba(148,163,184,.22);background:rgba(148,163,184,.08);padding:4px 8px;border-radius:999px;}
+  .eq-history-close{font-family:var(--mono);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;border:1px solid rgba(148,163,184,.30);border-radius:999px;padding:9px 13px;color:#e5e7eb;background:rgba(15,23,42,.85);cursor:pointer;}
+  .eq-history-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(148,163,184,.14);background:rgba(2,6,23,.35);}
+  .eq-history-filter-row{display:flex;flex-wrap:wrap;gap:7px;}
+  .eq-history-filter,.eq-history-export{font-family:var(--mono);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;border-radius:999px;padding:7px 10px;cursor:pointer;}
+  .eq-history-filter{border:1px solid rgba(148,163,184,.20);background:rgba(15,23,42,.74);color:#94a3b8;}
+  .eq-history-filter.active{border-color:rgba(74,158,255,.55);background:rgba(74,158,255,.16);color:#dbeafe;}
+  .eq-history-export{border:1px solid rgba(16,185,129,.38);background:rgba(16,185,129,.10);color:#bbf7d0;}
+  .eq-history-body{overflow:auto;padding:14px 16px 18px;}
+  .eq-history-timeline{display:flex;flex-direction:column;gap:10px;}
+  .eq-history-item{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:12px;border:1px solid rgba(148,163,184,.16);border-radius:14px;background:linear-gradient(90deg,rgba(15,23,42,.96),rgba(15,23,42,.68));}
+  .eq-history-time{font-family:var(--mono);font-size:10px;color:#94a3b8;line-height:1.45;}
+  .eq-history-action-line{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px;}
+  .eq-history-action{font-family:var(--mono);font-size:12px;font-weight:1000;color:#fff;text-transform:uppercase;letter-spacing:.8px;}
+  .eq-history-type{font-family:var(--mono);font-size:9px;font-weight:900;color:#93c5fd;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.28);border-radius:999px;padding:3px 7px;text-transform:uppercase;}
+  .eq-history-values{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+  .eq-history-val{border:1px solid rgba(148,163,184,.13);border-radius:10px;padding:8px;background:rgba(2,6,23,.28);min-width:0;}
+  .eq-history-val small{display:block;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:4px;font-weight:900;}
+  .eq-history-val span{display:block;font-family:var(--mono);font-size:11px;color:#e5e7eb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .eq-history-meta{font-family:var(--mono);font-size:10px;color:#94a3b8;margin-top:7px;}
+  .eq-history-empty{text-align:center;padding:34px 16px;color:#94a3b8;font-family:var(--mono);font-size:12px;border:1px dashed rgba(148,163,184,.22);border-radius:14px;background:rgba(15,23,42,.42);}
+  @media(max-width:700px){.eq-history-head,.eq-history-toolbar{flex-direction:column;align-items:stretch}.eq-history-title{font-size:18px}.eq-history-item{grid-template-columns:1fr}.eq-history-values{grid-template-columns:1fr}.eq-history-export,.eq-history-close{width:100%;}.eq-card-v2-actions{flex-wrap:wrap}.eq-history-btn{width:100%;}}
+</style>
+<script>
+(function(){
+  if(window.__equipmentUnitHistoryTimelineV2) return;
+  window.__equipmentUnitHistoryTimelineV2 = true;
+  var EQ_HISTORY_KEY = 'equipment_unit_history_v1';
+  var activeHistoryFilter = 'all';
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];}); }
+  function eqById(id){ return (window.equipment || []).find(function(e){ return String(e.id) === String(id); }); }
+  function labelEq(e){ return e ? ((e.unit || 'Unit') + (e.name && String(e.name).trim() && String(e.name).trim() !== String(e.unit).trim() ? ' · ' + e.name : '')) : 'Equipment Unit'; }
+  function currentActor(){ return window.eqLoginUsername || window.currentUserEmail || window.currentUser || 'unknown'; }
+  function loadHist(){ try{return JSON.parse(localStorage.getItem(EQ_HISTORY_KEY)||'[]') || [];}catch(e){return [];} }
+  function saveHist(list){ try{ localStorage.setItem(EQ_HISTORY_KEY, JSON.stringify((list||[]).slice(0,2500))); }catch(e){} }
+  function normalizeVal(v){ return String(v == null || v === '' ? '—' : v); }
+  function eventId(){ return 'eqhist_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+
+  async function persistHistoryEvent(evt){
+    var list = loadHist();
+    list.unshift(evt); saveHist(list);
+    try{
+      if(window.supabaseClient){
+        await window.supabaseClient.from('equipment_audit_log').insert([{
+          id: evt.id,
+          equipment_id: evt.equipment_id,
+          equipment_type: evt.equipment_type,
+          unit: evt.unit,
+          label: evt.label,
+          field: evt.field,
+          old_value: evt.old_value,
+          new_value: evt.new_value,
+          changed_by: evt.changed_by,
+          changed_at: evt.changed_at,
+          source: 'app'
+        }]);
+      }
+    }catch(err){ console.warn('Equipment audit log saved locally only:', err && (err.message || err)); }
+  }
+
+  function recordEquipmentHistory(id, field, oldValue, newValue, label){
+    oldValue = normalizeVal(oldValue); newValue = normalizeVal(newValue);
+    if(oldValue === newValue) return;
+    var e = eqById(id) || {};
+    persistHistoryEvent({
+      id: eventId(), equipment_id:String(id||''), equipment_type:e.type || '', unit:e.unit || '', label: labelEq(e),
+      field: field, action: label || field, old_value: oldValue, new_value: newValue,
+      changed_by: currentActor(), changed_at: new Date().toISOString()
+    });
+  }
+  window.recordEquipmentHistory = recordEquipmentHistory;
+
+  function fieldLabel(f){return ({status:'Status Change',tablet:'Tablet Change',assigned:'Assigned Employee',charged:'Charging Status',notes:'Notes Update',name:'Unit Name'})[f] || f;}
+  function renderHistoryItem(evt){
+    var d = evt.changed_at ? new Date(evt.changed_at) : new Date();
+    return '<div class="eq-history-item" data-field="'+esc(evt.field)+'">'
+      +'<div class="eq-history-time">'+esc(d.toLocaleDateString())+'<br>'+esc(d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}))+'</div>'
+      +'<div><div class="eq-history-action-line"><span class="eq-history-action">'+esc(fieldLabel(evt.field))+'</span><span class="eq-history-type">'+esc(evt.equipment_type || 'Equipment')+'</span></div>'
+      +'<div class="eq-history-values"><div class="eq-history-val"><small>Before</small><span title="'+esc(evt.old_value)+'">'+esc(evt.old_value)+'</span></div><div class="eq-history-val"><small>After</small><span title="'+esc(evt.new_value)+'">'+esc(evt.new_value)+'</span></div></div>'
+      +'<div class="eq-history-meta">Changed by '+esc(evt.changed_by || 'unknown')+'</div></div></div>';
+  }
+
+  function ensureModal(){
+    var m = document.getElementById('eq-history-modal-bg');
+    if(m) return m;
+    m = document.createElement('div'); m.id='eq-history-modal-bg'; m.className='eq-history-modal-bg';
+    m.innerHTML = '<div class="eq-history-modal" role="dialog" aria-modal="true"><div id="eq-history-modal-content"></div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click',function(ev){ if(ev.target===m) closeEquipmentHistoryModal(); });
+    return m;
+  }
+
+  window.openEquipmentHistoryModal = function(id){
+    var e = eqById(id); var m = ensureModal(); var c = document.getElementById('eq-history-modal-content');
+    var all = loadHist().filter(function(x){ return String(x.equipment_id) === String(id); });
+    var list = activeHistoryFilter === 'all' ? all : all.filter(function(x){ return String(x.field) === activeHistoryFilter; });
+    var body = list.length ? '<div class="eq-history-timeline">'+list.map(renderHistoryItem).join('')+'</div>' : '<div class="eq-history-empty">No timeline entries match this view yet. Future status, tablet, assignment, charging, notes, and name changes will appear here.</div>';
+    c.innerHTML = '<div class="eq-history-head"><div><div class="eq-history-kicker">Equipment Edit History</div><div class="eq-history-title">'+esc(labelEq(e))+'</div><div class="eq-history-sub"><span class="eq-history-chip">Type: '+esc((e&&e.type)||'—')+'</span><span class="eq-history-chip">Unit: '+esc((e&&e.unit)||'—')+'</span><span class="eq-history-chip">Events: '+all.length+'</span></div></div><button class="eq-history-close" type="button" onclick="closeEquipmentHistoryModal()">Close</button></div>'
+      +'<div class="eq-history-toolbar"><div class="eq-history-filter-row">'+['all','status','tablet','assigned','charged','notes','name'].map(function(f){return '<button type="button" class="eq-history-filter'+(activeHistoryFilter===f?' active':'')+'" data-filter="'+f+'">'+esc(f==='all'?'All':fieldLabel(f).replace(' Change','').replace(' Update',''))+'</button>';}).join('')+'</div><button type="button" class="eq-history-export" data-eid="'+esc(id)+'">Export Timeline</button></div>'
+      +'<div class="eq-history-body">'+body+'</div>';
+    m.classList.add('open');
+    c.querySelectorAll('.eq-history-filter').forEach(function(b){ b.addEventListener('click',function(){ activeHistoryFilter=this.dataset.filter || 'all'; openEquipmentHistoryModal(id); }); });
+    var ex = c.querySelector('.eq-history-export'); if(ex) ex.addEventListener('click',function(){ exportEquipmentHistory(id); });
+  };
+  window.closeEquipmentHistoryModal = function(){ var m=document.getElementById('eq-history-modal-bg'); if(m) m.classList.remove('open'); };
+
+  function exportEquipmentHistory(id){
+    var list = loadHist().filter(function(x){ return String(x.equipment_id) === String(id); });
+    var rows = [['Changed At','Equipment','Type','Unit','Field','Old Value','New Value','Changed By']].concat(list.map(function(x){return [x.changed_at,x.label,x.equipment_type,x.unit,fieldLabel(x.field),x.old_value,x.new_value,x.changed_by];}));
+    var csv = rows.map(function(r){return r.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); var a=document.createElement('a');
+    var e=eqById(id)||{}; a.href=URL.createObjectURL(blob); a.download='equipment_timeline_'+String(e.unit || id || 'unit').replace(/[^a-z0-9_-]+/gi,'_')+'.csv';
+    document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},0);
+  }
+
+  // Timeline buttons are rendered directly in the active equipment row/card markup.
+  // Do not inject them after render; delayed injection caused Timeline/Show Notes buttons to flash in and out.
+  function injectTimelineButtons(){ return; }
+
+  document.addEventListener('click', function(ev){
+    var b=ev.target.closest && ev.target.closest('#page-equipment .eq-history-btn');
+    if(b){ ev.preventDefault(); ev.stopPropagation(); openEquipmentHistoryModal(b.getAttribute('data-eid')); }
+  }, true);
+
+  var origStatus = window.updateEqStatus;
+  if(typeof origStatus === 'function') window.updateEqStatus = async function(id,val){ var e=eqById(id), prev=e&&e.status; var res=await origStatus.apply(this, arguments); recordEquipmentHistory(id,'status',prev,val,'Status changed'); return res; };
+  var origAssigned = window.updateEqAssignedTo;
+  if(typeof origAssigned === 'function') window.updateEqAssignedTo = function(id,val){ var e=eqById(id), prev=e&&e.assignedTo; var res=origAssigned.apply(this, arguments); recordEquipmentHistory(id,'assigned',prev,val,'Assigned employee changed'); return res; };
+  var origName = window.updateEqName;
+  if(typeof origName === 'function') window.updateEqName = function(id,val){ var e=eqById(id), prev=e&&e.name; var res=origName.apply(this, arguments); var after=eqById(id); recordEquipmentHistory(id,'name',prev,after&&after.name,'Unit name changed'); return res; };
+
+  var tabletFocus = {}, notesFocus = {};
+  document.addEventListener('focusin', function(ev){
+    var t=ev.target; if(!t || !t.dataset) return;
+    if(t.classList.contains('tablet-input')) tabletFocus[t.dataset.eid]=t.value;
+    if(t.classList.contains('notes-input')) notesFocus[t.dataset.eid]=t.value;
+  }, true);
+  document.addEventListener('focusout', function(ev){
+    var t=ev.target; if(!t || !t.dataset) return; var id=t.dataset.eid;
+    if(t.classList.contains('tablet-input')){ var old=tabletFocus[id]; delete tabletFocus[id]; if(old!==undefined) recordEquipmentHistory(id,'tablet',old,t.value,'Tablet changed'); }
+    if(t.classList.contains('notes-input')){ var oldn=notesFocus[id]; delete notesFocus[id]; if(oldn!==undefined) recordEquipmentHistory(id,'notes',oldn,t.value,'Notes changed'); }
+  }, true);
+  document.addEventListener('change', function(ev){
+    var t=ev.target; if(!t || !t.dataset || !t.dataset.eid) return;
+    if(t.classList.contains('charged-select')){ var id=t.dataset.eid, e=eqById(id), prev=e&&e.staysCharged, val=t.value; setTimeout(function(){recordEquipmentHistory(id,'charged',prev,val,'Charging status changed');},150); }
+  }, true);
+})();
+</script>
+
+
+<style id="equipment-action-buttons-no-flash-final">
+#page-equipment .eq-action-cell,
+#page-equipment .eq-card-v2-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+}
+#page-equipment .eq-history-btn,
+#page-equipment .eq-notes-toggle-v3{
+  opacity:1 !important;
+  visibility:visible !important;
+  position:relative !important;
+  transition:background .15s ease, border-color .15s ease, color .15s ease !important;
+}
+#page-equipment .eq-history-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:34px !important;
+  min-width:92px !important;
+  padding:7px 12px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(74,158,255,.45) !important;
+  background:rgba(74,158,255,.10) !important;
+  color:#bfdbfe !important;
+  font-family:var(--mono) !important;
+  font-size:10px !important;
+  font-weight:1000 !important;
+  letter-spacing:.7px !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+  flex:0 0 auto !important;
+  cursor:pointer !important;
+}
+#page-equipment .eq-history-btn:hover{
+  background:rgba(74,158,255,.18) !important;
+  color:#fff !important;
+}
+#page-equipment .eq-card-v2-actions .eq-history-btn{
+  min-width:96px !important;
+}
+@media(max-width:700px){
+  #page-equipment .eq-card-v2-actions{flex-wrap:nowrap !important;}
+  #page-equipment .eq-action-cell{flex-wrap:nowrap !important;}
+}
+</style>
+
+
+<!-- FINAL REPAIR — EQUIPMENT NOTES VISIBLE + WIDTH CONTAINED -->
+<style id="equipment-notes-visible-width-contained-final">
+#page-equipment .eq-card-notes,
+#page-equipment .eq-card-v2-notes,
+#page-equipment .eq-board-notes,
+#page-equipment tr.eq-notes-row{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+}
+#page-equipment .eq-card-notes.eq-card-notes-hidden:not(.notes-force-open),
+#page-equipment .eq-card-notes.notes-force-hidden:not(.notes-force-open),
+#page-equipment .eq-board-notes.eq-card-notes-hidden:not(.notes-force-open),
+#page-equipment .eq-board-notes.notes-force-hidden:not(.notes-force-open),
+#page-equipment tr.eq-notes-row.eq-notes-hidden:not(.notes-force-open),
+#page-equipment tr.eq-notes-row.notes-force-hidden:not(.notes-force-open){
+  display:none !important;
+}
+#page-equipment .eq-card-notes.notes-force-open,
+#page-equipment .eq-card-v2-notes.notes-force-open,
+#page-equipment .eq-board-notes.notes-force-open,
+#page-equipment .eq-card-notes.is-open,
+#page-equipment .eq-card-v2-notes.is-open,
+#page-equipment .eq-board-notes.is-open{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  pointer-events:auto !important;
+}
+#page-equipment tr.eq-notes-row.notes-force-open,
+#page-equipment tr.eq-notes-row.is-open{
+  display:table-row !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#page-equipment .eq-notes-shell{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+}
+#page-equipment .notes-input,
+#page-equipment textarea.notes-input{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  resize:vertical !important;
+  white-space:pre-wrap !important;
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+  overflow-x:hidden !important;
+}
+#page-equipment .eq-card,
+#page-equipment .eq-unit-card-v2,
+#page-equipment .eq-board-row{
+  max-width:100% !important;
+  min-width:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:visible !important;
+}
+</style>
+<script id="equipment-notes-visible-width-contained-final-js">
+(function(){
+  if(window.__equipmentNotesVisibleWidthFinalInstalled) return;
+  window.__equipmentNotesVisibleWidthFinalInstalled = true;
+  function esc(v){try{return CSS&&CSS.escape?CSS.escape(String(v)):String(v).replace(/[^a-zA-Z0-9_-]/g,'\\$&');}catch(e){return String(v||'');}}
+  function norm(v){return String(v||'').trim().toLowerCase();}
+  function isOperational(v){var s=norm(v);return s==='operational'||s==='op'||s==='ready'||s==='available';}
+  function eidFrom(el){return el&&el.getAttribute?(el.getAttribute('data-eid')||''):'';}
+  function mainFor(el){if(!el||!el.closest)return null;return el.closest('#page-equipment .eq-card, #page-equipment .eq-unit-card-v2, #page-equipment .eq-board-row, #page-equipment tr.eq-main-row');}
+  function panelFor(el){
+    if(!el)return null;
+    var main=mainFor(el)||el;
+    var eid=eidFrom(el)||eidFrom(main);
+    if(main&&main.querySelector){
+      var inside=main.querySelector('.eq-card-notes[data-eid="'+esc(eid)+'"], .eq-card-v2-notes[data-eid="'+esc(eid)+'"], .eq-board-notes[data-eid="'+esc(eid)+'"], .eq-card-notes, .eq-card-v2-notes, .eq-board-notes');
+      if(inside)return inside;
+    }
+    if(main&&main.nextElementSibling&&main.nextElementSibling.classList&&main.nextElementSibling.classList.contains('eq-notes-row'))return main.nextElementSibling;
+    if(eid)return document.querySelector('#page-equipment .eq-card-notes[data-eid="'+esc(eid)+'"], #page-equipment .eq-card-v2-notes[data-eid="'+esc(eid)+'"], #page-equipment .eq-board-notes[data-eid="'+esc(eid)+'"], #page-equipment tr.eq-notes-row[data-eid="'+esc(eid)+'"]');
+    return null;
+  }
+  function textHasValue(panel){var ta=panel&&panel.querySelector?panel.querySelector('.notes-input'):null;return !!(ta&&String(ta.value||'').trim());}
+  function statusFor(main){var sel=main&&main.querySelector?main.querySelector('.eq-status-select'):null;return sel?sel.value:(main&&main.getAttribute?main.getAttribute('data-status'):'');}
+  function setOpen(el,open){
+    var main=mainFor(el)||el;
+    var panel=panelFor(el);
+    if(!panel)return false;
+    var eid=eidFrom(el)||eidFrom(main)||eidFrom(panel);
+    window.eqNotesExpanded=window.eqNotesExpanded||{};
+    if(eid)window.eqNotesExpanded[eid]=!!open;
+    panel.hidden=false;
+    panel.classList.remove('notes-force-open','notes-force-hidden','eq-card-notes-hidden','eq-notes-hidden','is-open','is-hidden');
+    panel.classList.toggle('notes-force-open',!!open);
+    panel.classList.toggle('is-open',!!open);
+    panel.classList.toggle('notes-force-hidden',!open);
+    panel.classList.toggle('is-hidden',!open);
+    panel.classList.toggle('eq-card-notes-hidden',!open);
+    panel.classList.toggle('eq-notes-hidden',!open);
+    var isTr=panel.tagName&&panel.tagName.toLowerCase()==='tr';
+    if(open){
+      panel.style.setProperty('display',isTr?'table-row':'block','important');
+      panel.style.setProperty('visibility','visible','important');
+      panel.style.setProperty('opacity','1','important');
+      panel.style.setProperty('height','auto','important');
+      panel.style.setProperty('max-height','none','important');
+    }else{
+      panel.style.setProperty('display','none','important');
+    }
+    if(eid){document.querySelectorAll('#page-equipment .eq-notes-toggle-v3[data-eid="'+esc(eid)+'"]').forEach(function(b){b.classList.toggle('is-open',!!open);b.setAttribute('aria-expanded',open?'true':'false');b.textContent=open?'Hide Notes':'Show Notes';});}
+    return false;
+  }
+  function syncOne(el){var main=mainFor(el)||el;var panel=panelFor(main);if(!panel)return;var eid=eidFrom(main)||eidFrom(panel);var explicit=eid&&window.eqNotesExpanded&&Object.prototype.hasOwnProperty.call(window.eqNotesExpanded,eid);var shouldOpen=explicit?!!window.eqNotesExpanded[eid]:(textHasValue(panel)||!isOperational(statusFor(main)));setOpen(main,shouldOpen);}
+  function syncAll(){document.querySelectorAll('#page-equipment .eq-card, #page-equipment .eq-unit-card-v2, #page-equipment .eq-board-row, #page-equipment tr.eq-main-row').forEach(syncOne);}
+  document.addEventListener('click',function(ev){var btn=ev.target&&ev.target.closest?ev.target.closest('#page-equipment .eq-notes-toggle-v3'):null;if(!btn)return;ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation();var panel=panelFor(btn);var open=!(panel&&(panel.classList.contains('notes-force-open')||panel.classList.contains('is-open')||panel.style.display==='block'||panel.style.display==='table-row'));return setOpen(btn,open);},true);
+  document.addEventListener('input',function(ev){if(ev.target&&ev.target.classList&&ev.target.classList.contains('notes-input')){var panel=ev.target.closest('.eq-card-notes, .eq-card-v2-notes, .eq-board-notes, tr.eq-notes-row');if(panel&&String(ev.target.value||'').trim())setOpen(panel,true);}},true);
+  var oldRender=window.renderEquipment;
+  if(typeof oldRender==='function'&&!oldRender.__notesVisibleWrapped){var wrapped=function(){var result=oldRender.apply(this,arguments);setTimeout(syncAll,0);setTimeout(syncAll,80);return result;};wrapped.__notesVisibleWrapped=true;window.renderEquipment=wrapped;}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncAll);else syncAll();
+  setTimeout(syncAll,100);setTimeout(syncAll,500);
+})();
+</script>
+
+
+
+<style id="equipment-status-custom-dropdown-final">
+/* FINAL: reliable equipment status control. Uses an overlay menu so status can be changed even when
+   native select menus are blocked by older equipment card/table layers. */
+#page-equipment .eq-status-select{
+  position:relative !important;
+  z-index:20 !important;
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  min-height:38px !important;
+  padding-right:30px !important;
+  appearance:auto !important;
+  -webkit-appearance:menulist !important;
+}
+#page-equipment .eq-status-cell,
+#page-equipment .eq-card-v2-field:has(.eq-status-select){
+  position:relative !important;
+  z-index:15 !important;
+  overflow:visible !important;
+  pointer-events:auto !important;
+}
+#page-equipment .eq-status-cell::before,
+#page-equipment .eq-status-cell::after,
+#page-equipment .eq-card-v2-field:has(.eq-status-select)::before,
+#page-equipment .eq-card-v2-field:has(.eq-status-select)::after{
+  content:none !important;
+  display:none !important;
+}
+.eq-status-menu-popover{
+  position:fixed;
+  z-index:2147483000;
+  min-width:178px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.32);
+  background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(2,6,23,.98));
+  box-shadow:0 24px 60px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.06);
+  padding:7px;
+  display:none;
+}
+.eq-status-menu-popover.is-open{display:block;}
+.eq-status-menu-option{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid transparent;
+  border-radius:10px;
+  padding:10px 12px;
+  background:transparent;
+  color:#e5e7eb;
+  font-family:var(--mono, monospace);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.65px;
+  text-transform:uppercase;
+  cursor:pointer;
+  text-align:left;
+}
+.eq-status-menu-option:hover,
+.eq-status-menu-option:focus{
+  background:rgba(74,158,255,.14);
+  border-color:rgba(74,158,255,.32);
+  outline:none;
+}
+.eq-status-menu-option.is-selected::after{content:'✓';color:#93c5fd;font-weight:1000;}
+.eq-status-menu-option[data-value="operational"]{color:#6ee7b7;}
+.eq-status-menu-option[data-value="down"]{color:#fca5a5;}
+.eq-status-menu-option[data-value="maintenance"]{color:#fcd34d;}
+.eq-status-menu-option[data-value="standby"]{color:#a5b4fc;}
+</style>
+<script id="equipment-status-custom-dropdown-final">
+(function(){
+  'use strict';
+  var activeSelect = null;
+  var menu = null;
+
+  function cssEscape(v){
+    try{ return CSS.escape(String(v)); }catch(err){ return String(v).replace(/[^a-zA-Z0-9_-]/g, '\\$&'); }
+  }
+  function editable(){
+    var page = document.getElementById('page-equipment');
+    return !(page && page.classList.contains('view-only'));
+  }
+  function statusOptions(){
+    return [
+      ['operational','Operational'],
+      ['down','Down'],
+      ['maintenance','Maintenance'],
+      ['standby','Standby']
+    ];
+  }
+  function normalizeStatus(v){
+    try{ return typeof normalizeEqStatus === 'function' ? normalizeEqStatus(v) : String(v || 'operational').toLowerCase(); }
+    catch(err){ return String(v || 'operational').toLowerCase(); }
+  }
+  function statusClass(v){
+    try{ return typeof eqStatusClass === 'function' ? eqStatusClass(v) : 'status-' + String(v || 'operational').slice(0,5); }
+    catch(err){ return 'status-op'; }
+  }
+  function ensureMenu(){
+    if(menu && document.body.contains(menu)) return menu;
+    menu = document.createElement('div');
+    menu.className = 'eq-status-menu-popover';
+    menu.setAttribute('role','listbox');
+    menu.innerHTML = statusOptions().map(function(pair){
+      return '<button type="button" class="eq-status-menu-option" role="option" data-value="'+pair[0]+'">'+pair[1]+'</button>';
+    }).join('');
+    document.body.appendChild(menu);
+    menu.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); }, true);
+    menu.addEventListener('click', function(ev){
+      var btn = ev.target && ev.target.closest ? ev.target.closest('.eq-status-menu-option') : null;
+      if(!btn || !activeSelect) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      chooseStatus(activeSelect, btn.getAttribute('data-value'));
+      closeMenu();
+    }, true);
+    return menu;
+  }
+  function positionMenu(sel){
+    var m = ensureMenu();
+    var r = sel.getBoundingClientRect();
+    var width = Math.max(178, Math.min(260, r.width + 46));
+    var left = Math.max(8, Math.min(window.innerWidth - width - 8, r.left));
+    var top = r.bottom + 6;
+    if(top + 190 > window.innerHeight) top = Math.max(8, r.top - 190);
+    m.style.left = left + 'px';
+    m.style.top = top + 'px';
+    m.style.minWidth = width + 'px';
+  }
+  function openMenu(sel){
+    if(!sel || !editable()) return;
+    activeSelect = sel;
+    sel.disabled = false;
+    sel.style.pointerEvents = 'auto';
+    var m = ensureMenu();
+    var current = normalizeStatus(sel.value);
+    m.querySelectorAll('.eq-status-menu-option').forEach(function(btn){
+      btn.classList.toggle('is-selected', btn.getAttribute('data-value') === current);
+      btn.setAttribute('aria-selected', btn.getAttribute('data-value') === current ? 'true' : 'false');
+    });
+    positionMenu(sel);
+    m.classList.add('is-open');
+  }
+  function closeMenu(){
+    if(menu) menu.classList.remove('is-open');
+    activeSelect = null;
+  }
+  function chooseStatus(sel, value){
+    if(!sel || !sel.dataset || !sel.dataset.eid) return;
+    var val = normalizeStatus(value);
+    sel.value = val;
+    sel.className = 'eq-status-select ' + statusClass(val);
+    try{
+      if(typeof updateEqStatus === 'function') updateEqStatus(sel.dataset.eid, val);
+      else sel.dispatchEvent(new Event('change', {bubbles:true}));
+    }catch(err){ console.warn('Equipment status update failed:', err); }
+  }
+
+  // Re-enable selects after older view/layout patches and make the native click target reliable.
+  function normalizeControls(){
+    document.querySelectorAll('#page-equipment select.eq-status-select[data-eid]').forEach(function(sel){
+      sel.disabled = false;
+      sel.removeAttribute('disabled');
+      sel.style.pointerEvents = 'auto';
+      sel.style.position = 'relative';
+      sel.style.zIndex = '20';
+      sel.style.cursor = 'pointer';
+    });
+  }
+
+  document.addEventListener('pointerdown', function(ev){
+    var sel = ev.target && ev.target.closest ? ev.target.closest('#page-equipment select.eq-status-select[data-eid]') : null;
+    if(!sel) return;
+    if(!editable()) return;
+    // Do not allow row/card/note handlers to swallow the status click.
+    ev.stopPropagation();
+    normalizeControls();
+  }, true);
+
+  document.addEventListener('click', function(ev){
+    var sel = ev.target && ev.target.closest ? ev.target.closest('#page-equipment select.eq-status-select[data-eid]') : null;
+    if(sel){
+      if(!editable()) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      openMenu(sel);
+      return;
+    }
+    if(menu && menu.classList.contains('is-open') && !(ev.target && ev.target.closest && ev.target.closest('.eq-status-menu-popover'))){
+      closeMenu();
+    }
+  }, true);
+
+  document.addEventListener('change', function(ev){
+    var sel = ev.target;
+    if(!sel || !sel.classList || !sel.classList.contains('eq-status-select') || !sel.dataset || !sel.dataset.eid) return;
+    chooseStatus(sel, sel.value);
+  }, true);
+
+  window.addEventListener('scroll', function(){ if(menu && menu.classList.contains('is-open')) closeMenu(); }, true);
+  window.addEventListener('resize', function(){ if(activeSelect && menu && menu.classList.contains('is-open')) positionMenu(activeSelect); });
+
+  var oldRender = window.renderEquipment;
+  if(typeof oldRender === 'function' && !oldRender.__statusControlsNormalized){
+    var wrapped = function(){
+      var result = oldRender.apply(this, arguments);
+      setTimeout(normalizeControls, 0);
+      return result;
+    };
+    wrapped.__statusControlsNormalized = true;
+    window.renderEquipment = wrapped;
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', normalizeControls);
+  else normalizeControls();
+  setTimeout(normalizeControls, 250);
+})();
+</script>
+
+
+<!-- FINAL REPAIR: Employee ID table/card visibility + Needs Attention UP ID only -->
+<style id="employee-id-upid-only-clean-final-css">
+  /* Prevent table/card double-display on Employee ID page. */
+  body:not(.employee-card-mode) #page-employees #employee-card-list{
+    display:none !important;
+  }
+  body.employee-card-mode #page-employees .table-wrap{
+    display:none !important;
+  }
+  body.employee-card-mode #page-employees #employee-card-list{
+    display:grid !important;
+  }
+
+  /* Remove accidental duplicate warning clutter from the main Employee ID table/card display. */
+  #page-employees .emp-flag.dup,
+  #page-employees .employee-card .emp-flag.dup{
+    display:none !important;
+  }
+  #page-employees .emp-flags:empty{
+    display:none !important;
+  }
+</style>
+<script id="employee-id-upid-only-clean-final-js">
+(function(){
+  'use strict';
+  if(window.__employeeIdUpidOnlyCleanFinal) return;
+  window.__employeeIdUpidOnlyCleanFinal = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function norm(v){ return clean(v).toUpperCase(); }
+  var UPID_PRESETS = {'SENT IN':1,'NEED TO SEND':1,'NEED TO CALL':1,'WAITING ON DAN':1,'WAITING ON DA':1};
+  function resolvedUpId(v){ return !!clean(v) && !UPID_PRESETS[norm(v)]; }
+  function needsUpId(e){ return !resolvedUpId(e && (e.upId || e.up_id || e.upID || e.upid)); }
+  function allEmployees(){ return Array.isArray(window.employees) ? window.employees : (typeof employees !== 'undefined' && Array.isArray(employees) ? employees : []); }
+  function empName(e){ e=e||{}; return ((clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || clean(e.name) || 'Unnamed Employee'); }
+  function empShift(e){ return clean(e && e.shift) || 'No Shift'; }
+  function shiftClass(e){ var s=norm(empShift(e)); if(s==='DAY') return 'emp-attn-shift-day'; if(s==='NIGHT') return 'emp-attn-shift-night'; if(s==='GATE') return 'emp-attn-shift-gate'; return 'emp-attn-shift-other'; }
+  function shiftBadge(e){ return '<span class="emp-attn-shift-badge '+shiftClass(e)+'">'+esc(empShift(e))+'</span>'; }
+  function mtFlag(e){ return e && e.mobileToken ? '<span class="emp-mt-flag" title="Mobile Token enabled">MT</span>' : ''; }
+  function setText(id, value){ var el=document.getElementById(id); if(el) el.textContent=value; }
+  function setHtml(id, value){ var el=document.getElementById(id); if(el) el.innerHTML=value; }
+  function setBar(id, pct){ var el=document.getElementById(id); if(el) el.style.width=Math.max(0,Math.min(100,pct||0))+'%'; }
+  function completeBasic(e){
+    e=e||{};
+    return !!(clean(e.first) && clean(e.last) && clean(e.empId) && resolvedUpId(e.upId) && clean(e.phone) && clean(e.daysOff));
+  }
+
+  window.employeeNeedsAttention = function(e){ return needsUpId(e); };
+  window.missingItems = function(e){ return needsUpId(e) ? ['UP ID'] : []; };
+
+  function renderUpidPreview(rows){
+    var preview=document.getElementById('s-out-preview');
+    if(!preview) return;
+    if(!rows.length){ preview.innerHTML='<div class="emp-attn-mini-empty">No missing UP IDs</div>'; return; }
+    preview.innerHTML=rows.slice(0,3).map(function(e){
+      return '<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">'+esc(empName(e).toUpperCase())+'</span>'+shiftBadge(e)+mtFlag(e)+'<span class="emp-attn-mini-need">UP ID</span></div>';
+    }).join('') + (rows.length>3 ? '<div class="emp-attn-mini-more">+'+(rows.length-3)+' more</div>' : '');
+  }
+
+  function renderUpidDrawer(rows){
+    var drawer=document.getElementById('employee-attn-drawer');
+    if(!drawer) return;
+    var isOpen=drawer.classList.contains('is-open');
+    if(!isOpen && !drawer.innerHTML) return;
+    if(!isOpen) return;
+    if(!rows.length){
+      drawer.innerHTML='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List</div><button type="button" class="emp-attn-drawer-close" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer(false);">Close</button></div><div class="emp-attn-empty">No missing UP IDs</div>';
+      return;
+    }
+    drawer.innerHTML='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List · '+rows.length+'</div><button type="button" class="emp-attn-drawer-close" onclick="window.toggleEmployeeAttentionDrawer && window.toggleEmployeeAttentionDrawer(false);">Close</button></div><div class="emp-attn-drawer-list">'
+      + rows.map(function(e){
+          var up=clean(e.upId) || 'Missing';
+          return '<div class="emp-attn-drawer-ticket" data-eid="'+esc(e.id||'')+'"><div class="emp-attn-drawer-name-line"><div class="emp-attn-drawer-name">'+esc(empName(e).toUpperCase())+'</div>'+shiftBadge(e)+mtFlag(e)+'</div><div class="emp-attn-drawer-pills"><span class="emp-attn-drawer-pill" data-need="UP ID">UP ID</span><span class="emp-attn-drawer-upid-value"><span class="upid-prefix">UPID:</span><span class="upid-main">'+esc(up)+'</span></span></div></div>';
+        }).join('')
+      + '</div>';
+  }
+
+  window.updateStats = function(){
+    var list=allEmployees();
+    var total=list.length;
+    var complete=list.filter(completeBasic).length;
+    var rows=list.filter(needsUpId).sort(function(a,b){ return empName(a).localeCompare(empName(b)); });
+    var attn=rows.length;
+    setHtml('s-total', total ? Math.round((complete/total)*100)+'<small>%</small>' : '0<small>%</small>');
+    setText('s-total-sub', complete+'/'+total+' profiles complete');
+    setBar('s-total-bar', total ? (complete/total)*100 : 0);
+    setText('s-out', attn);
+    setText('s-out-sub', attn ? 'Missing UP ID only' : 'All UP IDs covered');
+    setBar('s-out-bar', total ? (attn/total)*100 : 0);
+    renderUpidPreview(rows);
+    renderUpidDrawer(rows);
+    ['Day','Night','Gate'].forEach(function(shift){
+      var id = shift==='Day'?'s-day':shift==='Night'?'s-night':'s-gate';
+      var arr=list.filter(function(e){ return clean(e.shift)===shift; });
+      var done=arr.filter(completeBasic).length;
+      setHtml(id, done+'<small>/'+arr.length+'</small>');
+      setText(id+'-sub', (arr.length && done===arr.length) ? 'All employees covered' : 'Complete');
+      setBar(id+'-bar', arr.length ? (done/arr.length)*100 : 0);
+    });
+  };
+
+  window.updateTabCounts = function(){
+    var list=allEmployees();
+    function set(id,val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+    set('tc-all',list.length);
+    try{ set('tc-today', typeof workingToday==='function' ? workingToday().length : list.length); }catch(e){ set('tc-today',list.length); }
+    set('tc-day',list.filter(function(e){return clean(e.shift)==='Day';}).length);
+    set('tc-night',list.filter(function(e){return clean(e.shift)==='Night';}).length);
+    set('tc-gate',list.filter(function(e){return clean(e.shift)==='Gate';}).length);
+    set('tc-missing-up',list.filter(needsUpId).length);
+    set('tc-attn',list.filter(needsUpId).length);
+  };
+
+  window.updateBanner = function(){
+    var banner=document.getElementById('callout-banner'); if(!banner) return;
+    var list=allEmployees();
+    var callouts=list.filter(function(e){ return e.status==='callout'; });
+    var waiting=list.filter(function(e){ return e.status==='waiting'; });
+    var missingUp=list.filter(needsUpId);
+    var html='';
+    function chip(e, extra){
+      var cls={Day:'bchip-day',Night:'bchip-night',Gate:'bchip-gate'}[e.shift]||'bchip-day';
+      return '<span class="bchip '+cls+'" data-eid="'+esc(e.id||'')+'" title="'+esc(empShift(e)+' shift')+'">'+esc(empName(e))+mtFlag(e)+(extra||'')+'</span>';
+    }
+    if(callouts.length) html+='<div class="banner-row banner-row-callout"><div class="banner-label banner-label-callout"><span class="pulse"></span>Called Out</div><div class="banner-chips">'+callouts.map(function(e){return chip(e);}).join('')+'</div></div>';
+    if(waiting.length) html+='<div class="banner-row banner-row-waiting"><div class="banner-label banner-label-waiting"><span class="pulse"></span>Waiting On</div><div class="banner-chips">'+waiting.map(function(e){return chip(e);}).join('')+'</div></div>';
+    if(missingUp.length) html+='<div class="banner-row banner-row-attn"><div class="banner-label banner-label-attn"><span class="pulse"></span>Needs Attention</div><div class="banner-chips">'+missingUp.slice(0,80).map(function(e){ return chip(e,'<span class="emp-attn-chip-shift">'+esc(empShift(e))+'</span><strong style="margin-left:4px;color:#fff;">UP ID</strong>'); }).join('')+'</div></div>';
+    banner.innerHTML=html;
+    banner.querySelectorAll('[data-eid]').forEach(function(el){ el.addEventListener('click',function(){ if(typeof openModal==='function') openModal(this.dataset.eid); }); });
+    setText('needs-attn-count', missingUp.length);
+  };
+
+  var drawerOpen=false;
+  window.toggleEmployeeAttentionDrawer = function(force){
+    var drawer=document.getElementById('employee-attn-drawer');
+    drawerOpen = typeof force==='boolean' ? force : !drawerOpen;
+    if(drawer) drawer.classList.toggle('is-open', drawerOpen);
+    renderUpidDrawer(allEmployees().filter(needsUpId).sort(function(a,b){ return empName(a).localeCompare(empName(b)); }));
+    return false;
+  };
+
+  function cleanupEmployeeDom(){
+    document.querySelectorAll('#page-employees .emp-flag.dup').forEach(function(el){ el.remove(); });
+    document.querySelectorAll('#page-employees .emp-flags').forEach(function(el){ if(!clean(el.textContent)) el.remove(); });
+  }
+
+  var oldRender=window.render;
+  if(typeof oldRender==='function' && !oldRender.__upidOnlyCleanWrapped){
+    window.render=function(){
+      var result=oldRender.apply(this, arguments);
+      try{ window.updateStats(); window.updateBanner(); window.updateTabCounts(); cleanupEmployeeDom(); }catch(e){}
+      return result;
+    };
+    window.render.__upidOnlyCleanWrapped=true;
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    try{ window.updateStats(); window.updateBanner(); window.updateTabCounts(); cleanupEmployeeDom(); }catch(e){}
+  });
+  setTimeout(function(){ try{ window.updateStats(); window.updateBanner(); window.updateTabCounts(); cleanupEmployeeDom(); }catch(e){} }, 500);
+})();
+</script>
 </body>
 </html>
 <style id="employee-missing-up-red-column-line-fix">
@@ -28198,6 +29032,101 @@ body.employee-card-mode #page-employees .employee-card-actions{
     margin:8px 10px 0 !important;
   }
 }
+
+
+/* ==========================================================
+   FINAL FIX — EQUIPMENT NOTES WIDTH CONTAINMENT
+   Prevents notes panels/textareas from expanding wider than
+   the equipment page in both board view and card view.
+   ========================================================== */
+#page-equipment,
+#page-equipment .equip-page-wrap,
+#page-equipment .equip-section,
+#page-equipment .eq-board,
+#page-equipment .eq-board-body,
+#page-equipment .eq-card-grid,
+#page-equipment .eq-card,
+#page-equipment .eq-unit-card-v2{
+  max-width:100% !important;
+  overflow-x:hidden !important;
+  min-width:0 !important;
+}
+
+#page-equipment .eq-board-row{
+  max-width:100% !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+}
+
+#page-equipment .eq-board-notes,
+#page-equipment .eq-card-notes,
+#page-equipment .eq-card-v2-notes,
+#page-equipment .eq-card-notes-always-open{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+#page-equipment .eq-board-notes{
+  grid-column:1 / -1 !important;
+  padding-left:min(78px, 8vw) !important;
+  padding-right:14px !important;
+}
+
+#page-equipment .eq-notes-shell,
+#page-equipment .eq-board-notes .eq-notes-shell,
+#page-equipment .eq-card-v2-notes .eq-notes-shell,
+#page-equipment .eq-card-notes .eq-notes-shell{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+#page-equipment textarea.notes-input,
+#page-equipment .notes-input,
+#page-equipment .eq-board-notes .notes-input,
+#page-equipment .eq-card-v2-notes .notes-input,
+#page-equipment .eq-card-notes .notes-input{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  resize:vertical !important;
+  overflow-x:hidden !important;
+  white-space:pre-wrap !important;
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+}
+
+@media(max-width:1100px){
+  #page-equipment .eq-board-notes{
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+}
+
+@media(max-width:640px){
+  #page-equipment .eq-card-grid,
+  #page-equipment .eq-board-body{
+    width:100% !important;
+    max-width:100% !important;
+  }
+  #page-equipment .eq-card-v2-notes,
+  #page-equipment .eq-card-notes,
+  #page-equipment .eq-board-notes{
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+  #page-equipment .eq-notes-shell{
+    border-radius:12px !important;
+  }
+}
+
 </style>
 
 
@@ -28389,5 +29318,1524 @@ body.employee-card-mode #page-employees .employee-card-actions{
   }
   window.addEventListener('load', function(){ installPPEOverride(); setTimeout(installPPEOverride, 500); setTimeout(installPPEOverride, 1500); });
   document.addEventListener('DOMContentLoaded', function(){ installPPEOverride(); setTimeout(installPPEOverride, 500); });
+})();
+</script>
+
+<script>
+(function(){
+  /* Equipment status responsiveness patch
+     The old status handler waited for Supabase/background refresh before rebuilding
+     timer/since/notes UI. This makes status changes optimistic and immediate. */
+  var pendingEqSaveTimer = null;
+
+  function scheduleEquipmentBackgroundSave(){
+    try{
+      if(pendingEqSaveTimer) clearTimeout(pendingEqSaveTimer);
+      pendingEqSaveTimer = setTimeout(function(){
+        pendingEqSaveTimer = null;
+        try{
+          var result = saveEquipment && saveEquipment();
+          if(result && typeof result.catch === 'function'){
+            result.catch(function(err){ console.warn('Equipment background save failed:', err && (err.message || err)); });
+          }
+        }catch(err){
+          console.warn('Equipment background save failed:', err && (err.message || err));
+        }
+      }, 80);
+    }catch(err){}
+  }
+
+  function updateEquipmentStatusDomFast(id, val){
+    try{
+      document.querySelectorAll('[data-eid="' + CSS.escape(id) + '"]').forEach(function(node){
+        if(node.classList && node.classList.contains('eq-status-select')){
+          node.value = val;
+          node.className = 'eq-status-select ' + eqStatusClass(val);
+        }
+      });
+      document.querySelectorAll('.eq-main-row[data-eid="' + CSS.escape(id) + '"], .eq-board-row[data-eid="' + CSS.escape(id) + '"]').forEach(function(row){
+        row.setAttribute('data-status', val);
+        row.classList.toggle('eq-row-maintenance', val === 'maintenance');
+        var e = (equipment || []).find(function(x){ return x.id === id; });
+        var needsNotes = !!e && val !== 'operational' && !String(e.notes || '').trim();
+        row.classList.toggle('eq-row-needs-notes', needsNotes);
+      });
+    }catch(err){}
+  }
+
+  window.updateEqStatus = function(id, val){
+    var e = (equipment || []).find(function(x){ return x.id === id; });
+    if(!e) return;
+
+    val = normalizeEqStatus ? normalizeEqStatus(val) : String(val || 'operational').toLowerCase();
+    var prev = e.status || 'operational';
+    if(prev === val){
+      updateEquipmentStatusDomFast(id, val);
+      return;
+    }
+
+    if(typeof pushEquipmentUndo === 'function') pushEquipmentUndo('Status changed for ' + (e.name || e.unit || id));
+    e.status = val;
+    e.updated_at = new Date().toISOString();
+
+    if(prev === 'operational' && val !== 'operational'){
+      e.status_changed_at = new Date().toISOString();
+      e.status_changed_day = new Date().toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' });
+      try{ eqNotesExpanded[id] = true; }catch(err){}
+    }
+    if(val === 'operational'){
+      e.status_changed_at = null;
+      e.status_changed_day = null;
+      try{ eqNotesExpanded[id] = false; }catch(err){}
+    }
+
+    updateEquipmentStatusDomFast(id, val);
+
+    // Let the native select repaint immediately, then rebuild timer/since/notes UI.
+    try{ markEquipmentLocalEdit(); }catch(err){}
+    var repaint = window.requestAnimationFrame || function(fn){ return setTimeout(fn, 0); };
+    repaint(function(){
+      try{ renderEquipment(); }catch(err){ console.warn('Immediate equipment render failed:', err && (err.message || err)); }
+      try{ renderEquipmentAttention(); }catch(err){}
+      try{ updateEquipmentStatusMeta(); }catch(err){}
+      try{ refreshEquipmentAgingDisplay(); }catch(err){}
+    });
+
+    try{
+      var unitLabel = (e.name && e.name.trim()) ? e.unit + ' (' + e.name.trim() + ')' : e.unit;
+      if(typeof logActivity === 'function' && typeof afPill === 'function'){
+        if(val === 'down') logActivity('status','<strong>'+unitLabel+'</strong> marked '+afPill('down'),e.type+(e.notes?' · '+e.notes:''));
+        else if(val === 'maintenance') logActivity('status','<strong>'+unitLabel+'</strong> sent to '+afPill('maintenance'),e.type);
+        else if(val === 'standby') logActivity('status','<strong>'+unitLabel+'</strong> set to '+afPill('standby'),e.type);
+        else if(val === 'operational' && prev !== 'operational') logActivity('equipment','<strong>'+unitLabel+'</strong> back '+afPill('operational')+' (was '+afPill(prev)+')',e.type);
+      }
+    }catch(err){}
+
+    scheduleEquipmentBackgroundSave();
+  };
+
+  document.addEventListener('change', function(ev){
+    var sel = ev.target;
+    if(!sel || !sel.classList || !sel.classList.contains('eq-status-select') || !sel.dataset || !sel.dataset.eid) return;
+    // Capture at document level as a safety net for any older render path.
+    sel.className = 'eq-status-select ' + eqStatusClass(sel.value);
+  }, true);
+})();
+</script>
+
+<!-- FINAL REPAIR: Employee/Equipment duplicate display + UPID-only attention normalization -->
+<style id="final-display-dedupe-and-view-mode-css">
+  /* Force only one Employee ID view to display at a time. */
+  #page-employees #employee-card-list{display:none!important;}
+  body.employee-card-mode #page-employees #employee-card-list{display:grid!important;}
+  body.employee-card-mode #page-employees #employee-table-main{display:none!important;}
+  body:not(.employee-card-mode) #page-employees #employee-card-list{display:none!important;}
+  body:not(.employee-card-mode) #page-employees #employee-table-main{display:table!important;}
+  #page-employees .employee-card-list + .employee-card-list,
+  #page-employees #employee-card-list + #employee-card-list{display:none!important;}
+</style>
+<script id="final-display-dedupe-and-upid-only-repair">
+(function(){
+  'use strict';
+  if(window.__finalDisplayDedupeAndUpidOnlyRepair) return;
+  window.__finalDisplayDedupeAndUpidOnlyRepair = true;
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function low(v){ return clean(v).toLowerCase().replace(/\s+/g,' '); }
+  function isRealUpId(v){
+    var s = clean(v);
+    if(!s) return false;
+    return !/^(missing|waiting|waiting on dan|pending|need|needs|n\/a|na|none|no)$/i.test(s);
+  }
+  function employeeKey(e){
+    e = e || {};
+    var empId = low(e.empId || e.employee_id);
+    if(empId) return 'emp:' + empId;
+    var upId = low(e.upId || e.up_id);
+    if(isRealUpId(upId)) return 'up:' + upId;
+    return 'name:' + [low(e.first || e.first_name), low(e.last || e.last_name), low(e.shift || 'Day')].join('|');
+  }
+  function scoreEmployee(e){
+    e = e || {};
+    var score = 0;
+    ['first','last','first_name','last_name','empId','employee_id','upId','up_id','email','phone','shift','daysOff','days_off','notes','passwordStatus','password_status','mobileToken','mobile_token'].forEach(function(k){ if(clean(e[k])) score += 1; });
+    ['updated_at','notes_edited_at','email_edited_at','phone_edited_at'].forEach(function(k){ var t = Date.parse(e[k] || ''); if(isFinite(t)) score += Math.floor(t/1000000000); });
+    return score;
+  }
+  function dedupeEmployees(list){
+    var map = Object.create(null), order = [];
+    (Array.isArray(list) ? list : []).forEach(function(raw){
+      if(!raw) return;
+      var e = (typeof normalizeEmployeeRecord === 'function') ? normalizeEmployeeRecord(raw) : raw;
+      var key = employeeKey(e);
+      if(!key || key === 'name:||day') return;
+      if(!map[key]){ map[key] = e; order.push(key); return; }
+      if(scoreEmployee(e) >= scoreEmployee(map[key])) map[key] = e;
+    });
+    return order.map(function(k){ return map[k]; });
+  }
+  function eqKey(e){
+    e = e || {};
+    return [low(e.type || 'Hostler'), low(e.unit || e.label || e.name || e.id)].join('|');
+  }
+  function scoreEq(e){
+    e = e || {};
+    var t1 = Date.parse(e.updated_at || ''), t2 = Date.parse(e.status_changed_at || '');
+    return Math.max(isFinite(t1)?t1:0, isFinite(t2)?t2:0);
+  }
+  function dedupeEquipment(list){
+    var map = Object.create(null), order = [];
+    (Array.isArray(list) ? list : []).forEach(function(e){
+      if(!e) return;
+      var key = eqKey(e);
+      if(!key || key === 'hostler|') return;
+      if(!map[key]){ map[key] = e; order.push(key); return; }
+      if(scoreEq(e) >= scoreEq(map[key])) map[key] = e;
+    });
+    return order.map(function(k){ return map[k]; });
+  }
+  function normalizeEmployeesInMemory(){
+    try{
+      if(typeof employees !== 'undefined' && Array.isArray(employees)){
+        employees = dedupeEmployees(employees);
+        window.employees = employees;
+      }else if(Array.isArray(window.employees)){
+        window.employees = dedupeEmployees(window.employees);
+      }
+    }catch(err){ console.warn('Employee in-memory dedupe skipped:', err && err.message); }
+  }
+  function normalizeEquipmentInMemory(){
+    try{
+      if(typeof equipment !== 'undefined' && Array.isArray(equipment)){
+        equipment = dedupeEquipment(equipment);
+        window.equipment = equipment;
+      }else if(Array.isArray(window.equipment)){
+        window.equipment = dedupeEquipment(window.equipment);
+      }
+    }catch(err){ console.warn('Equipment in-memory dedupe skipped:', err && err.message); }
+  }
+  function syncEmployeeViewMode(){
+    try{
+      var cardMode = localStorage.getItem('employee_card_mode_v1') === '1' || document.body.classList.contains('employee-card-mode');
+      document.body.classList.toggle('employee-card-mode', cardMode);
+      var cards = document.getElementById('employee-card-list');
+      var table = document.getElementById('employee-table-main');
+      if(cards) cards.style.display = cardMode ? 'grid' : 'none';
+      if(table) table.style.display = cardMode ? 'none' : 'table';
+      document.querySelectorAll('#page-employees .employee-card-list').forEach(function(el, idx){
+        if(el.id !== 'employee-card-list' && idx > 0) el.style.display = 'none';
+      });
+    }catch(err){}
+  }
+  function cleanupEmployeeDomDuplicates(){
+    try{
+      var tableBody = document.getElementById('emp-table');
+      if(tableBody){
+        var seenRows = Object.create(null);
+        Array.from(tableBody.querySelectorAll('tr')).forEach(function(row){
+          var txt = low(row.textContent || '');
+          if(seenRows[txt]) row.remove(); else seenRows[txt] = true;
+        });
+      }
+      var cardList = document.getElementById('employee-card-list');
+      if(cardList){
+        var seenCards = Object.create(null);
+        Array.from(cardList.children).forEach(function(card){
+          var name = low((card.querySelector('.employee-card-name') || card).textContent || '');
+          if(seenCards[name]) card.remove(); else seenCards[name] = true;
+        });
+      }
+    }catch(err){}
+  }
+  function upidRows(){
+    var list = (typeof employees !== 'undefined' && Array.isArray(employees)) ? employees : (Array.isArray(window.employees) ? window.employees : []);
+    return dedupeEmployees(list).filter(function(e){ return !isRealUpId(e && (e.upId || e.up_id)); });
+  }
+  function patchNeedsAttentionToUpidOnly(){
+    try{
+      window.employeeNeedsAttentionRows = upidRows;
+      window.getEmployeeNeedsAttentionRows = upidRows;
+      window.buildEmployeeNeedsAttentionRows = upidRows;
+      window.missingList = function(e){ return isRealUpId(e && (e.upId || e.up_id)) ? [] : ['UP ID']; };
+      window.needsAttention = function(e){ return !isRealUpId(e && (e.upId || e.up_id)); };
+    }catch(err){}
+  }
+  function afterRender(){
+    normalizeEmployeesInMemory();
+    normalizeEquipmentInMemory();
+    syncEmployeeViewMode();
+    cleanupEmployeeDomDuplicates();
+    patchNeedsAttentionToUpidOnly();
+  }
+
+  window.normalizeEmployeeRoster = normalizeEmployeesInMemory;
+  window.dedupeEmployeeDisplayRows = dedupeEmployees;
+  window.dedupeEquipmentRows = dedupeEquipment;
+
+  ['render','renderEmployees','renderEmployeeTable','renderEmployeeCards'].forEach(function(fnName){
+    var original = window[fnName];
+    if(typeof original === 'function' && !original.__finalDedupeWrapped){
+      var wrapped = function(){
+        normalizeEmployeesInMemory();
+        patchNeedsAttentionToUpidOnly();
+        var result = original.apply(this, arguments);
+        afterRender();
+        return result;
+      };
+      wrapped.__finalDedupeWrapped = true;
+      window[fnName] = wrapped;
+    }
+  });
+  ['renderEquipment'].forEach(function(fnName){
+    var original = window[fnName];
+    if(typeof original === 'function' && !original.__finalDedupeWrapped){
+      var wrapped = function(){
+        normalizeEquipmentInMemory();
+        var result = original.apply(this, arguments);
+        return result;
+      };
+      wrapped.__finalDedupeWrapped = true;
+      window[fnName] = wrapped;
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    afterRender();
+    setTimeout(afterRender, 250);
+    setTimeout(afterRender, 1000);
+  });
+  setTimeout(afterRender, 100);
+  setTimeout(afterRender, 800);
+})();
+</script>
+
+
+<script id="uploaded-csv-roster-final-display-repair">
+(function(){
+  'use strict';
+  var CSV_ROSTER_VERSION = 'employees_csv_6_final_43';
+  var CSV_ROSTER = [
+  {
+    "id": "emp_168057",
+    "first": "Makia",
+    "last": "Hickman",
+    "name": "Makia Hickman",
+    "empId": "168057",
+    "employeeId": "168057",
+    "employee_id": "168057",
+    "conglobalId": "168057",
+    "conglobal_id": "168057",
+    "upId": "xipj384",
+    "up_id": "xipj384",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "MAKIAHICKMAN38@GMAIL.COM",
+    "shift": "Day",
+    "phone": "(870) 571-7427",
+    "daysOff": "Sun/Mon",
+    "days_off": "Sun/Mon",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167857",
+    "first": "Alexander",
+    "last": "Hopkins",
+    "name": "Alexander Hopkins",
+    "empId": "167857",
+    "employeeId": "167857",
+    "employee_id": "167857",
+    "conglobalId": "167857",
+    "conglobal_id": "167857",
+    "upId": "xipj624",
+    "up_id": "xipj624",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "hopkiale357@gmail.com",
+    "shift": "Night",
+    "phone": "(832) 454-9230",
+    "daysOff": "Sun/Mon",
+    "days_off": "Sun/Mon",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_166353",
+    "first": "Kevin",
+    "last": "Hosey",
+    "name": "Kevin Hosey",
+    "empId": "166353",
+    "employeeId": "166353",
+    "employee_id": "166353",
+    "conglobalId": "166353",
+    "conglobal_id": "166353",
+    "upId": "xipj381",
+    "up_id": "xipj381",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "hoseykevin42@gmail.com",
+    "shift": "Night",
+    "phone": "(832) 551-9125",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_156896",
+    "first": "Jose",
+    "last": "Delgado",
+    "name": "Jose Delgado",
+    "empId": "156896",
+    "employeeId": "156896",
+    "employee_id": "156896",
+    "conglobalId": "156896",
+    "conglobal_id": "156896",
+    "upId": "xcno886",
+    "up_id": "xcno886",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "jayjay2312@hotmail.com",
+    "shift": "Night",
+    "phone": "(323) 271-9186",
+    "daysOff": "Fri/Sat",
+    "days_off": "Fri/Sat",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_169284",
+    "first": "Aweri",
+    "last": "Keme Jr.",
+    "name": "Aweri Keme Jr.",
+    "empId": "169284",
+    "employeeId": "169284",
+    "employee_id": "169284",
+    "conglobalId": "169284",
+    "conglobal_id": "169284",
+    "upId": "XIPJ750",
+    "up_id": "XIPJ750",
+    "password": "",
+    "passwordStatus": "On File",
+    "password_status": "On File",
+    "email": "awerikemeemployment@gmail.com",
+    "shift": "Night",
+    "phone": "(281) 254-9741",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_169663",
+    "first": "Messiah",
+    "last": "Johnson",
+    "name": "Messiah Johnson",
+    "empId": "169663",
+    "employeeId": "169663",
+    "employee_id": "169663",
+    "conglobalId": "169663",
+    "conglobal_id": "169663",
+    "upId": "XIPJ752",
+    "up_id": "XIPJ752",
+    "password": "",
+    "passwordStatus": "On File",
+    "password_status": "On File",
+    "email": "johnsonmessiah0206@icloud.com",
+    "shift": "Night",
+    "phone": "(832) 206-3320",
+    "daysOff": "Tues/Thurs",
+    "days_off": "Tues/Thurs",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167117",
+    "first": "Alton",
+    "last": "Branford",
+    "name": "Alton Branford",
+    "empId": "167117",
+    "employeeId": "167117",
+    "employee_id": "167117",
+    "conglobalId": "167117",
+    "conglobal_id": "167117",
+    "upId": "XIPJ664",
+    "up_id": "XIPJ664",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "branford_tyrone92@yahoo.com",
+    "shift": "Day",
+    "phone": "(832) 427-0830",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167546",
+    "first": "Demeatrius",
+    "last": "Towler",
+    "name": "Demeatrius Towler",
+    "empId": "167546",
+    "employeeId": "167546",
+    "employee_id": "167546",
+    "conglobalId": "167546",
+    "conglobal_id": "167546",
+    "upId": "XIPJ747",
+    "up_id": "XIPJ747",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "dtowner59@gmail.com",
+    "shift": "Day",
+    "phone": "(850) 483-7542",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_19268",
+    "first": "James",
+    "last": "Brown",
+    "name": "James Brown",
+    "empId": "19268",
+    "employeeId": "19268",
+    "employee_id": "19268",
+    "conglobalId": "19268",
+    "conglobal_id": "19268",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "brownjamesedward22@yahoo.com",
+    "shift": "Day",
+    "phone": "(281) 832-4695",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "NEED TO ASK HIM",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167522",
+    "first": "Victor",
+    "last": "Caceres Virula",
+    "name": "Victor Caceres Virula",
+    "empId": "167522",
+    "employeeId": "167522",
+    "employee_id": "167522",
+    "conglobalId": "167522",
+    "conglobal_id": "167522",
+    "upId": "XIPJ749",
+    "up_id": "XIPJ749",
+    "password": "",
+    "passwordStatus": "On File",
+    "password_status": "On File",
+    "email": "victorvirula2015@gmail.com",
+    "shift": "Night",
+    "phone": "(909) 968-5277",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_16149",
+    "first": "Robert",
+    "last": "Benavides",
+    "name": "Robert Benavides",
+    "empId": "16149",
+    "employeeId": "16149",
+    "employee_id": "16149",
+    "conglobalId": "16149",
+    "conglobal_id": "16149",
+    "upId": "xipg123",
+    "up_id": "xipg123",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "Robertcarlos.ben81@gmail.com",
+    "shift": "Night",
+    "phone": "(281) 223-6564",
+    "daysOff": "Wed/Sun",
+    "days_off": "Wed/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_169027",
+    "first": "Rama",
+    "last": "Pratt",
+    "name": "Rama Pratt",
+    "empId": "169027",
+    "employeeId": "169027",
+    "employee_id": "169027",
+    "conglobalId": "169027",
+    "conglobal_id": "169027",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "RAMAPRATT@YAHOO.COM",
+    "shift": "Gate",
+    "phone": "832-312-2957",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "SENT OF JUST WAITING ON AN EMAIL FROM DAN",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_168580",
+    "first": "Myles",
+    "last": "Wanza",
+    "name": "Myles Wanza",
+    "empId": "168580",
+    "employeeId": "168580",
+    "employee_id": "168580",
+    "conglobalId": "168580",
+    "conglobal_id": "168580",
+    "upId": "XIPJ665",
+    "up_id": "XIPJ665",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "myles28192@gmail.com",
+    "shift": "Day",
+    "phone": "(832) 630-8241",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_168704",
+    "first": "Dacoyea",
+    "last": "Frazer",
+    "name": "Dacoyea Frazer",
+    "empId": "168704",
+    "employeeId": "168704",
+    "employee_id": "168704",
+    "conglobalId": "168704",
+    "conglobal_id": "168704",
+    "upId": "XIPJ667",
+    "up_id": "XIPJ667",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "DACOYEA93@GMAIL.COM",
+    "shift": "Day",
+    "phone": "(281) 939-2023",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_163242",
+    "first": "Dorrean",
+    "last": "Gardner",
+    "name": "Dorrean Gardner",
+    "empId": "163242",
+    "employeeId": "163242",
+    "employee_id": "163242",
+    "conglobalId": "163242",
+    "conglobal_id": "163242",
+    "upId": "XIPJ748",
+    "up_id": "XIPJ748",
+    "password": "",
+    "passwordStatus": "On File",
+    "password_status": "On File",
+    "email": "Gardnerdorrean@gmail.com",
+    "shift": "Day",
+    "phone": "(832) 729-2315",
+    "daysOff": "Tues/Wed",
+    "days_off": "Tues/Wed",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_169075",
+    "first": "Nelson",
+    "last": "Romero",
+    "name": "Nelson Romero",
+    "empId": "169075",
+    "employeeId": "169075",
+    "employee_id": "169075",
+    "conglobalId": "169075",
+    "conglobal_id": "169075",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "enriqueromerojordan1979@gmail.com",
+    "shift": "Day",
+    "phone": "(832) 347-9574",
+    "daysOff": "Tues/Wed",
+    "days_off": "Tues/Wed",
+    "status": "active",
+    "notes": "HAVE NOT SEND IN PAPERWORK",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_169664",
+    "first": "Mikey",
+    "last": "Dever",
+    "name": "Mikey Dever",
+    "empId": "169664",
+    "employeeId": "169664",
+    "employee_id": "169664",
+    "conglobalId": "169664",
+    "conglobal_id": "169664",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "mikeydever92@gmail.com",
+    "shift": "Day",
+    "phone": "(281) 303-1936",
+    "daysOff": "Tues/Wed",
+    "days_off": "Tues/Wed",
+    "status": "active",
+    "notes": "NEEDS TO SEND IN FORM",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_168889",
+    "first": "Armando",
+    "last": "Castruita",
+    "name": "Armando Castruita",
+    "empId": "168889",
+    "employeeId": "168889",
+    "employee_id": "168889",
+    "conglobalId": "168889",
+    "conglobal_id": "168889",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "varmando70@yahoo.com",
+    "shift": "Day",
+    "phone": "(281) 509-3676",
+    "daysOff": "Wed/Thurs",
+    "days_off": "Wed/Thurs",
+    "status": "active",
+    "notes": "NEEDS TO SEND IN FORM",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_168606",
+    "first": "Dante",
+    "last": "Citizen",
+    "name": "Dante Citizen",
+    "empId": "168606",
+    "employeeId": "168606",
+    "employee_id": "168606",
+    "conglobalId": "168606",
+    "conglobal_id": "168606",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "danteciti07@icloud.com",
+    "shift": "Day",
+    "phone": "(346) 902-0075",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "ACCIDENTLY SENT IN A XCN USER ID, NEED TO RESEND IN A XIP USER ID AND HES GOOD",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167510",
+    "first": "Tran",
+    "last": "Tyler",
+    "name": "Tran Tyler",
+    "empId": "167510",
+    "employeeId": "167510",
+    "employee_id": "167510",
+    "conglobalId": "167510",
+    "conglobal_id": "167510",
+    "upId": "XIPJ042",
+    "up_id": "XIPJ042",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "TRANTYLER13@YAHOO.COM",
+    "shift": "Day",
+    "phone": "(832) 942-9995",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "PASSWORD NOT WORKING, ALSO PASSWORD RESET IS NOT SENDING TO ITS EMAIL SO HAVE HIM CHECK HIS PERSONAL",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_21374",
+    "first": "Ramon",
+    "last": "Nava",
+    "name": "Ramon Nava",
+    "empId": "21374",
+    "employeeId": "21374",
+    "employee_id": "21374",
+    "conglobalId": "21374",
+    "conglobal_id": "21374",
+    "upId": "xipg893",
+    "up_id": "xipg893",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "RANAVA571@GMAIL.COM",
+    "shift": "Day",
+    "phone": "(832) 455-4750",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_17095",
+    "first": "Jose",
+    "last": "Herrera",
+    "name": "Jose Herrera",
+    "empId": "17095",
+    "employeeId": "17095",
+    "employee_id": "17095",
+    "conglobalId": "17095",
+    "conglobal_id": "17095",
+    "upId": "xipg892",
+    "up_id": "xipg892",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "iaherrerafavela07@gmail.com",
+    "shift": "Day",
+    "phone": "(832) 878-0384",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_16155",
+    "first": "Dexter",
+    "last": "Stewart",
+    "name": "Dexter Stewart",
+    "empId": "16155",
+    "employeeId": "16155",
+    "employee_id": "16155",
+    "conglobalId": "16155",
+    "conglobal_id": "16155",
+    "upId": "xipa713",
+    "up_id": "xipa713",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "DEBRADEX@ATT.NET",
+    "shift": "Day",
+    "phone": "(936) 314-6713",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_16253",
+    "first": "Henry",
+    "last": "Thomas",
+    "name": "Henry Thomas",
+    "empId": "16253",
+    "employeeId": "16253",
+    "employee_id": "16253",
+    "conglobalId": "16253",
+    "conglobal_id": "16253",
+    "upId": "xipj383",
+    "up_id": "xipj383",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "levarhenrythomas@gmail.com",
+    "shift": "Day",
+    "phone": "(346) 255-3081",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_21110",
+    "first": "Charles",
+    "last": "McDaniel",
+    "name": "Charles McDaniel",
+    "empId": "21110",
+    "employeeId": "21110",
+    "employee_id": "21110",
+    "conglobalId": "21110",
+    "conglobal_id": "21110",
+    "upId": "xipj621",
+    "up_id": "xipj621",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "Charles.mcdaniel76@yahoo.com",
+    "shift": "Night",
+    "phone": "(313) 598-2784",
+    "daysOff": "Fri/Sat",
+    "days_off": "Fri/Sat",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_19373",
+    "first": "Marco",
+    "last": "Contrerras",
+    "name": "Marco Contrerras",
+    "empId": "19373",
+    "employeeId": "19373",
+    "employee_id": "19373",
+    "conglobalId": "19373",
+    "conglobal_id": "19373",
+    "upId": "xipj023",
+    "up_id": "xipj023",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "contrerasmarco64@icloud.com",
+    "shift": "Night",
+    "phone": "(713) 240-1178",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_17481",
+    "first": "Jason",
+    "last": "Tingle",
+    "name": "Jason Tingle",
+    "empId": "17481",
+    "employeeId": "17481",
+    "employee_id": "17481",
+    "conglobalId": "17481",
+    "conglobal_id": "17481",
+    "upId": "xcnt011",
+    "up_id": "xcnt011",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "jetingle@gmail.com",
+    "shift": "Night",
+    "phone": "(832) 599-5837",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_162497",
+    "first": "Timothy",
+    "last": "Carruthers",
+    "name": "Timothy Carruthers",
+    "empId": "162497",
+    "employeeId": "162497",
+    "employee_id": "162497",
+    "conglobalId": "162497",
+    "conglobal_id": "162497",
+    "upId": "xiph925",
+    "up_id": "xiph925",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "Timothycarruthers02@gmail.com",
+    "shift": "Night",
+    "phone": "(281) 761-5461",
+    "daysOff": "Sun/Mon",
+    "days_off": "Sun/Mon",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_163864",
+    "first": "Bryce",
+    "last": "Alexander",
+    "name": "Bryce Alexander",
+    "empId": "163864",
+    "employeeId": "163864",
+    "employee_id": "163864",
+    "conglobalId": "163864",
+    "conglobal_id": "163864",
+    "upId": "XCNS174",
+    "up_id": "XCNS174",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "BRYCEALEX2018@GMAIL.COM",
+    "shift": "Gate",
+    "phone": "346-774-3739",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_163309",
+    "first": "Naomisha",
+    "last": "Hunt",
+    "name": "Naomisha Hunt",
+    "empId": "163309",
+    "employeeId": "163309",
+    "employee_id": "163309",
+    "conglobalId": "163309",
+    "conglobal_id": "163309",
+    "upId": "XCNP039",
+    "up_id": "XCNP039",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "NAOMISHA223@GMAIL.COM",
+    "shift": "Gate",
+    "phone": "346-264-7765",
+    "daysOff": "Thurs/Fri/Sat",
+    "days_off": "Thurs/Fri/Sat",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167810",
+    "first": "Jarade",
+    "last": "Douglas",
+    "name": "Jarade Douglas",
+    "empId": "167810",
+    "employeeId": "167810",
+    "employee_id": "167810",
+    "conglobalId": "167810",
+    "conglobal_id": "167810",
+    "upId": "XCNS056",
+    "up_id": "XCNS056",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "JARADED@GMAIL.COM",
+    "shift": "Gate",
+    "phone": "832-709-9568",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_A69084",
+    "first": "Tavares",
+    "last": "Gariet",
+    "name": "Tavares Gariet",
+    "empId": "A69084",
+    "employeeId": "A69084",
+    "employee_id": "A69084",
+    "conglobalId": "A69084",
+    "conglobal_id": "A69084",
+    "upId": "XCNT611",
+    "up_id": "XCNT611",
+    "password": "",
+    "passwordStatus": "On File",
+    "password_status": "On File",
+    "email": "TMACGARIET@GMAIL.COM",
+    "shift": "Gate",
+    "phone": "346-565-3942",
+    "daysOff": "Mon/Tues",
+    "days_off": "Mon/Tues",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_015765",
+    "first": "Connie",
+    "last": "Johnson",
+    "name": "Connie Johnson",
+    "empId": "015765",
+    "employeeId": "015765",
+    "employee_id": "015765",
+    "conglobalId": "015765",
+    "conglobal_id": "015765",
+    "upId": "XCNI118",
+    "up_id": "XCNI118",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "CJOHNSON092964@YAHOO.COM",
+    "shift": "Gate",
+    "phone": "281-441-3285",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_012594",
+    "first": "Candace",
+    "last": "Warren",
+    "name": "Candace Warren",
+    "empId": "012594",
+    "employeeId": "012594",
+    "employee_id": "012594",
+    "conglobalId": "012594",
+    "conglobal_id": "012594",
+    "upId": "XCNK804",
+    "up_id": "XCNK804",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "TEXAS_COWGIRLANGEL@YMAIL.COM",
+    "shift": "Gate",
+    "phone": "281-413-7040",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_161573",
+    "first": "Gregory",
+    "last": "Watson",
+    "name": "Gregory Watson",
+    "empId": "161573",
+    "employeeId": "161573",
+    "employee_id": "161573",
+    "conglobalId": "161573",
+    "conglobal_id": "161573",
+    "upId": "XCNO088",
+    "up_id": "XCNO088",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "GREGORY2WATSON@YAHOO.COM",
+    "shift": "Gate",
+    "phone": "713-820-0549",
+    "daysOff": "Sat/Sun",
+    "days_off": "Sat/Sun",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167809",
+    "first": "Kane",
+    "last": "Cabral",
+    "name": "Kane Cabral",
+    "empId": "167809",
+    "employeeId": "167809",
+    "employee_id": "167809",
+    "conglobalId": "167809",
+    "conglobal_id": "167809",
+    "upId": "XCNS055",
+    "up_id": "XCNS055",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "CABRALKANE@GMAIL.COM",
+    "shift": "Gate",
+    "phone": "281-865-9773",
+    "daysOff": "Sun/Mon/Tue",
+    "days_off": "Sun/Mon/Tue",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_161383",
+    "first": "Brandy",
+    "last": "Brown",
+    "name": "Brandy Brown",
+    "empId": "161383",
+    "employeeId": "161383",
+    "employee_id": "161383",
+    "conglobalId": "161383",
+    "conglobal_id": "161383",
+    "upId": "xcnt529",
+    "up_id": "xcnt529",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "BrandyBrown89@yahoo.com",
+    "shift": "Night",
+    "phone": "(225) 325-9773",
+    "daysOff": "Wed/Thurs",
+    "days_off": "Wed/Thurs",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167702",
+    "first": "Chimeniem",
+    "last": "Echendu",
+    "name": "Chimeniem Echendu",
+    "empId": "167702",
+    "employeeId": "167702",
+    "employee_id": "167702",
+    "conglobalId": "167702",
+    "conglobal_id": "167702",
+    "upId": "XIPJ753",
+    "up_id": "XIPJ753",
+    "password": "",
+    "passwordStatus": "On File",
+    "password_status": "On File",
+    "email": "relyf177@gmail.com",
+    "shift": "Night",
+    "phone": "(832) 909-5906",
+    "daysOff": "Wed/Thurs",
+    "days_off": "Wed/Thurs",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167484",
+    "first": "Derrell",
+    "last": "Bookman",
+    "name": "Derrell Bookman",
+    "empId": "167484",
+    "employeeId": "167484",
+    "employee_id": "167484",
+    "conglobalId": "167484",
+    "conglobal_id": "167484",
+    "upId": "xipj022",
+    "up_id": "xipj022",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "derrellbookman@gmail.com",
+    "shift": "Night",
+    "phone": "(281) 594-1727",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_167271",
+    "first": "Aaron",
+    "last": "Mejia",
+    "name": "Aaron Mejia",
+    "empId": "167271",
+    "employeeId": "167271",
+    "employee_id": "167271",
+    "conglobalId": "167271",
+    "conglobal_id": "167271",
+    "upId": "xipj025",
+    "up_id": "xipj025",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "almejia2022@gmail.com",
+    "shift": "Night",
+    "phone": "(281) 928-2822",
+    "daysOff": "Thurs/Fri",
+    "days_off": "Thurs/Fri",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_20372",
+    "first": "Keyston",
+    "last": "Player",
+    "name": "Keyston Player",
+    "empId": "20372",
+    "employeeId": "20372",
+    "employee_id": "20372",
+    "conglobalId": "20372",
+    "conglobal_id": "20372",
+    "upId": "xipz341",
+    "up_id": "xipz341",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "KeystonPlayer@gmail.com",
+    "shift": "Day",
+    "phone": "(908) 305-4905",
+    "daysOff": "Sun/Mon",
+    "days_off": "Sun/Mon",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_169270",
+    "first": "Rufus",
+    "last": "Gilder II",
+    "name": "Rufus Gilder II",
+    "empId": "169270",
+    "employeeId": "169270",
+    "employee_id": "169270",
+    "conglobalId": "169270",
+    "conglobal_id": "169270",
+    "upId": "",
+    "up_id": "",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "reezygilder60@gmail.com",
+    "shift": "Night",
+    "phone": "(713) 231-8832",
+    "daysOff": "Tues/Wed",
+    "days_off": "Tues/Wed",
+    "status": "active",
+    "notes": "GAVE DAN FORM HE GAVE IT BACK BUT NO EMAIL SENT TO ME",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  },
+  {
+    "id": "emp_168890",
+    "first": "Ernest",
+    "last": "Urtado",
+    "name": "Ernest Urtado",
+    "empId": "168890",
+    "employeeId": "168890",
+    "employee_id": "168890",
+    "conglobalId": "168890",
+    "conglobal_id": "168890",
+    "upId": "xpij622",
+    "up_id": "xpij622",
+    "password": "",
+    "passwordStatus": "Missing",
+    "password_status": "Missing",
+    "email": "urtado_ernest@yahoo.com",
+    "shift": "Night",
+    "phone": "(346) 839-5707",
+    "daysOff": "Tues/Wed",
+    "days_off": "Tues/Wed",
+    "status": "active",
+    "notes": "",
+    "mobileToken": false,
+    "mobile_token": false,
+    "last_edited_by": "CSV Replacement"
+  }
+];
+
+  function cloneRoster(){
+    return CSV_ROSTER.map(function(e){
+      var out = Object.assign({}, e);
+      out.password = '';
+      out.passwordStatus = out.passwordStatus || out.password_status || 'Missing';
+      out.password_status = out.passwordStatus;
+      out.mobileToken = !!(out.mobileToken || out.mobile_token);
+      out.mobile_token = out.mobileToken;
+      return out;
+    });
+  }
+
+  function applyRoster(reason){
+    try{
+      var list = cloneRoster();
+      window.employees = list;
+      try{ employees = list; }catch(ignore){}
+      try{ localStorage.setItem('eit_emp_cache_v1', JSON.stringify(list)); }catch(ignore){}
+      try{ localStorage.setItem('employee_roster_replacement_version', CSV_ROSTER_VERSION); }catch(ignore){}
+      if(typeof normalizeEmployeeRoster === 'function'){
+        try{ normalizeEmployeeRoster(); }catch(ignore){}
+        try{ window.employees = employees; }catch(ignore){}
+      }
+      if(typeof renderEmployeeGlobals === 'function'){ try{ renderEmployeeGlobals(); }catch(ignore){} }
+      if(typeof render === 'function'){ try{ render(); }catch(ignore){} }
+      if(typeof renderPPE === 'function'){ try{ renderPPE(); }catch(ignore){} }
+      tidyEmployeePage();
+      console.info('CSV employee roster applied:', reason || CSV_ROSTER_VERSION, list.length);
+    }catch(err){
+      console.error('CSV roster display repair failed:', err);
+    }
+  }
+
+  function isCsvRosterActive(){
+    try{
+      var list = Array.isArray(window.employees) ? window.employees : (Array.isArray(employees) ? employees : []);
+      if(list.length !== CSV_ROSTER.length) return false;
+      var want = {};
+      CSV_ROSTER.forEach(function(e){ want[String(e.empId || '').trim().toLowerCase()] = true; });
+      return list.every(function(e){
+        var id = String((e && (e.empId || e.employeeId || e.employee_id || e.conglobalId)) || '').trim().toLowerCase();
+        return id && want[id];
+      });
+    }catch(err){ return false; }
+  }
+
+  window.applyUploadedCsvEmployeeRoster = applyRoster;
+  window.rosterLooksBroken = function(){ return false; };
+
+  if(typeof seedData === 'function' && !seedData.__csvRosterWrapped){
+    var oldSeedData = seedData;
+    seedData = function(){
+      try{ oldSeedData.apply(this, arguments); }catch(ignore){}
+      applyRoster('seedData override');
+    };
+    seedData.__csvRosterWrapped = true;
+  }
+
+  if(typeof window.loadEmployees === 'function' && !window.loadEmployees.__csvRosterWrapped){
+    var oldLoadEmployees = window.loadEmployees;
+    window.loadEmployees = async function(){
+      try{ await oldLoadEmployees.apply(this, arguments); }catch(err){ console.warn('Original loadEmployees failed before CSV roster apply:', err); }
+      if(!isCsvRosterActive()) applyRoster('after loadEmployees');
+      return window.employees;
+    };
+    window.loadEmployees.__csvRosterWrapped = true;
+    try{ loadEmployees = window.loadEmployees; }catch(ignore){}
+  }
+
+  function tidyEmployeePage(){
+    try{
+      var page = document.getElementById('page-employees');
+      if(!page) return;
+      var cardMode = document.body.classList.contains('employee-card-mode') || localStorage.getItem('employee_card_mode_v1') === '1';
+      page.querySelectorAll('.employee-card-grid,.employee-card-list,.employee-cards-wrap').forEach(function(el){
+        el.style.display = cardMode ? '' : 'none';
+      });
+      page.querySelectorAll('.table-wrap table, .employee-table, table').forEach(function(el){
+        var wrap = el.closest('.table-wrap') || el;
+        wrap.style.display = cardMode ? 'none' : '';
+      });
+      // Remove duplicate rendered employee rows/cards by Conglobal ID.
+      var seenRows = {};
+      page.querySelectorAll('tr').forEach(function(row){
+        var text = row.textContent || '';
+        var match = text.match(/\d{5,6}/);
+        if(match){
+          var key = match[0];
+          if(seenRows[key]) row.remove();
+          else seenRows[key] = true;
+        }
+      });
+    }catch(err){}
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    applyRoster('DOMContentLoaded immediate');
+    setTimeout(function(){ if(!isCsvRosterActive()) applyRoster('DOMContentLoaded delayed 1'); else tidyEmployeePage(); }, 500);
+    setTimeout(function(){ if(!isCsvRosterActive()) applyRoster('DOMContentLoaded delayed 2'); else tidyEmployeePage(); }, 1500);
+  });
+
+  setTimeout(function(){ if(!isCsvRosterActive()) applyRoster('startup fallback'); else tidyEmployeePage(); }, 50);
 })();
 </script>
