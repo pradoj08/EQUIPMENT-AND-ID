@@ -6427,6 +6427,59 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
   }
 }
 </style>
+
+
+<style id="admin-diagnostic-panel-style">
+/* ADMIN DIAGNOSTIC PANEL */
+#page-admin .admin-diagnostic-panel{
+  border:1px solid rgba(74,158,255,.26);
+  background:linear-gradient(180deg,rgba(17,24,39,.96),rgba(12,18,29,.98));
+  box-shadow:0 16px 34px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.035);
+}
+#page-admin .admin-diagnostic-toggle-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+#page-admin .admin-diagnostic-title-block{min-width:240px;flex:1 1 420px;}
+#page-admin .admin-diag-summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;}
+#page-admin .admin-diag-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;
+  border:1px solid rgba(148,163,184,.26);background:rgba(148,163,184,.08);color:#cbd5e1;
+  font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;
+}
+#page-admin .admin-diag-chip.ok{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.10);color:#86efac;}
+#page-admin .admin-diag-chip.warn{border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10);color:#fcd34d;}
+#page-admin .admin-diag-chip.bad{border-color:rgba(239,68,68,.38);background:rgba(239,68,68,.12);color:#fca5a5;}
+#page-admin .admin-diag-body{display:none;margin-top:14px;}
+#page-admin .admin-diagnostic-panel.open .admin-diag-body{display:block;}
+#page-admin .admin-diag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
+#page-admin .admin-diag-card{border:1px solid var(--border);background:rgba(15,17,23,.72);border-radius:12px;padding:12px 13px;min-height:104px;}
+#page-admin .admin-diag-card.ok{border-color:rgba(34,197,94,.26);box-shadow:inset 4px 0 0 rgba(34,197,94,.75);}
+#page-admin .admin-diag-card.warn{border-color:rgba(245,158,11,.28);box-shadow:inset 4px 0 0 rgba(245,158,11,.75);}
+#page-admin .admin-diag-card.bad{border-color:rgba(239,68,68,.30);box-shadow:inset 4px 0 0 rgba(239,68,68,.75);}
+#page-admin .admin-diag-card.checking{border-color:rgba(74,158,255,.28);box-shadow:inset 4px 0 0 rgba(74,158,255,.75);}
+#page-admin .admin-diag-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+#page-admin .admin-diag-name{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:var(--text);}
+#page-admin .admin-diag-status{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:3px 7px;border-radius:999px;border:1px solid rgba(148,163,184,.24);color:#cbd5e1;white-space:nowrap;}
+#page-admin .admin-diag-card.ok .admin-diag-status{border-color:rgba(34,197,94,.35);color:#86efac;background:rgba(34,197,94,.10);}
+#page-admin .admin-diag-card.warn .admin-diag-status{border-color:rgba(245,158,11,.35);color:#fcd34d;background:rgba(245,158,11,.10);}
+#page-admin .admin-diag-card.bad .admin-diag-status{border-color:rgba(239,68,68,.38);color:#fca5a5;background:rgba(239,68,68,.12);}
+#page-admin .admin-diag-detail{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;}
+#page-admin .admin-diag-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;flex:0 1 420px;}
+#page-admin .admin-diag-last-run{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:120px;}
+@media(max-width:700px){
+  #page-admin .admin-diagnostic-panel{margin-left:0;margin-right:0;}
+  #page-admin .admin-diag-grid{grid-template-columns:1fr;}
+  #page-admin .admin-diagnostic-toggle-row{align-items:stretch;}
+  #page-admin .admin-diag-actions{width:100%;flex:1 1 100%;justify-content:stretch;}
+  #page-admin .admin-diag-actions .admin-btn{flex:1;justify-content:center;}
+  #page-admin .admin-diag-last-run{flex-basis:100%;min-width:0;}
+}
+</style>
+
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
@@ -14965,6 +15018,24 @@ window.addEventListener('DOMContentLoaded', () => {
   <div class="admin-wrap">
     <div id="admin-auth-warning" class="admin-warning" style="display:none;">Admin access only.</div>
     <div id="admin-sync-warning" class="admin-warning" style="display:none;"></div>
+
+    <div id="admin-diagnostic-panel" class="admin-panel admin-diagnostic-panel">
+      <div class="admin-diagnostic-toggle-row">
+        <div class="admin-diagnostic-title-block">
+          <div class="admin-title">Admin Diagnostic Panel</div>
+          <div class="admin-sub">Toggle quick sync checks for employees, equipment, PPE, training rosters, audit rosters, and admin users.</div>
+          <div id="admin-diag-summary" class="admin-diag-summary"><span class="admin-diag-chip warn">Not checked</span></div>
+        </div>
+        <div class="admin-diag-actions">
+          <button id="admin-diag-toggle" class="admin-btn" type="button">Show Diagnostics</button>
+          <button id="admin-diag-refresh" class="admin-btn primary" type="button">Run Checks</button>
+          <span id="admin-diag-last-run" class="admin-diag-last-run"></span>
+        </div>
+      </div>
+      <div class="admin-diag-body">
+        <div id="admin-diag-results" class="admin-diag-grid"></div>
+      </div>
+    </div>
 
     <div class="admin-panel">
       <div class="admin-panel-head">
@@ -24527,6 +24598,155 @@ body{
   setTimeout(function(){ try{ window.updateStats(); window.updateBanner(); window.updateTabCounts(); cleanupEmployeeDom(); }catch(e){} }, 500);
 })();
 </script>
+
+
+<script id="admin-diagnostic-panel-script">
+(function(){
+  var diagOpen = false;
+  var lastResults = [];
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+  function getClient(){ return window.supabaseClient || null; }
+  function getArrayCount(name){
+    try{
+      if(Array.isArray(window[name])) return window[name].length;
+      if(name === 'employees' && typeof employees !== 'undefined' && Array.isArray(employees)) return employees.length;
+      if(name === 'equipment' && typeof equipment !== 'undefined' && Array.isArray(equipment)) return equipment.length;
+      if(name === 'appUsers' && typeof appUsers !== 'undefined' && Array.isArray(appUsers)) return appUsers.length;
+    }catch(e){}
+    return null;
+  }
+  function tableErrorText(err){
+    var msg = (err && (err.message || err.details || err.hint || err.code)) ? String(err.message || err.details || err.hint || err.code) : String(err || 'Unknown error');
+    if(/does not exist|schema cache|not find|PGRST205|42P01/i.test(msg)) return 'TABLE MISSING: ' + msg;
+    return msg;
+  }
+  async function countTable(table, label, localName){
+    var client = getClient();
+    var local = localName ? getArrayCount(localName) : null;
+    if(!client || typeof client.from !== 'function'){
+      return {name:label,status:'bad',label:'No Client',detail:'Supabase client is not connected. Loaded in app: ' + (local == null ? 'n/a' : local)};
+    }
+    try{
+      var res = await client.from(table).select('*', { count:'exact', head:true });
+      if(res && res.error) throw res.error;
+      var remoteCount = (res && typeof res.count === 'number') ? res.count : 0;
+      var state = remoteCount > 0 ? 'ok' : 'warn';
+      var detail = table + ' reachable. Supabase rows: ' + remoteCount;
+      if(local != null) detail += '\nLoaded in app: ' + local;
+      if(remoteCount === 0) detail += '\nWarning: table exists but returned zero rows.';
+      return {name:label,status:state,label:state === 'ok' ? 'Synced' : 'Empty',detail:detail};
+    }catch(err){
+      return {name:label,status:'bad',label:'Missing / Error',detail:table + ' check failed.\n' + tableErrorText(err)};
+    }
+  }
+  async function countRosterTable(type, table, label){
+    var result = await countTable(table, label, null);
+    try{
+      var payload = typeof loadPayload === 'function' ? loadPayload(type) : null;
+      var localItems = payload && Array.isArray(payload.items) ? payload.items.length : null;
+      if(localItems != null) result.detail += '\nLoaded in app: ' + localItems;
+      if(result.status === 'bad') result.label = 'Table Missing X';
+    }catch(e){ result.detail += '\nLocal roster check failed: ' + (e.message || e); }
+    return result;
+  }
+  async function checkPPE(){
+    var result = await countTable('ppe_compliance_state', 'PPE Sync Check', null);
+    try{
+      var frame = document.querySelector('#page-ppe iframe');
+      var win = frame && frame.contentWindow ? frame.contentWindow : null;
+      if(win){
+        var ready = !!win.ppeGlobalSyncReady;
+        var updated = win.ppeRemoteUpdatedAt ? new Date(win.ppeRemoteUpdatedAt).toLocaleString() : 'not reported';
+        result.detail += '\nIframe loaded: yes\nPPE sync ready: ' + (ready ? 'yes' : 'no') + '\nRemote update: ' + updated;
+        if(result.status === 'ok' && !ready){ result.status = 'warn'; result.label = 'Check Page'; }
+      }else{
+        result.detail += '\nIframe loaded: no';
+        if(result.status === 'ok'){ result.status = 'warn'; result.label = 'Iframe Not Ready'; }
+      }
+    }catch(e){ result.detail += '\nIframe status unavailable: ' + (e.message || e); }
+    return result;
+  }
+  function clientPresenceCheck(){
+    var client = getClient();
+    var activeUserName = '';
+    var loggedIn = null;
+    try{ if(typeof activeAppUser !== 'undefined' && activeAppUser){ activeUserName = activeAppUser.display_name || activeAppUser.username || ''; loggedIn = true; } }catch(e){}
+    try{ if(loggedIn === null && typeof eqLoggedIn !== 'undefined') loggedIn = !!eqLoggedIn; }catch(e){}
+    return {name:'Supabase / Login',status:client ? 'ok' : 'bad',label:client ? 'Client Found' : 'No Client',detail:'Supabase client: ' + (client ? 'detected' : 'missing') + '\nSigned in: ' + (loggedIn === null ? 'unknown' : (loggedIn ? 'yes' : 'no')) + (activeUserName ? '\nUser: ' + activeUserName : '')};
+  }
+  async function buildDiagnostics(){
+    var checks = [clientPresenceCheck()];
+    checks.push(await countTable('employees', 'Employees Sync Check', 'employees'));
+    checks.push(await countTable('equipment', 'Equipment Sync Check', 'equipment'));
+    checks.push(await checkPPE());
+    checks.push(await countRosterTable('trainings', 'training_roster_lists', 'Training Table Check'));
+    checks.push(await countRosterTable('audits', 'audit_roster_lists', 'Audit Roster Check'));
+    checks.push(await countTable('app_users', 'Admin Users Sync Check', 'appUsers'));
+    return checks;
+  }
+  function renderCards(results, running){
+    var body = document.getElementById('admin-diag-results');
+    var summary = document.getElementById('admin-diag-summary');
+    if(!body || !summary) return;
+    if(running){
+      body.innerHTML = '<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running checks</div><div class="admin-diag-status">Checking</div></div><div class="admin-diag-detail">Testing Supabase tables and loaded app data...</div></div>';
+      summary.innerHTML = '<span class="admin-diag-chip warn">Checking...</span>';
+      return;
+    }
+    var ok = results.filter(function(x){return x.status === 'ok';}).length;
+    var warn = results.filter(function(x){return x.status === 'warn';}).length;
+    var bad = results.filter(function(x){return x.status === 'bad';}).length;
+    summary.innerHTML = '<span class="admin-diag-chip ok">OK ' + ok + '</span><span class="admin-diag-chip warn">Warnings ' + warn + '</span><span class="admin-diag-chip bad">Missing/Error ' + bad + '</span>';
+    body.innerHTML = results.map(function(r){
+      return '<div class="admin-diag-card ' + esc(r.status) + '"><div class="admin-diag-top"><div class="admin-diag-name">' + esc(r.name) + '</div><div class="admin-diag-status">' + esc(r.label || r.status) + '</div></div><div class="admin-diag-detail">' + esc(r.detail) + '</div></div>';
+    }).join('');
+    var last = document.getElementById('admin-diag-last-run');
+    if(last) last.textContent = 'Last checked: ' + new Date().toLocaleString();
+  }
+  function initAdminDiagnostics(){
+    var panel = document.getElementById('admin-diagnostic-panel');
+    if(!panel || panel.__diagReady) return;
+    panel.__diagReady = true;
+    var toggle = document.getElementById('admin-diag-toggle');
+    var refresh = document.getElementById('admin-diag-refresh');
+    if(toggle){
+      toggle.addEventListener('click', function(){
+        diagOpen = !diagOpen;
+        panel.classList.toggle('open', diagOpen);
+        toggle.textContent = diagOpen ? 'Hide Diagnostics' : 'Show Diagnostics';
+        if(diagOpen && !lastResults.length) window.runAdminDiagnostics();
+      });
+    }
+    if(refresh){ refresh.addEventListener('click', function(){ window.runAdminDiagnostics(); }); }
+  }
+  window.runAdminDiagnostics = async function(){
+    initAdminDiagnostics();
+    var panel = document.getElementById('admin-diagnostic-panel');
+    if(panel){ diagOpen = true; panel.classList.add('open'); }
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(toggle) toggle.textContent = 'Hide Diagnostics';
+    renderCards([], true);
+    try{ lastResults = await buildDiagnostics(); renderCards(lastResults, false); }
+    catch(err){ lastResults = [{name:'Diagnostic Runner',status:'bad',label:'Error',detail:String(err && (err.message || err) || err)}]; renderCards(lastResults, false); }
+  };
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(initAdminDiagnostics, 50); });
+  var oldSwitchPage = window.switchPage;
+  if(typeof oldSwitchPage === 'function' && !oldSwitchPage.__diagWrapped){
+    window.switchPage = function(p){
+      var out = oldSwitchPage.apply(this, arguments);
+      if(p === 'admin') setTimeout(initAdminDiagnostics, 50);
+      return out;
+    };
+    window.switchPage.__diagWrapped = true;
+  }
+})();
+</script>
+
 </body>
 </html>
 <style id="employee-missing-up-red-column-line-fix">
