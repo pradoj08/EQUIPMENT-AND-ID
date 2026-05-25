@@ -15018,15 +15018,30 @@ async function initAuditsPage(){
   await renderRosterPanels();
 }
 
+function showEmployeeRemoteLoadingState(){
+  try{
+    var tbody=document.getElementById('emp-table');
+    var noData=document.getElementById('no-data');
+    var table=document.getElementById('employee-table-main');
+    if(noData){ noData.style.display='none'; }
+    if(tbody){
+      tbody.innerHTML='<tr class="employee-current-load-row"><td colspan="8"><div class="employee-current-load-box"><strong>Loading current Supabase roster…</strong><span>Holding the Employee ID table until the global roster finishes loading so old bundled/preloaded data is not shown as current.</span></div></td></tr>';
+    }
+    if(table){ table.dataset.currentLoad='pending'; }
+  }catch(e){}
+}
+
 load();
 syncEqLoginUI();
 updateActivityBadge();
 initGlobalScale();
 if(eqLoggedIn){
-  // Show cached roster instantly while Supabase loads
-  loadEmployeesFromCache();
-  render();
-  loadEmployees().then(function(){ render(); }).catch(function(){ render(); });
+  // Do not render cached/preloaded employees first. That was showing stale names for several seconds.
+  showEmployeeRemoteLoadingState();
+  Promise.resolve()
+    .then(function(){ return loadEmployees(); })
+    .then(function(){ render(); try{ if(window.startEmployeeRealtimeSync) window.startEmployeeRealtimeSync(); }catch(e){} })
+    .catch(function(err){ console.warn('Employee Supabase-first load failed:', err); render(); });
   loadEquipment().then(function(){ renderEquipment(); updateEquipmentStatusMeta(); }).catch(function(){ renderEquipment(); updateEquipmentStatusMeta(); });
 } else {
   render();
@@ -18479,7 +18494,7 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
     }catch(err){
       console.warn('Employee realtime unavailable:', err);
     }
-    employeePollTimer = setInterval(refreshEmployeesFromRemote, 20000);
+    employeePollTimer = setInterval(refreshEmployeesFromRemote, 3000);
   };
 
   window.stopEmployeeRealtimeSync = function(){
@@ -34463,5 +34478,412 @@ body.admin-final-session #page-admin.admin-final-active{display:block !important
   border-top:0 !important;
 }
 </style>
+
+
+<!-- FINAL PATCH: default Needs Attention list expanded + toggle button text -->
+<style id="employee-attn-default-open-toggle-label-css">
+#page-employees .emp-attn-open-btn{
+  transition:background .12s ease,border-color .12s ease,color .12s ease;
+}
+#page-employees .emp-attn-open-btn.is-expanded{
+  background:rgba(255,255,255,.12) !important;
+  border-color:rgba(255,255,255,.22) !important;
+}
+</style>
+<script id="employee-attn-default-open-toggle-label-js">
+(function(){
+  if(window.__employeeAttnDefaultOpenHideLabelPatched) return;
+  window.__employeeAttnDefaultOpenHideLabelPatched = true;
+
+  function getDrawer(){ return document.getElementById('employee-attn-drawer'); }
+  function getButton(){ return document.querySelector('#page-employees .emp-attn-open-btn'); }
+  function isOpen(){ var d=getDrawer(); return !!(d && d.classList.contains('is-open')); }
+  function syncLabel(){
+    var btn = getButton();
+    if(!btn) return;
+    var open = isOpen();
+    btn.textContent = open ? 'Hide List' : 'View List';
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.classList.toggle('is-expanded', open);
+  }
+  function openByDefault(){
+    var d = getDrawer();
+    if(!d) return;
+    if(!d.classList.contains('is-open') && typeof window.toggleEmployeeAttentionDrawer === 'function'){
+      try{ window.toggleEmployeeAttentionDrawer(true); }catch(e){}
+    }
+    syncLabel();
+  }
+
+  var oldToggle = window.toggleEmployeeAttentionDrawer;
+  if(typeof oldToggle === 'function' && !oldToggle.__defaultOpenHideLabel){
+    window.toggleEmployeeAttentionDrawer = function(force){
+      var result = oldToggle.apply(this, arguments);
+      setTimeout(syncLabel, 0);
+      setTimeout(syncLabel, 80);
+      return result;
+    };
+    window.toggleEmployeeAttentionDrawer.__defaultOpenHideLabel = true;
+  }
+
+  var oldUpdateStats = window.updateStats;
+  if(typeof oldUpdateStats === 'function' && !oldUpdateStats.__defaultOpenHideLabel){
+    window.updateStats = function(){
+      var result = oldUpdateStats.apply(this, arguments);
+      setTimeout(openByDefault, 0);
+      setTimeout(syncLabel, 80);
+      return result;
+    };
+    window.updateStats.__defaultOpenHideLabel = true;
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(openByDefault, 80);
+      setTimeout(openByDefault, 500);
+      setTimeout(openByDefault, 1200);
+    });
+  }else{
+    setTimeout(openByDefault, 40);
+    setTimeout(openByDefault, 400);
+    setTimeout(openByDefault, 1000);
+  }
+
+  try{
+    new MutationObserver(function(){ setTimeout(syncLabel, 0); }).observe(document.body, {childList:true, subtree:true});
+  }catch(e){}
+})();
+</script>
+
+
+<!-- FINAL PATCH: stable Needs Attention open drawer without card-pill flicker -->
+<style id="employee-attn-open-no-flicker-final-css">
+/* Keep Needs Attention card badges steady when the drawer opens/closes. */
+#page-employees .stat-card-attn-metric,
+#page-employees .stat-card-attn-metric *,
+#page-employees .emp-attn-mini-preview,
+#page-employees .emp-attn-mini-preview *,
+#page-employees .emp-attn-mini-row,
+#page-employees .emp-attn-mini-need,
+#page-employees .emp-attn-shift-badge,
+#page-employees .emp-mt-flag,
+#page-employees .emp-attn-pill,
+#page-employees .emp-attn-drawer-pill{
+  animation:none !important;
+}
+#page-employees .stat-card-attn-metric .emp-attn-mini-preview *,
+#page-employees .stat-card-attn-metric .emp-attn-compact-body *,
+#page-employees .stat-card-attn-metric .emp-attn-open-btn{
+  transition:none !important;
+}
+</style>
+<script id="employee-attn-stable-no-flicker-final-js">
+(function(){
+  'use strict';
+  if(window.__employeeAttentionNoFlickerFinal) return;
+  window.__employeeAttentionNoFlickerFinal = true;
+
+  var drawerOpen = true;
+  var lastPreviewSignature = '';
+  var lastDrawerSignature = '';
+
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function getList(){
+    try{ if(Array.isArray(window.employees)) return window.employees; }catch(e){}
+    try{ if(Array.isArray(employees)) return employees; }catch(e){}
+    return [];
+  }
+  function isPreset(v){ return ['SENT IN','NEED TO SEND','NEED TO CALL','WAITING ON DAN'].indexOf(clean(v).toUpperCase()) > -1; }
+  function resolvedUp(v){ return !!clean(v) && !isPreset(v); }
+  function hasNote(e){ return !!clean((e && (e.notes || e.note || e.employee_notes || e.employeeNotes || e.comments)) || ''); }
+  function personName(e){
+    e=e||{};
+    return ((clean(e.first)+' '+clean(e.last)).replace(/\s+/g,' ').trim() || clean(e.name) || 'UNNAMED EMPLOYEE').toUpperCase();
+  }
+  function shiftText(e){ return clean(e && e.shift) || 'No Shift'; }
+  function shiftClass(e){
+    var v=shiftText(e).toUpperCase();
+    if(v==='DAY') return 'emp-attn-shift-day';
+    if(v==='NIGHT') return 'emp-attn-shift-night';
+    if(v==='GATE') return 'emp-attn-shift-gate';
+    return 'emp-attn-shift-other';
+  }
+  function attentionShiftBadge(e){ return '<span class="emp-attn-shift-badge '+shiftClass(e)+'">'+esc(shiftText(e))+'</span>'; }
+  function mobileTokenFlag(e){ return (e && e.mobileToken) ? '<span class="emp-mt-flag" title="Mobile Token enabled">MT</span>' : ''; }
+  function missingList(e){
+    e=e||{};
+    var out=[];
+    if(!clean(e.empId)) out.push('CONGLOBAL ID');
+    if(!resolvedUp(e.upId)) out.push('UP ID');
+    if(!clean(e.email)) out.push('EMAIL');
+    if(!clean(e.phone)) out.push('PHONE');
+    if(!clean(e.daysOff)) out.push('DAYS OFF');
+    if(!resolvedUp(e.upId) && !hasNote(e)) out.push('MISSING NOTE');
+    var seen={};
+    return out.map(function(x){ return clean(x).toUpperCase(); }).filter(function(x){ if(!x || seen[x]) return false; seen[x]=1; return true; });
+  }
+  function completeEmployee(e){ return missingList(e).length === 0; }
+  function pct(done,total){ return total ? Math.max(0,Math.min(100,(done/total)*100)) : 0; }
+  function pctClass(v){ if(v>=98) return 'emp-metric-green'; if(v>=90) return 'emp-metric-yellow'; return 'emp-metric-red'; }
+  function countClass(n){ return n>0 ? 'emp-metric-red' : 'emp-metric-green'; }
+  function priority(needs){ if(needs.indexOf('MISSING NOTE')>-1) return 0; if(needs.indexOf('UP ID')>-1) return 1; return 2; }
+  function rows(){
+    return getList().map(function(e){ return {employee:e, name:personName(e), needs:missingList(e)}; })
+      .filter(function(x){ return x.needs.length>0; })
+      .sort(function(a,b){ return priority(a.needs)-priority(b.needs) || a.name.localeCompare(b.name); });
+  }
+  function signature(r){
+    return r.map(function(x){ return [x.name, shiftText(x.employee), x.needs.join('|'), x.employee && x.employee.mobileToken ? 'MT' : ''].join('~'); }).join('||');
+  }
+  function setText(id,text){ var el=document.getElementById(id); if(el && el.textContent!==String(text)) el.textContent=text; }
+  function setHtml(id,html){ var el=document.getElementById(id); if(el && el.innerHTML!==html) el.innerHTML=html; }
+  function setMetricClass(id,cls){
+    var el=document.getElementById(id); if(!el) return;
+    ['emp-metric-red','emp-metric-yellow','emp-metric-green','emp-metric-gold','emp-metric-neutral','employee-metric-red','employee-metric-yellow','employee-metric-green'].forEach(function(c){ el.classList.remove(c); });
+    el.classList.add(cls || 'emp-metric-neutral');
+  }
+  function setFill(id,value,cls){
+    var el=document.getElementById(id); if(!el) return;
+    var w=Math.max(0,Math.min(100,value||0))+'%';
+    if(el.style.width!==w) el.style.width=w;
+    el.className='emp-metric-fill '+(cls||'emp-metric-neutral');
+    var color='rgba(229,231,235,.55)';
+    if(cls==='emp-metric-red') color='#ef4444';
+    else if(cls==='emp-metric-yellow'||cls==='emp-metric-gold') color='#f59e0b';
+    else if(cls==='emp-metric-green') color='#22c55e';
+    if(el.style.background!==color) el.style.background=color;
+  }
+  function ensureShell(){
+    var row=document.querySelector('#page-employees .stats-row');
+    if(!row) return;
+    row.classList.add('employee-metrics-overhauled');
+    if(document.getElementById('employee-attn-drawer') && document.getElementById('s-out-preview') && document.getElementById('s-total') && document.getElementById('s-day')) return;
+    row.innerHTML=''
+      + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-day"><div class="emp-metric-topline"><div class="emp-metric-kicker">Day Shift</div><span class="emp-metric-icon">☀</span></div><div class="emp-metric-number" id="s-day">0<small>/0</small></div><div class="emp-metric-sub" id="s-day-sub">All employees covered</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-day-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-night"><div class="emp-metric-topline"><div class="emp-metric-kicker">Night Shift</div><span class="emp-metric-icon">☾</span></div><div class="emp-metric-number" id="s-night">0<small>/0</small></div><div class="emp-metric-sub" id="s-night-sub">All employees covered</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-night-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-gate"><div class="emp-metric-topline"><div class="emp-metric-kicker">Gate</div><span class="emp-metric-icon">◆</span></div><div class="emp-metric-number" id="s-gate">0<small>/0</small></div><div class="emp-metric-sub" id="s-gate-sub">All employees covered</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-gate-bar"></div></div></div>'
+      + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-attn-compact-body"><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Open items</div><div class="emp-attn-mini-preview" id="s-out-preview"></div></div><button type="button" class="emp-attn-open-btn">Hide List</button></div>'
+      + '<div class="emp-attn-drawer is-open" id="employee-attn-drawer"></div>';
+    var btn=row.querySelector('.emp-attn-open-btn');
+    if(btn){ btn.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); window.toggleEmployeeAttentionDrawer(); return false; }); }
+    lastPreviewSignature='';
+    lastDrawerSignature='';
+  }
+  function renderPreview(r){
+    var sig=signature(r.slice(0,3)) + '::' + r.length;
+    if(sig===lastPreviewSignature) return;
+    lastPreviewSignature=sig;
+    var html='';
+    if(!r.length){
+      html='<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">ALL CLEAR</span><span class="emp-attn-mini-need">DONE</span></div>';
+    }else{
+      html=r.slice(0,2).map(function(x){
+        return '<div class="emp-attn-mini-row" title="'+esc(x.name+' · '+shiftText(x.employee)+' shift · needs: '+x.needs.join(', '))+'"><span class="emp-attn-mini-person"><span class="emp-attn-mini-name">'+esc(x.name)+'</span>'+attentionShiftBadge(x.employee)+mobileTokenFlag(x.employee)+'</span><span class="emp-attn-mini-need">'+esc(x.needs[0])+'</span></div>';
+      }).join('') + (r.length>2 ? '<div class="emp-attn-mini-row"><span class="emp-attn-mini-name">+'+(r.length-2)+' MORE</span><span class="emp-attn-mini-need">OPEN</span></div>' : '');
+    }
+    setHtml('s-out-preview', html);
+  }
+  function renderDrawer(r){
+    var drawer=document.getElementById('employee-attn-drawer'); if(!drawer) return;
+    drawer.classList.toggle('is-open', !!drawerOpen);
+    var btn=document.querySelector('#page-employees .emp-attn-open-btn');
+    if(btn){
+      var label=drawerOpen ? 'Hide List' : 'View List';
+      if(btn.textContent!==label) btn.textContent=label;
+      btn.setAttribute('aria-expanded', drawerOpen ? 'true' : 'false');
+      btn.classList.toggle('is-expanded', !!drawerOpen);
+    }
+    if(!drawerOpen){
+      if(drawer.innerHTML!=='') drawer.innerHTML='';
+      lastDrawerSignature='closed';
+      return;
+    }
+    var sig=signature(r)+'::open';
+    if(sig===lastDrawerSignature) return;
+    lastDrawerSignature=sig;
+    var html='';
+    if(!r.length){
+      html='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List</div><button type="button" class="emp-attn-drawer-close">Close</button></div><div class="emp-attn-empty">All required info complete</div>';
+    }else{
+      html='<div class="emp-attn-drawer-head"><div class="emp-attn-drawer-title">Needs Attention List · '+r.length+'</div><button type="button" class="emp-attn-drawer-close">Close</button></div><div class="emp-attn-drawer-list">'
+        + r.map(function(x){ return '<div class="emp-attn-drawer-ticket" title="'+esc(x.name+' · '+shiftText(x.employee)+' shift')+'"><div class="emp-attn-drawer-name-line"><div class="emp-attn-drawer-name">'+esc(x.name)+'</div>'+attentionShiftBadge(x.employee)+mobileTokenFlag(x.employee)+'</div><div class="emp-attn-drawer-pills">'+x.needs.map(function(n){ return '<span class="emp-attn-drawer-pill" data-need="'+esc(n)+'">'+esc(n)+'</span>'; }).join('')+'</div></div>'; }).join('')
+        + '</div>';
+    }
+    drawer.innerHTML=html;
+    var close=drawer.querySelector('.emp-attn-drawer-close');
+    if(close){ close.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); window.toggleEmployeeAttentionDrawer(false); return false; }); }
+  }
+  window.toggleEmployeeAttentionDrawer=function(force){
+    drawerOpen = typeof force === 'boolean' ? force : !drawerOpen;
+    try{ ensureShell(); renderDrawer(rows()); }catch(e){ console.error('Attention drawer toggle failed:', e); }
+    return false;
+  };
+  window.updateStats=function(){
+    ensureShell();
+    var list=getList();
+    var total=list.length;
+    var complete=list.filter(completeEmployee).length;
+    var completionPct=pct(complete,total);
+    var completionCls=pctClass(completionPct);
+    var r=rows();
+    setHtml('s-total', Math.round(completionPct)+'<small>%</small>');
+    setText('s-total-sub', complete+'/'+total+' profiles complete');
+    setMetricClass('s-total', completionCls);
+    setFill('s-total-bar', completionPct, completionCls);
+    setText('s-out', r.length);
+    setText('s-out-sub', r.length ? 'Tap to review' : 'All clear');
+    setMetricClass('s-out', countClass(r.length));
+    renderPreview(r);
+    renderDrawer(r);
+    function shiftStats(name){ var arr=list.filter(function(e){ return clean(e&&e.shift).toUpperCase()===name; }); var done=arr.filter(completeEmployee).length; return {done:done,total:arr.length,pct:pct(done,arr.length)}; }
+    [['DAY','s-day'],['NIGHT','s-night'],['GATE','s-gate']].forEach(function(pair){
+      var x=shiftStats(pair[0]); var cls=pctClass(x.pct);
+      setHtml(pair[1], x.done+'<small>/'+x.total+'</small>');
+      setText(pair[1]+'-sub', (x.total && x.done===x.total) ? 'All employees covered' : 'Complete');
+      setMetricClass(pair[1], cls); setFill(pair[1]+'-bar', x.pct, cls);
+    });
+  };
+  function boot(){ try{ window.updateStats(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot,60); setTimeout(boot,350); });
+  else { setTimeout(boot,20); setTimeout(boot,300); }
+})();
+</script>
+
+<style id="employee-supabase-first-fast-load-css">
+#page-employees .employee-current-load-row td{
+  padding:18px 14px !important;
+  text-align:left !important;
+  background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(11,18,32,.98)) !important;
+  border:1px solid rgba(74,158,255,.22) !important;
+}
+#page-employees .employee-current-load-box{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  max-width:760px;
+  margin:0 auto;
+  padding:14px 16px;
+  border-radius:12px;
+  border:1px solid rgba(74,158,255,.28);
+  background:rgba(74,158,255,.08);
+  color:#bfdbfe;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.3px;
+}
+#page-employees .employee-current-load-box strong{
+  color:#e8f2ff;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+#page-employees .employee-current-load-box span{color:#93a4c7;line-height:1.45;}
+</style>
+<script id="employee-supabase-first-fast-load-final-js">
+(function(){
+  var remoteLoadStarted = false;
+  var remoteLoadDone = false;
+  var remoteLoadPromise = null;
+  var lastRenderStamp = '';
+
+  function signedIn(){
+    try{ if(typeof eqLoggedIn !== 'undefined') return !!eqLoggedIn; }catch(e){}
+    try{ return sessionStorage.getItem('eq_logged_in') === '1'; }catch(e){}
+    return false;
+  }
+  function client(){
+    try{ return window.supabaseClient || (typeof supabaseClient !== 'undefined' ? supabaseClient : null); }catch(e){ return null; }
+  }
+  function activeEmployeesPage(){
+    var p=document.getElementById('page-employees');
+    return !!(p && p.classList.contains('active'));
+  }
+  function showLoading(){
+    try{
+      var tbody=document.getElementById('emp-table');
+      var noData=document.getElementById('no-data');
+      if(noData) noData.style.display='none';
+      if(tbody && !tbody.querySelector('.employee-current-load-row')){
+        tbody.innerHTML='<tr class="employee-current-load-row"><td colspan="8"><div class="employee-current-load-box"><strong>Loading current Supabase roster…</strong><span>Employee ID is waiting for the live global roster so stale preloaded data does not flash first.</span></div></td></tr>';
+      }
+    }catch(e){}
+  }
+  function rosterStamp(){
+    try{
+      var arr = Array.isArray(employees) ? employees : [];
+      return arr.map(function(e){return [e.id,e.first,e.last,e.empId,e.upId,e.email,e.shift,e.phone,e.daysOff,e.status,e.notes,e.passwordStatus||e.password_status].join('~');}).join('|');
+    }catch(e){ return String(Date.now()); }
+  }
+  function beginRemoteLoad(){
+    if(!signedIn()) return Promise.resolve(false);
+    if(remoteLoadPromise) return remoteLoadPromise;
+    remoteLoadStarted = true;
+    remoteLoadDone = false;
+    if(activeEmployeesPage()) showLoading();
+    remoteLoadPromise = Promise.resolve()
+      .then(function(){ return (typeof window.loadEmployees === 'function') ? window.loadEmployees() : (typeof loadEmployees === 'function' ? loadEmployees() : null); })
+      .then(function(){
+        remoteLoadDone = true;
+        lastRenderStamp = rosterStamp();
+        try{ if(typeof render === 'function') render(); }catch(e){}
+        try{ if(window.startEmployeeRealtimeSync) window.startEmployeeRealtimeSync(); }catch(e){}
+        return true;
+      })
+      .catch(function(err){
+        remoteLoadDone = true;
+        console.warn('Employee Supabase fast load failed:', err);
+        try{ if(typeof render === 'function') render(); }catch(e){}
+        return false;
+      })
+      .finally(function(){ setTimeout(function(){ remoteLoadPromise=null; }, 250); });
+    return remoteLoadPromise;
+  }
+
+  // Guard against older scripts repainting the Employee ID table with cached/preloaded data while Supabase is still loading.
+  var oldRender = window.render || (typeof render === 'function' ? render : null);
+  if(typeof oldRender === 'function'){
+    window.render = function(){
+      if(signedIn() && remoteLoadStarted && !remoteLoadDone && activeEmployeesPage()){
+        showLoading();
+        return;
+      }
+      var before = rosterStamp();
+      var out = oldRender.apply(this, arguments);
+      var after = rosterStamp();
+      if(remoteLoadDone && activeEmployeesPage() && after === lastRenderStamp){
+        // no-op; keep stable. This prevents duplicate table rebuilds from old timers when data did not change.
+      }else if(remoteLoadDone){
+        lastRenderStamp = after || before;
+      }
+      return out;
+    };
+    try{ render = window.render; }catch(e){}
+  }
+
+  // Make Employee nav trigger a fresh, immediate remote load before showing old data.
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('[onclick*="employees"], [data-page="employees"], #nav-employees, .page-nav-btn') : null;
+    if(!btn) return;
+    var text=(btn.textContent||'').toLowerCase();
+    var raw=((btn.getAttribute('onclick')||'')+' '+(btn.getAttribute('data-page')||'')+' '+(btn.id||'')).toLowerCase();
+    if(text.indexOf('employee')>-1 || raw.indexOf('employee')>-1){
+      remoteLoadStarted=true; remoteLoadDone=false; setTimeout(function(){ showLoading(); beginRemoteLoad(); },0);
+    }
+  }, true);
+
+  // Start as early as possible on already-signed sessions.
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ if(signedIn()) beginRemoteLoad(); });
+  }else{
+    if(signedIn()) beginRemoteLoad();
+  }
+
+  // Expose a manual refresh hook for other app code.
+  window.refreshEmployeesNow = function(){ remoteLoadPromise=null; remoteLoadDone=false; return beginRemoteLoad(); };
+})();
+</script>
+
 </body>
 </html>
