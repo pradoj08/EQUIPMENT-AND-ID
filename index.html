@@ -21566,6 +21566,18 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
     var row=document.querySelector('#page-employees .stats-row');
     if(!row) return;
     row.classList.add('employee-metrics-overhauled');
+
+    /*
+      FINAL FLICKER FIX:
+      Do not rebuild the whole metric-card row on every updateStats() call.
+      The previous version replaced row.innerHTML every time the Attention drawer opened,
+      which destroyed/recreated the Missing UP / shift chips and made them visibly flicker.
+      Build the shell once, then only update text/bar/list values.
+    */
+    var required=['s-total','s-out','s-day','s-night','s-gate','s-out-list'];
+    var shellIsReady=required.every(function(id){ return !!document.getElementById(id); });
+    if(shellIsReady) return;
+
     row.innerHTML=''
       + '<div class="stat-card stat-card-total"><div class="emp-metric-topline"><div class="emp-metric-kicker">Roster Complete</div><span class="emp-metric-icon">◈</span></div><div class="emp-metric-number" id="s-total">0%</div><div class="emp-metric-sub" id="s-total-sub">0/0 profiles complete</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-total-bar"></div></div></div>'
       + '<div class="stat-card stat-card-attn-metric"><div class="emp-metric-topline"><div class="emp-metric-kicker">Needs Attention</div><span class="emp-metric-icon">!</span></div><div class="emp-metric-number" id="s-out">0</div><div class="emp-metric-sub" id="s-out-sub">Action board</div><div class="emp-metric-bar"><div class="emp-metric-fill" id="s-out-bar"></div></div><div class="emp-attn-board" id="s-out-list"></div></div>'
@@ -21611,7 +21623,10 @@ body.auth-transition-lock .app-command-nav .page-nav-btn:hover{
         + '</div>';
     }).join('');
     if(sorted.length>max) tickets += '<div class="emp-attn-more">+'+(sorted.length-max)+' more need attention</div>';
-    el.innerHTML='<div class="emp-attn-summary">'+summary+'</div><div class="emp-attn-queue">'+tickets+'</div>';
+    var nextHtml='<div class="emp-attn-summary">'+summary+'</div><div class="emp-attn-queue">'+tickets+'</div>';
+    if(el.getAttribute('data-last-attn-html') === nextHtml) return;
+    el.setAttribute('data-last-attn-html', nextHtml);
+    el.innerHTML=nextHtml;
   }
 
   window.updateStats=function(){
@@ -34235,5 +34250,218 @@ body.admin-final-session #page-admin.admin-final-active{display:block !important
   }
 })();
 </script>
+
+
+<!-- FINAL PATCH: Employee ID Needs Attention dropdown red background -->
+<style id="employee-needs-attention-red-dropdown-final-css">
+/* Employee ID: make the expanded Needs Attention list/dropdown visibly red. */
+#page-employees .emp-attn-drawer,
+#page-employees .emp-attn-drawer.is-open{
+  background:
+    radial-gradient(circle at 12% 0%, rgba(248,113,113,.28), transparent 36%),
+    linear-gradient(135deg, rgba(127,29,29,.98), rgba(69,10,10,.98)) !important;
+  border:1px solid rgba(248,113,113,.58) !important;
+  box-shadow:0 18px 42px rgba(127,29,29,.42), inset 0 1px 0 rgba(255,255,255,.12) !important;
+  color:#fff !important;
+}
+#page-employees .emp-attn-drawer-head{
+  padding-bottom:10px !important;
+  border-bottom:1px solid rgba(254,202,202,.28) !important;
+}
+#page-employees .emp-attn-drawer-title{
+  color:#fff !important;
+  text-shadow:0 1px 10px rgba(0,0,0,.35) !important;
+}
+#page-employees .emp-attn-drawer-close{
+  background:rgba(255,255,255,.14) !important;
+  border-color:rgba(254,202,202,.34) !important;
+  color:#fff !important;
+}
+#page-employees .emp-attn-drawer-close:hover{
+  background:rgba(255,255,255,.22) !important;
+}
+#page-employees .emp-attn-drawer-list{
+  scrollbar-color:rgba(254,202,202,.55) rgba(69,10,10,.55);
+}
+#page-employees .emp-attn-drawer-ticket{
+  background:rgba(255,255,255,.10) !important;
+  border:1px solid rgba(254,202,202,.26) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+#page-employees .emp-attn-drawer-name{
+  color:#fff !important;
+}
+#page-employees .emp-attn-drawer-pill{
+  background:rgba(254,202,202,.18) !important;
+  border-color:rgba(254,202,202,.36) !important;
+  color:#fff !important;
+}
+#page-employees .emp-attn-drawer-pill[data-need="UP ID"],
+#page-employees .emp-attn-drawer-pill[data-need="MISSING UP ID"]{
+  background:rgba(251,191,36,.22) !important;
+  border-color:rgba(251,191,36,.46) !important;
+  color:#fff7ed !important;
+}
+#page-employees .emp-attn-empty{
+  color:#fee2e2 !important;
+}
+</style>
+
+
+<style id="employee-needs-attention-match-metric-red-css">
+/* Employee ID: make the Needs Attention list/dropdown match the Needs Attention metric-card red. */
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-list,
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-board{
+  background:linear-gradient(135deg,#1a0a0a,#100505)!important;
+  border:1px solid rgba(239,68,68,.25)!important;
+  border-radius:14px!important;
+  padding:8px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035), 0 8px 18px rgba(0,0,0,.18)!important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-list::before,
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-board::before{
+  content:'';
+  display:block;
+  height:2px;
+  border-radius:999px;
+  margin:0 0 7px;
+  background:linear-gradient(90deg,#dc2626,#ef4444)!important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-item,
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-ticket{
+  background:linear-gradient(135deg,rgba(26,10,10,.96),rgba(16,5,5,.96))!important;
+  border:1px solid rgba(239,68,68,.25)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-more{
+  background:rgba(239,68,68,.10)!important;
+  border:1px solid rgba(239,68,68,.22)!important;
+  border-radius:10px!important;
+  padding:6px 8px!important;
+}
+</style>
+
+
+<!-- FINAL PATCH: Needs Attention target red color match -->
+<style id="employee-needs-attention-target-red-css">
+/* Employee ID: tune the Needs Attention dropdown/list to the darker burgundy card color shown in the target image. */
+#page-employees .emp-attn-drawer,
+#page-employees .emp-attn-drawer.is-open{
+  background:
+    radial-gradient(circle at 12% 0%, rgba(239,68,68,.20), transparent 34%),
+    linear-gradient(135deg,#1b0809 0%, #120405 58%, #0d0304 100%) !important;
+  border:1px solid rgba(127,29,29,.82) !important;
+  border-top:3px solid #ef4444 !important;
+  box-shadow:0 16px 34px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.055) !important;
+  color:#fff !important;
+}
+#page-employees .emp-attn-drawer::before{
+  content:'';
+  display:block;
+  height:2px;
+  border-radius:999px;
+  margin:0 0 9px;
+  background:linear-gradient(90deg,#b91c1c,#ef4444,#7f1d1d) !important;
+  opacity:.95;
+}
+#page-employees .emp-attn-drawer-head{
+  border-bottom:1px solid rgba(127,29,29,.55) !important;
+}
+#page-employees .emp-attn-drawer-title{
+  color:#c7d2fe !important;
+  letter-spacing:2.6px !important;
+}
+#page-employees .emp-attn-drawer-close{
+  background:rgba(127,29,29,.58) !important;
+  border-color:rgba(239,68,68,.45) !important;
+  color:#fecaca !important;
+}
+#page-employees .emp-attn-drawer-ticket,
+#page-employees .emp-attn-ticket,
+#page-employees .emp-attn-item{
+  background:linear-gradient(135deg,rgba(45,24,24,.96),rgba(31,16,16,.96)) !important;
+  border:1px solid rgba(148,81,81,.42) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045) !important;
+}
+#page-employees .emp-attn-drawer-name,
+#page-employees .emp-attn-ticket-name{
+  color:#ffffff !important;
+  text-shadow:0 1px 0 rgba(0,0,0,.35) !important;
+}
+#page-employees .emp-attn-drawer-pill,
+#page-employees .emp-attn-pill{
+  background:rgba(111,39,39,.76) !important;
+  border-color:rgba(248,113,113,.38) !important;
+  color:#fff !important;
+}
+#page-employees .emp-attn-drawer-pill[data-need="UP ID"],
+#page-employees .emp-attn-drawer-pill[data-need="MISSING UP ID"],
+#page-employees .emp-attn-pill[data-need="UP ID"],
+#page-employees .emp-attn-pill[data-need="MISSING UP ID"]{
+  background:rgba(120,53,15,.88) !important;
+  border-color:rgba(245,158,11,.55) !important;
+  color:#fff7ed !important;
+}
+#page-employees .emp-attn-more,
+#page-employees .emp-attn-open,
+#page-employees .emp-attn-drawer-more{
+  background:linear-gradient(135deg,rgba(45,24,24,.98),rgba(31,16,16,.98)) !important;
+  border:1px solid rgba(148,81,81,.48) !important;
+  color:#fff !important;
+}
+/* Also tune any list rendered inside the metric card itself to the same target red. */
+#page-employees .stat-card-attn,
+#page-employees .stat-card.stat-card-attn-metric{
+  background:linear-gradient(135deg,#1b0809 0%,#120405 58%,#0d0304 100%) !important;
+  border-color:rgba(127,29,29,.82) !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+#page-employees .stat-card-attn::before,
+#page-employees .stat-card.stat-card-attn-metric::before{
+  background:linear-gradient(90deg,#b91c1c,#ef4444,#7f1d1d) !important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-list,
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-board{
+  background:linear-gradient(135deg,#1b0809,#120405) !important;
+  border-color:rgba(127,29,29,.72) !important;
+}
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-item,
+#page-employees .stat-card.stat-card-attn-metric .emp-attn-ticket{
+  background:linear-gradient(135deg,rgba(45,24,24,.96),rgba(31,16,16,.96)) !important;
+  border-color:rgba(148,81,81,.42) !important;
+}
+</style>
+
+<style id="employee-attn-flicker-final-css">
+/* Final active fix: stop Missing UP / issue badges from blinking when the Attention drawer opens. */
+#page-employees .stat-card-attn-metric .emp-attn-pill,
+#page-employees .stat-card-attn-metric .emp-attn-shift-badge,
+#page-employees .stat-card-attn-metric .emp-mt-flag,
+#page-employees .banner-row-attn .bchip,
+#page-employees .banner-row-attn .emp-attn-chip-shift{
+  animation:none!important;
+  transition:none!important;
+}
+</style>
+
+
+<!-- FINAL PATCH: remove thin red divider line from expanded Needs Attention list -->
+<style id="employee-attn-expanded-line-removed-css">
+/* Remove the thin red accent line at the top of the expanded Needs Attention drawer. */
+#page-employees .emp-attn-drawer,
+#page-employees .emp-attn-drawer.is-open{
+  border-top:1px solid rgba(127,29,29,.82) !important;
+}
+#page-employees .emp-attn-drawer::before{
+  content:none !important;
+  display:none !important;
+  height:0 !important;
+  margin:0 !important;
+  background:none !important;
+}
+#page-employees .emp-attn-drawer-head{
+  border-top:0 !important;
+}
+</style>
 </body>
 </html>
