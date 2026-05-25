@@ -3141,6 +3141,134 @@ th:hover{
   #page-equipment .eq-board-row{grid-template-columns:1fr !important;}
 }
 
+
+
+/* PREMIUM BRAND CARD REDESIGN — safe visual-only patch */
+.nav-brand-panel.premium-brand-card{
+  position:relative;
+  isolation:isolate;
+  min-width:292px;
+  padding:9px 12px 9px 10px;
+  gap:11px;
+  border-radius:18px;
+  border:1px solid rgba(74,158,255,.36);
+  background:
+    radial-gradient(circle at 12% 22%, rgba(34,197,94,.30), transparent 28%),
+    radial-gradient(circle at 82% 8%, rgba(74,158,255,.25), transparent 34%),
+    linear-gradient(135deg, rgba(6,22,32,.98), rgba(10,16,28,.94) 50%, rgba(8,25,23,.94));
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.34),
+    0 0 0 1px rgba(255,255,255,.035) inset,
+    0 0 28px rgba(74,158,255,.16);
+  overflow:hidden;
+}
+.nav-brand-panel.premium-brand-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.16), transparent 22%, transparent 66%, rgba(16,185,129,.10)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 19px);
+  opacity:.42;
+  pointer-events:none;
+  z-index:-1;
+}
+.nav-brand-panel.premium-brand-card::after{
+  content:'';
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, #22c55e, #4a9eff, transparent);
+  opacity:.9;
+  pointer-events:none;
+}
+.premium-brand-orb{
+  position:relative;
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  color:#052014;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(255,255,255,.72), transparent 25%),
+    linear-gradient(135deg, #7dd3fc 0%, #22c55e 45%, #059669 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.30) inset,
+    0 10px 22px rgba(34,197,94,.24),
+    0 0 26px rgba(74,158,255,.24);
+  flex-shrink:0;
+}
+.premium-brand-orb::after{
+  content:'';
+  position:absolute;
+  inset:-5px;
+  border-radius:20px;
+  border:1px solid rgba(74,158,255,.20);
+  opacity:.85;
+}
+.premium-brand-orb span{
+  position:relative;
+  z-index:1;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-shadow:0 1px 0 rgba(255,255,255,.28);
+}
+.premium-brand-copy{gap:2px;}
+.nav-brand-kicker{
+  font-family:var(--mono);
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:#6ee7b7;
+  opacity:.95;
+  white-space:nowrap;
+}
+.premium-brand-card .nav-brand-title{
+  font-size:12px;
+  letter-spacing:2px;
+  color:#f8fbff;
+  text-shadow:0 0 14px rgba(74,158,255,.28);
+}
+.premium-brand-card .nav-brand-sub{
+  margin-top:2px;
+  font-size:7px;
+  letter-spacing:1.45px;
+  color:rgba(191,219,254,.70);
+}
+.nav-brand-status-wrap{
+  margin-left:auto;
+  width:27px;
+  height:27px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:rgba(15,23,42,.60);
+  border:1px solid rgba(34,197,94,.22);
+  box-shadow:inset 0 0 12px rgba(34,197,94,.08);
+  flex-shrink:0;
+}
+.nav-brand-status-dot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:#22c55e;
+  box-shadow:0 0 0 4px rgba(34,197,94,.12), 0 0 16px rgba(34,197,94,.95);
+  animation:brandStatusPulse 1.8s ease-in-out infinite;
+}
+@keyframes brandStatusPulse{
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(.72);opacity:.62;}
+}
+@media(max-width:760px){
+  .nav-brand-panel.premium-brand-card{min-width:0;flex:1 1 100%;padding:8px 10px;}
+  .premium-brand-orb{width:38px;height:38px;border-radius:14px;}
+  .nav-brand-kicker{font-size:6px;letter-spacing:1.1px;}
+  .premium-brand-card .nav-brand-title{font-size:10px;letter-spacing:1.4px;}
+  .premium-brand-card .nav-brand-sub{font-size:6px;}
+}
 </style>
 <style id="table-scale">
 html,body{
@@ -6480,6 +6608,21 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
 }
 </style>
 
+
+
+<style id="audit-training-last-updated-banner-remove-final">
+  #page-audits #roster-updated-banner,
+  #page-audits .roster-updated-banner{
+    display:none !important;
+    visibility:hidden !important;
+    height:0 !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    overflow:hidden !important;
+  }
+</style>
 </head>
 <body>
 <!-- FULL SCREEN LOGIN OVERLAY -->
@@ -6497,13 +6640,14 @@ body.employee-card-mode #employee-card-list{display:grid!important;}
 
 <!-- PAGE NAV -->
 <div class="page-nav app-command-nav">
-  <div class="nav-brand-panel nav-metric-card">
-    <div class="nav-brand-orb">SO</div>
-    <div class="nav-brand-copy">
+  <div class="nav-brand-panel nav-metric-card premium-brand-card" aria-label="Settegast Operations dashboard brand">
+    <div class="nav-brand-copy premium-brand-copy">
       <div class="nav-brand-title">SETTEGAST OPERATIONS</div>
       <div class="nav-brand-sub">Created by Jacob Prado</div>
     </div>
-    <div class="nav-metric-pulse" title="Global dashboard"></div>
+    <div class="nav-brand-status-wrap" title="System online">
+      <span class="nav-brand-status-dot"></span>
+    </div>
   </div>
 
   <div class="page-nav-center">
@@ -8508,7 +8652,9 @@ body.print-mode .time-lbl{
   vertical-align:bottom;
   padding-bottom:10px;
 }
-th.ppe-col-name{ text-align:center; padding-left:0; }
+th.ppe-col-name{ text-align:center; padding-left:0; width:190px; min-width:190px; }
+.ppe-name-cell{ width:190px; min-width:190px; padding-left:18px; padding-right:18px; }
+.ppe-name{ overflow-wrap:anywhere; }
 
 /* Group color accents */
 .ppe-th-group{
@@ -10047,6 +10193,23 @@ body.ppe-trends-hidden .ppe-insight-panel{
 /* FINAL PATCH: internal PPE size slider removed; main app slider remains. */
 .ppe-size-control,#ppe-size-slider,#ppe-size-value{display:none !important;}
 #ppe-screen{zoom:1 !important;}
+
+/* PPE ROLE COLUMN WIDTH PATCH - keep role column readable like employee column */
+.ppe-col-task{
+  width:175px !important;
+  min-width:175px !important;
+}
+.ppe-task-cell{
+  width:175px !important;
+  min-width:175px !important;
+  padding-left:14px !important;
+  padding-right:14px !important;
+}
+.ppe-task-select{
+  min-width:145px !important;
+  width:100% !important;
+}
+
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body class=&quot;ppe-open&quot;&gt;
@@ -11389,11 +11552,8 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
     <button id="employee-revert-btn" class="btn btn-ghost admin-revert-only" onclick="openRevertModal()" type="button" title="Admin only">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.9"/></svg>Revert
     </button>
-    <button class="btn btn-ghost" onclick="exportCSV()">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV
-    </button>
-    <button class="btn btn-ghost" onclick="openEmployeeBulkImportModal()" type="button">
-      ⇪ Bulk Import
+    <button class="btn btn-ghost" onclick="exportCSV()" title="Export Employee ID table as formatted Excel workbook">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Excel
     </button>
     <button class="btn btn-primary" onclick="openModal()">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Employee
@@ -11470,7 +11630,7 @@ document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
       </button>
     </div>
   </div>
-  <div id="roster-updated-banner" class="roster-updated-banner"><strong>Last Updated</strong><span id="roster-updated-banner-text">No audit/training updates loaded yet.</span></div>
+  <!-- Audit/Training last-updated banner removed by request -->
 
   <div class="audits-wrap">
     <div class="roster-overview audit-training-hero-cards">
@@ -12461,17 +12621,15 @@ function setGlobalScale(val){
   if(!v || v < 85) v = 85;
   if(v > 130) v = 130;
   var scale = v / 100;
+
+  // Global resize must apply to every real app page, including Employee ID.
+  // A prior guard hard-locked #page-employees at zoom 1, which made the top
+  // resize slider appear broken on the Employee ID page.
   document.documentElement.style.setProperty('--app-scale', String(scale));
   document.querySelectorAll('.page, .modal-bg').forEach(function(el){
-    // Keep the Employee ID page locked to the viewport.
-    // Zoom expands the rendered box wider than the screen, which causes mobile side-scroll.
-    // Other pages can still use zoom normally.
-    if(el && el.id === 'page-employees'){
-      el.style.zoom = '1';
-    }else{
-      el.style.zoom = String(scale);
-    }
+    if(el) el.style.zoom = String(scale);
   });
+
   try{ localStorage.setItem(APP_SCALE_KEY, String(v)); }catch(e){}
   var readout = document.getElementById('global-size-value');
   if(readout) readout.textContent = v + '%';
@@ -12480,12 +12638,13 @@ function setGlobalScale(val){
 }
 
 function initGlobalScale(){
-  // Default every new app load to 100% zoom.
-  // Previous saved zoom values were causing the app to reopen oversized/undersized.
   var saved = 100;
-  try{ localStorage.setItem(APP_SCALE_KEY, '100'); }catch(e){}
+  try{
+    var stored = parseInt(localStorage.getItem(APP_SCALE_KEY) || '100', 10);
+    if(stored >= 85 && stored <= 130) saved = stored;
+  }catch(e){}
   var slider = document.getElementById('global-size-slider');
-  if(slider) slider.value = '100';
+  if(slider) slider.value = String(saved);
   setGlobalScale(saved);
 }
 
@@ -18367,35 +18526,6 @@ body:not(.is-admin) #clear-activity-log-btn{display:none !important;}
 </script>
 
 
-<script>
-/* HARD RESTORE: if Employee ID data was wiped or partially synced, restore full default roster and save it globally. */
-(function(){
-  async function restoreEmployeeNamesIfMissing(){
-    try{
-      if(typeof eqLoggedIn !== 'undefined' && !eqLoggedIn) return;
-      if(typeof employees === 'undefined' || !Array.isArray(employees)) return;
-      if(typeof rosterLooksBroken === 'function' && rosterLooksBroken()){
-        console.warn('Employee roster missing names. Restoring default employee roster.');
-        if(typeof seedData === 'function') seedData();
-        if(typeof normalizeEmployeeRoster === 'function') normalizeEmployeeRoster();
-        if(typeof saveEmployeesToCache === 'function') saveEmployeesToCache();
-        if(typeof window.saveEmployees === 'function') await window.saveEmployees();
-        if(typeof render === 'function') render();
-        if(typeof renderEquipment === 'function') renderEquipment();
-        if(typeof renderRosterPanels === 'function') renderRosterPanels();
-      }
-    }catch(err){ console.error('Employee roster restore failed:', err); }
-  }
-  window.restoreEmployeeNamesIfMissing = restoreEmployeeNamesIfMissing;
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(restoreEmployeeNamesIfMissing, 1600);
-    setTimeout(restoreEmployeeNamesIfMissing, 4200);
-  });
-})();
-</script>
-
-
-
 <style id="audit-reset-no-popup-polish">
 /* Audit / Monthly Training reset + no-popup status polish */
 #page-audits .roster-inline-notice{
@@ -22749,7 +22879,8 @@ body{
 
 #page-employees.page,
 #page-employees.page.active{
-  zoom:1 !important;
+  /* Must follow the global resize slider. Do not hard-lock this page to zoom:1. */
+  zoom:var(--app-scale) !important;
   width:100% !important;
   max-width:100vw !important;
   min-width:0 !important;
@@ -25489,8 +25620,10 @@ body{
 
 
 
-<!-- SAFE FINAL PATCH: remove employee sync banner and stabilize Employee ID row order without blocking render -->
-<style id="employee-sync-banner-remove-css-final">
+
+
+<!-- FINAL SAFE PATCH: diagnostics unlock + stable Employee ID load/render response -->
+<style id="employee-no-sync-banner-css-v4">
 #employee-sync-status-banner,
 #employee-sync-warning-banner{
   display:none !important;
@@ -25504,11 +25637,11 @@ body{
   border:0 !important;
 }
 </style>
-<script id="employee-display-stability-final-v2">
+<script id="admin-diagnostic-unlock-and-employee-stability-v4">
 (function(){
   'use strict';
-  if(window.__employeeDisplayStabilityFinalV2) return;
-  window.__employeeDisplayStabilityFinalV2 = true;
+  if(window.__adminUnlockEmployeeStableV4) return;
+  window.__adminUnlockEmployeeStableV4 = true;
 
   function removeEmployeeSyncBanners(){
     ['employee-sync-status-banner','employee-sync-warning-banner'].forEach(function(id){
@@ -25516,68 +25649,342 @@ body{
       if(el && el.parentNode) el.parentNode.removeChild(el);
     });
   }
-
-  function stableEmployeeKey(emp){
-    emp = emp || {};
-    var last = String(emp.last || emp.last_name || '').trim().toLowerCase();
-    var first = String(emp.first || emp.first_name || '').trim().toLowerCase();
-    var id = String(emp.empId || emp.employee_id || emp.id || '').trim().toLowerCase();
-    return last + '\u0001' + first + '\u0001' + id;
-  }
-
-  function stabilizeEmployeesInPlace(){
-    try{
-      if(!Array.isArray(window.employees) || window.employees.length < 2) return;
-      window.employees.sort(function(a,b){
-        return stableEmployeeKey(a).localeCompare(stableEmployeeKey(b), undefined, {sensitivity:'base'});
-      });
-      try{ employees = window.employees; }catch(e){}
-    }catch(e){}
-  }
-
   window.showEmployeeSyncWarning = function(){ removeEmployeeSyncBanners(); };
   window.hideEmployeeSyncWarning = function(){ removeEmployeeSyncBanners(); };
   window.showEmployeeSyncStatusBanner = function(){ removeEmployeeSyncBanners(); };
 
-  var originalRender = window.render;
-  if(typeof originalRender === 'function' && !originalRender.__employeeStableWrapped){
-    var wrappedRender = function(){
-      removeEmployeeSyncBanners();
-      stabilizeEmployeesInPlace();
-      return originalRender.apply(this, arguments);
+  function clearDiagnosticLocks(){
+    window.__ADMIN_DIAG_PAGE_LOCK = false;
+    window.__adminDiagnosticRunning = false;
+  }
+  window.forceAdminDiagnosticUnlock = clearDiagnosticLocks;
+
+  // Rebind diagnostics WITHOUT any page-lock behavior. After a test completes, navigation works normally.
+  var baseRun = window.runAdminDiagnostics;
+  var baseToggle = window.toggleAdminDiagnostics;
+  if(typeof baseRun === 'function' && !baseRun.__noLockWrappedV4){
+    var noLockRun = async function(ev){
+      try{ if(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); } }catch(e){}
+      clearDiagnosticLocks();
+      try{ return await baseRun.call(this, ev || {preventDefault:function(){},stopPropagation:function(){},stopImmediatePropagation:function(){}}); }
+      finally{ clearDiagnosticLocks(); }
     };
-    wrappedRender.__employeeStableWrapped = true;
-    window.render = wrappedRender;
-    try{ render = wrappedRender; }catch(e){}
+    noLockRun.__noLockWrappedV4 = true;
+    window.runAdminDiagnostics = noLockRun;
+  }
+  if(typeof baseToggle === 'function' && !baseToggle.__noLockWrappedV4){
+    var noLockToggle = function(ev){
+      try{ if(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); } }catch(e){}
+      clearDiagnosticLocks();
+      return baseToggle.call(this, ev || {preventDefault:function(){},stopPropagation:function(){},stopImmediatePropagation:function(){}});
+    };
+    noLockToggle.__noLockWrappedV4 = true;
+    window.toggleAdminDiagnostics = noLockToggle;
   }
 
-  var originalLoadEmployees = window.loadEmployees;
-  if(typeof originalLoadEmployees === 'function' && !originalLoadEmployees.__employeeStableLoadWrapped){
-    var wrappedLoadEmployees = async function(){
-      var result = await originalLoadEmployees.apply(this, arguments);
-      stabilizeEmployeesInPlace();
-      removeEmployeeSyncBanners();
-      return result;
-    };
-    wrappedLoadEmployees.__employeeStableLoadWrapped = true;
-    window.loadEmployees = wrappedLoadEmployees;
-    try{ loadEmployees = wrappedLoadEmployees; }catch(e){}
+  function bindDiagnosticButtons(){
+    clearDiagnosticLocks();
+    var run = document.getElementById('admin-diag-refresh');
+    var tog = document.getElementById('admin-diag-toggle');
+    var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
+    if(sub) sub.textContent = 'Real-path diagnostics. No page lock: after the test finishes, navigation remains normal.';
+    if(run){
+      run.type = 'button';
+      run.disabled = false;
+      run.textContent = 'Run Real Save Test';
+      run.onclick = function(ev){ return window.runAdminDiagnostics(ev || window.event); };
+    }
+    if(tog){
+      tog.type = 'button';
+      tog.disabled = false;
+      tog.onclick = function(ev){ return window.toggleAdminDiagnostics(ev || window.event); };
+    }
   }
 
-  removeEmployeeSyncBanners();
-  try{
-    new MutationObserver(function(){ removeEmployeeSyncBanners(); }).observe(document.documentElement, {childList:true, subtree:true});
-  }catch(e){}
-  document.addEventListener('DOMContentLoaded', function(){
+  function employeeArray(){
+    try{ return Array.isArray(window.employees) ? window.employees : (typeof employees !== 'undefined' && Array.isArray(employees) ? employees : []); }
+    catch(e){ return []; }
+  }
+  function employeeKey(e){
+    e = e || {};
+    return String(e.id || e.empId || e.employee_id || ((e.first||'')+'|'+(e.last||'')+'|'+(e.shift||''))).toLowerCase();
+  }
+  function ensureOrderMap(){
+    var list = employeeArray();
+    window.__employeeStableOrderMap = window.__employeeStableOrderMap || {};
+    var map = window.__employeeStableOrderMap;
+    list.forEach(function(e, i){
+      var key = employeeKey(e);
+      if(key && map[key] == null) map[key] = i;
+    });
+    return map;
+  }
+  function applyStableOrder(){
+    var list = employeeArray();
+    if(!list.length) return;
+    var map = ensureOrderMap();
+    list.sort(function(a,b){
+      var ak = employeeKey(a), bk = employeeKey(b);
+      var ai = map[ak], bi = map[bk];
+      if(ai == null && bi == null){
+        return String((a && a.last) || '').localeCompare(String((b && b.last) || ''), undefined, {numeric:true, sensitivity:'base'});
+      }
+      if(ai == null) return 1;
+      if(bi == null) return -1;
+      return ai - bi;
+    });
+    try{ employees = list; }catch(e){}
+    window.employees = list;
+  }
+  function employeeSignature(){
+    var list;
+    try{ list = (typeof getFiltered === 'function') ? getFiltered() : employeeArray(); }
+    catch(e){ list = employeeArray(); }
+    return (list || []).map(function(e){
+      return [e && e.id, e && e.first, e && e.last, e && e.empId, e && e.upId, e && e.password, e && e.email, e && e.shift, e && e.daysOff, e && e.phone, e && e.status, e && e.notes].map(function(v){ return String(v == null ? '' : v); }).join('\u0002');
+    }).join('\u0003') + '|tab=' + String(window.currentTab || (typeof currentTab !== 'undefined' ? currentTab : '')) + '|q=' + String((document.getElementById('search-input')||{}).value || '');
+  }
+
+  // Stop visual flicker: avoid rebuilding the Employee table when the visible employee data did not actually change.
+  var originalRender = window.render || (typeof render === 'function' ? render : null);
+  var lastEmployeeRenderSig = '';
+  if(typeof originalRender === 'function' && !originalRender.__stableRenderV4){
+    var stableRender = function(){
+      removeEmployeeSyncBanners();
+      applyStableOrder();
+      var page = document.getElementById('page-employees');
+      var table = document.getElementById('emp-table');
+      var sig = employeeSignature();
+      if(page && page.classList.contains('active') && table && table.children.length && sig && sig === lastEmployeeRenderSig && !window.__forceEmployeeRender){
+        // Keep KPI/tab counts fresh without tearing down/rebuilding the rows.
+        try{ if(typeof updateStats === 'function') updateStats(); }catch(e){}
+        try{ if(typeof updateBanner === 'function') updateBanner(); }catch(e){}
+        try{ if(typeof updateTabCounts === 'function') updateTabCounts(); }catch(e){}
+        try{ if(typeof updateEmployeeNeedsAttentionButton === 'function') updateEmployeeNeedsAttentionButton(); }catch(e){}
+        return;
+      }
+      var out = originalRender.apply(this, arguments);
+      lastEmployeeRenderSig = employeeSignature();
+      removeEmployeeSyncBanners();
+      return out;
+    };
+    stableRender.__stableRenderV4 = true;
+    window.render = stableRender;
+    try{ render = stableRender; }catch(e){}
+  }
+
+  var originalLoadEmployees = window.loadEmployees || (typeof loadEmployees === 'function' ? loadEmployees : null);
+  if(typeof originalLoadEmployees === 'function' && !originalLoadEmployees.__stableLoadV4){
+    var loadInFlight = null;
+    var stableLoadEmployees = async function(){
+      // Collapse stacked calls on boot/login/realtime so they do not repaint the same table several times.
+      if(loadInFlight) return loadInFlight;
+      var beforeSig = employeeSignature();
+      var beforeRows = employeeArray().slice();
+      loadInFlight = (async function(){
+        try{
+          ensureOrderMap();
+          var result = await originalLoadEmployees.apply(this, arguments);
+          applyStableOrder();
+          var afterSig = employeeSignature();
+          // If remote data was identical, preserve current array reference/order to prevent visible churn.
+          if(beforeRows.length && beforeSig && afterSig === beforeSig){
+            try{ employees = beforeRows; window.employees = beforeRows; }catch(e){}
+          }
+          removeEmployeeSyncBanners();
+          return result;
+        }finally{
+          loadInFlight = null;
+        }
+      }).call(this);
+      return loadInFlight;
+    };
+    stableLoadEmployees.__stableLoadV4 = true;
+    window.loadEmployees = stableLoadEmployees;
+    try{ loadEmployees = stableLoadEmployees; }catch(e){}
+  }
+
+  // Make realtime/polling less aggressive. The Employee page should not repaint from background polls unless data changed.
+  if(typeof window.startEmployeeRealtimeSync === 'function' && !window.startEmployeeRealtimeSync.__stableSyncV4){
+    var originalStartSync = window.startEmployeeRealtimeSync;
+    window.startEmployeeRealtimeSync = function(){
+      var out = originalStartSync.apply(this, arguments);
+      try{
+        if(window.employeePollTimer){ clearInterval(window.employeePollTimer); window.employeePollTimer = null; }
+      }catch(e){}
+      return out;
+    };
+    window.startEmployeeRealtimeSync.__stableSyncV4 = true;
+  }
+
+  document.addEventListener('click', function(ev){
+    var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
+    if(!target) return;
+    clearDiagnosticLocks();
+  }, true);
+
+  function boot(){
+    clearDiagnosticLocks();
+    bindDiagnosticButtons();
     removeEmployeeSyncBanners();
-    stabilizeEmployeesInPlace();
-  });
-  setTimeout(removeEmployeeSyncBanners, 100);
-  setTimeout(removeEmployeeSyncBanners, 750);
-  setTimeout(removeEmployeeSyncBanners, 2000);
+    ensureOrderMap();
+    applyStableOrder();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  setTimeout(boot, 250);
+  setTimeout(boot, 1000);
 })();
 </script>
-</body>
+
+
+<style id="final-login-typeability-fix">
+/* FINAL LOGIN TYPEABILITY FIX — keeps the sign-in fields editable above every page layer. */
+#eq-login-overlay.eq-login-overlay{
+  display:flex;
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+}
+#eq-login-overlay[style*="none"]{display:none !important;}
+#eq-login-overlay .eq-login-modal,
+#eq-login-overlay input,
+#eq-login-overlay button{
+  pointer-events:auto !important;
+  user-select:text !important;
+  -webkit-user-select:text !important;
+}
+#eq-login-overlay input{
+  opacity:1 !important;
+  visibility:visible !important;
+  cursor:text !important;
+}
+#eq-popup-user,
+#eq-popup-password,
+#eq-username,
+#eq-password{
+  pointer-events:auto !important;
+}
+</style>
+<script id="final-login-typeability-fix-js">
+(function(){
+  function byId(id){ return document.getElementById(id); }
+  function makeEditable(el){
+    if(!el) return;
+    try{ el.disabled=false; }catch(e){}
+    try{ el.readOnly=false; }catch(e){}
+    try{ el.removeAttribute('disabled'); el.removeAttribute('readonly'); }catch(e){}
+    try{ el.tabIndex = 0; }catch(e){}
+    try{
+      el.style.pointerEvents='auto';
+      el.style.userSelect='text';
+      el.style.webkitUserSelect='text';
+      el.style.opacity='1';
+      el.style.visibility='visible';
+    }catch(e){}
+  }
+  function repairLoginInputs(){
+    var overlay=byId('eq-login-overlay');
+    if(overlay){
+      overlay.style.pointerEvents='auto';
+      overlay.style.zIndex='2147483647';
+    }
+    makeEditable(byId('eq-popup-user'));
+    makeEditable(byId('eq-popup-password'));
+    makeEditable(byId('eq-username'));
+    makeEditable(byId('eq-password'));
+  }
+
+  ['pointerdown','mousedown','click','touchstart'].forEach(function(type){
+    document.addEventListener(type,function(ev){
+      var target=ev.target;
+      if(target && target.closest && target.closest('#eq-login-overlay input, #eq-login-overlay button, #auth-bar input, #auth-bar button')){
+        repairLoginInputs();
+        ev.stopPropagation();
+      }
+    },true);
+  });
+  document.addEventListener('focusin',function(ev){
+    if(ev.target && ev.target.matches && ev.target.matches('#eq-popup-user,#eq-popup-password,#eq-username,#eq-password')){
+      repairLoginInputs();
+    }
+  },true);
+
+  var previousHandle=window.handlePopupLogin;
+  window.handlePopupLogin = async function(){
+    repairLoginInputs();
+    var uEl=byId('eq-popup-user');
+    var pEl=byId('eq-popup-password');
+    var username=(uEl && uEl.value ? uEl.value : 'admin').trim();
+    var password=(pEl && pEl.value) || '';
+    var err=byId('eq-login-error');
+    if(err) err.style.display='none';
+
+    // First use the app's real login path. This is important: it sets the internal
+    // activeAppUser closure that controls the top page buttons/permissions.
+    if(typeof previousHandle === 'function'){
+      try{
+        await previousHandle.apply(this, arguments);
+        var overlayAfter=byId('eq-login-overlay');
+        var sessionUser=null;
+        try{ sessionUser=sessionStorage.getItem('conglobal_current_user_v1'); }catch(e){}
+        if((overlayAfter && overlayAfter.style.display === 'none') || sessionUser){
+          repairLoginInputs();
+          try{ ensureTopPageNavVisible(); }catch(e){}
+          return true;
+        }
+      }catch(realLoginErr){
+        console.warn('Primary login path failed; trying safe fallback.', realLoginErr);
+      }
+    }
+
+    // Safe fallback: built-in admin login must always work even if admin_users has not loaded yet.
+    // It also writes the same current-user session object the permission system expects.
+    if((username.toLowerCase()==='admin' || username.toLowerCase()==='conglobal') && password === (window.APP_LOGIN_PASSWORD || 'admin')){
+      var adminSession={
+        id:'admin', username:'admin', display_name:'Admin', password:'admin', role:'admin',
+        permissions:{employees:{view:true,edit:true},equipment:{view:true,edit:true},audits:{view:true,edit:true},ppe:{view:true,edit:true},activity:{view:true,edit:true},admin:{view:true,edit:true}},
+        updated_at:new Date().toISOString(), last_edited_by:'system'
+      };
+      try{
+        sessionStorage.setItem('eq_app_logged_in','true');
+        sessionStorage.setItem('eq_logged_in','1');
+        sessionStorage.setItem('eq_login_username','Admin');
+        sessionStorage.setItem('conglobal_current_user_v1', JSON.stringify(adminSession));
+      }catch(e){}
+      if(typeof window.eqLoggedIn !== 'undefined') window.eqLoggedIn=true;
+      var overlay=byId('eq-login-overlay'); if(overlay) overlay.style.display='none';
+      if(pEl) pEl.value='';
+      try{ if(typeof syncEqLoginUI==='function') syncEqLoginUI(); }catch(e){}
+      try{ ensureTopPageNavVisible(); }catch(e){}
+      try{ if(typeof loadEmployees==='function') await loadEmployees(); }catch(e){ console.warn('Employee load after login failed:', e); }
+      try{ if(typeof loadEquipment==='function') await loadEquipment(); }catch(e){ console.warn('Equipment load after login failed:', e); }
+      try{ if(typeof render==='function') render(); }catch(e){}
+      try{ if(typeof renderEquipment==='function') renderEquipment(); }catch(e){}
+      try{ ensureTopPageNavVisible(); }catch(e){}
+      return true;
+    }
+
+    if(err) err.style.display='block';
+    if(pEl){ pEl.value=''; pEl.focus(); }
+    return false;
+  };
+
+  function init(){
+    repairLoginInputs();
+    var input=byId('eq-popup-password');
+    if(input && !input.dataset.typeabilityFinal){
+      input.dataset.typeabilityFinal='1';
+      input.addEventListener('keydown',function(e){
+        if(e.key==='Enter') window.handlePopupLogin();
+      });
+      try{ setTimeout(function(){ if((byId('eq-login-overlay')||{}).style.display !== 'none') input.focus(); },120); }catch(e){}
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+  window.addEventListener('load',function(){ setTimeout(init,50); setTimeout(init,500); });
+})();
+</script>
 
 
 <style id="audit-training-fast-load-css">
@@ -25743,7 +26150,250 @@ body{
   });
 })();
 </script>
-</html>
+
+
+<style id="employee-excel-export-button-polish">
+  #page-employees .btn[onclick="exportCSV()"]{
+    border-color:rgba(34,197,94,.45)!important;
+    background:rgba(34,197,94,.10)!important;
+    color:#d1fae5!important;
+  }
+  #page-employees .btn[onclick="exportCSV()"]:hover{
+    background:rgba(34,197,94,.18)!important;
+    border-color:rgba(34,197,94,.70)!important;
+  }
+</style>
+<script id="employee-id-real-excel-table-export-v1">
+(function(){
+  'use strict';
+  if(window.__employeeIdRealExcelTableExportV1) return;
+  window.__employeeIdRealExcelTableExportV1 = true;
+
+  function xmlEscape(value){
+    return String(value == null ? '' : value)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&apos;');
+  }
+  function textBytes(s){ return new TextEncoder().encode(s); }
+  function le16(n){ return [n & 255, (n >>> 8) & 255]; }
+  function le32(n){ return [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]; }
+  var crcTable = null;
+  function crc32(bytes){
+    if(!crcTable){
+      crcTable = new Uint32Array(256);
+      for(var i=0;i<256;i++){
+        var c=i;
+        for(var k=0;k<8;k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        crcTable[i]=c>>>0;
+      }
+    }
+    var crc = 0 ^ -1;
+    for(var j=0;j<bytes.length;j++) crc = (crc >>> 8) ^ crcTable[(crc ^ bytes[j]) & 255];
+    return (crc ^ -1) >>> 0;
+  }
+  function concatParts(parts){
+    var len=0;
+    parts.forEach(function(p){ len += p.length; });
+    var out = new Uint8Array(len);
+    var off=0;
+    parts.forEach(function(p){ out.set(p, off); off += p.length; });
+    return out;
+  }
+  function zipStore(files){
+    var localParts=[], centralParts=[], offset=0;
+    files.forEach(function(file){
+      var nameBytes = textBytes(file.name);
+      var data = typeof file.data === 'string' ? textBytes(file.data) : file.data;
+      var crc = crc32(data);
+      var localHeader = new Uint8Array([].concat(
+        le32(0x04034b50), le16(20), le16(0), le16(0), le16(0), le16(0),
+        le32(crc), le32(data.length), le32(data.length), le16(nameBytes.length), le16(0)
+      ));
+      localParts.push(localHeader, nameBytes, data);
+      var centralHeader = new Uint8Array([].concat(
+        le32(0x02014b50), le16(20), le16(20), le16(0), le16(0), le16(0), le16(0),
+        le32(crc), le32(data.length), le32(data.length), le16(nameBytes.length), le16(0), le16(0),
+        le16(0), le16(0), le32(0), le32(offset)
+      ));
+      centralParts.push(centralHeader, nameBytes);
+      offset += localHeader.length + nameBytes.length + data.length;
+    });
+    var centralStart = offset;
+    var central = concatParts(centralParts);
+    var local = concatParts(localParts);
+    var end = new Uint8Array([].concat(
+      le32(0x06054b50), le16(0), le16(0), le16(files.length), le16(files.length),
+      le32(central.length), le32(centralStart), le16(0)
+    ));
+    return concatParts([local, central, end]);
+  }
+  function colName(n){
+    var s='';
+    while(n>0){ var m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); }
+    return s;
+  }
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function getName(e){
+    var first = clean(e.first || e.first_name);
+    var last = clean(e.last || e.last_name);
+    return (first + ' ' + last).trim() || clean(e.name);
+  }
+  function getEmpId(e){ return clean(e.empId || e.employee_id || e.conglobal_id); }
+  function getUpId(e){ return clean(e.upId || e.up_id); }
+  function getDaysOff(e){ return clean(e.daysOff || e.days_off); }
+  function getPasswordStatus(e){ return clean(e.passwordStatus || e.password_status || (e.password ? 'Set' : 'Missing')); }
+  function normalizedEmployeesForExport(){
+    try{ if(typeof migrateRoster === 'function') migrateRoster(); }catch(err){}
+    var list = Array.isArray(window.employees) ? window.employees.slice() : [];
+    return list.map(function(e){
+      try{ return (typeof migrateEmployee === 'function') ? migrateEmployee(e) : e; }catch(err){ return e; }
+    }).filter(Boolean).sort(function(a,b){
+      var an = getName(a).toLowerCase();
+      var bn = getName(b).toLowerCase();
+      return an.localeCompare(bn, undefined, {sensitivity:'base'});
+    });
+  }
+  function rowsForEmployeeExport(){
+    var rows = [['Name','Conglobal ID','UP ID','Password Status','Email','Shift','Days Off','Phone','Status','Notes']];
+    normalizedEmployeesForExport().forEach(function(e){
+      rows.push([
+        getName(e),
+        getEmpId(e),
+        getUpId(e),
+        getPasswordStatus(e),
+        clean(e.email),
+        clean(e.shift),
+        getDaysOff(e),
+        clean(e.phone),
+        clean(e.status || 'active'),
+        clean(e.notes)
+      ]);
+    });
+    return rows;
+  }
+  function computedWidths(rows){
+    var maxCols = Math.max(1, rows.reduce(function(m,r){ return Math.max(m, (r || []).length); }, 0));
+    var widths=[];
+    for(var c=0;c<maxCols;c++){
+      var maxLen=0;
+      rows.forEach(function(row){
+        var value = clean((row || [])[c]);
+        maxLen = Math.max(maxLen, value.length);
+      });
+      var width = Math.max(10, Math.min(42, Math.ceil(maxLen * 1.12) + 2));
+      if(c === 0) width = Math.max(width, 22);
+      if(c === 4) width = Math.max(width, 26);
+      if(c === 7) width = Math.max(width, 18);
+      if(c === 9) width = Math.max(width, 24);
+      widths.push(width);
+    }
+    return widths;
+  }
+  function sheetXml(rows){
+    var maxCols = Math.max(1, rows.reduce(function(m,r){ return Math.max(m, (r || []).length); }, 0));
+    var widths = computedWidths(rows).map(function(w,i){ var c=i+1; return '<col min="'+c+'" max="'+c+'" width="'+w+'" customWidth="1"/>'; }).join('');
+    var body = rows.map(function(row, rIdx){
+      var r = rIdx + 1;
+      var cells = [];
+      for(var cIdx=0;cIdx<maxCols;cIdx++){
+        var c = cIdx + 1;
+        var v = (row || [])[cIdx] == null ? '' : (row || [])[cIdx];
+        var style = r === 1 ? ' s="1"' : (r % 2 === 0 ? ' s="2"' : ' s="3"');
+        cells.push('<c r="'+colName(c)+r+'" t="inlineStr"'+style+'><is><t>'+xmlEscape(v)+'</t></is></c>');
+      }
+      return '<row r="'+r+'">'+cells.join('')+'</row>';
+    }).join('');
+    var lastRef = colName(maxCols) + Math.max(rows.length, 1);
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+      + '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
+      + '<cols>'+widths+'</cols>'
+      + '<sheetData>'+body+'</sheetData>'
+      + '<autoFilter ref="A1:'+lastRef+'"/>'
+      + '<tableParts count="1"><tablePart r:id="rId1"/></tableParts>'
+      + '</worksheet>';
+  }
+  function tableXml(rows){
+    var cols = (rows[0] || []).map(function(h,i){ return '<tableColumn id="'+(i+1)+'" name="'+xmlEscape(h || ('Column '+(i+1)))+'"/>'; }).join('');
+    var ref = 'A1:' + colName(Math.max(1, (rows[0] || []).length)) + Math.max(rows.length, 1);
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      + '<table xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" id="1" name="EmployeeIDTable" displayName="EmployeeIDTable" ref="'+ref+'" totalsRowShown="0">'
+      + '<autoFilter ref="'+ref+'"/>'
+      + '<tableColumns count="'+Math.max(1, (rows[0] || []).length)+'">'+cols+'</tableColumns>'
+      + '<tableStyleInfo name="TableStyleMedium2" showFirstColumn="0" showLastColumn="0" showRowStripes="1" showColumnStripes="0"/>'
+      + '</table>';
+  }
+  function stylesXml(){
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+      + '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>'
+      + '<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1F4E78"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF3F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/><bgColor indexed="64"/></patternFill></fill></fills>'
+      + '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD9E2EC"/></left><right style="thin"><color rgb="FFD9E2EC"/></right><top style="thin"><color rgb="FFD9E2EC"/></top><bottom style="thin"><color rgb="FFD9E2EC"/></bottom><diagonal/></border></borders>'
+      + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+      + '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf></cellXfs>'
+      + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+      + '<dxfs count="0"/><tableStyles count="1" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/>'
+      + '</styleSheet>';
+  }
+  function workbookXml(){
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Employee ID" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  }
+  function xlsxBlob(rows){
+    var files = [
+      {name:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/tables/table1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'},
+      {name:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+      {name:'xl/workbook.xml', data:workbookXml()},
+      {name:'xl/_rels/workbook.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+      {name:'xl/worksheets/_rels/sheet1.xml.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/table" Target="../tables/table1.xml"/></Relationships>'},
+      {name:'xl/styles.xml', data:stylesXml()},
+      {name:'xl/worksheets/sheet1.xml', data:sheetXml(rows)},
+      {name:'xl/tables/table1.xml', data:tableXml(rows)}
+    ];
+    return new Blob([zipStore(files)], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }
+  function dateStamp(){
+    var d = new Date();
+    function pad(n){ return String(n).padStart(2,'0'); }
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '_' + pad(d.getHours()) + pad(d.getMinutes());
+  }
+  window.exportEmployeeIdExcel = function(){
+    try{
+      var rows = rowsForEmployeeExport();
+      if(rows.length <= 1){ alert('No employee records to export.'); return; }
+      var blob = xlsxBlob(rows);
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'employee_id_table_' + dateStamp() + '.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); if(a && a.parentNode) a.parentNode.removeChild(a); }, 250);
+      try{ if(typeof logActivity === 'function') logActivity('employee','Exported <strong>Employee ID</strong> table', String(rows.length-1) + ' row(s) exported as formatted XLSX'); }catch(err){}
+    }catch(err){
+      console.error('Employee ID Excel export failed', err);
+      alert('Employee ID Excel export failed. Check the console for details.');
+    }
+  };
+  window.exportCSV = window.exportEmployeeIdExcel;
+  function relabelEmployeeExportButton(){
+    var page = document.getElementById('page-employees');
+    if(!page) return;
+    page.querySelectorAll('button[onclick="exportCSV()"], button[onclick="exportEmployeeIdExcel()"], button').forEach(function(btn){
+      if(btn && /export\s+(csv|excel)/i.test(btn.textContent || '') && btn.closest('#page-employees')){
+        btn.setAttribute('onclick','exportEmployeeIdExcel()');
+        btn.title = 'Export Employee ID table as a formatted Excel table';
+        var svg = btn.querySelector('svg');
+        btn.innerHTML = (svg ? svg.outerHTML : '') + 'Export Excel';
+      }
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', relabelEmployeeExportButton); else relabelEmployeeExportButton();
+  window.addEventListener('load', function(){ relabelEmployeeExportButton(); setTimeout(relabelEmployeeExportButton, 250); });
+})();
+</script>
+
 <style id="employee-missing-up-red-column-line-fix">
 /* Keep the required-note red row highlight, but remove the unintended red divider on every column. */
 #page-employees tr.employee-up-note-required > td{
@@ -32316,16 +32966,739 @@ body.employee-card-mode #page-employees .employee-card-actions{
 })();
 </script>
 
-<script id="admin-diagnostic-hard-page-lock-v2">
+<style id="final-top-nav-visibility-repair-css">
+/* FINAL TOP NAV REPAIR — keep page buttons visible after login. */
+.page-nav.app-command-nav{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:sticky !important;
+  top:0 !important;
+  z-index:9000 !important;
+  min-height:58px !important;
+}
+.page-nav.app-command-nav .page-nav-center{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  min-width:0 !important;
+  overflow-x:auto !important;
+}
+.page-nav.app-command-nav .page-nav-btn{
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
+body:not(.nav-repair-hide-admin) #nav-employees,
+body:not(.nav-repair-hide-admin) #nav-equipment,
+body:not(.nav-repair-hide-admin) #nav-audits,
+body:not(.nav-repair-hide-admin) #nav-ppe,
+body:not(.nav-repair-hide-admin) #nav-activity{
+  display:flex !important;
+}
+body.nav-admin-session #nav-admin{
+  display:flex !important;
+}
+</style>
+<script id="final-top-nav-visibility-repair-js">
+(function(){
+  function getSessionUser(){
+    try{ return JSON.parse(sessionStorage.getItem('conglobal_current_user_v1') || 'null'); }catch(e){ return null; }
+  }
+  function isUnlocked(){
+    try{ return sessionStorage.getItem('eq_app_logged_in') === 'true' || sessionStorage.getItem('eq_logged_in') === '1'; }catch(e){ return false; }
+  }
+  function ensureTopPageNavVisible(){
+    var nav=document.querySelector('.page-nav.app-command-nav');
+    if(!nav) return false;
+    nav.style.display='flex';
+    nav.style.visibility='visible';
+    nav.style.opacity='1';
+    var center=nav.querySelector('.page-nav-center');
+    if(center){ center.style.display='flex'; center.style.visibility='visible'; center.style.opacity='1'; }
+    var user=getSessionUser();
+    var admin=!!(user && user.role === 'admin');
+    document.body.classList.toggle('nav-admin-session', admin);
+    document.body.classList.toggle('nav-repair-hide-admin', !admin);
+    ['employees','equipment','audits','ppe','activity'].forEach(function(p){
+      var btn=document.getElementById('nav-'+p);
+      if(btn){ btn.style.display='flex'; btn.style.visibility='visible'; btn.style.opacity='1'; btn.style.pointerEvents='auto'; }
+    });
+    var adminBtn=document.getElementById('nav-admin');
+    if(adminBtn){ adminBtn.style.display=admin?'flex':'none'; adminBtn.style.visibility='visible'; adminBtn.style.opacity='1'; adminBtn.style.pointerEvents='auto'; }
+    return true;
+  }
+  window.ensureTopPageNavVisible=ensureTopPageNavVisible;
+
+  var prevSwitch=window.switchPage;
+  window.switchPage=function(page){
+    var user=getSessionUser();
+    var admin=!!(user && user.role === 'admin');
+    if(page === 'admin' && admin){
+      try{
+        document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+        var pg=document.getElementById('page-admin'); if(pg) pg.classList.add('active');
+        document.querySelectorAll('.page-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+        var nb=document.getElementById('nav-admin'); if(nb) nb.classList.add('active');
+        try{ if(typeof renderAdminUsers === 'function') renderAdminUsers(); }catch(e){}
+        try{ if(typeof updateAdminSyncWarning === 'function') updateAdminSyncWarning(); }catch(e){}
+        ensureTopPageNavVisible();
+        return;
+      }catch(e){}
+    }
+    if(typeof prevSwitch === 'function') prevSwitch.apply(this, arguments);
+    setTimeout(ensureTopPageNavVisible,0);
+  };
+
+  function boot(){
+    ensureTopPageNavVisible();
+    setTimeout(ensureTopPageNavVisible,100);
+    setTimeout(ensureTopPageNavVisible,700);
+    setTimeout(ensureTopPageNavVisible,1800);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('load',boot);
+})();
+</script>
+
+<style id="employee-slider-alignment-final-clean-v3">
+/* Final clean control layer: keeps Employee ID alignment separate from the resize slider. */
+:root{--app-scale:1;--employee-table-scale:1;}
+#employee-align-btn{white-space:nowrap;flex:0 0 auto;}
+
+/* The global slider must affect the Employee ID page too. */
+body #page-employees.page,
+body #page-employees.page.active{
+  zoom:var(--app-scale) !important;
+  transform-origin:top left !important;
+}
+
+/* Employee table gets an explicit font/padding scale as a fallback in case browser zoom is constrained by fixed table layout. */
+#page-employees #employee-table-main th,
+#page-employees #employee-table-main td{
+  font-size:clamp(8px, calc(12px * var(--employee-table-scale)), 17px) !important;
+  padding-top:clamp(5px, calc(10px * var(--employee-table-scale)), 14px) !important;
+  padding-bottom:clamp(5px, calc(10px * var(--employee-table-scale)), 14px) !important;
+  padding-left:clamp(6px, calc(12px * var(--employee-table-scale)), 16px) !important;
+  padding-right:clamp(6px, calc(12px * var(--employee-table-scale)), 16px) !important;
+}
+#page-employees #employee-table-main .emp-name,
+#page-employees #employee-table-main .phone-cell,
+#page-employees #employee-table-main .emp-id{
+  font-size:clamp(8px, calc(12px * var(--employee-table-scale)), 17px) !important;
+}
+#page-employees #employee-table-main .action-btn,
+#page-employees #employee-table-main .employee-note-toggle,
+#page-employees #employee-table-main .employee-notes-toggle,
+#page-employees #employee-table-main .missing-field-btn,
+#page-employees #employee-table-main .shift-badge{
+  font-size:clamp(7px, calc(10px * var(--employee-table-scale)), 14px) !important;
+}
+
+/* Alignment only controls alignment. It does not touch zoom, scale, slider handlers, or table rendering. */
+#page-employees[data-emp-table-align="left"] #employee-table-main th,
+#page-employees[data-emp-table-align="left"] #employee-table-main td,
+#page-employees[data-emp-table-align="left"] #employee-table-main td > *{text-align:left !important;}
+#page-employees[data-emp-table-align="center"] #employee-table-main th,
+#page-employees[data-emp-table-align="center"] #employee-table-main td,
+#page-employees[data-emp-table-align="center"] #employee-table-main td > *{text-align:center !important;}
+#page-employees[data-emp-table-align="right"] #employee-table-main th,
+#page-employees[data-emp-table-align="right"] #employee-table-main td,
+#page-employees[data-emp-table-align="right"] #employee-table-main td > *{text-align:right !important;}
+
+#page-employees[data-emp-table-align="left"] #employee-table-main .employee-action-row,
+#page-employees[data-emp-table-align="left"] #employee-table-main .employee-card-actions{justify-content:flex-start !important;margin-left:0 !important;margin-right:auto !important;}
+#page-employees[data-emp-table-align="center"] #employee-table-main .employee-action-row,
+#page-employees[data-emp-table-align="center"] #employee-table-main .employee-card-actions{justify-content:center !important;margin-left:auto !important;margin-right:auto !important;}
+#page-employees[data-emp-table-align="right"] #employee-table-main .employee-action-row,
+#page-employees[data-emp-table-align="right"] #employee-table-main .employee-card-actions{justify-content:flex-end !important;margin-left:auto !important;margin-right:0 !important;}
+
+#page-employees[data-emp-table-align="left"] #employee-table-main .shift-badge,
+#page-employees[data-emp-table-align="left"] #employee-table-main .action-btn,
+#page-employees[data-emp-table-align="left"] #employee-table-main a{margin-left:0 !important;margin-right:auto !important;}
+#page-employees[data-emp-table-align="center"] #employee-table-main .shift-badge,
+#page-employees[data-emp-table-align="center"] #employee-table-main .action-btn,
+#page-employees[data-emp-table-align="center"] #employee-table-main a{margin-left:auto !important;margin-right:auto !important;}
+#page-employees[data-emp-table-align="right"] #employee-table-main .shift-badge,
+#page-employees[data-emp-table-align="right"] #employee-table-main .action-btn,
+#page-employees[data-emp-table-align="right"] #employee-table-main a{margin-left:auto !important;margin-right:0 !important;}
+</style>
+
+<script id="employee-slider-alignment-final-clean-v3">
 (function(){
   'use strict';
-  var previousRun = window.runAdminDiagnostics;
-  var previousToggle = window.toggleAdminDiagnostics;
-  var previousSwitch = window.switchPage;
-  var lockTimer = null;
-  var guardTimer = null;
+  var SCALE_KEY='eit_app_scale_v1';
+  var ALIGN_KEY='employee_table_alignment_v2';
+  var aligns=['left','center','right'];
+  var labels={left:'Align: Left',center:'Align: Middle',right:'Align: Right'};
 
-  function stopEvent(ev){
+  function clampScale(value){
+    var n=parseInt(value,10);
+    if(!isFinite(n)) n=100;
+    if(n<85) n=85;
+    if(n>130) n=130;
+    return n;
+  }
+  function getScale(){
+    try{return clampScale(localStorage.getItem(SCALE_KEY)||'100');}catch(e){return 100;}
+  }
+  function saveScale(v){try{localStorage.setItem(SCALE_KEY,String(v));}catch(e){}}
+
+  function applyScale(value){
+    var v=clampScale(value);
+    var scale=v/100;
+    document.documentElement.style.setProperty('--app-scale',String(scale));
+    document.documentElement.style.setProperty('--employee-table-scale',String(scale));
+    if(document.body){
+      document.body.style.setProperty('--app-scale',String(scale));
+      document.body.style.setProperty('--employee-table-scale',String(scale));
+    }
+    var pages=document.querySelectorAll('.page, .modal-bg');
+    for(var i=0;i<pages.length;i++) pages[i].style.zoom=String(scale);
+    var emp=document.getElementById('page-employees');
+    if(emp){
+      emp.style.zoom=String(scale);
+      emp.style.setProperty('--employee-table-scale',String(scale));
+      emp.style.setProperty('--app-scale',String(scale));
+    }
+    var out=document.getElementById('global-size-value');
+    if(out) out.textContent=v+'%';
+    var slider=document.getElementById('global-size-slider');
+    if(slider && slider.value!==String(v)) slider.value=String(v);
+    saveScale(v);
+    return v;
+  }
+
+  function bindSlider(){
+    var slider=document.getElementById('global-size-slider');
+    if(!slider) return;
+    if(slider.dataset.finalScaleBound==='1'){
+      applyScale(slider.value || getScale());
+      return;
+    }
+    // Remove the old inline handler that could point at an overwritten function, then bind one clean handler.
+    try{slider.removeAttribute('oninput');}catch(e){}
+    slider.oninput=null;
+    slider.onchange=null;
+    var handler=function(){applyScale(this.value);};
+    slider.addEventListener('input',handler,{passive:true});
+    slider.addEventListener('change',handler,{passive:true});
+    slider.dataset.finalScaleBound='1';
+    applyScale(getScale());
+  }
+
+  function page(){return document.getElementById('page-employees');}
+  function getAlign(){
+    try{var v=localStorage.getItem(ALIGN_KEY)||'left';return aligns.indexOf(v)>-1?v:'left';}catch(e){return 'left';}
+  }
+  function saveAlign(v){try{localStorage.setItem(ALIGN_KEY,v);}catch(e){}}
+  function applyAlign(v){
+    v=aligns.indexOf(v)>-1?v:'left';
+    var p=page();
+    if(p) p.setAttribute('data-emp-table-align',v);
+    var btn=document.getElementById('employee-align-btn');
+    if(btn){
+      btn.type='button';
+      btn.textContent=labels[v];
+      btn.dataset.align=v;
+      btn.title='Cycle Employee ID table alignment: left, middle, right';
+    }
+  }
+  function cycleAlign(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    var cur=getAlign();
+    var next=aligns[(aligns.indexOf(cur)+1)%aligns.length];
+    saveAlign(next);
+    applyAlign(next);
+    return false;
+  }
+  function findDeletedButton(){
+    var byId=document.getElementById('deleted-employees-btn');
+    if(byId) return byId;
+    var buttons=document.querySelectorAll('#page-employees button');
+    for(var i=0;i<buttons.length;i++){
+      if(/deleted\s+employees/i.test((buttons[i].textContent||'').trim())) return buttons[i];
+    }
+    return null;
+  }
+  function ensureAlignButton(){
+    var p=page();
+    if(!p) return;
+    var deleted=findDeletedButton();
+    var toolbar=(deleted && deleted.parentElement) || p.querySelector('.toolbar .employee-search-actions') || p.querySelector('.toolbar > div:last-child') || p.querySelector('.toolbar');
+    if(!toolbar) return;
+    var btn=document.getElementById('employee-align-btn');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='employee-align-btn';
+      btn.className='btn btn-ghost';
+      btn.type='button';
+    }
+    btn.onclick=cycleAlign;
+    if(deleted){
+      if(btn.parentElement!==toolbar || btn.nextElementSibling!==deleted) toolbar.insertBefore(btn,deleted);
+    }else if(btn.parentElement!==toolbar){
+      toolbar.insertBefore(btn,toolbar.firstChild);
+    }
+    applyAlign(getAlign());
+  }
+  function wrapEmployeeRender(){
+    if(typeof window.render==='function' && !window.render.__employeeFinalControlsWrapped){
+      var original=window.render;
+      var wrapped=function(){
+        var result=original.apply(this,arguments);
+        setTimeout(function(){ensureAlignButton();applyAlign(getAlign());applyScale(getScale());},0);
+        return result;
+      };
+      wrapped.__employeeFinalControlsWrapped=true;
+      window.render=wrapped;
+    }
+  }
+  function boot(){
+    window.setGlobalScale=applyScale;
+    window.initGlobalScale=function(){bindSlider();applyScale(getScale());};
+    bindSlider();
+    ensureAlignButton();
+    applyAlign(getAlign());
+    wrapEmployeeRender();
+    applyScale(getScale());
+    setTimeout(function(){bindSlider();ensureAlignButton();applyScale(getScale());},150);
+    setTimeout(function(){bindSlider();ensureAlignButton();applyScale(getScale());},800);
+  }
+
+  window.applyEmployeeTableAlignment=applyAlign;
+  window.cycleEmployeeTableAlignment=cycleAlign;
+  window.ensureEmployeeAlignmentButton=ensureAlignButton;
+  window.setGlobalScale=applyScale;
+  window.initGlobalScale=function(){bindSlider();applyScale(getScale());};
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('load',boot);
+})();
+</script>
+
+
+
+<style id="final-admin-navigation-no-kick-css">
+/* FINAL ADMIN NAV FIX: prevent Admin page from staying hidden by stale permission classes. */
+body.admin-final-session #nav-admin{display:flex !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;}
+body.admin-final-session #page-admin.admin-final-active{display:block !important;visibility:visible !important;opacity:1 !important;height:auto !important;overflow:visible !important;pointer-events:auto !important;}
+</style>
+<script id="final-admin-navigation-no-kick-fix">
+(function(){
+  'use strict';
+  var ADMIN_SESSION_KEY='conglobal_current_user_v1';
+  function readJSON(key){try{return JSON.parse(sessionStorage.getItem(key)||'null');}catch(e){return null;}}
+  function isLoggedIn(){
+    try{
+      return sessionStorage.getItem('eq_logged_in')==='1' || sessionStorage.getItem('eq_app_logged_in')==='true';
+    }catch(e){return false;}
+  }
+  function adminSessionObject(){
+    return {id:'admin',username:'admin',display_name:'Admin',password:'admin',role:'admin',permissions:{employees:{view:true,edit:true,passwords:true},equipment:{view:true,edit:true},audits:{view:true,edit:true},ppe:{view:true,edit:true},activity:{view:true,edit:true},admin:{view:true,edit:true}},updated_at:new Date().toISOString(),last_edited_by:'admin'};
+  }
+  function currentUserIsAdmin(){
+    var u=readJSON(ADMIN_SESSION_KEY);
+    if(u && String(u.role||'').toLowerCase()==='admin') return true;
+    var name='';
+    try{name=String(sessionStorage.getItem('eq_login_username')||'').trim().toLowerCase();}catch(e){}
+    return isLoggedIn() && (name==='admin' || name==='conglobal' || !name);
+  }
+  function forceAdminSession(){
+    if(!currentUserIsAdmin()) return false;
+    var u=readJSON(ADMIN_SESSION_KEY);
+    if(!(u && String(u.role||'').toLowerCase()==='admin')){
+      try{sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminSessionObject()));}catch(e){}
+    }
+    try{sessionStorage.setItem('eq_logged_in','1'); sessionStorage.setItem('eq_app_logged_in','true'); sessionStorage.setItem('eq_login_username','admin');}catch(e){}
+    document.body.classList.add('admin-final-session','nav-admin-session');
+    document.body.classList.remove('nav-repair-hide-admin');
+    return true;
+  }
+  function showAdminPage(){
+    if(!forceAdminSession()) return false;
+    document.querySelectorAll('.page').forEach(function(p){
+      var on=p.id==='page-admin';
+      p.classList.toggle('active',on);
+      p.classList.toggle('admin-final-active',on);
+      if(on){
+        p.classList.remove('no-view');
+        p.classList.remove('view-only');
+        p.style.display='block';
+        p.style.visibility='visible';
+        p.style.opacity='1';
+        p.style.height='auto';
+        p.style.overflow='visible';
+        p.style.pointerEvents='auto';
+      }else{
+        p.style.display='none';
+        p.style.visibility='hidden';
+        p.style.opacity='0';
+        p.style.height='0';
+        p.style.overflow='hidden';
+        p.style.pointerEvents='none';
+      }
+    });
+    document.querySelectorAll('.page-nav-btn').forEach(function(b){b.classList.toggle('active', b.id==='nav-admin');});
+    var nb=document.getElementById('nav-admin');
+    if(nb){nb.style.display='flex';nb.style.visibility='visible';nb.style.opacity='1';nb.style.pointerEvents='auto';}
+    var warn=document.getElementById('admin-auth-warning'); if(warn) warn.style.display='none';
+    try{ if(typeof window.renderAdminPermissionRows==='function') window.renderAdminPermissionRows(); }catch(e){}
+    try{ if(typeof window.renderAdminUsers==='function') window.renderAdminUsers(); }catch(e){}
+    try{ if(typeof window.updateAdminSyncWarning==='function') window.updateAdminSyncWarning(); }catch(e){}
+    try{ if(typeof window.initAdminDiagnostics==='function') window.initAdminDiagnostics(); }catch(e){}
+    try{ if(typeof window.ensureTopPageNavVisible==='function') window.ensureTopPageNavVisible(); }catch(e){}
+    return true;
+  }
+  var previousSwitch=window.switchPage;
+  window.switchPage=function(page){
+    if(page==='admin'){
+      if(showAdminPage()) return true;
+      var overlay=document.getElementById('eq-login-overlay'); if(overlay) overlay.style.display='flex';
+      return false;
+    }
+    if(typeof previousSwitch==='function'){
+      var result=previousSwitch.apply(this,arguments);
+      setTimeout(function(){ if(currentUserIsAdmin()) forceAdminSession(); },0);
+      return result;
+    }
+    return false;
+  };
+  document.addEventListener('click',function(evt){
+    var btn=evt.target && evt.target.closest ? evt.target.closest('#nav-admin') : null;
+    if(!btn) return;
+    evt.preventDefault();
+    evt.stopPropagation();
+    if(evt.stopImmediatePropagation) evt.stopImmediatePropagation();
+    showAdminPage();
+  },true);
+  function boot(){
+    if(currentUserIsAdmin()) forceAdminSession();
+    var active=document.querySelector('.page.active');
+    if(active && active.id==='page-admin') showAdminPage();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('load',function(){setTimeout(boot,50);setTimeout(boot,500);});
+  window.forceAdminPageNoKick=showAdminPage;
+})();
+</script>
+
+
+<!-- FINAL DIAGNOSTIC NO-NAV RUNNER: replaces every older diagnostic runner and never switches pages -->
+<script id="final-diagnostic-no-nav-runner-v6">
+(function(){
+  'use strict';
+  if(window.__finalDiagnosticNoNavRunnerV6) return;
+  window.__finalDiagnosticNoNavRunnerV6 = true;
+
+  function swallow(ev){
+    try{ if(ev){ ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation(); } }catch(e){}
+    return false;
+  }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; });
+  }
+  function now(){ return new Date().toISOString(); }
+  function client(){
+    try{ if(window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient; }catch(e){}
+    try{ if(typeof supabaseClient !== 'undefined' && supabaseClient && typeof supabaseClient.from === 'function'){ window.supabaseClient = supabaseClient; return supabaseClient; } }catch(e){}
+    return null;
+  }
+  function friendlyError(err){
+    var raw = String((err && (err.message || err.details || err.hint || err.code)) || err || 'Unknown error');
+    if(/does not exist|schema cache|not find|PGRST205|42P01/i.test(raw)) return 'TABLE MISSING X: ' + raw;
+    if(/permission denied|row-level security|RLS|401|403/i.test(raw)) return 'PERMISSION / RLS ERROR: ' + raw;
+    if(/duplicate key/i.test(raw)) return 'DUPLICATE KEY ERROR: ' + raw;
+    if(/column .* does not exist|Could not find the .* column|PGRST204/i.test(raw)) return 'COLUMN / SCHEMA MISMATCH: ' + raw;
+    return raw;
+  }
+  function employeeList(){
+    try{ if(Array.isArray(window.employees)) return window.employees; }catch(e){}
+    try{ if(typeof employees !== 'undefined' && Array.isArray(employees)){ window.employees = employees; return employees; } }catch(e){}
+    return [];
+  }
+  function setEmployeeList(list){
+    window.employees = list;
+    try{ employees = list; }catch(e){}
+  }
+  function employeeId(e){ return String((e && (e.id || e.uuid || e.employee_uuid)) || ''); }
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+
+  function showPanelOpen(){
+    var panel = document.getElementById('admin-diagnostic-panel');
+    if(panel) panel.classList.add('open');
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(toggle) toggle.textContent = 'Hide Diagnostics';
+  }
+  function renderDiagnostics(rows, running){
+    showPanelOpen();
+    var body = document.getElementById('admin-diag-results');
+    var summary = document.getElementById('admin-diag-summary');
+    if(!body || !summary) return;
+    if(running){
+      summary.innerHTML = '<span class="admin-diag-chip warn">Running no-navigation tests...</span>';
+      body.innerHTML = '<div class="admin-diag-card checking"><div class="admin-diag-top"><div class="admin-diag-name">Running diagnostics</div><div class="admin-diag-status">No page switching</div></div><div class="admin-diag-detail">This diagnostic runner does not call switchPage(), does not lock Admin, and does not force navigation. Page buttons remain usable after the test.</div></div>';
+      return;
+    }
+    var ok = rows.filter(function(r){ return r.status === 'ok'; }).length;
+    var warn = rows.filter(function(r){ return r.status === 'warn'; }).length;
+    var bad = rows.filter(function(r){ return r.status === 'bad'; }).length;
+    summary.innerHTML = '<span class="admin-diag-chip ok">OK '+ok+'</span><span class="admin-diag-chip warn">Warnings '+warn+'</span><span class="admin-diag-chip bad">Failed '+bad+'</span>';
+    body.innerHTML = rows.map(function(r){
+      return '<div class="admin-diag-card '+esc(r.status)+'"><div class="admin-diag-top"><div class="admin-diag-name">'+esc(r.name)+'</div><div class="admin-diag-status">'+esc(r.label || r.status)+'</div></div><div class="admin-diag-detail">'+esc(r.detail)+'</div></div>';
+    }).join('');
+    var last = document.getElementById('admin-diag-last-run');
+    if(last) last.textContent = 'Last diagnostic: ' + new Date().toLocaleString();
+  }
+
+  async function directDbTest(name, table, rowMaker, insertOnly){
+    var c = client();
+    var ts = now();
+    var id = '__diag_no_nav__' + table + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    if(!c) return {name:name,status:'bad',label:'No Supabase',detail:'Supabase client was not found.'};
+    try{
+      var row = rowMaker(id, ts);
+      var write = insertOnly ? await c.from(table).insert([row]) : await c.from(table).upsert([row], {onConflict:'id'});
+      if(write && write.error) throw write.error;
+      var read = await c.from(table).select('id').eq('id', id).maybeSingle();
+      if(read && read.error) throw read.error;
+      if(!(read && read.data && read.data.id)) throw new Error('No readback row returned.');
+      await c.from(table).delete().eq('id', id);
+      return {name:name,status:'warn',label:'DB Save OK / Page Path Not Proven',detail:'Temporary row was written, read back, and cleaned up in table "'+table+'". This proves Supabase table access only; it does not prove the visible page button workflow.'};
+    }catch(err){
+      try{ await c.from(table).delete().eq('id', id); }catch(e){}
+      return {name:name,status:'bad',label:'Save Failed',detail:friendlyError(err)};
+    }
+  }
+
+  async function employeeSaveFunctionTest(){
+    var c = client();
+    if(!c) return {name:'Employee ID Save Function Path',status:'bad',label:'No Supabase',detail:'Supabase client was not found.'};
+    if(typeof window.saveEmployees !== 'function') return {name:'Employee ID Save Function Path',status:'bad',label:'Missing saveEmployees()',detail:'The Employee ID page global save function is missing.'};
+    var list = employeeList();
+    var emp = (list || []).find(function(e){ return e && employeeId(e); });
+    if(!emp) return {name:'Employee ID Save Function Path',status:'bad',label:'No Employee Loaded',detail:'No employee with an id is loaded, so the Employee ID save function cannot be tested safely.'};
+
+    var id = employeeId(emp);
+    var originalNotes = clean(emp.notes || '');
+    var marker = '[DIAG-NO-NAV-' + Date.now() + ']';
+    var testNotes = (originalNotes ? originalNotes + ' ' : '') + marker;
+    try{
+      emp.notes = testNotes;
+      setEmployeeList(list);
+      var save = await window.saveEmployees();
+      if(save && save.ok === false) throw new Error(save.error || 'saveEmployees returned failure.');
+      var read = await c.from('employees').select('*').eq('id', id).maybeSingle();
+      if(read && read.error) throw read.error;
+      var remoteNotes = clean(read && read.data && (read.data.notes || read.data.note));
+      if(remoteNotes !== testNotes) throw new Error('False save detected. saveEmployees() ran, but Supabase readback did not match the test value. Remote notes="'+remoteNotes+'".');
+
+      emp.notes = originalNotes;
+      setEmployeeList(list);
+      var restore = await window.saveEmployees();
+      if(restore && restore.ok === false) throw new Error('Restore save failed: ' + (restore.error || 'unknown error'));
+      var reread = await c.from('employees').select('*').eq('id', id).maybeSingle();
+      if(reread && reread.error) throw reread.error;
+      var restored = clean(reread && reread.data && (reread.data.notes || reread.data.note));
+      if(restored !== originalNotes) throw new Error('Restore readback failed. Remote notes="'+restored+'" but original was "'+originalNotes+'".');
+      return {name:'Employee ID Save Function Path',status:'ok',label:'Save Function Verified',detail:'Changed one real employee field through the Employee ID saveEmployees() pipeline, read the exact value back from Supabase, restored the original value, and verified restore. No page navigation was used.'};
+    }catch(err){
+      try{ emp.notes = originalNotes; setEmployeeList(list); if(typeof window.saveEmployees === 'function') await window.saveEmployees(); }catch(e){}
+      return {name:'Employee ID Save Function Path',status:'bad',label:'Failed / False Save',detail:friendlyError(err)};
+    }
+  }
+
+  async function buildNoNavResults(){
+    var rows = [];
+    var c = client();
+    rows.push({name:'Supabase Client',status:c?'ok':'bad',label:c?'Client Found':'No Client',detail:c?'Supabase client is available.':'Supabase client is missing.'});
+    rows.push(await employeeSaveFunctionTest());
+    rows.push(await directDbTest('Equipment DB Access','equipment',function(id,ts){ return {id:id,type:'Diagnostic',unit:'DIAG-'+id.slice(-6),name:'Diagnostic Test Unit',tablet_assigned:'',assigned_to:'',stays_charged:'pending',status:'operational',notes:'Temporary no-nav diagnostic row',updated_at:ts,status_changed_at:null,status_changed_day:null}; }));
+    rows.push(await directDbTest('PPE DB Access','ppe_compliance_state',function(id,ts){ return {id:id,state:{diagnostic:true,page:'ppe',ts:ts},updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'}; }));
+    rows.push(await directDbTest('Monthly Training DB Access','training_roster_lists',function(id,ts){ return {id:id,items:[{id:id+'_item',name:'Diagnostic Training Test',shift:'Day',matched:false}],updated_at:ts,updated_by:'ADMIN_DIAGNOSTIC'}; }));
+    rows.push(await directDbTest('Audit DB Access','audit_roster_lists',function(id,ts){ return {id:id,items:[{id:id+'_item',name:'Diagnostic Audit Test',shift:'Day',matched:false}],updated_at:ts,updated_by:'ADMIN_DIAGNOSTIC'}; }));
+    rows.push(await directDbTest('Admin Users DB Access','app_users',function(id,ts){ return {id:id,username:id,display_name:'Diagnostic Test User',password:'diagnostic-only',role:'user',permissions:{},updated_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'}; }));
+    rows.push(await directDbTest('Activity DB Access','activity_log',function(id,ts){ return {id:id,category:'system',message:'Diagnostic save test',details:{diagnostic:true,ts:Date.now()},created_at:ts,last_edited_by:'ADMIN_DIAGNOSTIC'}; }, true));
+    return rows;
+  }
+
+  var running = false;
+  window.runAdminDiagnostics = async function(ev){
+    swallow(ev);
+    if(running) return false;
+    running = true;
+    window.__adminDiagnosticRunning = false;
+    window.__ADMIN_DIAG_PAGE_LOCK = false;
+    renderDiagnostics([], true);
+    try{
+      var rows = await buildNoNavResults();
+      renderDiagnostics(rows, false);
+    }catch(err){
+      renderDiagnostics([{name:'Diagnostic Runner',status:'bad',label:'Runner Error',detail:friendlyError(err)}], false);
+    }finally{
+      window.__adminDiagnosticRunning = false;
+      window.__ADMIN_DIAG_PAGE_LOCK = false;
+      running = false;
+    }
+    return false;
+  };
+
+  window.toggleAdminDiagnostics = function(ev){
+    swallow(ev);
+    var panel = document.getElementById('admin-diagnostic-panel');
+    if(!panel) return false;
+    var open = !panel.classList.contains('open');
+    panel.classList.toggle('open', open);
+    var toggle = document.getElementById('admin-diag-toggle');
+    if(toggle) toggle.textContent = open ? 'Hide Diagnostics' : 'Show Diagnostics';
+    return false;
+  };
+
+  function bind(){
+    window.__adminDiagnosticRunning = false;
+    window.__ADMIN_DIAG_PAGE_LOCK = false;
+    var run = document.getElementById('admin-diag-refresh');
+    var tog = document.getElementById('admin-diag-toggle');
+    var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
+    if(sub) sub.textContent = 'No-navigation diagnostics: tests saves without switching pages or locking Admin.';
+    if(run){
+      run.type = 'button';
+      run.disabled = false;
+      run.textContent = 'Run Diagnostics';
+      run.style.pointerEvents = 'auto';
+      run.onclick = function(ev){ return window.runAdminDiagnostics(ev || window.event); };
+    }
+    if(tog){
+      tog.type = 'button';
+      tog.disabled = false;
+      tog.style.pointerEvents = 'auto';
+      tog.onclick = function(ev){ return window.toggleAdminDiagnostics(ev || window.event); };
+    }
+  }
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle') : null;
+    if(!t) return;
+    swallow(ev);
+    if(t.id === 'admin-diag-refresh') return window.runAdminDiagnostics(ev);
+    if(t.id === 'admin-diag-toggle') return window.toggleAdminDiagnostics(ev);
+  }, true);
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
+  window.addEventListener('load', function(){ setTimeout(bind, 50); setTimeout(bind, 500); });
+})();
+</script>
+
+<style id="employee-page-width-compensation-final-v1">
+/* FINAL EMPLOYEE WIDTH COMPENSATION:
+   The global slider uses CSS zoom. When zoom drops below 100%, a 100%-wide page becomes visually narrower.
+   This expands the Employee ID page's layout width by the inverse scale so the zoomed page still fills the viewport. */
+#page-employees.page,
+#page-employees.page.active{
+  transform-origin: top left !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+#page-employees .toolbar,
+#page-employees .tabs-row,
+#page-employees .table-wrap,
+#page-employees .stats-row,
+#page-employees .header{
+  max-width: 100% !important;
+}
+#page-employees .table-wrap{
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+#page-employees #employee-table-main,
+#page-employees .table-wrap table{
+  width: 100% !important;
+  max-width: 100% !important;
+}
+</style>
+<script id="employee-page-width-compensation-final-v1">
+(function(){
+  'use strict';
+  var SCALE_KEY='eit_app_scale_v1';
+  function clampScale(value){
+    var n=parseInt(value,10);
+    if(!isFinite(n)) n=100;
+    if(n<85) n=85;
+    if(n>130) n=130;
+    return n;
+  }
+  function currentScalePct(){
+    var slider=document.getElementById('global-size-slider');
+    if(slider && slider.value) return clampScale(slider.value);
+    try{return clampScale(localStorage.getItem(SCALE_KEY)||'100');}catch(e){return 100;}
+  }
+  function applyEmployeeWidthLock(value){
+    var pct=clampScale(value||currentScalePct());
+    var scale=pct/100;
+    var emp=document.getElementById('page-employees');
+    if(!emp) return;
+    emp.style.zoom=String(scale);
+    emp.style.setProperty('--app-scale',String(scale));
+    emp.style.setProperty('--employee-table-scale',String(scale));
+    // Compensate for zoom shrink/expand so the visible Employee page remains locked to viewport width.
+    var inverse=(100/scale).toFixed(4)+'%';
+    emp.style.width=inverse;
+    emp.style.maxWidth=inverse;
+    emp.style.minWidth=inverse;
+    emp.style.transformOrigin='top left';
+    document.documentElement.style.setProperty('--app-scale',String(scale));
+    document.documentElement.style.setProperty('--employee-table-scale',String(scale));
+    if(document.body){
+      document.body.style.setProperty('--app-scale',String(scale));
+      document.body.style.setProperty('--employee-table-scale',String(scale));
+    }
+    var out=document.getElementById('global-size-value');
+    if(out) out.textContent=pct+'%';
+  }
+  function bindWidthLock(){
+    var slider=document.getElementById('global-size-slider');
+    if(slider && slider.dataset.employeeWidthLockBound!=='1'){
+      slider.addEventListener('input',function(){setTimeout(function(){applyEmployeeWidthLock(slider.value);},0);},{passive:true});
+      slider.addEventListener('change',function(){setTimeout(function(){applyEmployeeWidthLock(slider.value);},0);},{passive:true});
+      slider.dataset.employeeWidthLockBound='1';
+    }
+    applyEmployeeWidthLock(currentScalePct());
+  }
+  function wrapScaleFunction(){
+    if(typeof window.setGlobalScale==='function' && !window.setGlobalScale.__employeeWidthLockWrapped){
+      var original=window.setGlobalScale;
+      var wrapped=function(value){
+        var result=original.apply(this,arguments);
+        setTimeout(function(){applyEmployeeWidthLock(value||currentScalePct());},0);
+        return result;
+      };
+      wrapped.__employeeWidthLockWrapped=true;
+      window.setGlobalScale=wrapped;
+    }
+  }
+  function boot(){
+    wrapScaleFunction();
+    bindWidthLock();
+    setTimeout(function(){wrapScaleFunction();bindWidthLock();},150);
+    setTimeout(function(){wrapScaleFunction();bindWidthLock();},800);
+    setTimeout(function(){wrapScaleFunction();bindWidthLock();},1800);
+  }
+  window.lockEmployeePageWidthToSlider=applyEmployeeWidthLock;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('load',boot);
+})();
+</script>
+
+
+
+<!-- FINAL FIX: temporary diagnostic navigation shield. Runs only while diagnostics are active, then fully releases page navigation. -->
+<script id="diagnostic-temporary-nav-shield-final-v1">
+(function(){
+  'use strict';
+  if(window.__diagnosticTemporaryNavShieldFinalV1) return;
+  window.__diagnosticTemporaryNavShieldFinalV1 = true;
+
+  function swallow(ev){
     try{
       if(ev){
         ev.preventDefault();
@@ -32336,143 +33709,531 @@ body.employee-card-mode #page-employees .employee-card-actions{
     return false;
   }
 
-  function setActiveAdmin(){
+  function forceAdminVisible(){
     try{
-      var adminPage = document.getElementById('page-admin');
-      if(!adminPage) return;
-      document.querySelectorAll('.page').forEach(function(page){ page.classList.remove('active'); });
-      adminPage.classList.remove('no-view');
-      adminPage.classList.remove('view-only');
-      adminPage.classList.add('active');
-
-      document.querySelectorAll('.page-nav-btn').forEach(function(btn){ btn.classList.remove('active'); });
-      var adminNav = document.getElementById('nav-admin');
-      if(adminNav){
-        adminNav.style.display = '';
-        adminNav.classList.add('active');
+      var admin = document.getElementById('page-admin');
+      if(!admin) return false;
+      document.querySelectorAll('.page').forEach(function(page){
+        var isAdmin = page.id === 'page-admin';
+        page.classList.toggle('active', isAdmin);
+        if(isAdmin){
+          page.style.display = 'block';
+          page.style.visibility = 'visible';
+          page.style.opacity = '1';
+          page.style.height = 'auto';
+          page.style.overflow = 'visible';
+          page.style.pointerEvents = 'auto';
+        }else{
+          page.style.display = 'none';
+        }
+      });
+      document.querySelectorAll('.page-nav-btn').forEach(function(btn){
+        var isAdmin = btn.id === 'nav-admin' || (btn.dataset && btn.dataset.page === 'admin');
+        btn.classList.toggle('active', isAdmin);
+      });
+      var navAdmin = document.getElementById('nav-admin');
+      if(navAdmin){
+        navAdmin.style.display = 'flex';
+        navAdmin.style.visibility = 'visible';
+        navAdmin.style.opacity = '1';
+        navAdmin.style.pointerEvents = 'auto';
       }
-
-      var overlay = document.getElementById('eq-login-overlay');
-      if(overlay && window.__ADMIN_DIAG_PAGE_LOCK){ overlay.style.display = 'none'; }
-
-      var panel = document.getElementById('admin-diagnostic-panel');
-      if(panel){ panel.classList.add('open'); }
-      var toggle = document.getElementById('admin-diag-toggle');
-      if(toggle){ toggle.textContent = 'Hide Diagnostics'; }
-    }catch(e){}
-  }
-
-  function bindButtons(){
-    try{
-      var run = document.getElementById('admin-diag-refresh');
-      var tog = document.getElementById('admin-diag-toggle');
-      var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
-      if(sub){ sub.textContent = 'Live save test. Page lock is active while diagnostics run so the app cannot jump back to the front page.'; }
-      if(run){
-        run.type = 'button';
-        run.textContent = 'Run Save Tests';
-        run.disabled = false;
-        run.style.pointerEvents = 'auto';
-        run.onclick = function(ev){ return window.runAdminDiagnostics(ev || window.event); };
-      }
-      if(tog){
-        tog.type = 'button';
-        tog.disabled = false;
-        tog.style.pointerEvents = 'auto';
-        tog.onclick = function(ev){ return window.toggleAdminDiagnostics(ev || window.event); };
-      }
-    }catch(e){}
-  }
-
-  function startLock(ms){
-    window.__ADMIN_DIAG_PAGE_LOCK = true;
-    setActiveAdmin();
-    bindButtons();
-    if(guardTimer) clearInterval(guardTimer);
-    guardTimer = setInterval(function(){
-      if(!window.__ADMIN_DIAG_PAGE_LOCK){ clearInterval(guardTimer); guardTimer = null; return; }
-      setActiveAdmin();
-    }, 150);
-    if(lockTimer) clearTimeout(lockTimer);
-    lockTimer = setTimeout(function(){
-      window.__ADMIN_DIAG_PAGE_LOCK = false;
-      if(guardTimer){ clearInterval(guardTimer); guardTimer = null; }
-      setActiveAdmin();
-    }, ms || 30000);
-  }
-
-  window.switchPage = function(pageName){
-    if(window.__ADMIN_DIAG_PAGE_LOCK && pageName !== 'admin'){
-      setActiveAdmin();
+      var loginOverlay = document.getElementById('eq-login-overlay');
+      if(loginOverlay) loginOverlay.style.display = 'none';
+      return true;
+    }catch(e){
       return false;
     }
-    if(typeof previousSwitch === 'function'){
-      return previousSwitch.apply(this, arguments);
-    }
-    return undefined;
-  };
+  }
 
+  function releaseDiagnosticFlags(){
+    try{ window.__adminDiagnosticRunning = false; }catch(e){}
+    try{ window.__ADMIN_DIAG_PAGE_LOCK = false; }catch(e){}
+    try{ window.__diagTempRunning = false; }catch(e){}
+  }
+
+  var previousRun = window.runAdminDiagnostics;
   window.runAdminDiagnostics = async function(ev){
-    stopEvent(ev);
-    startLock(45000);
-    var result = false;
+    swallow(ev);
+    if(window.__diagTempRunning) return false;
+
+    window.__diagTempRunning = true;
+    window.__adminDiagnosticRunning = true;
+    window.__ADMIN_DIAG_PAGE_LOCK = false;
+
+    var originalSwitchPage = window.switchPage;
+    var originalHash = location.hash;
+    var guardTimer = null;
+
+    // Critical fix: some older diagnostic/save wrappers call switchPage(firstVisiblePage())
+    // while the test is running. Block only during the diagnostic, then restore the real switchPage.
+    window.switchPage = function(pageName){
+      if(window.__diagTempRunning){
+        forceAdminVisible();
+        return false;
+      }
+      return (typeof originalSwitchPage === 'function') ? originalSwitchPage.apply(this, arguments) : false;
+    };
+
     try{
+      forceAdminVisible();
+      guardTimer = setInterval(forceAdminVisible, 120);
       if(typeof previousRun === 'function'){
-        result = await previousRun.call(this, ev || {preventDefault:function(){}, stopPropagation:function(){}, stopImmediatePropagation:function(){}});
-      }else{
-        var body = document.getElementById('admin-diag-results');
-        var summary = document.getElementById('admin-diag-summary');
-        if(summary) summary.innerHTML = '<span class="admin-diag-chip bad">Diagnostic runner missing</span>';
-        if(body) body.innerHTML = '<div class="admin-diag-card bad"><div class="admin-diag-top"><div class="admin-diag-name">Diagnostic Runner</div><div class="admin-diag-status">Missing</div></div><div class="admin-diag-detail">The diagnostic runner did not load. Reload this corrected file and try again.</div></div>';
+        await Promise.resolve(previousRun.call(this, ev));
       }
     }catch(err){
-      var errorText = String((err && err.message) || err || 'Unknown diagnostic error');
-      var out = document.getElementById('admin-diag-results');
-      var sum = document.getElementById('admin-diag-summary');
-      if(sum) sum.innerHTML = '<span class="admin-diag-chip bad">Diagnostic Error</span>';
-      if(out) out.innerHTML = '<div class="admin-diag-card bad"><div class="admin-diag-top"><div class="admin-diag-name">Diagnostic Runner</div><div class="admin-diag-status">Error</div></div><div class="admin-diag-detail">' + errorText.replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}) + '</div></div>';
+      try{
+        var body = document.getElementById('admin-diag-results');
+        var summary = document.getElementById('admin-diag-summary');
+        var msg = String(err && (err.message || err.details || err.hint) || err || 'Unknown diagnostic error');
+        if(summary) summary.innerHTML = '<span class="admin-diag-chip bad">Runner Error</span>';
+        if(body) body.innerHTML = '<div class="admin-diag-card bad"><div class="admin-diag-top"><div class="admin-diag-name">Diagnostic Runner</div><div class="admin-diag-status">Error</div></div><div class="admin-diag-detail"></div></div>';
+        var detail = body && body.querySelector('.admin-diag-detail');
+        if(detail) detail.textContent = msg;
+      }catch(e){}
+    }finally{
+      if(guardTimer) clearInterval(guardTimer);
+      if(typeof originalSwitchPage === 'function') window.switchPage = originalSwitchPage;
+      releaseDiagnosticFlags();
+      forceAdminVisible();
+      try{ if(originalHash && location.hash !== originalHash) history.replaceState(null, '', location.pathname + location.search + originalHash); }catch(e){}
+      // One more delayed release in case an older async save hook fires after the runner resolves.
+      setTimeout(function(){ releaseDiagnosticFlags(); }, 250);
+      setTimeout(function(){ releaseDiagnosticFlags(); }, 1000);
     }
-    setActiveAdmin();
-    /* Keep the lock briefly after Supabase returns. Some app save hooks rerender permissions/pages after async callbacks. */
-    setTimeout(setActiveAdmin, 250);
-    setTimeout(setActiveAdmin, 1000);
-    setTimeout(function(){
-      window.__ADMIN_DIAG_PAGE_LOCK = false;
-      if(guardTimer){ clearInterval(guardTimer); guardTimer = null; }
-      setActiveAdmin();
-    }, 2500);
     return false;
   };
 
-  window.toggleAdminDiagnostics = function(ev){
-    stopEvent(ev);
-    startLock(8000);
-    try{
-      if(typeof previousToggle === 'function') previousToggle.call(this, ev || {preventDefault:function(){}, stopPropagation:function(){}, stopImmediatePropagation:function(){}});
-      else setActiveAdmin();
-    }catch(e){ setActiveAdmin(); }
-    return false;
-  };
-
-  ['pointerdown','mousedown','mouseup','click','submit'].forEach(function(type){
-    document.addEventListener(type, function(ev){
-      var target = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh,#admin-diag-toggle,#admin-diagnostic-panel') : null;
-      if(!target) return;
-      if(target.id === 'admin-diag-refresh' || target.id === 'admin-diag-toggle'){
-        stopEvent(ev);
-        if(type === 'click'){
-          if(target.id === 'admin-diag-refresh') window.runAdminDiagnostics(ev);
-          if(target.id === 'admin-diag-toggle') window.toggleAdminDiagnostics(ev);
-        }
-      }
-    }, true);
-  });
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', function(){ setTimeout(bindButtons, 50); setTimeout(bindButtons, 500); setTimeout(bindButtons, 1500); });
-  }else{
-    setTimeout(bindButtons, 50); setTimeout(bindButtons, 500); setTimeout(bindButtons, 1500);
+  function bind(){
+    releaseDiagnosticFlags();
+    var run = document.getElementById('admin-diag-refresh');
+    if(run){
+      run.type = 'button';
+      run.disabled = false;
+      run.style.pointerEvents = 'auto';
+      run.onclick = function(ev){ return window.runAdminDiagnostics(ev || window.event); };
+    }
+    var sub = document.querySelector('#admin-diagnostic-panel .admin-sub');
+    if(sub) sub.textContent = 'Diagnostics run with a temporary navigation shield: Admin stays open during the test, and page switching is released afterward.';
   }
+
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest ? ev.target.closest('#admin-diag-refresh') : null;
+    if(!btn) return;
+    swallow(ev);
+    return window.runAdminDiagnostics(ev);
+  }, true);
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
+  window.addEventListener('load', function(){ setTimeout(bind, 50); setTimeout(bind, 500); });
 })();
 </script>
 
+
+<!-- FINAL ADMIN / ACTIVITY PAGE SEPARATION PATCH -->
+<style id="admin-activity-separated-pages-final-css">
+  /* Admin and Activity are independent pages. Never let either page display while the other is active. */
+  body #page-admin.page:not(.active),
+  body #page-activity.page:not(.active){
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+    height:0 !important;
+    overflow:hidden !important;
+  }
+  body #page-admin.page.active,
+  body #page-activity.page.active{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    height:auto !important;
+    overflow:visible !important;
+  }
+  body #nav-admin,
+  body #nav-activity{
+    flex-shrink:0;
+  }
+
+/* BRAND CARD CLEANUP — remove SO badge and live operations label */
+.nav-brand-panel.premium-brand-card{
+  min-width:260px;
+  padding:11px 14px;
+  gap:10px;
+}
+.nav-brand-panel.premium-brand-card .nav-brand-orb,
+.nav-brand-panel.premium-brand-card .nav-brand-kicker{
+  display:none !important;
+}
+.nav-brand-panel.premium-brand-card .nav-brand-copy{
+  min-width:0;
+}
+.nav-brand-panel.premium-brand-card .nav-brand-title{
+  font-size:13px;
+  letter-spacing:2.25px;
+}
+.nav-brand-panel.premium-brand-card .nav-brand-sub{
+  margin-top:4px;
+}
+@media(max-width:760px){
+  .nav-brand-panel.premium-brand-card{min-width:0;padding:10px 12px;}
+}
+</style>
+<script id="admin-activity-separated-pages-final-js">
+(function(){
+  if(window.__ADMIN_ACTIVITY_SEPARATED_FINAL__) return;
+  window.__ADMIN_ACTIVITY_SEPARATED_FINAL__ = true;
+
+  var PAGE_NAMES = ['employees','equipment','audits','ppe','admin','activity'];
+
+  function isAdminSession(){
+    try{
+      if(document.body && document.body.classList.contains('is-admin')) return true;
+      var raw = sessionStorage.getItem('conglobal_current_user_v1');
+      if(raw){
+        var user = JSON.parse(raw);
+        if(user && (user.role === 'admin' || String(user.id || user.username || '').toLowerCase() === 'admin')) return true;
+      }
+      if(String(sessionStorage.getItem('eq_login_username') || '').toLowerCase().indexOf('admin') >= 0) return true;
+      return sessionStorage.getItem('eq_logged_in') === '1' && sessionStorage.getItem('eq_app_logged_in') === 'true';
+    }catch(e){
+      return false;
+    }
+  }
+
+  function clearInlinePageStyles(page, isTarget){
+    if(!page) return;
+    if(isTarget){
+      page.style.removeProperty('display');
+      page.style.removeProperty('visibility');
+      page.style.removeProperty('opacity');
+      page.style.removeProperty('height');
+      page.style.removeProperty('overflow');
+      page.style.removeProperty('pointer-events');
+    }else{
+      page.style.display = 'none';
+      page.style.visibility = 'hidden';
+      page.style.opacity = '0';
+      page.style.height = '0';
+      page.style.overflow = 'hidden';
+      page.style.pointerEvents = 'none';
+    }
+  }
+
+  function runPageHooks(pageName){
+    if(pageName === 'equipment'){
+      try{ if(typeof window.renderEquipment === 'function') window.renderEquipment(); }catch(e){ console.warn('Equipment render failed', e); }
+      try{ if(typeof window.updateEquipmentStatusMeta === 'function') window.updateEquipmentStatusMeta(); }catch(e){}
+    }
+    if(pageName === 'audits'){
+      try{ if(typeof window.initAuditsPage === 'function') window.initAuditsPage(); }catch(e){ console.warn('Audits init failed', e); }
+      try{ if(typeof window.renderAuditsPage === 'function') window.renderAuditsPage(); }catch(e){}
+    }
+    if(pageName === 'admin'){
+      try{ if(typeof window.renderAdminPermissionRows === 'function') window.renderAdminPermissionRows(); }catch(e){}
+      try{ if(typeof window.renderAdminUsers === 'function') window.renderAdminUsers(); }catch(e){}
+      try{ if(typeof window.updateAdminSyncWarning === 'function') window.updateAdminSyncWarning(); }catch(e){}
+    }
+    if(pageName === 'activity'){
+      try{ if(typeof window.renderActivityFeed === 'function') window.renderActivityFeed(); }catch(e){ console.warn('Activity feed render failed', e); }
+    }
+  }
+
+  function showSeparatedPage(pageName){
+    pageName = String(pageName || '').replace(/^page-/, '').replace(/^nav-/, '');
+    if(PAGE_NAMES.indexOf(pageName) < 0) pageName = 'employees';
+
+    if(pageName === 'admin' && !isAdminSession()){
+      var warning = document.getElementById('admin-auth-warning');
+      if(warning){ warning.style.display = 'block'; warning.textContent = 'Admin access only.'; }
+      pageName = 'employees';
+    }
+
+    PAGE_NAMES.forEach(function(name){
+      var page = document.getElementById('page-' + name);
+      var nav = document.getElementById('nav-' + name);
+      var isTarget = name === pageName;
+      if(page){
+        page.classList.toggle('active', isTarget);
+        clearInlinePageStyles(page, isTarget);
+      }
+      if(nav){ nav.classList.toggle('active', isTarget); }
+    });
+
+    /* Make Admin and Activity independent. Activity never opens inside Admin, and Admin never opens inside Activity. */
+    var adminPage = document.getElementById('page-admin');
+    var activityPage = document.getElementById('page-activity');
+    if(adminPage && pageName !== 'admin') clearInlinePageStyles(adminPage, false);
+    if(activityPage && pageName !== 'activity') clearInlinePageStyles(activityPage, false);
+
+    var adminNav = document.getElementById('nav-admin');
+    if(adminNav && isAdminSession()) adminNav.style.display = '';
+    var activityNav = document.getElementById('nav-activity');
+    if(activityNav) activityNav.style.display = '';
+
+    runPageHooks(pageName);
+    return false;
+  }
+
+  window.openSeparatedPage = showSeparatedPage;
+  window.switchPage = showSeparatedPage;
+
+  function bindSeparatedNav(){
+    ['admin','activity'].forEach(function(name){
+      var btn = document.getElementById('nav-' + name);
+      if(!btn || btn.__separatedPageBound) return;
+      btn.__separatedPageBound = true;
+      btn.setAttribute('type','button');
+      btn.onclick = function(evt){
+        if(evt){ evt.preventDefault(); evt.stopPropagation(); }
+        return showSeparatedPage(name);
+      };
+    });
+  }
+
+  document.addEventListener('click', function(evt){
+    var btn = evt.target && evt.target.closest ? evt.target.closest('#nav-admin,#nav-activity') : null;
+    if(!btn) return;
+    evt.preventDefault();
+    evt.stopPropagation();
+    if(evt.stopImmediatePropagation) evt.stopImmediatePropagation();
+    var target = btn.id === 'nav-admin' ? 'admin' : 'activity';
+    showSeparatedPage(target);
+    return false;
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){
+    bindSeparatedNav();
+    setTimeout(bindSeparatedNav, 250);
+    setTimeout(bindSeparatedNav, 1000);
+    var active = document.querySelector('.page.active');
+    showSeparatedPage(active && active.id ? active.id.replace('page-','') : 'employees');
+  });
+
+  setTimeout(bindSeparatedNav, 0);
+})();
+</script>
+
+
+<!-- BRAND CARD SPACE-FILL REFINEMENT — no SO badge, no live operations text -->
+<style id="brand-card-filled-space-final">
+  .nav-brand-panel.premium-brand-card{
+    min-width:320px !important;
+    min-height:58px !important;
+    padding:10px 42px 10px 18px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    overflow:hidden !important;
+  }
+  .nav-brand-panel.premium-brand-card::before{
+    content:'' !important;
+    position:absolute !important;
+    inset:0 !important;
+    background:
+      radial-gradient(circle at 8% 50%, rgba(34,197,94,.24), transparent 35%),
+      radial-gradient(circle at 92% 18%, rgba(74,158,255,.20), transparent 34%),
+      linear-gradient(115deg, rgba(255,255,255,.10), transparent 24%, transparent 67%, rgba(16,185,129,.10)),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.032) 0 1px, transparent 1px 18px) !important;
+    opacity:.72 !important;
+    pointer-events:none !important;
+    z-index:-1 !important;
+  }
+  .nav-brand-panel.premium-brand-card::after{
+    content:'' !important;
+    position:absolute !important;
+    left:16px !important;
+    right:42px !important;
+    bottom:0 !important;
+    height:2px !important;
+    background:linear-gradient(90deg, #22c55e, #4a9eff, rgba(74,158,255,0)) !important;
+    opacity:.9 !important;
+    pointer-events:none !important;
+  }
+  .nav-brand-panel.premium-brand-card .nav-brand-copy{
+    flex:1 1 auto !important;
+    width:100% !important;
+    min-width:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    padding-left:0 !important;
+  }
+  .nav-brand-panel.premium-brand-card .nav-brand-title{
+    font-size:15px !important;
+    line-height:1.05 !important;
+    letter-spacing:2.8px !important;
+    font-weight:900 !important;
+    white-space:nowrap !important;
+    color:#f8fbff !important;
+    text-shadow:0 0 18px rgba(74,158,255,.34) !important;
+  }
+  .nav-brand-panel.premium-brand-card .nav-brand-sub{
+    margin-top:6px !important;
+    font-size:8px !important;
+    line-height:1 !important;
+    letter-spacing:1.75px !important;
+    font-weight:800 !important;
+    color:rgba(191,219,254,.76) !important;
+    white-space:nowrap !important;
+  }
+  .nav-brand-panel.premium-brand-card .nav-brand-status-wrap{
+    position:absolute !important;
+    right:13px !important;
+    top:50% !important;
+    transform:translateY(-50%) !important;
+    width:22px !important;
+    height:22px !important;
+    margin:0 !important;
+  }
+  .nav-brand-panel.premium-brand-card .nav-brand-status-dot{
+    width:9px !important;
+    height:9px !important;
+  }
+  @media(max-width:760px){
+    .nav-brand-panel.premium-brand-card{
+      min-width:0 !important;
+      min-height:52px !important;
+      padding:9px 36px 9px 13px !important;
+    }
+    .nav-brand-panel.premium-brand-card .nav-brand-title{
+      font-size:12px !important;
+      letter-spacing:1.8px !important;
+    }
+    .nav-brand-panel.premium-brand-card .nav-brand-sub{
+      font-size:7px !important;
+      letter-spacing:1.25px !important;
+    }
+  }
+</style>
+
+
+<!-- FINAL PATCH: Compact Activity page toolbar spacing -->
+<style id="activity-page-compact-toolbar-css">
+/* Activity page compact toolbar: removes wasted vertical space in the header controls */
+#page-activity .header{
+  padding:8px 14px !important;
+  min-height:0 !important;
+  align-items:center !important;
+  gap:10px !important;
+}
+#page-activity .header > div:first-child{
+  min-width:190px !important;
+}
+#page-activity .header .header-title{
+  font-size:13px !important;
+  line-height:1.1 !important;
+}
+#page-activity .header .header-sub{
+  display:none !important;
+}
+#page-activity .header > div:last-child{
+  display:grid !important;
+  grid-template-columns:auto minmax(170px,300px) auto auto !important;
+  align-items:center !important;
+  justify-content:end !important;
+  gap:7px !important;
+  margin-left:auto !important;
+  width:auto !important;
+  flex:1 1 auto !important;
+}
+#employee-audit-log-btn{
+  order:1 !important;
+  height:32px !important;
+  padding:5px 12px !important;
+  font-size:10px !important;
+  white-space:nowrap !important;
+}
+#activity-filter{
+  order:2 !important;
+  width:100% !important;
+  min-width:170px !important;
+  max-width:300px !important;
+  height:32px !important;
+  padding:5px 9px !important;
+  font-size:10px !important;
+  margin:0 !important;
+}
+#clear-activity-log-btn{
+  order:3 !important;
+  height:32px !important;
+  padding:5px 11px !important;
+  font-size:10px !important;
+  white-space:nowrap !important;
+  margin:0 !important;
+}
+#activity-trash-bin-btn{
+  order:4 !important;
+  height:32px !important;
+  padding:5px 11px !important;
+  font-size:10px !important;
+  white-space:nowrap !important;
+  margin:0 !important;
+}
+#activity-feed-wrap{
+  padding-top:12px !important;
+}
+@media(max-width:900px){
+  #page-activity .header{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+  }
+  #page-activity .header > div:first-child{
+    min-width:0 !important;
+  }
+  #page-activity .header > div:last-child{
+    width:100% !important;
+    grid-template-columns:1fr 1fr !important;
+    justify-content:stretch !important;
+  }
+  #activity-filter,
+  #employee-audit-log-btn,
+  #clear-activity-log-btn,
+  #activity-trash-bin-btn{
+    width:100% !important;
+    max-width:none !important;
+  }
+}
+@media(max-width:560px){
+  #page-activity .header > div:last-child{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+<script id="activity-page-compact-toolbar-js">
+(function(){
+  function compactActivityToolbar(){
+    var page=document.getElementById('page-activity');
+    if(!page) return;
+    var header=page.querySelector('.header > div:last-child');
+    if(!header) return;
+    var audit=document.getElementById('employee-audit-log-btn');
+    var filter=document.getElementById('activity-filter');
+    var move=document.getElementById('clear-activity-log-btn');
+    var trash=document.getElementById('activity-trash-bin-btn');
+    [audit,filter,move,trash].forEach(function(el){
+      if(el && el.parentElement!==header) header.appendChild(el);
+    });
+    if(audit && filter && audit.nextSibling!==filter) header.insertBefore(audit, filter);
+    if(move && filter && move.previousSibling!==filter) header.insertBefore(move, filter.nextSibling);
+    if(trash) header.appendChild(trash);
+  }
+  document.addEventListener('DOMContentLoaded', compactActivityToolbar);
+  setTimeout(compactActivityToolbar,250);
+  setTimeout(compactActivityToolbar,1000);
+  var oldRender=window.renderActivityFeed;
+  if(typeof oldRender==='function' && !oldRender.__compactToolbarPatched){
+    window.renderActivityFeed=function(){
+      var result=oldRender.apply(this, arguments);
+      setTimeout(compactActivityToolbar,0);
+      return result;
+    };
+    window.renderActivityFeed.__compactToolbarPatched=true;
+  }
+})();
+</script>
+</body>
+</html>
