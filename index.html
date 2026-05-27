@@ -857,7 +857,816 @@ body.slider-active button:hover {
   color: #dbeafe !important;
 }
 
+
+/* Updated review age windows */
+.twoDays{color:#dbeafe;background:rgba(71,85,105,.32);border-color:rgba(148,163,184,.22)}
+.minor{color:#fed7aa;background:rgba(234,88,12,.24);border-color:rgba(251,146,60,.37)}
+.moderate{color:#fde68a;background:rgba(245,158,11,.24);border-color:rgba(251,191,36,.40)}
+.review.moderate{color:#fde68a;background:rgba(245,158,11,.24);border-color:rgba(251,191,36,.42)}
+
+
+/* Review flag thresholds: 3-4 minor, 5-9 moderate, 10+ delete */
+.twoDays {
+  color:#dbeafe !important;
+  background:rgba(71,85,105,.32) !important;
+  border-color:rgba(148,163,184,.22) !important;
+}
+.minor {
+  color:#fed7aa !important;
+  background:rgba(234,88,12,.24) !important;
+  border-color:rgba(251,146,60,.37) !important;
+}
+.moderate {
+  color:#fde68a !important;
+  background:rgba(245,158,11,.24) !important;
+  border-color:rgba(251,191,36,.40) !important;
+}
+.review.minor {
+  color:#fed7aa !important;
+  background:rgba(234,88,12,.24) !important;
+  border-color:rgba(251,146,60,.42) !important;
+}
+.review.moderate {
+  color:#fde68a !important;
+  background:rgba(245,158,11,.24) !important;
+  border-color:rgba(251,191,36,.42) !important;
+}
+.review.delete {
+  color:#fecdd3 !important;
+  background:rgba(225,29,72,.25) !important;
+  border-color:rgba(251,113,133,.42) !important;
+}
+
+
+/* CE bright-orange flag */
+.ce-flag {
+  min-width: 44px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(251,146,60,.30) !important;
+  background: rgba(71,85,105,.28) !important;
+  color: #cbd5e1 !important;
+  font-size: 11px !important;
+  font-weight: 1000 !important;
+  padding: 0 10px !important;
+}
+.ce-flag.active {
+  background: #ff7a00 !important;
+  border-color: #fed7aa !important;
+  color: #451a03 !important;
+  box-shadow: 0 0 0 3px rgba(255,122,0,.18), 0 8px 20px rgba(255,122,0,.22) !important;
+}
+.ce-flag:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+
+/* CE drag-select highlighting */
+.ce-flag.selected {
+  outline: 3px solid rgba(255,255,255,.88) !important;
+  box-shadow:
+    0 0 0 4px rgba(255,122,0,.34),
+    0 8px 22px rgba(255,122,0,.24) !important;
+}
+th button[data-sort="ce"].ce-ready {
+  background: #ff7a00 !important;
+  color: #451a03 !important;
+  border-radius: 9px !important;
+  padding: 5px 8px !important;
+}
+
+
+/* Stable CE drag-select engagement */
+.ce-flag {
+  user-select: none !important;
+  touch-action: none !important;
+}
+body.ce-selecting,
+body.ce-selecting * {
+  user-select: none !important;
+}
+body.ce-selecting {
+  cursor: crosshair;
+}
+.ce-flag.selected {
+  outline: 3px solid rgba(255,255,255,.9) !important;
+  box-shadow:
+    0 0 0 4px rgba(255,122,0,.34),
+    0 8px 22px rgba(255,122,0,.24) !important;
+}
+th button[data-sort="ce"].ce-ready {
+  background: #ff7a00 !important;
+  color: #451a03 !important;
+  border-radius: 9px !important;
+  padding: 5px 8px !important;
+  box-shadow: 0 0 0 3px rgba(255,122,0,.18) !important;
+}
+
+
+/* Full-cell CE column drag selection */
+.ce-cell {
+  min-width: 62px;
+  cursor: crosshair;
+  user-select: none !important;
+  touch-action: none !important;
+  border-left: 1px solid rgba(251,146,60,.18);
+  border-right: 1px solid rgba(251,146,60,.18);
+}
+.ce-cell.selected {
+  background: rgba(255,122,0,.30) !important;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.55);
+}
+.ce-cell.selected .ce-flag {
+  outline: 3px solid rgba(255,255,255,.88) !important;
+  box-shadow:
+    0 0 0 4px rgba(255,122,0,.34),
+    0 8px 22px rgba(255,122,0,.24) !important;
+}
+.ce-flag {
+  user-select: none !important;
+  touch-action: none !important;
+  pointer-events: none;
+}
+body.ce-selecting,
+body.ce-selecting * {
+  user-select: none !important;
+}
+body.ce-selecting {
+  cursor: crosshair;
+}
+th button[data-sort="ce"].ce-ready {
+  background: #ff7a00 !important;
+  color: #451a03 !important;
+  border-radius: 9px !important;
+  padding: 5px 8px !important;
+  box-shadow: 0 0 0 3px rgba(255,122,0,.18) !important;
+}
+
+
+/* CE remove/unapply mode */
+th button[data-sort="ce"].ce-remove-ready {
+  background: #fb7185 !important;
+  color: #450a0a !important;
+  border-radius: 9px !important;
+  padding: 5px 8px !important;
+  box-shadow: 0 0 0 3px rgba(251,113,133,.18) !important;
+}
+
+
+/* Combined Days Old / Event Age + Chas HC */
+.event-age-combo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.event-age-combo strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(15,23,42,.62);
+  border: 1px solid rgba(148,163,184,.22);
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 1000;
+}
+.hc-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(99,102,241,.16);
+  border: 1px solid rgba(129,140,248,.32);
+  color: #e0e7ff;
+  font-size: 11px;
+  font-weight: 1000;
+}
+
+
+/* Copy button inside Chassis column header */
+.chassis-header-cell {
+  min-width: 135px;
+}
+.chassis-header-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+}
+.header-copy-btn {
+  min-height: 24px !important;
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+
+/* Tighter missing-event breakdown cards */
+.breakdown-grid,
+.banner-grid,
+.missing-breakdown-grid,
+.review-breakdown-grid {
+  gap: 10px !important;
+}
+.breakdown-card,
+.banner-card,
+.missing-breakdown-card,
+.review-breakdown-card {
+  min-height: 74px !important;
+  padding: 12px 14px !important;
+}
+.breakdown-card .value,
+.banner-card .value,
+.missing-breakdown-card .value,
+.review-breakdown-card .value {
+  font-size: 30px !important;
+  line-height: 1 !important;
+}
+.breakdown-card small,
+.banner-card small,
+.missing-breakdown-card small,
+.review-breakdown-card small {
+  margin-top: 4px !important;
+}
+
+
+/* Purple banner compact layout */
+.missing-banner .breakdown-card,
+.missing-event-banner .breakdown-card,
+#missingBreakdown .breakdown-card {
+  max-width: 260px !important;
+}
+
+
+/* Final compact missing-event breakdown */
+#banner.banner {
+  padding: 12px !important;
+}
+#bannerGrid.banner-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+}
+#bannerGrid .banner-card {
+  width: auto !important;
+  min-width: 185px !important;
+  max-width: 230px !important;
+  min-height: 64px !important;
+  padding: 9px 11px !important;
+  column-gap: 10px !important;
+  row-gap: 3px !important;
+  flex: 0 0 auto !important;
+}
+#bannerGrid .banner-value {
+  font-size: 28px !important;
+}
+#bannerGrid .banner-label {
+  max-width: 120px !important;
+  font-size: 9px !important;
+}
+#bannerGrid .banner-hint {
+  font-size: 10px !important;
+}
+
+
+/* Archive chassis search */
+.archive-search-card {
+  border: 1px solid rgba(96,165,250,.26);
+  background: rgba(15,23,42,.58);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.archive-search-title {
+  color: #bfdbfe;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 1000;
+  margin-bottom: 10px;
+}
+.archive-search-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+#archiveChassisSearch {
+  width: 100%;
+  border: 1px solid rgba(96,165,250,.32);
+  background: rgba(7,13,30,.86);
+  color: #f8fafc;
+  border-radius: 14px;
+  padding: 11px 12px;
+  font-size: 13px;
+  font-weight: 900;
+}
+#archiveSearchClear {
+  background: rgba(71,85,105,.26);
+  border-color: rgba(148,163,184,.28);
+  color: #dbeafe;
+  min-height: 40px;
+}
+.archive-search-results {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.archive-search-empty {
+  border: 1px dashed rgba(148,163,184,.26);
+  background: rgba(15,23,42,.36);
+  border-radius: 14px;
+  padding: 12px;
+  color: #9fb0cd;
+  font-size: 12px;
+  font-weight: 850;
+}
+.archive-find-card {
+  border: 1px solid rgba(96,165,250,.24);
+  background: rgba(30,41,59,.44);
+  border-radius: 16px;
+  padding: 12px;
+}
+.archive-find-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.archive-find-title {
+  color: #f8fafc;
+  font-weight: 1000;
+  font-size: 14px;
+}
+.archive-find-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.archive-find-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(148,163,184,.20);
+  background: rgba(15,23,42,.58);
+  color: #c7d2fe;
+  border-radius: 999px;
+  padding: 4px 7px;
+  font-size: 10px;
+  font-weight: 950;
+}
+.archive-find-table {
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(148,163,184,.14);
+}
+.archive-find-table table {
+  width: 100%;
+  min-width: 880px;
+}
+.archive-find-table th,
+.archive-find-table td {
+  padding: 7px 8px;
+  font-size: 11px;
+  text-align: center;
+}
+.archive-find-table mark {
+  background: #facc15;
+  color: #451a03;
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+
+/* Archive confirmation modal */
+.archive-confirm-page {
+  width: min(640px, 100%);
+  max-height: min(720px, 92vh);
+  overflow: auto;
+  border: 1px solid rgba(216,180,254,.42);
+  background:
+    radial-gradient(circle at top left, rgba(168,85,247,.22), transparent 22rem),
+    linear-gradient(135deg, rgba(15,23,42,.98), rgba(7,13,30,.98));
+  border-radius: 28px;
+  box-shadow: 0 28px 90px rgba(0,0,0,.55);
+  padding: 22px;
+}
+.archive-confirm-body {
+  display: grid;
+  gap: 12px;
+}
+.archive-confirm-label {
+  color: #bfdbfe;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 1000;
+}
+.archive-confirm-input {
+  width: 100%;
+  border: 1px solid rgba(168,85,247,.38);
+  background: rgba(7,13,30,.88);
+  color: #f8fafc;
+  border-radius: 15px;
+  padding: 12px 13px;
+  font-size: 15px;
+  font-weight: 900;
+}
+.archive-calendar-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(52,211,153,.26);
+  background: rgba(6,78,59,.16);
+  color: #d1fae5;
+  border-radius: 15px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 900;
+}
+.archive-calendar-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: #10b981;
+}
+.archive-confirm-summary {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px;
+}
+.archive-confirm-summary div {
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(15,23,42,.58);
+  border-radius: 14px;
+  padding: 11px;
+}
+.archive-confirm-summary span {
+  display: block;
+  color: #9fb0cd;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 5px;
+}
+.archive-confirm-summary strong {
+  display: block;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+}
+.archive-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+
+/* Archive search quick actions */
+.archive-search-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.archive-search-actions button {
+  min-height: 38px;
+  white-space: nowrap;
+}
+
+
+/* Reliable Missing Event Today Breakdown hide/show */
+#bannerGrid.banner-hidden {
+  display: none !important;
+}
+#banner.banner-collapsed {
+  padding-bottom: 12px !important;
+}
+#banner.banner-collapsed .banner-head {
+  margin-bottom: 0 !important;
+}
+#bannerToggle {
+  cursor: pointer;
+}
+
+
+/* Calendar archive/report integration */
+.calendar-yard-drops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  min-height: 18px;
+}
+.calendar-yard-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border: 1px solid rgba(251,191,36,.32);
+  background: rgba(251,191,36,.14);
+  color: #fde68a;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 1000;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.calendar-report-count {
+  color: #dbeafe;
+  font-size: 9px;
+  font-weight: 1000;
+  text-align: center;
+}
+.calendar-day.has-reports {
+  border-color: rgba(251,191,36,.42);
+  box-shadow: inset 0 0 0 1px rgba(251,191,36,.15);
+}
+.calendar-day.has-reports .calendar-date {
+  cursor: pointer;
+}
+.calendar-open-day {
+  width: 100%;
+  min-height: 24px;
+  padding: 4px 6px !important;
+  font-size: 10px !important;
+  border-radius: 9px !important;
+  background: rgba(37,99,235,.20) !important;
+  border-color: rgba(96,165,250,.38) !important;
+  color: #dbeafe !important;
+}
+.calendar-reports-panel {
+  margin-top: 14px;
+  border: 1px solid rgba(96,165,250,.28);
+  background: rgba(15,23,42,.58);
+  border-radius: 18px;
+  padding: 14px;
+}
+.calendar-reports-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid rgba(148,163,184,.16);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.calendar-reports-kicker {
+  color: #bfdbfe;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 1000;
+}
+.calendar-reports-head h3 {
+  margin: 4px 0 0;
+  color: #f8fafc;
+  font-size: 20px;
+  line-height: 1;
+}
+.calendar-reports-list {
+  display: grid;
+  gap: 10px;
+}
+.calendar-report-card {
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(30,41,59,.46);
+  border-radius: 15px;
+  padding: 12px;
+}
+.calendar-report-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.calendar-report-title {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 1000;
+}
+.calendar-report-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.calendar-report-meta span {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,.20);
+  background: rgba(15,23,42,.54);
+  color: #c7d2fe;
+  padding: 4px 7px;
+  font-size: 10px;
+  font-weight: 950;
+}
+.calendar-report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+
+/* Calendar report inline preview */
+.calendar-report-preview {
+  margin-top: 12px;
+  border: 1px solid rgba(96,165,250,.28);
+  background: rgba(15,23,42,.66);
+  border-radius: 16px;
+  padding: 12px;
+}
+.calendar-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid rgba(148,163,184,.16);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.calendar-preview-head h3 {
+  margin: 4px 0 0;
+  color: #f8fafc;
+  font-size: 18px;
+  line-height: 1;
+}
+.calendar-preview-table {
+  overflow: auto;
+  max-height: 320px;
+  border-radius: 12px;
+  border: 1px solid rgba(148,163,184,.14);
+}
+.calendar-preview-table table {
+  width: 100%;
+  min-width: 920px;
+}
+.calendar-preview-table th,
+.calendar-preview-table td {
+  padding: 7px 8px;
+  font-size: 11px;
+  text-align: center;
+}
+.calendar-preview-summary {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.calendar-preview-summary div {
+  border: 1px solid rgba(148,163,184,.20);
+  background: rgba(30,41,59,.44);
+  border-radius: 12px;
+  padding: 9px;
+}
+.calendar-preview-summary span {
+  display: block;
+  color: #9fb0cd;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 4px;
+  font-weight: 900;
+}
+.calendar-preview-summary strong {
+  display: block;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+}
+@media(max-width:800px){
+  .calendar-preview-summary {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+
+/* Keep Chassis header + Copy button next to each other */
+.chassis-header-cell {
+  min-width: 165px !important;
+  width: 165px !important;
+  white-space: nowrap !important;
+}
+.chassis-header-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  width: 100% !important;
+  white-space: nowrap !important;
+}
+.chassis-header-wrap button[data-sort="chassis"] {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  padding-right: 2px !important;
+}
+.header-copy-btn {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 44px !important;
+  height: 24px !important;
+  padding: 3px 9px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+
+/* Low Warning category before Moderate Warning */
+.low {
+  color:#fed7aa !important;
+  background:rgba(234,88,12,.24) !important;
+  border-color:rgba(251,146,60,.37) !important;
+}
+.review.low {
+  color:#fed7aa !important;
+  background:rgba(234,88,12,.24) !important;
+  border-color:rgba(251,146,60,.42) !important;
+}
+
+
+/* Low Warning: 2-4 days before Moderate Warning */
+.low {
+  color:#fed7aa !important;
+  background:rgba(234,88,12,.24) !important;
+  border-color:rgba(251,146,60,.37) !important;
+}
+.review.low {
+  color:#fed7aa !important;
+  background:rgba(234,88,12,.24) !important;
+  border-color:rgba(251,146,60,.42) !important;
+}
+
+
+/* Tighter Chassis + Copy header alignment */
+.chassis-header-cell {
+  min-width: 145px !important;
+  width: 145px !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+  white-space: nowrap !important;
+}
+.chassis-header-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 3px !important;
+  width: auto !important;
+  white-space: nowrap !important;
+}
+.chassis-header-wrap button[data-sort="chassis"] {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  padding: 0 2px 0 0 !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+.header-copy-btn {
+  flex: 0 0 auto !important;
+  min-width: 36px !important;
+  height: 22px !important;
+  padding: 2px 7px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+
+/* Header order swap: Cloud Sync before Yard Checked */
+.header-controls .cloud-control-card {
+  order: 1;
+}
+.header-controls .yard-card {
+  order: 2;
+}
+.header-controls .calendar-top-btn {
+  order: 3;
+}
+
 </style>
+<!-- REVIEW FLAGS: 3-4 days = Low Warning | 5-9 days = Moderate Warning | 10+ days = Flagged for Delete -->
+<!-- REVIEW FLAGS ACTIVE: 1 day = Event Recorded Yesterday | 2-4 days = Low Warning | 5-9 days = Moderate Warning | 10+ days = Flagged for Delete -->
 </head>
 <body>
 <main class="app">
@@ -867,16 +1676,7 @@ body.slider-active button:hover {
       <h1>Chassis Reconciliation Report</h1>
     </div>
     <div class="header-controls">
-      <div class="yard-card">
-        <label id="yardLabel" for="yardSelect">Yard checked 05/26/2026</label>
-        <select id="yardSelect"></select>
-      </div>
-      <button id="calendarTopBtn" class="calendar-top-btn" type="button">
-        <span>📅</span>
-        <strong>Calendar</strong>
-      </button>
-
-      <div class="cloud-control-card">
+<div class="cloud-control-card">
         <div class="cloud-control-title">Cloud Sync</div>
         <span id="cloudStatus" class="cloud-status top-cloud-status">Cloud: connecting</span>
         <div class="cloud-control-actions">
@@ -884,7 +1684,14 @@ body.slider-active button:hover {
           <button id="reloadCloudBtn" class="btn-reload-cloud" type="button">Reload Cloud</button>
         </div>
       </div>
-
+<button id="calendarTopBtn" class="calendar-top-btn" type="button">
+        <span>📅</span>
+        <strong>Calendar</strong>
+      </button>
+<div class="yard-card">
+        <label id="yardLabel" for="yardSelect">Yard checked 05/26/2026</label>
+        <select id="yardSelect"></select>
+      </div>
 </div>
   </section>
 
@@ -916,13 +1723,12 @@ body.slider-active button:hover {
             <h2>Reconciliation Table</h2>
             <div id="showing" class="showing">Showing 0 of 0 chassis</div>
           </div>
-          <button id="copyChassisBtn" class="btn-copy-chassis" type="button">Copy Chassis</button>
-        </div>
+</div>
         <div class="actions">
-          <button id="exportBtn" class="btn-export">⇩ Export</button>
           <button id="emailReportBtn" class="btn-email">✉ Send Email Report</button>
 <button id="archiveBtn" class="btn-archive">▣ Archive</button>
           <button id="archivePageBtn" class="btn-archive">▣ Archive Page</button>
+          <button id="exportBtn" class="btn-export">⇩ Export</button>
           <button id="importBtn" class="btn-import">↥ Import Files</button>
           <button id="restoreBtn" class="btn-restore">↺ Restore</button>
           <button id="clearBtn" class="btn-clear">🗑 Clear</button>
@@ -933,15 +1739,21 @@ body.slider-active button:hover {
         <table>
           <thead><tr>
             <th><button data-sort="id"># ↕</button></th>
-            <th><button data-sort="chassis">Chassis ↕</button></th>
+            <th class="chassis-header-cell">
+              <div class="chassis-header-wrap">
+                <button data-sort="chassis">Chassis ↕</button>
+                <button id="copyChassisBtn" class="btn-copy-chassis header-copy-btn" type="button">Copy</button>
+              </div>
+            </th>
             <th><button data-sort="yardChecked">Yard Checked ↕</button></th>
-            <th><button data-sort="eventAge">Event Age ↕</button></th>
-            <th><button data-sort="daysOld">Days Old ↕</button></th>
+            <th><button data-sort="daysOld">Days Old / Event Age ↕</button></th>
             <th><button data-sort="location">Location ↕</button></th>
             <th><button data-sort="eventDate">Event Date ↕</button></th>
+            <th><button data-sort="hc">Chas HC ↕</button></th>
             <th><button data-sort="event">Event Type ↕</button></th>
             <th><button data-sort="reviewFlag">Review Flag ↕</button></th>
             <th><button data-sort="pool">Pool ↕</button></th>
+            <th><button data-sort="ce">CE ↕</button></th>
           </tr></thead>
           <tbody id="tbody"></tbody>
         </table>
@@ -966,6 +1778,16 @@ body.slider-active button:hover {
       <div class="archive-summary-card"><span>Current On Hand</span><strong id="archiveOnHand">0</strong></div>
       <div class="archive-summary-card"><span>Current Missing</span><strong id="archiveMissing">0</strong></div>
     </div>
+    
+    <div class="archive-search-card">
+      <div class="archive-search-title">Search Archived Chassis</div>
+      <div class="archive-search-row">
+        <input id="archiveChassisSearch" type="text" placeholder="Search chassis across saved archives..." autocomplete="off">
+        <button id="archiveSearchClear" type="button">Clear</button>
+      </div>
+      <div id="archiveSearchResults" class="archive-search-results"></div>
+    </div>
+
     <div class="archive-list-card">
       <div class="archive-list-title">Archive Library</div>
       <div id="archiveLibraryList" class="archive-library-list"></div>
@@ -1043,6 +1865,61 @@ body.slider-active button:hover {
     </div>
 
     <div id="yardCalendarGrid" class="calendar-grid"></div>
+    <div id="calendarReportsPanel" class="calendar-reports-panel" style="display:none">
+      <div class="calendar-reports-head">
+        <div>
+          <div class="calendar-reports-kicker">Reports for Day</div>
+          <h3 id="calendarReportsTitle">Selected Day</h3>
+        </div>
+        <button id="calendarReportsClose" type="button">Close</button>
+      </div>
+      <div id="calendarReportsList" class="calendar-reports-list"></div>
+      <div id="calendarReportPreview" class="calendar-report-preview" style="display:none">
+        <div class="calendar-preview-head">
+          <div>
+            <div class="calendar-reports-kicker">Preview</div>
+            <h3 id="calendarPreviewTitle">Archive Preview</h3>
+          </div>
+          <button id="calendarPreviewClose" type="button">Close Preview</button>
+        </div>
+        <div id="calendarPreviewBody"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="archiveConfirmModal" class="archive-modal" aria-hidden="true">
+  <div class="archive-confirm-page">
+    <div class="archive-page-head">
+      <div>
+        <div class="archive-kicker">Confirm Archive</div>
+        <h2>Archive Current Page?</h2>
+        <p>Name this archive before saving. You can also mark today as yard checked on the calendar.</p>
+      </div>
+      <button id="archiveConfirmClose" class="archive-close" type="button">Close</button>
+    </div>
+
+    <div class="archive-confirm-body">
+      <label class="archive-confirm-label" for="archiveConfirmName">Archive Name</label>
+      <input id="archiveConfirmName" class="archive-confirm-input" type="text" autocomplete="off">
+
+      <label class="archive-calendar-check">
+        <input id="archiveCheckToday" type="checkbox">
+        <span>Mark current day ✓ on Yard Check Calendar</span>
+      </label>
+
+      <div class="archive-confirm-summary">
+        <div><span>Rows</span><strong id="archiveConfirmRows">0</strong></div>
+        <div><span>Missing Event Today</span><strong id="archiveConfirmMissing">0</strong></div>
+        <div><span>Delete Flags</span><strong id="archiveConfirmDelete">0</strong></div>
+      </div>
+
+      <div class="archive-confirm-actions">
+        <button id="archiveConfirmCancel" class="archive-cancel-name-btn" type="button">Cancel</button>
+        <button id="archiveConfirmSave" class="archive-save-name-btn" type="button">Confirm Archive</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1050,8 +1927,8 @@ body.slider-active button:hover {
 <script>
 const REPORT_TODAY = new Date("2026-05-26T00:00:00");
 const YARD_OPTIONS = ["TGRP 40/45","DCLI 40/45","TGRP & DCLP 20","FLEXI 40/20","SCLU 53/SNBZ 40","UP 53"];
-const INITIAL_ROWS = [[1, "DCNZ 408123", "DIRT - DIRT", "DCLP", "05/26/2026 14:52:56", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [2, "MSCZ 250233", "DIRT - DIRT", "DCLP", "05/25/2026 10:38:03", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [3, "DCNZ 606582", "DIRT - DIRT", "DCLP", "05/26/2026 14:18:03", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [4, "DECZ 405057", "DIRT - DIRT", "DCLP", "05/26/2026 14:26:57", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [5, "DCLZ 710906", "D - D - 31", "DCLP", "05/26/2026 07:15:29", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [6, "APMZ 418007", "L - L - 47", "DCLP", "05/26/2026 10:25:13", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [7, "DCLZ 404907", "06801 - 801", "DCLP", "05/25/2026 14:08:49", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [8, "MAEC 685232", "R - R - 16", "DCLP", "05/26/2026 15:36:10", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [9, "APMZ 700430", "P - P - 12", "DCLP", "05/26/2026 15:38:54", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [10, "DECZ 403537", "O - O - 19", "DCLP", "05/26/2026 10:27:59", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [11, "DECZ 405061", "I - I - 17", "DCLP", "05/26/2026 08:56:57", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [12, "MSCZ 140062", "06801 - 801", "DCLP", "05/25/2026 13:47:51", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [13, "DCNZ 415587", "I - I - 41", "DCLP", "05/26/2026 09:01:30", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [14, "APMZ 406229", "DIRT - DIRT", "DCLP", "05/26/2026 14:39:56", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [15, "APMZ 412267", "M - M - 157", "DCLP", "05/26/2026 05:33:52", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [16, "POCZ 2001", "06802 - 802", "DCLP", "05/13/2026 06:44:05", "BARE(Breaking a Container/Chassis pair)", "Q40", "Current(Park - UP Storage)"], [17, "MSCZ 140374", "N - N - 79", "DCLP", "05/26/2026 15:42:55", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [18, "APMZ 417637", "N - N - 36", "DCLP", "05/26/2026 15:52:09", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [19, "DCLZ 700661", "06802 - 802", "DCLP", "05/05/2026 10:44:55", "MTUP(Match Update)", "Q40", "Current(Park - UP Storage)"], [20, "APMZ 405743", "M - M - 101", "DCLP", "05/26/2026 05:47:46", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [21, "APMZ 400723", "M - M - 7", "DCLP", "05/01/2026 07:22:04", "MTUP(Match Update)", "Q40", "Current(Park - UP Storage)"], [22, "NEDZ 409299", "O - O - 43", "DCLP", "05/26/2026 10:30:39", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [23, "APMZ 410315", "DIRT - DIRT", "DCLP", "05/26/2026 14:54:24", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [24, "PONZ 457834", "I - I - 42", "DCLP", "05/26/2026 09:01:40", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [25, "PONZ 456960", "DIRT - DIRT", "DCLP", "05/26/2026 14:14:13", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [26, "DCLZ 405582", "DIRT - DIRT", "DCLP", "05/26/2026 14:42:44", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [27, "DCLZ 404028", "DIRT - DIRT", "DCLP", "05/26/2026 14:10:26", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [28, "DCLZ 413504", "I - I - 7", "DCLP", "05/26/2026 08:53:39", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [29, "MAEC 710520", "L - L - 15", "DCLP", "05/26/2026 09:56:27", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [30, "APMZ 405404", "M - M - 124", "DCLP", "05/26/2026 05:43:23", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [31, "POCZ 400837", "D - D - 29", "DCLP", "05/26/2026 07:15:41", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [32, "DCLZ 420214", "N - N - 19", "DCLP", "05/26/2026 15:54:56", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [33, "MAEC 666017", "06801 - 801", "DCLP", "05/26/2026 09:31:54", "MOVE(Move)", "Q40", "Current(Park - UP Storage)"], [34, "DCSZ 711698", "N - N - 75", "DCLP", "05/26/2026 15:43:15", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [35, "DCNZ 507068", "I - I - 3", "DCLP", "05/26/2026 08:53:17", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [36, "MAEC 734047", "SHOP - SHOP", "DCLP", "05/25/2026 13:42:12", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [37, "IPPZ 400539", "06801 - 801", "DCLP", "05/24/2026 23:44:01", "BARE(Breaking a Container/Chassis pair)", "Q40", "Current(Park - UP Storage)"], [38, "MAEC 450170", "S - S - 31", "DCLP", "05/26/2026 15:33:15", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [39, "MAEC 623989", "M - M - 100", "DCLP", "05/26/2026 05:47:51", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [40, "MSCZ 423300", "DIRT - DIRT", "DCLP", "05/26/2026 14:49:27", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [41, "APMZ 406431", "DIRT - DIRT", "DCLP", "05/26/2026 14:10:41", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [42, "DCLZ 700401", "N - N - 10", "DCLP", "05/26/2026 15:55:40", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [43, "MAEC 731800", "I - I - 24", "DCLP", "05/21/2026 07:56:15", "INUP(Inventory Update)", "Q40", "Current(Park - UP Storage)"], [44, "DCNZ 405302", "DIRT - DIRT", "DCLP", "05/26/2026 14:15:58", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [45, "DCLZ 406511", "DIRT - DIRT", "DCLP", "05/26/2026 14:16:31", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [46, "MSCZ 423689", "DIRT - DIRT", "DCLP", "05/26/2026 14:35:01", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [47, "APMZ 411438", "BOWL - BOWL", "DCLP", "05/18/2026 14:02:53", "MTUP(Match Update)", "Q40", "Current(Park - UP Storage)"], [48, "MSCZ 451085", "06808 - 808", "DCLP", "05/08/2026 20:13:28", "BARE(Breaking a Container/Chassis pair)", "Q40", "Current(Park - UP Storage)"], [49, "DCNZ 498301", "DIRT - DIRT", "DCLP", "05/26/2026 14:21:10", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [50, "DECZ 403469", "K - K - 10", "DCLP", "05/26/2026 09:29:26", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [51, "APMZ 426111", "M - M - 99", "DCLP", "05/26/2026 05:47:55", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [52, "APMZ 701853", "I - I - 28", "DCLP", "05/26/2026 09:00:00", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"]].map(([id,chassis,location,pool,eventDate,event,kind,status])=>({id,chassis,location,pool,eventDate,event,kind,status}));
-let tableRows=[...INITIAL_ROWS], query="", filter="all", sortConfig={key:"id",direction:"asc"}, showBanner=true, clearArmed=false, clearTimer=null, importedFileArchives=[], archiveDeleteArmedId=null, archiveDeleteTimer=null, recycleDeleteArmedId=null, recycleDeleteTimer=null, emptyRecycleArmed=false, emptyRecycleTimer=null, recycleExpanded=false, archiveRenameId=null;
+const INITIAL_ROWS = [[1, "DCNZ 408123", "DIRT - DIRT", "DCLP", "05/26/2026 14:52:56", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [2, "MSCZ 250233", "DIRT - DIRT", "DCLP", "05/25/2026 10:38:03", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [3, "DCNZ 606582", "DIRT - DIRT", "DCLP", "05/26/2026 14:18:03", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [4, "DECZ 405057", "DIRT - DIRT", "DCLP", "05/26/2026 14:26:57", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [5, "DCLZ 710906", "D - D - 31", "DCLP", "05/26/2026 07:15:29", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [6, "APMZ 418007", "L - L - 47", "DCLP", "05/26/2026 10:25:13", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [7, "DCLZ 404907", "06801 - 801", "DCLP", "05/25/2026 14:08:49", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [8, "MAEC 685232", "R - R - 16", "DCLP", "05/26/2026 15:36:10", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [9, "APMZ 700430", "P - P - 12", "DCLP", "05/26/2026 15:38:54", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [10, "DECZ 403537", "O - O - 19", "DCLP", "05/26/2026 10:27:59", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [11, "DECZ 405061", "I - I - 17", "DCLP", "05/26/2026 08:56:57", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [12, "MSCZ 140062", "06801 - 801", "DCLP", "05/25/2026 13:47:51", "PKUP(Parking Update)", "Q40", "Current(Park - UP Storage)"], [13, "DCNZ 415587", "I - I - 41", "DCLP", "05/26/2026 09:01:30", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [14, "APMZ 406229", "DIRT - DIRT", "DCLP", "05/26/2026 14:39:56", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [15, "APMZ 412267", "M - M - 157", "DCLP", "05/26/2026 05:33:52", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [16, "POCZ 2001", "06802 - 802", "DCLP", "05/13/2026 06:44:05", "BARE(Breaking a Container/Chassis pair)", "Q40", "Current(Park - UP Storage)"], [17, "MSCZ 140374", "N - N - 79", "DCLP", "05/26/2026 15:42:55", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [18, "APMZ 417637", "N - N - 36", "DCLP", "05/26/2026 15:52:09", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [19, "DCLZ 700661", "06802 - 802", "DCLP", "05/05/2026 10:44:55", "MTUP(Match Update)", "Q40", "Current(Park - UP Storage)"], [20, "APMZ 405743", "M - M - 101", "DCLP", "05/26/2026 05:47:46", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [21, "APMZ 400723", "M - M - 7", "DCLP", "05/01/2026 07:22:04", "MTUP(Match Update)", "Q40", "Current(Park - UP Storage)"], [22, "NEDZ 409299", "O - O - 43", "DCLP", "05/26/2026 10:30:39", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [23, "APMZ 410315", "DIRT - DIRT", "DCLP", "05/26/2026 14:54:24", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [24, "PONZ 457834", "I - I - 42", "DCLP", "05/26/2026 09:01:40", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [25, "PONZ 456960", "DIRT - DIRT", "DCLP", "05/26/2026 14:14:13", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [26, "DCLZ 405582", "DIRT - DIRT", "DCLP", "05/26/2026 14:42:44", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [27, "DCLZ 404028", "DIRT - DIRT", "DCLP", "05/26/2026 14:10:26", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [28, "DCLZ 413504", "I - I - 7", "DCLP", "05/26/2026 08:53:39", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [29, "MAEC 710520", "L - L - 15", "DCLP", "05/26/2026 09:56:27", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [30, "APMZ 405404", "M - M - 124", "DCLP", "05/26/2026 05:43:23", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [31, "POCZ 400837", "D - D - 29", "DCLP", "05/26/2026 07:15:41", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [32, "DCLZ 420214", "N - N - 19", "DCLP", "05/26/2026 15:54:56", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [33, "MAEC 666017", "06801 - 801", "DCLP", "05/26/2026 09:31:54", "MOVE(Move)", "Q40", "Current(Park - UP Storage)"], [34, "DCSZ 711698", "N - N - 75", "DCLP", "05/26/2026 15:43:15", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [35, "DCNZ 507068", "I - I - 3", "DCLP", "05/26/2026 08:53:17", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [36, "MAEC 734047", "SHOP - SHOP", "DCLP", "05/25/2026 13:42:12", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [37, "IPPZ 400539", "06801 - 801", "DCLP", "05/24/2026 23:44:01", "BARE(Breaking a Container/Chassis pair)", "Q40", "Current(Park - UP Storage)"], [38, "MAEC 450170", "S - S - 31", "DCLP", "05/26/2026 15:33:15", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [39, "MAEC 623989", "M - M - 100", "DCLP", "05/26/2026 05:47:51", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [40, "MSCZ 423300", "DIRT - DIRT", "DCLP", "05/26/2026 14:49:27", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [41, "APMZ 406431", "DIRT - DIRT", "DCLP", "05/26/2026 14:10:41", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [42, "DCLZ 700401", "N - N - 10", "DCLP", "05/26/2026 15:55:40", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [43, "MAEC 731800", "I - I - 24", "DCLP", "05/21/2026 07:56:15", "INUP(Inventory Update)", "Q40", "Current(Park - UP Storage)"], [44, "DCNZ 405302", "DIRT - DIRT", "DCLP", "05/26/2026 14:15:58", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [45, "DCLZ 406511", "DIRT - DIRT", "DCLP", "05/26/2026 14:16:31", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [46, "MSCZ 423689", "DIRT - DIRT", "DCLP", "05/26/2026 14:35:01", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [47, "APMZ 411438", "BOWL - BOWL", "DCLP", "05/18/2026 14:02:53", "MTUP(Match Update)", "Q40", "Current(Park - UP Storage)"], [48, "MSCZ 451085", "06808 - 808", "DCLP", "05/08/2026 20:13:28", "BARE(Breaking a Container/Chassis pair)", "Q40", "Current(Park - UP Storage)"], [49, "DCNZ 498301", "DIRT - DIRT", "DCLP", "05/26/2026 14:21:10", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [50, "DECZ 403469", "K - K - 10", "DCLP", "05/26/2026 09:29:26", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [51, "APMZ 426111", "M - M - 99", "DCLP", "05/26/2026 05:47:55", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"], [52, "APMZ 701853", "I - I - 28", "DCLP", "05/26/2026 09:00:00", "YCCO(Yard Check)", "Q40", "Current(Park - UP Storage)"]].map(([id,chassis,location,pool,eventDate,event,kind,status])=>({id,chassis,location,pool,eventDate,event,kind,status,hc:"",ce:false}));
+let tableRows=[...INITIAL_ROWS], query="", filter="all", sortConfig={key:"id",direction:"asc"}, showBanner=true, clearArmed=false, clearTimer=null, importedFileArchives=[], archiveDeleteArmedId=null, archiveDeleteTimer=null, recycleDeleteArmedId=null, recycleDeleteTimer=null, emptyRecycleArmed=false, emptyRecycleTimer=null, recycleExpanded=false, archiveRenameId=null, ceSelectedIds=new Set(), ceDragActive=false, ceDragStartId=null;
 const filters=[["all","On Hand"],["yardChecked","Yard Checked"],["today","Event Today"],["missingToday","Missing Event Today"],["tenPlus","Flagged for Delete"],["notChecked","Not Yard Checked"]];
 const $=id=>document.getElementById(id);
 
@@ -1124,7 +2001,7 @@ function makeCurrentSessionSnapshot(){
   };
 }
 function applyCurrentSessionSnapshot(snap){
-  if(!snap||!Array.isArray(snap.tableRows))return false;
+  if(!snap||!Array.isArray(snap.tableRows)||snap.tableRows.length===0)return false;
   tableRows=snap.tableRows;
   query=snap.query||"";
   filter=snap.filter||"all";
@@ -1208,27 +2085,210 @@ async function reloadCloudState(){
 function parseEventDate(v){const [dp,tp="00:00:00"]=String(v||"").split(" ");const [m,d,y]=dp.split("/").map(Number);const [hh,mm,ss]=tp.split(":").map(Number);return new Date(y||1900,(m||1)-1,d||1,hh||0,mm||0,ss||0)}
 function formatDateShort(v){const [dp,tp=""]=String(v||"").split(" ");const [m,d]=dp.split("/");const [hh,mm]=tp.split(":");return `${m||"--"}/${d||"--"}${hh&&mm?` ${hh}:${mm}`:""}`}
 function daysOld(r){const ev=parseEventDate(r.eventDate);const mid=new Date(ev.getFullYear(),ev.getMonth(),ev.getDate());return Math.floor((REPORT_TODAY-mid)/86400000)}
-function ageBucket(r){const d=daysOld(r);if(d===0)return{key:"today",label:"Today"};if(d===1)return{key:"yesterday",label:"Yesterday"};if(d>=2&&d<=10)return{key:"twoTen",label:"2–10 Days"};return{key:"tenPlus",label:"10+ Days"}}
+function ageBucket(r){
+  const d=daysOld(r);
+  if(d===0)return{key:"today",label:"Today"};
+  if(d===1)return{key:"yesterday",label:"Yesterday"};
+  if(d>=2&&d<=4)return{key:"low",label:"2–4 Days"};
+  if(d>=5&&d<=9)return{key:"moderate",label:"5–9 Days"};
+  return{key:"tenPlus",label:"10+ Days"};
+}
 function isYardChecked(r){const e=String(r.event||"").toLowerCase();return e.includes("ycco")||e.includes("tcco")||e.includes("yard check")}
-function issueTag(r){const b=ageBucket(r);const has=!!(r.event&&r.eventDate);if(b.key==="tenPlus")return{label:"Flagged for Delete",cls:"delete"};if(b.key==="yesterday"&&has)return{label:"Event Recorded<br>Yesterday",cls:"yesterday"};if(b.key==="twoTen"&&has)return{label:"Minor Warning",cls:"minor"};if(!isYardChecked(r)&&b.key==="today"&&has)return{label:"Yard Check ❌<br>Event Today ✅",cls:"warn"};if(!isYardChecked(r)&&b.key!=="today")return{label:"Not Yard Checked",cls:"warn"};return{label:"OK",cls:"ok"}}
+function issueTag(r){
+  const d=daysOld(r);
+  const has=!!(r.event&&r.eventDate);
+
+  if(has && d>=10)return{label:"Flagged for Delete",cls:"delete"};
+  if(has && d>=5 && d<=9)return{label:"Moderate Warning",cls:"moderate"};
+  if(has && d>=2 && d<=4)return{label:"Low Warning",cls:"low"};
+  if(has && d===1)return{label:"Event Recorded<br>Yesterday",cls:"yesterday"};
+
+  if(!isYardChecked(r)&&d===0&&has)return{label:"Yard Check ❌<br>Event Today ✅",cls:"warn"};
+  if(!isYardChecked(r)&&!has)return{label:"Not Yard Checked",cls:"warn"};
+
+  return{label:"OK",cls:"ok"};
+}
 function locClass(loc){if(loc.includes("DIRT"))return"dirt";if(loc.includes("SHOP"))return"shop";if(loc.includes("068"))return"rail";if(loc.includes("BOWL"))return"bowl";return"normal"}
-function enrich(){return tableRows.map(r=>{const bucket=ageBucket(r);return{...r,daysOld:daysOld(r),bucket,yardChecked:isYardChecked(r),issue:issueTag(r)}})}
+function enrich(){return tableRows.map(r=>{const bucket=ageBucket(r);return{...r,hc:r.hc||"",ce:!!r.ce,daysOld:daysOld(r),bucket,yardChecked:isYardChecked(r),issue:issueTag(r)}})}
 function applyFilters(rows){return rows.filter(r=>{const text=Object.values(r).join(" ").toLowerCase();const q=text.includes(query.toLowerCase());const f=filter==="all"||(filter==="yardChecked"&&r.yardChecked)||(filter==="today"&&r.bucket.key==="today")||(filter==="missingToday"&&r.bucket.key!=="today")||(filter==="tenPlus"&&r.bucket.key==="tenPlus")||(filter==="notChecked"&&!r.yardChecked);return q&&f})}
-function sortRows(rows){const val=(r,k)=>k==="yardChecked"?(r.yardChecked?1:0):k==="eventAge"?r.daysOld:k==="eventDate"?parseEventDate(r.eventDate).getTime():k==="reviewFlag"?r.issue.label.replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,""):r[k]??"";return [...rows].sort((a,b)=>{const av=val(a,sortConfig.key),bv=val(b,sortConfig.key);if(typeof av==="number"&&typeof bv==="number")return sortConfig.direction==="asc"?av-bv:bv-av;const res=String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:"base"});return sortConfig.direction==="asc"?res:-res})}
+function sortRows(rows){const val=(r,k)=>k==="yardChecked"?(r.yardChecked?1:0):k==="eventAge"?r.daysOld:k==="eventDate"?parseEventDate(r.eventDate).getTime():k==="reviewFlag"?r.issue.label.replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,""):k==="ce"?(r.ce?1:0):r[k]??"";return [...rows].sort((a,b)=>{const av=val(a,sortConfig.key),bv=val(b,sortConfig.key);if(typeof av==="number"&&typeof bv==="number")return sortConfig.direction==="asc"?av-bv:bv-av;const res=String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:"base"});return sortConfig.direction==="asc"?res:-res})}
 function currentRows(){return sortRows(applyFilters(enrich()))}
-function reviewWindow(label){const c=String(label).replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,"");if(c.includes("Yesterday"))return"1 day old";if(c.includes("Minor"))return"2–10 days old";if(c.includes("Delete"))return"10+ days old";if(c.includes("Yard Check"))return"event today";if(c.includes("Not Yard"))return"outside today";return"current"}
-function renderBanner(e){const grid=$("bannerGrid");const missing=e.filter(r=>r.bucket.key!=="today");const counts=missing.reduce((a,r)=>{const lab=r.issue.label.replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,"");a[lab]=(a[lab]||0)+1;return a},{});const preferred=["Event Recorded / Yesterday","Minor Warning","Flagged for Delete","Not Yard Checked","OK"];const labels=[...new Set([...preferred,...Object.keys(counts)])].filter(l=>counts[l]);grid.style.display=showBanner?"grid":"none";$("bannerToggle").textContent=showBanner?"Hide":"Show";grid.innerHTML=labels.length?labels.map(l=>`<div class="banner-card"><div class="banner-label">${l}</div><div class="banner-value">${counts[l]}</div><div class="banner-hint">${reviewWindow(l)}</div></div>`).join(""):`<div class="banner-card"><div class="banner-label">No Missing Events</div><div class="banner-value">0</div><div class="banner-hint">all current</div></div>`}
+function reviewWindow(label){
+  const c=String(label).replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,"");
+  if(c.includes("Yesterday"))return"1 day old";
+  if(c.includes("Low"))return"2–4 days old";
+  if(c.includes("Moderate"))return"5–9 days old";
+  if(c.includes("Delete"))return"10+ days old";
+  if(c.includes("Yard Check"))return"event today";
+  if(c.includes("Not Yard"))return"outside today";
+  return"current";
+}
+function renderBanner(e){
+  const banner=$("banner");
+  const grid=$("bannerGrid");
+  const toggle=$("bannerToggle");
+  const missing=e.filter(r=>r.bucket.key!=="today");
+  const counts=missing.reduce((a,r)=>{
+    const lab=r.issue.label.replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,"");
+    if(lab==="OK"||lab==="Current")return a;
+    a[lab]=(a[lab]||0)+1;
+    return a;
+  },{});
+
+  const preferred=["Event Recorded / Yesterday","Low Warning","Moderate Warning","Flagged for Delete","Not Yard Checked"];
+  const labels=[...new Set([...preferred,...Object.keys(counts)])].filter(l=>counts[l]&&l!=="OK"&&l!=="Current");
+
+  if(toggle)toggle.textContent=showBanner?"Hide":"Show";
+  if(banner)banner.classList.toggle("banner-collapsed",!showBanner);
+  if(grid)grid.classList.toggle("banner-hidden",!showBanner);
+
+  if(!grid)return;
+  grid.innerHTML=labels.length
+    ? labels.map(l=>`<div class="banner-card"><div class="banner-label">${l}</div><div class="banner-value">${counts[l]}</div><div class="banner-hint">${reviewWindow(l)}</div></div>`).join("")
+    : `<div class="banner-card"><div class="banner-label">No Missing Events</div><div class="banner-value">0</div><div class="banner-hint">all current</div></div>`;
+}
 function renderMetrics(e){const total=e.length,today=e.filter(r=>r.bucket.key==="today").length;$("mOnHand").textContent=total;$("mYard").textContent=e.filter(r=>r.yardChecked).length;$("mToday").textContent=`${today}/${total}`;$("mMissing").textContent=e.filter(r=>r.bucket.key!=="today").length;$("mDelete").textContent=e.filter(r=>r.bucket.key==="tenPlus").length}
 function renderFilters(){$("filters").innerHTML=filters.map(([k,l])=>`<button class="${filter===k?"active":""}" data-filter="${k}">${l}</button>`).join("");document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;if(filter==="today")sortConfig={key:"eventDate",direction:"desc"};if(filter==="missingToday")sortConfig={key:"eventDate",direction:"asc"};render()})}
-function renderSort(){document.querySelectorAll("th button").forEach(b=>{const k=b.dataset.sort,base=b.textContent.replace(/[↑↓↕]/g,"").trim(),arr=sortConfig.key===k?(sortConfig.direction==="asc"?"↑":"↓"):"↕";b.textContent=`${base} ${arr}`;b.classList.toggle("sorted",sortConfig.key===k)})}
-function renderTable(rows,total){$("showing").textContent=`Showing ${rows.length} of ${total} chassis`;$("empty").style.display=rows.length?"none":"block";$("tbody").innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td><span class="chassis">${r.chassis}<span class="kind">${r.kind}</span></span></td><td><span class="chip ${r.yardChecked?"yes":"no"}">${r.yardChecked?"⊙ Yes":"No"}</span></td><td><span class="chip ${r.bucket.key}">${r.bucket.label}</span></td><td><strong>${r.daysOld}</strong></td><td><span class="loc ${locClass(r.location)}">⌾ ${r.location}</span></td><td>◷ ${formatDateShort(r.eventDate)}</td><td><span class="event-type">${r.event}</span></td><td><span class="review ${r.issue.cls}">${r.issue.label}</span></td><td><span class="pool">${r.pool}</span></td></tr>`).join("")}
+function renderSort(){
+  document.querySelectorAll("th button[data-sort]").forEach(b=>{
+    const k=b.dataset.sort;
+    if(k==="ce"&&ceSelectedIds.size>0){
+      b.textContent=`${selectedCeAction()==="remove"?"CE Remove":"CE Apply"} (${ceSelectedIds.size})`;
+      b.classList.add("ce-ready");
+      b.classList.toggle("ce-remove-ready",selectedCeAction()==="remove");
+      b.classList.remove("sorted");
+      return;
+    }
+    const base=k==="ce"?"CE":b.textContent.replace(/[↑↓↕]/g,"").replace(/CE (Apply|Remove) \(\d+\)/,"CE").trim();
+    const arr=sortConfig.key===k?(sortConfig.direction==="asc"?"↑":"↓"):"↕";
+    b.textContent=`${base} ${arr}`;
+    b.classList.toggle("sorted",sortConfig.key===k);
+    if(k==="ce"){b.classList.remove("ce-ready");b.classList.remove("ce-remove-ready");}
+  });
+}
+function renderTable(rows,total){
+  $("showing").textContent=`Showing ${rows.length} of ${total} chassis`;
+  $("empty").style.display=rows.length?"none":"block";
+  $("tbody").innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td><span class="chassis">${r.chassis}<span class="kind">${r.kind}</span></span></td><td><span class="chip ${r.yardChecked?"yes":"no"}">${r.yardChecked?"⊙ Yes":"No"}</span></td><td><span class="event-age-combo"><strong>${r.daysOld}d</strong><span class="chip ${r.bucket.key}">${r.bucket.label}</span></span></td><td><span class="loc ${locClass(r.location)}">⌾ ${r.location}</span></td><td>◷ ${formatDateShort(r.eventDate)}</td><td><span class="hc-chip">${r.hc||"—"}</span></td><td><span class="event-type">${r.event}</span></td><td><span class="review ${r.issue.cls}">${r.issue.label}</span></td><td><span class="pool">${r.pool}</span></td><td class="ce-cell ${ceSelectedIds.has(String(r.id))?'selected':''}" data-ce-cell="${r.id}"><button type="button" class="ce-flag ${r.ce?'active':''} ${ceSelectedIds.has(String(r.id))?'selected':''}" data-ce-toggle="${r.id}">${r.ce?'CE':'—'}</button></td></tr>`).join("");
+
+  document.querySelectorAll("[data-ce-cell]").forEach(cell=>{
+    cell.onpointerdown=(event)=>startCeDrag(cell.dataset.ceCell,event);
+    cell.onpointerenter=(event)=>extendCeDrag(cell.dataset.ceCell,event);
+    cell.onpointermove=(event)=>extendCeDrag(cell.dataset.ceCell,event);
+  });
+
+  document.querySelectorAll("[data-ce-toggle]").forEach(btn=>{
+    btn.onclick=(event)=>{
+      event.preventDefault();
+      event.stopPropagation();
+      startCeDrag(btn.dataset.ceToggle,event);
+    };
+  });
+
+  document.onpointermove=handleCePointerMove;
+  document.onpointerup=stopCeDrag;
+  document.onpointercancel=stopCeDrag;
+  renderCeSelectionVisuals();
+}
+function getVisibleCeIds(){
+  return currentRows().map(r=>String(r.id));
+}
+function selectCeRange(fromId,toId){
+  const ids=getVisibleCeIds();
+  const a=ids.indexOf(String(fromId));
+  const b=ids.indexOf(String(toId));
+  if(a===-1||b===-1)return;
+  const start=Math.min(a,b), end=Math.max(a,b);
+  for(let i=start;i<=end;i++) ceSelectedIds.add(ids[i]);
+  renderCeSelectionVisuals();
+}
+function clearCeSelection(){
+  ceSelectedIds.clear();
+  renderCeSelectionVisuals();
+}
+function renderCeSelectionVisuals(){
+  document.querySelectorAll("[data-ce-cell]").forEach(cell=>{
+    cell.classList.toggle("selected",ceSelectedIds.has(String(cell.dataset.ceCell)));
+  });
+  document.querySelectorAll("[data-ce-toggle]").forEach(btn=>{
+    btn.classList.toggle("selected",ceSelectedIds.has(String(btn.dataset.ceToggle)));
+  });
+  const ceHeader=document.querySelector('th button[data-sort="ce"]');
+  if(ceHeader){
+    ceHeader.classList.toggle("ce-ready",ceSelectedIds.size>0);ceHeader.classList.toggle("ce-remove-ready",ceSelectedIds.size>0&&selectedCeAction()==="remove");
+    ceHeader.textContent=ceSelectedIds.size>0?`${selectedCeAction()==="remove"?"CE Remove":"CE Apply"} (${ceSelectedIds.size})`:`CE ↕`;
+  }
+}
+function selectedCeRows(){
+  return tableRows.filter(r=>ceSelectedIds.has(String(r.id)));
+}
+function selectedCeAction(){
+  const rows=selectedCeRows();
+  if(!rows.length)return "apply";
+  return rows.every(r=>!!r.ce) ? "remove" : "apply";
+}
+function applySelectedCeFlags(){
+  if(!ceSelectedIds.size)return false;
+  const action=selectedCeAction();
+  tableRows=tableRows.map(r=>{
+    if(!ceSelectedIds.has(String(r.id)))return r;
+    return {...r,ce:action==="apply"};
+  });
+  const count=ceSelectedIds.size;
+  ceSelectedIds.clear();
+  ceDragActive=false;
+  ceDragStartId=null;
+  render();
+  queueCloudSave();
+  if(typeof showArchiveToast==="function"){
+    showArchiveToast(action==="apply" ? `${count} CE values applied.` : `${count} CE values removed.`);
+  }
+  return true;
+}
+function toggleCeFlag(id){
+  const key=String(id);
+  tableRows=tableRows.map(r=>String(r.id)===key?{...r,ce:!r.ce}:r);
+  render();
+  queueCloudSave();
+}
+function startCeDrag(id,event){
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  ceDragActive=true;
+  ceDragStartId=String(id);
+  ceSelectedIds.add(String(id));
+  document.body.classList.add("ce-selecting");
+  renderCeSelectionVisuals();
+}
+function extendCeDrag(id,event){
+  if(!ceDragActive)return;
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  selectCeRange(ceDragStartId,id);
+}
+function stopCeDrag(){
+  ceDragActive=false;
+  ceDragStartId=null;
+  document.body.classList.remove("ce-selecting");
+}
+function handleCePointerMove(event){
+  if(!ceDragActive)return;
+  const el=document.elementFromPoint(event.clientX,event.clientY);
+  const cell=el?.closest?.("[data-ce-cell]");
+  if(cell)extendCeDrag(cell.dataset.ceCell,event);
+}
+
 function render(){const e=enrich(),rows=sortRows(applyFilters(e));renderMetrics(e);renderBanner(e);renderFilters();renderSort();renderTable(rows,e.length)}
 function normHeader(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
 function pick(row,map,cands,fallback=-1){
   const h=cands.map(normHeader).find(n=>map[n]!==undefined);
   return h?row[map[h]]??"—":fallback>=0?row[fallback]??"—":"—";
 }
-function normalizeRows(data,start){if(data.length<2)return[];const headers=data[0].map(h=>normHeader(h));const map=headers.reduce((a,h,i)=>{a[h]=i;return a},{});return data.slice(1).map((row,i)=>{const chassis=pick(row,map,["chassis","chassis #","chassis number","chassis id"],1);const location=pick(row,map,["location","loc","current location","parking location"],2);const pool=pick(row,map,["chas pool","chassis pool","pool"],3);const eventDate=pick(row,map,["event date","event datetime","date"],4);const event=pick(row,map,["event","event type","last event"],5);const kind=pick(row,map,["chas car kind","chas/car kind","chassis car kind","car kind","chas kind","kind","chassis kind","type"],-1);const status=pick(row,map,["status","current status"],7);return{id:start+i+1,chassis:String(chassis||"—"),location:String(location||"—"),pool:String(pool||"—"),eventDate:String(eventDate||"01/01/1900 00:00:00"),event:String(event||"—"),kind:String(kind&&kind!==eventDate?kind:"—"),status:String(status||"—")}}).filter(r=>r.chassis!=="—")}
+function normalizeRows(data,start){if(data.length<2)return[];const headers=data[0].map(h=>normHeader(h));const map=headers.reduce((a,h,i)=>{a[h]=i;return a},{});return data.slice(1).map((row,i)=>{const chassis=pick(row,map,["chassis","chassis #","chassis number","chassis id"],1);const location=pick(row,map,["location","loc","current location","parking location"],2);const pool=pick(row,map,["chas pool","chassis pool","pool"],3);const eventDate=pick(row,map,["event date","event datetime","date"],4);const event=pick(row,map,["event","event type","last event"],5);const kind=pick(row,map,["chas car kind","chas/car kind","chassis car kind","car kind","chas kind","kind","chassis kind","type"],-1);const hc=pick(row,map,["chas hc","hc","chassis hc","hazard class","height code"],-1);const status=pick(row,map,["status","current status"],7);const ce=pick(row,map,["ce","c/e","customer exception","ce flag"],-1);return{id:start+i+1,chassis:String(chassis||"—"),location:String(location||"—"),pool:String(pool||"—"),eventDate:String(eventDate||"01/01/1900 00:00:00"),event:String(event||"—"),kind:String(kind&&kind!==eventDate?kind:"—"),status:String(status||"—")}}).filter(r=>r.chassis!=="—")}
 async function importFiles(files){const all=[];importedFileArchives=[];for(const file of [...files]){let dataUrl='';try{dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}catch{}importedFileArchives.push({name:file.name,size:file.size,type:file.type,lastModified:file.lastModified,dataUrl});const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:"array",cellDates:false});const sh=wb.Sheets[wb.SheetNames[0]];const data=XLSX.utils.sheet_to_json(sh,{header:1,defval:""}).filter(r=>r.some(Boolean));all.push(...normalizeRows(data,all.length))}tableRows=all.map((r,i)=>({...r,id:i+1}));query="";filter="all";sortConfig={key:"id",direction:"asc"};$("search").value="";render();queueCloudSave()}
 function csvEscape(value){
   const s=String(value ?? "");
@@ -1243,7 +2303,7 @@ function downloadBlob(blob, filename){
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
 }
 function downloadImportReadyCsv(rows){
-  const headers=["Chassis","Location","Chas Pool","Event Date","Event","Chas Car Kind","Status","Yard Checked","Event Age","Days Old","Review Flag"];
+  const headers=["Chassis","Location","Chas Pool","Event Date","Event","Chas Car Kind","Chas HC","Status","CE","Yard Checked","Event Age","Days Old","Review Flag"];
   const csv=[headers.join(","),...rows.map(row=>headers.map(h=>csvEscape(row[h])).join(","))].join("\n");
   downloadBlob(new Blob([csv],{type:"text/csv;charset=utf-8"}),`chassis-reconciliation-import-ready-${new Date().toISOString().slice(0,10)}.csv`);
 }
@@ -1333,7 +2393,16 @@ function makeSnapshot(){
   const e=enrich();
   return {id:makeArchiveId(),name:makeArchiveName(),savedAt:new Date().toISOString(),reportDate:REPORT_TODAY.toISOString(),yardChecked:$("yardSelect")?.value||"",tableRows,query,filter,sortConfig,showBanner,importedFileArchives,counts:{onHand:e.length,yardChecked:e.filter(r=>r.yardChecked).length,eventToday:e.filter(r=>r.bucket.key==="today").length,missingToday:e.filter(r=>r.bucket.key!=="today").length,flaggedDelete:e.filter(r=>r.bucket.key==="tenPlus").length}};
 }
-function saveSnapshot(){const snap=makeSnapshot();const customName=prompt("Name this archive:",snap.name);if(customName&&customName.trim())snap.name=customName.trim();const list=getArchiveList();list.unshift(snap);saveArchiveList(list);localStorage.setItem("chassisReconciliationLastArchive",JSON.stringify(snap));return snap}
+function saveSnapshot(customName){
+  const snap=makeSnapshot();
+  snap.yardChecked=snap.yardChecked||$("yardSelect")?.value||"";
+  if(customName&&String(customName).trim())snap.name=String(customName).trim();
+  const list=getArchiveList();
+  list.unshift(snap);
+  saveArchiveList(list);
+  localStorage.setItem("chassisReconciliationLastArchive",JSON.stringify(snap));
+  return snap;
+}
 function makeReportWorkbookRows(){
   return currentRows().map(r=>({
     "Chassis": r.chassis,
@@ -1342,15 +2411,100 @@ function makeReportWorkbookRows(){
     "Event Date": r.eventDate,
     "Event": r.event,
     "Chas Car Kind": r.kind,
+    "Chas HC": r.hc || "",
     "Status": r.status || "",
+    "CE": r.ce ? "CE" : "",
     "Yard Checked": r.yardChecked ? "Yes" : "No",
     "Event Age": r.bucket.label,
     "Days Old": r.daysOld,
     "Review Flag": r.issue.label.replace(/<br\s*\/?>/g," / ").replace(/<[^>]+>/g,"")
   }));
 }
-async function archivePage(){
-  const snap=saveSnapshot();
+
+function todayCalendarKey(){
+  const d=new Date();
+  return dateKey(d.getFullYear(),d.getMonth(),d.getDate());
+}
+function reportCalendarKey(){
+  return dateKey(REPORT_TODAY.getFullYear(),REPORT_TODAY.getMonth(),REPORT_TODAY.getDate());
+}
+function currentReportDateKey(){
+  return todayCalendarKey();
+}
+function markCurrentDayCheckedFromArchive(){
+  const state=getYardCalendarState();
+  const key=todayCalendarKey();
+  state[key]="check";
+
+  // Also mark the report date if it differs from the actual current date.
+  const reportKey=reportCalendarKey();
+  state[reportKey]="check";
+
+  saveYardCalendarState(state);
+
+  // Force cloud write for calendar immediately instead of waiting on other archive saves.
+  try{
+    cloudUpsert(CLOUD_KEYS.calendar,state)
+      .then(()=>setCloudStatus("Cloud: calendar saved","ok"))
+      .catch(err=>{console.error("Calendar cloud save failed",err);setCloudStatus("Cloud: calendar save failed","err")});
+  }catch(err){
+    console.error("Calendar save failed",err);
+  }
+
+  renderYardCalendar();
+}
+function openArchiveConfirmModal(){
+  const modal=$("archiveConfirmModal");
+  if(!modal)return archivePage();
+
+  const e=enrich();
+  const name=makeArchiveName();
+  const input=$("archiveConfirmName");
+  const check=$("archiveCheckToday");
+  if(input)input.value=name;
+  if(check)check.checked=false;
+  const rows=$("archiveConfirmRows");
+  const missing=$("archiveConfirmMissing");
+  const del=$("archiveConfirmDelete");
+  if(rows)rows.textContent=e.length;
+  if(missing)missing.textContent=e.filter(r=>r.bucket.key!=="today").length;
+  if(del)del.textContent=e.filter(r=>r.bucket.key==="tenPlus").length;
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+  setTimeout(()=>input?.focus(),40);
+}
+function closeArchiveConfirmModal(){
+  const modal=$("archiveConfirmModal");
+  if(!modal)return;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+}
+async function confirmArchiveSave(){
+  const input=$("archiveConfirmName");
+  const check=$("archiveCheckToday");
+  const shouldMarkCalendar=!!check?.checked;
+  const name=(input?.value||"").trim()||makeArchiveName();
+  const btn=$("archiveConfirmSave");
+
+  if(btn){btn.textContent="Archiving...";btn.disabled=true}
+
+  if(shouldMarkCalendar){
+    markCurrentDayCheckedFromArchive();
+  }
+
+  await archivePage({name});
+
+  if(shouldMarkCalendar){
+    markCurrentDayCheckedFromArchive();
+    if(typeof showArchiveToast==="function")showArchiveToast("Archive saved and today marked checked on calendar.");
+  }
+
+  if(btn){btn.textContent="Confirm Archive";btn.disabled=false}
+  closeArchiveConfirmModal();
+}
+async function archivePage(options={}){
+  const snap=saveSnapshot(options.name);
   try{
     if(typeof XLSX!=="undefined" && typeof JSZip!=="undefined"){
       const folderDate=new Date().toISOString().slice(0,10);
@@ -1367,9 +2521,9 @@ async function archivePage(){
       else originals.file("README.txt","No imported source files were captured in this session.");
       const blob=await zip.generateAsync({type:"blob"});
       const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`chassis-reconciliation-archive-${safeDate}.zip`; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-      showArchiveToast("Archive saved as a new session and download started.");saveAllCloudState();saveAllCloudState();
+      showArchiveToast("Archive saved as a new session and download started.");saveAllCloudState();
     } else {
-      showArchiveToast("Archive saved as a new session.");saveAllCloudState();saveAllCloudState();
+      showArchiveToast("Archive saved as a new session.");saveAllCloudState();
     }
   }catch(err){console.error(err);showArchiveToast("Archive saved. Download could not start.")}
 }
@@ -1581,6 +2735,149 @@ function cancelArchiveRename(){
 }
 
 
+
+let archiveSearchQuery="";
+
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+function highlightArchiveMatch(value, query){
+  const safe=escapeHtml(value);
+  const q=String(query||"").trim();
+  if(!q)return safe;
+  const esc=q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  return safe.replace(new RegExp(esc,"ig"), m=>`<mark>${m}</mark>`);
+}
+function archiveRowMatches(row, query){
+  const q=String(query||"").trim().toLowerCase();
+  if(!q)return false;
+  return [
+    row.chassis,row.kind,row.hc,row.location,row.eventDate,row.event,row.pool,row.status,row.ce?"CE":""
+  ].some(v=>String(v??"").toLowerCase().includes(q));
+}
+function searchAllArchives(query){
+  const q=String(query||"").trim();
+  if(!q)return [];
+  const sources=[
+    ...getArchiveList().map(a=>({...a,_source:"Archive"})),
+    ...getRecycleBin().map(a=>({...a,_source:"Recycle Bin"}))
+  ];
+  const results=[];
+  sources.forEach(archive=>{
+    const matches=(archive.tableRows||[]).filter(row=>archiveRowMatches(row,q));
+    if(matches.length){
+      results.push({archive,matches});
+    }
+  });
+  return results;
+}
+function renderArchiveSearchResults(){
+  const box=$("archiveSearchResults");
+  const input=$("archiveChassisSearch");
+  if(!box)return;
+  const query=input?input.value.trim():archiveSearchQuery;
+  archiveSearchQuery=query;
+
+  if(!query){
+    box.innerHTML=`<div class="archive-search-empty">Type a chassis number to search every saved archive and recycle-bin file.</div>`;
+    return;
+  }
+
+  const results=searchAllArchives(query);
+  if(!results.length){
+    box.innerHTML=`<div class="archive-search-empty">No archive matches found for “${escapeHtml(query)}”.</div>`;
+    return;
+  }
+
+  box.innerHTML=results.map(({archive,matches})=>{
+    const example=matches[0]||{};
+    const count=matches.length;
+    const c=archive.counts||{};
+    return `<div class="archive-find-card">
+      <div class="archive-find-head">
+        <div>
+          <div class="archive-find-title">${escapeHtml(archive.name||"Chassis Archive")}</div>
+          <div class="archive-find-meta">
+            <span class="archive-find-pill">${escapeHtml(archive._source||"Archive")}</span>
+            <span class="archive-find-pill">${archive.savedAt?new Date(archive.savedAt).toLocaleString():"No saved date"}</span>
+            <span class="archive-find-pill">${count} match${count===1?"":"es"}</span>
+            <span class="archive-find-pill">On Hand: ${c.onHand ?? (archive.tableRows||[]).length}</span>
+          </div>
+        </div>
+        <div class="archive-search-actions">
+          <button class="archive-view-btn" type="button" data-search-quick="${archive.id}">Quick View Archive</button>
+          <button class="archive-restore-btn" type="button" data-search-restore="${archive.id}">Restore</button>
+        </div>
+      </div>
+      <div class="archive-find-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Example Chassis</th>
+              <th>Kind</th>
+              <th>HC</th>
+              <th>Location</th>
+              <th>Event Date</th>
+              <th>Event</th>
+              <th>Pool</th>
+              <th>CE</th>
+              <th>All Matches</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${highlightArchiveMatch(example.chassis||"",query)}</td>
+              <td>${highlightArchiveMatch(example.kind||"",query)}</td>
+              <td>${highlightArchiveMatch(example.hc||"",query)}</td>
+              <td>${highlightArchiveMatch(example.location||"",query)}</td>
+              <td>${highlightArchiveMatch(formatDateShort(example.eventDate||""),query)}</td>
+              <td>${highlightArchiveMatch(example.event||"",query)}</td>
+              <td>${highlightArchiveMatch(example.pool||"",query)}</td>
+              <td>${example.ce?"CE":"—"}</td>
+              <td>${matches.slice(0,10).map(r=>highlightArchiveMatch(r.chassis||"",query)).join(", ")}${matches.length>10?" …":""}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join("");
+
+  box.querySelectorAll("[data-search-quick]").forEach(btn=>{
+    btn.onclick=()=>{
+      const id=btn.dataset.searchQuick;
+      const inArchive=getArchiveList().some(a=>a.id===id);
+      if(inArchive)quickViewArchive(id);
+      else quickViewRecycledArchive(id);
+    };
+  });
+  box.querySelectorAll("[data-search-restore]").forEach(btn=>{
+    btn.onclick=()=>{
+      const id=btn.dataset.searchRestore;
+      const inArchive=getArchiveList().some(a=>a.id===id);
+      if(inArchive)restoreArchiveById(id);
+      else restoreArchiveFromRecycleBin(id);
+    };
+  });
+}
+function setupArchiveSearch(){
+  const input=$("archiveChassisSearch");
+  const clear=$("archiveSearchClear");
+  if(input){
+    if(archiveSearchQuery && input.value!==archiveSearchQuery)input.value=archiveSearchQuery;
+    input.oninput=renderArchiveSearchResults;
+  }
+  if(clear){
+    clear.onclick=()=>{
+      if(input)input.value="";
+      archiveSearchQuery="";
+      renderArchiveSearchResults();
+    };
+  }
+  renderArchiveSearchResults();
+}
+
 function renderArchiveModal(){
   const list=getArchiveList(), recycle=getRecycleBin(), e=enrich(), lib=$("archiveLibraryList"), recycleLib=$("archiveRecycleList");
   const recycleBadge=$("recycleCountBadge"), recycleBody=$("archiveRecycleBody"), recycleToggleText=$("recycleToggleText"), recycleToggleHeader=$("recycleToggleHeader");
@@ -1657,6 +2954,7 @@ function renderArchiveModal(){
     emptyBtn.onclick=emptyRecycleBin;
   }
 
+  setupArchiveSearch();
   if(!recycleLib)return;
   if(!recycle.length){
     recycleLib.innerHTML=`<div class="recycle-empty">Recycle Bin is empty. Deleted archives will appear here before they are permanently removed.</div>`;
@@ -1683,6 +2981,8 @@ function renderArchiveModal(){
       </div>
     </div>`;
   }).join("");
+
+  setupArchiveSearch();
 
   recycleLib.onclick=(event)=>{
     const viewBtn=event.target.closest("[data-recycle-view]");
@@ -1906,12 +3206,160 @@ function closeYardCalendar(){
   modal.classList.remove("show");
   modal.setAttribute("aria-hidden","true");
 }
+
+function keyFromAnyDate(value){
+  if(!value)return "";
+  const d=new Date(value);
+  if(!Number.isNaN(d.getTime()))return dateKey(d.getFullYear(),d.getMonth(),d.getDate());
+  const m=String(value).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(m){
+    const y=Number(m[3].length===2?"20"+m[3]:m[3]);
+    return dateKey(y,Number(m[1])-1,Number(m[2]));
+  }
+  return "";
+}
+function getArchiveDayKey(archive){
+  return keyFromAnyDate(archive.reportDate)||keyFromAnyDate(archive.savedAt);
+}
+function getCalendarReportsByDay(){
+  const map={};
+  const add=(archive,source)=>{
+    const key=getArchiveDayKey(archive);
+    if(!key)return;
+    if(!map[key])map[key]=[];
+    map[key].push({...archive,_source:source});
+  };
+  getArchiveList().forEach(a=>add(a,"Archive"));
+  getRecycleBin().forEach(a=>add(a,"Recycle Bin"));
+  return map;
+}
+function uniqueYardDropsForDay(key){
+  const reports=(getCalendarReportsByDay()[key]||[]);
+  const drops=[];
+  reports.forEach(r=>{
+    const raw=String(r.yardChecked||"").trim();
+    if(raw && !drops.some(x=>x.toLowerCase()===raw.toLowerCase()))drops.push(raw);
+  });
+  return drops;
+}
+
+function getCalendarArchiveById(id,source){
+  if(source==="Recycle Bin")return getRecycleBin().find(a=>a.id===id);
+  return getArchiveList().find(a=>a.id===id);
+}
+function previewCalendarArchive(id,source){
+  const snap=getCalendarArchiveById(id,source);
+  const panel=$("calendarReportPreview");
+  const title=$("calendarPreviewTitle");
+  const body=$("calendarPreviewBody");
+  if(!snap||!panel||!title||!body)return;
+
+  const rows=(snap.tableRows||[]).slice(0,40);
+  const c=snap.counts||{};
+  title.textContent=snap.name||"Chassis Archive";
+
+  body.innerHTML=`
+    <div class="calendar-preview-summary">
+      <div><span>Source</span><strong>${escapeHtml(source||"Archive")}</strong></div>
+      <div><span>On Hand</span><strong>${c.onHand ?? (snap.tableRows||[]).length}</strong></div>
+      <div><span>Missing</span><strong>${c.missingToday ?? "—"}</strong></div>
+      <div><span>Yard Drop</span><strong>${escapeHtml(snap.yardChecked||"—")}</strong></div>
+    </div>
+    <div class="calendar-preview-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Chassis</th>
+            <th>Kind</th>
+            <th>HC</th>
+            <th>Location</th>
+            <th>Event Date</th>
+            <th>Event</th>
+            <th>Pool</th>
+            <th>CE</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r=>`<tr>
+            <td>${escapeHtml(r.chassis||"")}</td>
+            <td>${escapeHtml(r.kind||"")}</td>
+            <td>${escapeHtml(r.hc||"")}</td>
+            <td>${escapeHtml(r.location||"")}</td>
+            <td>${escapeHtml(formatDateShort(r.eventDate||""))}</td>
+            <td>${escapeHtml(r.event||"")}</td>
+            <td>${escapeHtml(r.pool||"")}</td>
+            <td>${r.ce?"CE":"—"}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+  panel.style.display="block";
+  panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function openCalendarReportsForDay(key){
+  const panel=$("calendarReportsPanel");
+  const title=$("calendarReportsTitle");
+  const list=$("calendarReportsList");
+  if(!panel||!title||!list)return;
+
+  const reports=(getCalendarReportsByDay()[key]||[]);
+  const pretty=(()=>{const [y,m,d]=key.split("-");return `${m}/${d}/${y}`})();
+  title.textContent=pretty;
+  panel.style.display="block";
+  const preview=$("calendarReportPreview"); if(preview)preview.style.display="none";
+
+  if(!reports.length){
+    list.innerHTML=`<div class="archive-search-empty">No archived reports found for ${pretty}.</div>`;
+    return;
+  }
+
+  list.innerHTML=reports.map(r=>{
+    const c=r.counts||{};
+    const drops=uniqueYardDropsForDay(key);
+    return `<div class="calendar-report-card">
+      <div class="calendar-report-top">
+        <div>
+          <div class="calendar-report-title">${escapeHtml(r.name||"Chassis Archive")}</div>
+          <div class="calendar-report-meta">
+            <span>${escapeHtml(r._source||"Archive")}</span>
+            <span>${r.savedAt?new Date(r.savedAt).toLocaleString():"No saved time"}</span>
+            <span>Yard: ${escapeHtml(r.yardChecked||"—")}</span>
+            <span>On Hand: ${c.onHand ?? (r.tableRows||[]).length}</span>
+            <span>Missing: ${c.missingToday ?? "—"}</span>
+            ${drops.length>1?`<span>Day Drops: ${drops.map(escapeHtml).join(" / ")}</span>`:""}
+          </div>
+        </div>
+        <div class="calendar-report-actions">
+          <button class="archive-view-btn" type="button" data-cal-preview="${r.id}" data-cal-source="${r._source}">Preview</button>
+          <button class="archive-restore-btn" type="button" data-cal-restore="${r.id}" data-cal-source="${r._source}">Restore</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  list.querySelectorAll("[data-cal-preview]").forEach(btn=>{
+    btn.onclick=()=>{
+      previewCalendarArchive(btn.dataset.calPreview,btn.dataset.calSource);
+    };
+  });
+  list.querySelectorAll("[data-cal-restore]").forEach(btn=>{
+    btn.onclick=()=>{
+      const id=btn.dataset.calRestore;
+      if(btn.dataset.calSource==="Recycle Bin")restoreArchiveFromRecycleBin(id);
+      else restoreArchiveById(id);
+    };
+  });
+}
+
 function renderYardCalendar(){
   const grid=$("yardCalendarGrid");
   const label=$("calendarMonthLabel");
   if(!grid||!label)return;
 
   const state=getYardCalendarState();
+  const reportsByDay=getCalendarReportsByDay();
   const year=yardCalendarMonth.getFullYear();
   const month=yardCalendarMonth.getMonth();
   const monthName=yardCalendarMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
@@ -1930,14 +3378,26 @@ function renderYardCalendar(){
   for(let day=1;day<=daysInMonth;day++){
     const key=dateKey(year,month,day);
     const status=state[key]||"";
-    const cls=status==="check"?"checked":status==="x"?"missed":"";
+    const reports=reportsByDay[key]||[];
+    const drops=uniqueYardDropsForDay(key);
+    const cls=[
+      status==="check"?"checked":"",
+      status==="x"?"missed":"",
+      reports.length?"has-reports":""
+    ].filter(Boolean).join(" ");
     const symbol=status==="check"?"✓":status==="x"?"✕":"—";
     html+=`
       <div class="calendar-day ${cls}" data-date="${key}">
-        <div class="calendar-date">
+        <div class="calendar-date" data-open-day="${key}">
           <span>${day}</span>
+          ${reports.length?`<span class="calendar-report-count">${reports.length} report${reports.length===1?"":"s"}</span>`:""}
+        </div>
+        <div class="calendar-yard-drops">
+          ${drops.slice(0,3).map(d=>`<span class="calendar-yard-pill">${escapeHtml(d)}</span>`).join("")}
+          ${drops.length>3?`<span class="calendar-yard-pill">+${drops.length-3}</span>`:""}
         </div>
         <div class="calendar-status">${symbol}</div>
+        ${reports.length?`<button type="button" class="calendar-open-day" data-open-day="${key}">Open Reports</button>`:""}
         <div class="calendar-day-controls">
           <button type="button" class="calendar-check-btn ${status==="check"?"active":""}" data-cal-check="${key}">✓</button>
           <button type="button" class="calendar-x-btn ${status==="x"?"active":""}" data-cal-x="${key}">✕</button>
@@ -1947,10 +3407,13 @@ function renderYardCalendar(){
 
   grid.innerHTML=html;
   grid.querySelectorAll("[data-cal-check]").forEach(btn=>{
-    btn.onclick=()=>setYardCheckStatus(btn.dataset.calCheck,state[btn.dataset.calCheck]==="check"?"clear":"check");
+    btn.onclick=(event)=>{event.stopPropagation();setYardCheckStatus(btn.dataset.calCheck,state[btn.dataset.calCheck]==="check"?"clear":"check");};
   });
   grid.querySelectorAll("[data-cal-x]").forEach(btn=>{
-    btn.onclick=()=>setYardCheckStatus(btn.dataset.calX,state[btn.dataset.calX]==="x"?"clear":"x");
+    btn.onclick=(event)=>{event.stopPropagation();setYardCheckStatus(btn.dataset.calX,state[btn.dataset.calX]==="x"?"clear":"x");};
+  });
+  grid.querySelectorAll("[data-open-day]").forEach(el=>{
+    el.onclick=(event)=>{event.stopPropagation();openCalendarReportsForDay(el.dataset.openDay);};
   });
 }
 
@@ -1958,8 +3421,8 @@ function init(){
   $("yardSelect").innerHTML=YARD_OPTIONS.map(o=>`<option>${o}</option>`).join("");
   $("yardLabel").textContent=`Yard checked ${String(REPORT_TODAY.getMonth()+1).padStart(2,"0")}/${String(REPORT_TODAY.getDate()).padStart(2,"0")}/${REPORT_TODAY.getFullYear()}`;setupDisplaySliders();
   $("search").oninput=e=>{query=e.target.value;render();queueCloudSave()};
-  document.querySelectorAll("th button").forEach(b=>b.onclick=()=>{const k=b.dataset.sort;sortConfig={key:k,direction:sortConfig.key===k&&sortConfig.direction==="asc"?"desc":"asc"};render();queueCloudSave()});
-  $("bannerToggle").onclick=()=>{showBanner=!showBanner;render();queueCloudSave()};
+  document.querySelectorAll("th button[data-sort]").forEach(b=>b.onclick=()=>{const k=b.dataset.sort;if(k==="ce"&&applySelectedCeFlags())return;sortConfig={key:k,direction:sortConfig.key===k&&sortConfig.direction==="asc"?"desc":"asc"};render();queueCloudSave()});
+  const bannerToggle=$("bannerToggle"); if(bannerToggle)bannerToggle.onclick=()=>{showBanner=!showBanner;render();queueCloudSave()};
   $("importBtn").onclick=()=>$("fileInput").click();
   $("fileInput").onchange=e=>{if(e.target.files?.length)importFiles(e.target.files);e.target.value=""};
   $("clearBtn").onclick=typeof handleClearClick==="function"?handleClearClick:()=>{tableRows=[];query="";filter="all";$("search").value="";render();queueCloudSave()};
@@ -1969,8 +3432,13 @@ function init(){
   const emailReportBtn=$("emailReportBtn"); if(emailReportBtn)emailReportBtn.onclick=sendEmailReport;
   const calendarTopBtn=$("calendarTopBtn"); if(calendarTopBtn)calendarTopBtn.onclick=openYardCalendar;
   $("exportBtn").onclick=async()=>{const b=$("exportBtn");if(b){b.textContent="Exporting...";b.disabled=true}await Promise.resolve(exportReport());if(b){b.textContent="⇩ Export";b.disabled=false}};
-  const archiveBtn=$("archiveBtn"); if(archiveBtn)archiveBtn.onclick=async()=>{archiveBtn.textContent="Archiving...";archiveBtn.disabled=true;await archivePage();archiveBtn.textContent="▣ Archive";archiveBtn.disabled=false};
+  const archiveBtn=$("archiveBtn"); if(archiveBtn)archiveBtn.onclick=openArchiveConfirmModal;
   const archivePageBtn=$("archivePageBtn"); if(archivePageBtn)archivePageBtn.onclick=openArchiveModal;
+  const archiveConfirmClose=$("archiveConfirmClose"); if(archiveConfirmClose)archiveConfirmClose.onclick=closeArchiveConfirmModal;
+  const archiveConfirmCancel=$("archiveConfirmCancel"); if(archiveConfirmCancel)archiveConfirmCancel.onclick=closeArchiveConfirmModal;
+  const archiveConfirmSave=$("archiveConfirmSave"); if(archiveConfirmSave)archiveConfirmSave.onclick=confirmArchiveSave;
+  const archiveConfirmModal=$("archiveConfirmModal"); if(archiveConfirmModal)archiveConfirmModal.addEventListener("click",e=>{if(e.target===archiveConfirmModal)closeArchiveConfirmModal()});
+  const archiveConfirmName=$("archiveConfirmName"); if(archiveConfirmName)archiveConfirmName.onkeydown=e=>{if(e.key==="Enter")confirmArchiveSave();if(e.key==="Escape")closeArchiveConfirmModal()};
   const restoreBtn=$("restoreBtn"); if(restoreBtn)restoreBtn.onclick=restoreLastArchive;
   const closeArchive=$("closeArchiveModal"); if(closeArchive)closeArchive.onclick=closeArchiveModal;
   const archiveModal=$("archiveModal"); if(archiveModal)archiveModal.addEventListener("click",e=>{if(e.target===archiveModal)closeArchiveModal()});
@@ -1978,6 +3446,8 @@ function init(){
   const calModal=$("yardCalendarModal"); if(calModal)calModal.addEventListener("click",e=>{if(e.target===calModal)closeYardCalendar()});
   const prevCal=$("prevCalendarMonth"); if(prevCal)prevCal.onclick=()=>{yardCalendarMonth=new Date(yardCalendarMonth.getFullYear(),yardCalendarMonth.getMonth()-1,1);renderYardCalendar()};
   const nextCal=$("nextCalendarMonth"); if(nextCal)nextCal.onclick=()=>{yardCalendarMonth=new Date(yardCalendarMonth.getFullYear(),yardCalendarMonth.getMonth()+1,1);renderYardCalendar()};
+  const calendarReportsClose=$("calendarReportsClose"); if(calendarReportsClose)calendarReportsClose.onclick=()=>{$("calendarReportsPanel").style.display="none"};
+  const calendarPreviewClose=$("calendarPreviewClose"); if(calendarPreviewClose)calendarPreviewClose.onclick=()=>{$("calendarReportPreview").style.display="none"};
   render();
   loadCloudState();
 }
