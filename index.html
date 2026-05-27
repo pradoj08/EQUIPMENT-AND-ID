@@ -802,6 +802,10 @@ body.slider-active button:hover {
 .cloud-status.warn{color:#fde68a;background:rgba(245,158,11,.16);border-color:rgba(251,191,36,.36)}
 .cloud-status.err{color:#ffe4e6;background:rgba(225,29,72,.18);border-color:rgba(251,113,133,.38)}
 
+
+/* Manual cloud sync button */
+.btn-sync-cloud{background:rgba(16,185,129,.16)!important;border-color:rgba(52,211,153,.36)!important;color:#d1fae5!important}
+
 </style>
 </head>
 <body>
@@ -857,6 +861,7 @@ body.slider-active button:hover {
           <button id="exportBtn" class="btn-export">⇩ Export</button>
           <button id="emailReportBtn" class="btn-email">✉ Send Email Report</button>
           <span id="cloudStatus" class="cloud-status">Cloud: connecting</span>
+          <button id="syncCloudBtn" class="btn-sync-cloud" type="button">Sync Cloud</button>
 <button id="archiveBtn" class="btn-archive">▣ Archive</button>
           <button id="archivePageBtn" class="btn-archive">▣ Archive Page</button>
           <button id="importBtn" class="btn-import">↥ Import Files</button>
@@ -995,7 +1000,7 @@ const SUPABASE_URL="https://epthcamzzwegsdggrjgh.supabase.co";
 const SUPABASE_KEY="sb_publishable_f5HYn7EM12Z7V2psO_njmQ_w89WOtm1";
 const CLOUD_KEYS={current:"current_session",archives:"archive_list",recycle:"archive_recycle_bin",calendar:"yard_check_calendar"};
 const supabaseClient=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-let cloudReady=false, cloudSaveTimer=null;
+let cloudReady=false, cloudLoading=false, cloudSaveTimer=null, cloudChannel=null;
 
 function setCloudStatus(text,mode="warn"){
   const el=$("cloudStatus"); if(!el)return;
@@ -1003,45 +1008,144 @@ function setCloudStatus(text,mode="warn"){
 }
 async function cloudUpsert(key,value){
   if(!supabaseClient)return false;
-  const {error}=await supabaseClient.from("chassis_reconciliation_state").upsert({state_key:key,state_value:value,updated_at:new Date().toISOString()},{onConflict:"state_key"});
-  if(error)throw error; return true;
+  const {error}=await supabaseClient
+    .from("chassis_reconciliation_state")
+    .upsert({state_key:key,state_value:value,updated_at:new Date().toISOString()},{onConflict:"state_key"});
+  if(error)throw error;
+  return true;
 }
 async function cloudGet(key){
   if(!supabaseClient)return null;
-  const {data,error}=await supabaseClient.from("chassis_reconciliation_state").select("state_value").eq("state_key",key).maybeSingle();
-  if(error)throw error; return data?data.state_value:null;
+  const {data,error}=await supabaseClient
+    .from("chassis_reconciliation_state")
+    .select("state_value")
+    .eq("state_key",key)
+    .maybeSingle();
+  if(error)throw error;
+  return data?data.state_value:null;
 }
 function makeCurrentSessionSnapshot(){
-  return {savedAt:new Date().toISOString(),reportDate:REPORT_TODAY.toISOString(),yardChecked:$("yardSelect")?.value||"",tableRows,query,filter,sortConfig,showBanner,importedFileArchives};
+  return {
+    savedAt:new Date().toISOString(),
+    reportDate:REPORT_TODAY.toISOString(),
+    yardChecked:$("yardSelect")?.value||"",
+    tableRows,
+    query,
+    filter,
+    sortConfig,
+    showBanner,
+    importedFileArchives
+  };
 }
 function applyCurrentSessionSnapshot(snap){
-  if(!snap||!Array.isArray(snap.tableRows))return;
-  tableRows=snap.tableRows; query=snap.query||""; filter=snap.filter||"all"; sortConfig=snap.sortConfig||{key:"id",direction:"asc"};
-  showBanner=snap.showBanner!==false; importedFileArchives=Array.isArray(snap.importedFileArchives)?snap.importedFileArchives:[];
-  if($("search"))$("search").value=query; if($("yardSelect")&&snap.yardChecked)$("yardSelect").value=snap.yardChecked;
+  if(!snap||!Array.isArray(snap.tableRows))return false;
+  tableRows=snap.tableRows;
+  query=snap.query||"";
+  filter=snap.filter||"all";
+  sortConfig=snap.sortConfig||{key:"id",direction:"asc"};
+  showBanner=snap.showBanner!==false;
+  importedFileArchives=Array.isArray(snap.importedFileArchives)?snap.importedFileArchives:[];
+  if($("search"))$("search").value=query;
+  if($("yardSelect")&&snap.yardChecked)$("yardSelect").value=snap.yardChecked;
+  return true;
 }
 function queueCloudSave(){
   clearTimeout(cloudSaveTimer);
-  cloudSaveTimer=setTimeout(saveCurrentSessionToCloud,600);
+  cloudSaveTimer=setTimeout(saveCurrentSessionToCloud,350);
 }
 async function saveCurrentSessionToCloud(){
-  if(!supabaseClient||!cloudReady)return;
-  try{await cloudUpsert(CLOUD_KEYS.current,makeCurrentSessionSnapshot());setCloudStatus("Cloud: saved","ok");}
-  catch(err){console.error("Cloud save failed",err);setCloudStatus("Cloud: save failed","err");}
+  if(!supabaseClient||cloudLoading)return;
+  try{
+    await cloudUpsert(CLOUD_KEYS.current,makeCurrentSessionSnapshot());
+    cloudReady=true;
+    setCloudStatus("Cloud: saved","ok");
+  }catch(err){
+    console.error("Cloud current-session save failed",err);
+    setCloudStatus("Cloud: save failed","err");
+  }
+}
+async function saveAllCloudState(){
+  if(!supabaseClient||cloudLoading)return;
+  try{
+    await Promise.all([
+      cloudUpsert(CLOUD_KEYS.current,makeCurrentSessionSnapshot()),
+      cloudUpsert(CLOUD_KEYS.archives,getArchiveList()),
+      cloudUpsert(CLOUD_KEYS.recycle,getRecycleBin()),
+      cloudUpsert(CLOUD_KEYS.calendar,getYardCalendarState())
+    ]);
+    cloudReady=true;
+    setCloudStatus("Cloud: saved","ok");
+  }catch(err){
+    console.error("Cloud full save failed",err);
+    setCloudStatus("Cloud: save failed","err");
+  }
 }
 async function loadCloudState(){
   if(!supabaseClient){setCloudStatus("Cloud: offline","err");return;}
   try{
+    cloudLoading=true;
     setCloudStatus("Cloud: loading","warn");
-    const [current,archives,recycle,calendar]=await Promise.all([cloudGet(CLOUD_KEYS.current),cloudGet(CLOUD_KEYS.archives),cloudGet(CLOUD_KEYS.recycle),cloudGet(CLOUD_KEYS.calendar)]);
+    const [current,archives,recycle,calendar]=await Promise.all([
+      cloudGet(CLOUD_KEYS.current),
+      cloudGet(CLOUD_KEYS.archives),
+      cloudGet(CLOUD_KEYS.recycle),
+      cloudGet(CLOUD_KEYS.calendar)
+    ]);
+
     if(Array.isArray(archives))localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(archives));
     if(Array.isArray(recycle))localStorage.setItem("chassisReconciliationArchiveRecycleBin",JSON.stringify(recycle));
     if(calendar&&typeof calendar==="object")localStorage.setItem("setteYardCheckCalendar",JSON.stringify(calendar));
-    if(current)applyCurrentSessionSnapshot(current);
-    cloudReady=true; setCloudStatus("Cloud: synced","ok"); render();
-  }catch(err){console.error("Cloud load failed",err);setCloudStatus("Cloud: check SQL","err");}
-}
 
+    const applied=applyCurrentSessionSnapshot(current);
+    cloudReady=true;
+    cloudLoading=false;
+    setCloudStatus("Cloud: synced","ok");
+    render();
+
+    // First-run safety: if the cloud row is empty but this app has rows loaded, push them.
+    if(!applied && tableRows.length){
+      queueCloudSave();
+    }
+
+    setupCloudRealtime();
+  }catch(err){
+    cloudReady=false;
+    cloudLoading=false;
+    console.error("Cloud load failed",err);
+    setCloudStatus("Cloud: check SQL","err");
+  }
+}
+function setupCloudRealtime(){
+  if(!supabaseClient||cloudChannel)return;
+  try{
+    cloudChannel=supabaseClient
+      .channel("chassis-reconciliation-state")
+      .on("postgres_changes",{event:"*",schema:"public",table:"chassis_reconciliation_state"},payload=>{
+        const row=payload.new;
+        if(!row||!row.state_key)return;
+        if(row.state_key===CLOUD_KEYS.current){
+          const remote=row.state_value;
+          if(remote&&remote.savedAt&&remote.savedAt!==makeCurrentSessionSnapshot().savedAt){
+            applyCurrentSessionSnapshot(remote);
+            render();
+            setCloudStatus("Cloud: live update","ok");
+          }
+        }
+        if(row.state_key===CLOUD_KEYS.archives&&Array.isArray(row.state_value)){
+          localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(row.state_value));
+        }
+        if(row.state_key===CLOUD_KEYS.recycle&&Array.isArray(row.state_value)){
+          localStorage.setItem("chassisReconciliationArchiveRecycleBin",JSON.stringify(row.state_value));
+        }
+        if(row.state_key===CLOUD_KEYS.calendar&&row.state_value&&typeof row.state_value==="object"){
+          localStorage.setItem("setteYardCheckCalendar",JSON.stringify(row.state_value));
+        }
+      })
+      .subscribe();
+  }catch(err){
+    console.warn("Realtime subscription unavailable",err);
+  }
+}
 function parseEventDate(v){const [dp,tp="00:00:00"]=String(v||"").split(" ");const [m,d,y]=dp.split("/").map(Number);const [hh,mm,ss]=tp.split(":").map(Number);return new Date(y||1900,(m||1)-1,d||1,hh||0,mm||0,ss||0)}
 function formatDateShort(v){const [dp,tp=""]=String(v||"").split(" ");const [m,d]=dp.split("/");const [hh,mm]=tp.split(":");return `${m||"--"}/${d||"--"}${hh&&mm?` ${hh}:${mm}`:""}`}
 function daysOld(r){const ev=parseEventDate(r.eventDate);const mid=new Date(ev.getFullYear(),ev.getMonth(),ev.getDate());return Math.floor((REPORT_TODAY-mid)/86400000)}
@@ -1066,7 +1170,7 @@ function pick(row,map,cands,fallback=-1){
   return h?row[map[h]]??"—":fallback>=0?row[fallback]??"—":"—";
 }
 function normalizeRows(data,start){if(data.length<2)return[];const headers=data[0].map(h=>normHeader(h));const map=headers.reduce((a,h,i)=>{a[h]=i;return a},{});return data.slice(1).map((row,i)=>{const chassis=pick(row,map,["chassis","chassis #","chassis number","chassis id"],1);const location=pick(row,map,["location","loc","current location","parking location"],2);const pool=pick(row,map,["chas pool","chassis pool","pool"],3);const eventDate=pick(row,map,["event date","event datetime","date"],4);const event=pick(row,map,["event","event type","last event"],5);const kind=pick(row,map,["chas car kind","chas/car kind","chassis car kind","car kind","chas kind","kind","chassis kind","type"],-1);const status=pick(row,map,["status","current status"],7);return{id:start+i+1,chassis:String(chassis||"—"),location:String(location||"—"),pool:String(pool||"—"),eventDate:String(eventDate||"01/01/1900 00:00:00"),event:String(event||"—"),kind:String(kind&&kind!==eventDate?kind:"—"),status:String(status||"—")}}).filter(r=>r.chassis!=="—")}
-async function importFiles(files){const all=[];importedFileArchives=[];for(const file of [...files]){let dataUrl='';try{dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}catch{}importedFileArchives.push({name:file.name,size:file.size,type:file.type,lastModified:file.lastModified,dataUrl});const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:"array",cellDates:false});const sh=wb.Sheets[wb.SheetNames[0]];const data=XLSX.utils.sheet_to_json(sh,{header:1,defval:""}).filter(r=>r.some(Boolean));all.push(...normalizeRows(data,all.length))}tableRows=all.map((r,i)=>({...r,id:i+1}));query="";filter="all";sortConfig={key:"id",direction:"asc"};$("search").value="";render()}
+async function importFiles(files){const all=[];importedFileArchives=[];for(const file of [...files]){let dataUrl='';try{dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}catch{}importedFileArchives.push({name:file.name,size:file.size,type:file.type,lastModified:file.lastModified,dataUrl});const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:"array",cellDates:false});const sh=wb.Sheets[wb.SheetNames[0]];const data=XLSX.utils.sheet_to_json(sh,{header:1,defval:""}).filter(r=>r.some(Boolean));all.push(...normalizeRows(data,all.length))}tableRows=all.map((r,i)=>({...r,id:i+1}));query="";filter="all";sortConfig={key:"id",direction:"asc"};$("search").value="";render();queueCloudSave()}
 function csvEscape(value){
   const s=String(value ?? "");
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
@@ -1163,7 +1267,7 @@ function showArchiveToast(message){
   window.__archiveToastTimer=setTimeout(()=>toast.classList.remove("show"),3200);
 }
 function getArchiveList(){try{return JSON.parse(localStorage.getItem("chassisReconciliationArchiveList")||"[]")||[]}catch{return[]}}
-function saveArchiveList(list){localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(list));if(cloudReady)cloudUpsert(CLOUD_KEYS.archives,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")})}
+function saveArchiveList(list){localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(list));if(supabaseClient&&!cloudLoading)cloudUpsert(CLOUD_KEYS.archives,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")})}
 function makeArchiveId(){return "archive_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
 function makeArchiveName(){const d=new Date();return `Chassis Archive ${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}/${d.getFullYear()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
 function makeSnapshot(){
@@ -1204,9 +1308,9 @@ async function archivePage(){
       else originals.file("README.txt","No imported source files were captured in this session.");
       const blob=await zip.generateAsync({type:"blob"});
       const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`chassis-reconciliation-archive-${safeDate}.zip`; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-      showArchiveToast("Archive saved as a new session and download started.");
+      showArchiveToast("Archive saved as a new session and download started.");saveAllCloudState();
     } else {
-      showArchiveToast("Archive saved as a new session.");
+      showArchiveToast("Archive saved as a new session.");saveAllCloudState();
     }
   }catch(err){console.error(err);showArchiveToast("Archive saved. Download could not start.")}
 }
@@ -1258,7 +1362,7 @@ function getRecycleBin(){
 }
 function saveRecycleBin(list){
   localStorage.setItem("chassisReconciliationArchiveRecycleBin",JSON.stringify(list));
-  if(cloudReady)cloudUpsert(CLOUD_KEYS.recycle,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
+  if(supabaseClient&&!cloudLoading)cloudUpsert(CLOUD_KEYS.recycle,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
 }
 function moveArchiveToRecycleBin(id){
   const list=getArchiveList();
@@ -1718,7 +1822,7 @@ function getYardCalendarState(){
 }
 function saveYardCalendarState(state){
   localStorage.setItem("setteYardCheckCalendar",JSON.stringify(state));
-  if(cloudReady)cloudUpsert(CLOUD_KEYS.calendar,state).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
+  if(supabaseClient&&!cloudLoading)cloudUpsert(CLOUD_KEYS.calendar,state).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
 }
 function dateKey(year,month,day){
   return `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
@@ -1799,7 +1903,8 @@ function init(){
   $("bannerToggle").onclick=()=>{showBanner=!showBanner;render();queueCloudSave()};
   $("importBtn").onclick=()=>$("fileInput").click();
   $("fileInput").onchange=e=>{if(e.target.files?.length)importFiles(e.target.files);e.target.value=""};
-  $("clearBtn").onclick=typeof handleClearClick==="function"?handleClearClick:()=>{tableRows=[];query="";filter="all";$("search").value="";render()};
+  $("clearBtn").onclick=typeof handleClearClick==="function"?handleClearClick:()=>{tableRows=[];query="";filter="all";$("search").value="";render();queueCloudSave()};
+  const syncCloudBtn=$("syncCloudBtn"); if(syncCloudBtn)syncCloudBtn.onclick=saveAllCloudState;
   const copyChassisBtn=$("copyChassisBtn"); if(copyChassisBtn)copyChassisBtn.onclick=copyFilteredChassisList;
   const emailReportBtn=$("emailReportBtn"); if(emailReportBtn)emailReportBtn.onclick=sendEmailReport;
   const calendarTopBtn=$("calendarTopBtn"); if(calendarTopBtn)calendarTopBtn.onclick=openYardCalendar;
@@ -1817,6 +1922,7 @@ function init(){
   loadCloudState();
 }
 
+window.addEventListener("beforeunload",()=>{try{saveAllCloudState()}catch{}});
 init();
 </script>
 </body>
