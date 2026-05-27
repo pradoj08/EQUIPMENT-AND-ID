@@ -806,6 +806,57 @@ body.slider-active button:hover {
 /* Manual cloud sync button */
 .btn-sync-cloud{background:rgba(16,185,129,.16)!important;border-color:rgba(52,211,153,.36)!important;color:#d1fae5!important}
 
+
+/* Visible top cloud sync controls */
+.cloud-control-card {
+  min-width: 210px;
+  min-height: 86px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  border: 1px solid rgba(52,211,153,.32);
+  background:
+    radial-gradient(circle at top left, rgba(52,211,153,.14), transparent 12rem),
+    rgba(6, 78, 59, .20);
+  border-radius: 18px;
+  padding: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.cloud-control-title {
+  color: #d1fae5;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.top-cloud-status {
+  width: 100%;
+  min-height: 28px !important;
+  justify-content: flex-start !important;
+  padding: 0 10px !important;
+}
+.cloud-control-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+.btn-sync-cloud,
+.btn-reload-cloud {
+  min-height: 30px;
+  padding: 6px 8px !important;
+  font-size: 11px !important;
+}
+.btn-sync-cloud {
+  background: rgba(16,185,129,.20) !important;
+  border-color: rgba(52,211,153,.42) !important;
+  color: #d1fae5 !important;
+}
+.btn-reload-cloud {
+  background: rgba(37,99,235,.20) !important;
+  border-color: rgba(96,165,250,.42) !important;
+  color: #dbeafe !important;
+}
+
 </style>
 </head>
 <body>
@@ -824,6 +875,16 @@ body.slider-active button:hover {
         <span>📅</span>
         <strong>Calendar</strong>
       </button>
+
+      <div class="cloud-control-card">
+        <div class="cloud-control-title">Cloud Sync</div>
+        <span id="cloudStatus" class="cloud-status top-cloud-status">Cloud: connecting</span>
+        <div class="cloud-control-actions">
+          <button id="forceSaveBtn" class="btn-sync-cloud" type="button">Force Save</button>
+          <button id="reloadCloudBtn" class="btn-reload-cloud" type="button">Reload Cloud</button>
+        </div>
+      </div>
+
 </div>
   </section>
 
@@ -860,8 +921,6 @@ body.slider-active button:hover {
         <div class="actions">
           <button id="exportBtn" class="btn-export">⇩ Export</button>
           <button id="emailReportBtn" class="btn-email">✉ Send Email Report</button>
-          <span id="cloudStatus" class="cloud-status">Cloud: connecting</span>
-          <button id="syncCloudBtn" class="btn-sync-cloud" type="button">Sync Cloud</button>
 <button id="archiveBtn" class="btn-archive">▣ Archive</button>
           <button id="archivePageBtn" class="btn-archive">▣ Archive Page</button>
           <button id="importBtn" class="btn-import">↥ Import Files</button>
@@ -999,30 +1058,57 @@ const $=id=>document.getElementById(id);
 const SUPABASE_URL="https://epthcamzzwegsdggrjgh.supabase.co";
 const SUPABASE_KEY="sb_publishable_f5HYn7EM12Z7V2psO_njmQ_w89WOtm1";
 const CLOUD_KEYS={current:"current_session",archives:"archive_list",recycle:"archive_recycle_bin",calendar:"yard_check_calendar"};
-const supabaseClient=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-let cloudReady=false, cloudLoading=false, cloudSaveTimer=null, cloudChannel=null;
+let cloudReady=false, cloudLoading=false, cloudSaveTimer=null, cloudLastSavedAt=null;
 
 function setCloudStatus(text,mode="warn"){
   const el=$("cloudStatus"); if(!el)return;
   el.textContent=text; el.classList.remove("ok","warn","err"); el.classList.add(mode);
 }
+function cloudHeaders(extra={}){
+  return {
+    "apikey":SUPABASE_KEY,
+    "Authorization":"Bearer "+SUPABASE_KEY,
+    "Content-Type":"application/json",
+    "Prefer":"return=representation",
+    ...extra
+  };
+}
 async function cloudUpsert(key,value){
-  if(!supabaseClient)return false;
-  const {error}=await supabaseClient
-    .from("chassis_reconciliation_state")
-    .upsert({state_key:key,state_value:value,updated_at:new Date().toISOString()},{onConflict:"state_key"});
-  if(error)throw error;
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/chassis_reconciliation_state?on_conflict=state_key`,{
+    method:"POST",
+    headers:cloudHeaders({"Prefer":"resolution=merge-duplicates,return=representation"}),
+    body:JSON.stringify({state_key:key,state_value:value,updated_at:new Date().toISOString()})
+  });
+  if(!res.ok){
+    const text=await res.text().catch(()=>"");
+    throw new Error(`Supabase upsert failed ${res.status}: ${text}`);
+  }
   return true;
 }
 async function cloudGet(key){
-  if(!supabaseClient)return null;
-  const {data,error}=await supabaseClient
-    .from("chassis_reconciliation_state")
-    .select("state_value")
-    .eq("state_key",key)
-    .maybeSingle();
-  if(error)throw error;
-  return data?data.state_value:null;
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/chassis_reconciliation_state?state_key=eq.${encodeURIComponent(key)}&select=state_value`,{
+    method:"GET",
+    headers:cloudHeaders()
+  });
+  if(!res.ok){
+    const text=await res.text().catch(()=>"");
+    throw new Error(`Supabase read failed ${res.status}: ${text}`);
+  }
+  const rows=await res.json();
+  return rows && rows[0] ? rows[0].state_value : null;
+}
+async function testCloudConnection(){
+  try{
+    setCloudStatus("Cloud: testing","warn");
+    await cloudGet(CLOUD_KEYS.current);
+    setCloudStatus("Cloud: connected","ok");
+    cloudReady=true;
+    return true;
+  }catch(err){
+    console.error("Cloud test failed",err);
+    setCloudStatus("Cloud: SQL/URL issue","err");
+    return false;
+  }
 }
 function makeCurrentSessionSnapshot(){
   return {
@@ -1054,10 +1140,11 @@ function queueCloudSave(){
   cloudSaveTimer=setTimeout(saveCurrentSessionToCloud,350);
 }
 async function saveCurrentSessionToCloud(){
-  if(!supabaseClient||cloudLoading)return;
+  if(cloudLoading)return;
   try{
     await cloudUpsert(CLOUD_KEYS.current,makeCurrentSessionSnapshot());
     cloudReady=true;
+    cloudLastSavedAt=new Date().toISOString();
     setCloudStatus("Cloud: saved","ok");
   }catch(err){
     console.error("Cloud current-session save failed",err);
@@ -1065,8 +1152,9 @@ async function saveCurrentSessionToCloud(){
   }
 }
 async function saveAllCloudState(){
-  if(!supabaseClient||cloudLoading)return;
+  if(cloudLoading)return;
   try{
+    setCloudStatus("Cloud: saving","warn");
     await Promise.all([
       cloudUpsert(CLOUD_KEYS.current,makeCurrentSessionSnapshot()),
       cloudUpsert(CLOUD_KEYS.archives,getArchiveList()),
@@ -1074,14 +1162,16 @@ async function saveAllCloudState(){
       cloudUpsert(CLOUD_KEYS.calendar,getYardCalendarState())
     ]);
     cloudReady=true;
-    setCloudStatus("Cloud: saved","ok");
+    cloudLastSavedAt=new Date().toISOString();
+    setCloudStatus("Cloud: force saved","ok");
+    if(typeof showArchiveToast==="function")showArchiveToast("Cloud force save complete.");
   }catch(err){
     console.error("Cloud full save failed",err);
-    setCloudStatus("Cloud: save failed","err");
+    setCloudStatus("Cloud: force failed","err");
+    alert("Cloud save failed. Run the latest SQL, then try Force Save again.\n\n"+(err&&err.message?err.message:err));
   }
 }
 async function loadCloudState(){
-  if(!supabaseClient){setCloudStatus("Cloud: offline","err");return;}
   try{
     cloudLoading=true;
     setCloudStatus("Cloud: loading","warn");
@@ -1102,12 +1192,8 @@ async function loadCloudState(){
     setCloudStatus("Cloud: synced","ok");
     render();
 
-    // First-run safety: if the cloud row is empty but this app has rows loaded, push them.
-    if(!applied && tableRows.length){
-      queueCloudSave();
-    }
-
-    setupCloudRealtime();
+    // First device safety: if the cloud current_session is empty, push this page state.
+    if(!applied && tableRows.length) queueCloudSave();
   }catch(err){
     cloudReady=false;
     cloudLoading=false;
@@ -1115,36 +1201,9 @@ async function loadCloudState(){
     setCloudStatus("Cloud: check SQL","err");
   }
 }
-function setupCloudRealtime(){
-  if(!supabaseClient||cloudChannel)return;
-  try{
-    cloudChannel=supabaseClient
-      .channel("chassis-reconciliation-state")
-      .on("postgres_changes",{event:"*",schema:"public",table:"chassis_reconciliation_state"},payload=>{
-        const row=payload.new;
-        if(!row||!row.state_key)return;
-        if(row.state_key===CLOUD_KEYS.current){
-          const remote=row.state_value;
-          if(remote&&remote.savedAt&&remote.savedAt!==makeCurrentSessionSnapshot().savedAt){
-            applyCurrentSessionSnapshot(remote);
-            render();
-            setCloudStatus("Cloud: live update","ok");
-          }
-        }
-        if(row.state_key===CLOUD_KEYS.archives&&Array.isArray(row.state_value)){
-          localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(row.state_value));
-        }
-        if(row.state_key===CLOUD_KEYS.recycle&&Array.isArray(row.state_value)){
-          localStorage.setItem("chassisReconciliationArchiveRecycleBin",JSON.stringify(row.state_value));
-        }
-        if(row.state_key===CLOUD_KEYS.calendar&&row.state_value&&typeof row.state_value==="object"){
-          localStorage.setItem("setteYardCheckCalendar",JSON.stringify(row.state_value));
-        }
-      })
-      .subscribe();
-  }catch(err){
-    console.warn("Realtime subscription unavailable",err);
-  }
+async function reloadCloudState(){
+  await loadCloudState();
+  if(typeof showArchiveToast==="function")showArchiveToast("Cloud data reloaded.");
 }
 function parseEventDate(v){const [dp,tp="00:00:00"]=String(v||"").split(" ");const [m,d,y]=dp.split("/").map(Number);const [hh,mm,ss]=tp.split(":").map(Number);return new Date(y||1900,(m||1)-1,d||1,hh||0,mm||0,ss||0)}
 function formatDateShort(v){const [dp,tp=""]=String(v||"").split(" ");const [m,d]=dp.split("/");const [hh,mm]=tp.split(":");return `${m||"--"}/${d||"--"}${hh&&mm?` ${hh}:${mm}`:""}`}
@@ -1267,7 +1326,7 @@ function showArchiveToast(message){
   window.__archiveToastTimer=setTimeout(()=>toast.classList.remove("show"),3200);
 }
 function getArchiveList(){try{return JSON.parse(localStorage.getItem("chassisReconciliationArchiveList")||"[]")||[]}catch{return[]}}
-function saveArchiveList(list){localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(list));if(supabaseClient&&!cloudLoading)cloudUpsert(CLOUD_KEYS.archives,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")})}
+function saveArchiveList(list){localStorage.setItem("chassisReconciliationArchiveList",JSON.stringify(list));cloudUpsert(CLOUD_KEYS.archives,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")})}
 function makeArchiveId(){return "archive_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
 function makeArchiveName(){const d=new Date();return `Chassis Archive ${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}/${d.getFullYear()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
 function makeSnapshot(){
@@ -1308,9 +1367,9 @@ async function archivePage(){
       else originals.file("README.txt","No imported source files were captured in this session.");
       const blob=await zip.generateAsync({type:"blob"});
       const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`chassis-reconciliation-archive-${safeDate}.zip`; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-      showArchiveToast("Archive saved as a new session and download started.");saveAllCloudState();
+      showArchiveToast("Archive saved as a new session and download started.");saveAllCloudState();saveAllCloudState();
     } else {
-      showArchiveToast("Archive saved as a new session.");saveAllCloudState();
+      showArchiveToast("Archive saved as a new session.");saveAllCloudState();saveAllCloudState();
     }
   }catch(err){console.error(err);showArchiveToast("Archive saved. Download could not start.")}
 }
@@ -1362,7 +1421,7 @@ function getRecycleBin(){
 }
 function saveRecycleBin(list){
   localStorage.setItem("chassisReconciliationArchiveRecycleBin",JSON.stringify(list));
-  if(supabaseClient&&!cloudLoading)cloudUpsert(CLOUD_KEYS.recycle,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
+  cloudUpsert(CLOUD_KEYS.recycle,list).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
 }
 function moveArchiveToRecycleBin(id){
   const list=getArchiveList();
@@ -1822,7 +1881,7 @@ function getYardCalendarState(){
 }
 function saveYardCalendarState(state){
   localStorage.setItem("setteYardCheckCalendar",JSON.stringify(state));
-  if(supabaseClient&&!cloudLoading)cloudUpsert(CLOUD_KEYS.calendar,state).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
+  cloudUpsert(CLOUD_KEYS.calendar,state).then(()=>setCloudStatus("Cloud: saved","ok")).catch(err=>{console.error(err);setCloudStatus("Cloud: save failed","err")});
 }
 function dateKey(year,month,day){
   return `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
@@ -1904,7 +1963,8 @@ function init(){
   $("importBtn").onclick=()=>$("fileInput").click();
   $("fileInput").onchange=e=>{if(e.target.files?.length)importFiles(e.target.files);e.target.value=""};
   $("clearBtn").onclick=typeof handleClearClick==="function"?handleClearClick:()=>{tableRows=[];query="";filter="all";$("search").value="";render();queueCloudSave()};
-  const syncCloudBtn=$("syncCloudBtn"); if(syncCloudBtn)syncCloudBtn.onclick=saveAllCloudState;
+  const forceSaveBtn=$("forceSaveBtn"); if(forceSaveBtn)forceSaveBtn.onclick=saveAllCloudState;
+  const reloadCloudBtn=$("reloadCloudBtn"); if(reloadCloudBtn)reloadCloudBtn.onclick=reloadCloudState;
   const copyChassisBtn=$("copyChassisBtn"); if(copyChassisBtn)copyChassisBtn.onclick=copyFilteredChassisList;
   const emailReportBtn=$("emailReportBtn"); if(emailReportBtn)emailReportBtn.onclick=sendEmailReport;
   const calendarTopBtn=$("calendarTopBtn"); if(calendarTopBtn)calendarTopBtn.onclick=openYardCalendar;
