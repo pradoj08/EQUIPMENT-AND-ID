@@ -2319,6 +2319,22 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         <input type="range" min="0" max="300" step="5" value="0" id="prelifts">
         <div class="note">Day shift &middot; completed before current time</div>
       </div>
+      <div class="ctrl-group" style="border:1px solid rgba(239,68,68,0.25);border-radius:6px;padding:8px;background:rgba(239,68,68,0.04);">
+        <div class="ctrl-header">
+          <span class="ctrl-name" style="color:#EF4444;">&#x26A0; Carry-Over Lifts <span style="font-size:9px;color:var(--text3);">&middot; PRIOR DAY</span></span>
+          <span class="ctrl-val" id="v-carryover-lifts">0</span>
+        </div>
+        <input type="range" min="0" max="300" step="5" value="0" id="carryover-lifts">
+        <div class="ctrl-header" style="margin-top:6px;">
+          <span class="ctrl-name" style="font-size:10px;color:var(--text3);">Carry-over type</span>
+        </div>
+        <select class="profile-select" id="carryover-type" style="margin-bottom:0;">
+          <option value="mhoas">MHOA (Previous Day)</option>
+          <option value="inbound">Inbound (Previous Day)</option>
+          <option value="both">Both</option>
+        </select>
+        <div class="note" id="carryover-note" style="color:#EF4444;">Unfinished work from the prior shift &mdash; must be completed before today's operations can begin.</div>
+      </div>
       <div class="ctrl-group">
         <div class="ctrl-header"><span class="ctrl-name">Expected flips (1 each)</span><span class="ctrl-val" id="v-flips">0</span></div>
         <input type="range" min="0" max="100" step="1" value="0" id="flips">
@@ -4204,8 +4220,8 @@ function calcInboundWeightedDrop(trains,segs,rate,trainArrivalTimes){
 
 function getShiftLiftSources(segs,ws,we,activeKeys,trainLabelMap,rate){
   var sources=[];
-  var allKeys=activeKeys.concat(['ihosa','mhoas','coh','ups_work']);
-  var labelMap={'ihosa':'loading IHOSA','mhoas':'loading MHOAS','coh':'loading COH','ups_work':'UPS units dropped'};
+  var allKeys=activeKeys.concat(['ihosa','mhoas','coh','ups_work','carryover']);
+  var labelMap={'ihosa':'loading IHOSA','mhoas':'loading MHOAS','coh':'loading COH','ups_work':'UPS units dropped','carryover':'clearing carry-over (prior day)'};
   allKeys.forEach(function(k){
     var lbl=labelMap[k]||('dropping '+( trainLabelMap[k]||k));
     if(!segs[k])return;
@@ -4639,7 +4655,7 @@ function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap){
     var total=0;
     var detail=[];
 
-    activeKeys.concat(['ihosa','mhoas','coh','ups_work']).forEach(function(k){
+    activeKeys.concat(['ihosa','mhoas','coh','ups_work','carryover']).forEach(function(k){
       if(!segs[k]) return;
 
       var lifts=0;
@@ -5008,6 +5024,8 @@ function simulate(){
   var crew2=parseInt(document.getElementById('crew2').value);
   var flips=parseInt(document.getElementById('flips').value);
   var preLifts=parseInt(document.getElementById('prelifts').value);
+  var carryOverLifts=parseInt(document.getElementById('carryover-lifts').value)||0;
+  var carryOverType=document.getElementById('carryover-type').value;
   var ihosaExtMins=parseInt(document.getElementById('ihosa-ext').value)||0;
   var mhoasExtMins=parseInt(document.getElementById('mhoas-ext').value)||0;
   var ihosaCommitment=IHOSA_DL+ihosaExtMins/60;
@@ -5031,6 +5049,17 @@ function simulate(){
   document.getElementById('ups-break-note').textContent='Window length is set manually; '+upsCount+' UPS units are lift credit during this time.';
   document.getElementById('v-flips').textContent=flips;
   document.getElementById('v-prelifts').textContent=preLifts;
+  document.getElementById('v-carryover-lifts').textContent=carryOverLifts;
+  (function(){
+    var noteEl=document.getElementById('carryover-note');
+    if(!noteEl) return;
+    var typeLabel=carryOverType==='mhoas'?'MHOA (previous day)':carryOverType==='inbound'?'inbound freight (previous day)':'MHOA + inbound (previous day)';
+    if(carryOverLifts>0){
+      noteEl.textContent='PRIOR-DAY '+typeLabel+' \u2014 '+carryOverLifts+' units must be cleared before today\'s operations can begin ('+fmtDur(carryOverLifts/Math.max(1,rate))+' at current rate).';
+    } else {
+      noteEl.textContent='Unfinished work from the prior shift \u2014 must be completed before today\'s operations can begin.';
+    }
+  })();
   document.getElementById('night-hours-note').textContent='Night: crew x '+nightHours.toFixed(1)+'h ('+fmtH(s2Start)+'-'+fmtH(s2End)+(nightWraps?' next day; includes 0000-0300':'')+')';
   var dayEffectiveCrew = crew1 + swingHeadcount;
   document.getElementById('s1-badge').textContent=fmtH(s1Start)+'-'+fmtH(s1End);
@@ -5092,11 +5121,29 @@ function simulate(){
   });
 
   var emptyCarsAccrued=0;
+  // ── Carry-over lifts (prior-day MHOA and/or inbound work) ──────────────────────
+  // This is a mandatory prerequisite: the crew must clear it before today's IHOSA/MHOAS
+  // loading can begin. It pushes the effective start of today's operation back by the
+  // time needed to clear it at the current rate.
+  var carryOverH=carryOverLifts>0?carryOverLifts/rate:0;
+  var carryOverStart=cohInitialEmptyCars>0?s1Start:trains[0].arr;
+  var carryOverEnd=carryOverStart+carryOverH;
+  if(carryOverLifts>0){
+    var carryOverLabel=carryOverType==='mhoas'?'MHOA (previous day)':carryOverType==='inbound'?'inbound (previous day)':'MHOA + inbound (previous day)';
+    segs.carryover=[{start:carryOverStart,end:carryOverEnd}];
+    events.push({
+      time:carryOverStart,
+      title:'Carry-over: '+carryOverLabel,
+      meta:carryOverLifts+' units from the prior day must clear before today\'s IHOSA/MHOAS loading begins \u2014 '+fmtDur(carryOverH)+', resumes '+fmtH(carryOverEnd),
+      color:'#EF4444',pill:'CARRY-OVER',pillBg:'rgba(239,68,68,0.15)',pillColor:'#EF4444',status:'bad'
+    });
+  }
+
   // When COH is on hand, the crew starts loading outbound at shift start (s1Start),
   // BEFORE any inbound train is unloaded. Trains that arrived before s1Start will be
   // sitting on the ramp waiting — they become available immediately when the clock reaches
   // s1Start, but COH loading still takes priority when that is part of the outbound logic.
-  var clock=cohInitialEmptyCars>0?s1Start:trains[0].arr;
+  var clock=Math.max(cohInitialEmptyCars>0?s1Start:trains[0].arr, carryOverEnd);
   var delaysDone={shift:false,ups:false,lunch:false,lunch2:false};
 
   var ihosaResult=runPhase(trains,clock,ihosaCommitment,rate,ihosaUnits,0,
@@ -5764,6 +5811,7 @@ function updateStaticControlLabels(){
     ['swing-hours','v-swing-hours','h'],
     ['crew2','v-crew2',''],
     ['prelifts','v-prelifts',''],
+    ['carryover-lifts','v-carryover-lifts',''],
     ['flips','v-flips','']
   ];
   pairs.forEach(function(p){
@@ -5806,6 +5854,8 @@ function resetLeftInputs(){
   setControlValue('swing-hours','0');
   setControlValue('crew2','10');
   setControlValue('prelifts','0');
+  setControlValue('carryover-lifts','0');
+  setControlValue('carryover-type','mhoas');
   setControlValue('flips','0');
 
   buildTrains();
@@ -5839,9 +5889,10 @@ if(unexpectedDelayBtn){
   unexpectedDelayBtn.addEventListener('click',cycleUnexpectedDelay);
 }
 
-['cars-on-hand','crew1','swing-hours','crew2','flips','prelifts','current-time','s1-start','s1-end','s2-start','s2-end'].forEach(function(id){
+['cars-on-hand','crew1','swing-hours','crew2','flips','prelifts','carryover-lifts','current-time','s1-start','s1-end','s2-start','s2-end'].forEach(function(id){
   document.getElementById(id).addEventListener('input',function(){simulate();});
 });
+document.getElementById('carryover-type').addEventListener('change',function(){simulate();});
 
 buildPPESummary();
 buildPPETable();
@@ -5911,6 +5962,8 @@ function collectState(){
     unexpectedMins:  unexpectedDelayMins,
     flips:           gv('flips'),
     preLifts:        gv('prelifts'),
+    carryOverLifts:  gv('carryover-lifts'),
+    carryOverType:   g('carryover-type'),
     footage:         gv('cars-on-hand'),
     alerts:  (document.getElementById('alert-wrap')||{innerText:'None'}).innerText.trim() || 'None'
   };
@@ -5977,6 +6030,12 @@ function generateHandoffReport(state){
   // Delays
   var delayRows = [];
   var totalDelayMins = 0;
+  if(state.carryOverLifts > 0){
+    var carryLabel = state.carryOverType==='mhoas' ? 'Carry-over (MHOA, prior day)' : state.carryOverType==='inbound' ? 'Carry-over (inbound, prior day)' : 'Carry-over (MHOA + inbound, prior day)';
+    var carryMins = Math.round(state.carryOverLifts/Math.max(1,state.rate)*60);
+    delayRows.push({label:carryLabel,time:'0300 (before today\'s work)',dur:carryMins});
+    totalDelayMins+=carryMins;
+  }
   if(state.shiftChangeMins > 0){ delayRows.push({label:'Shift change',time:'1500',dur:state.shiftChangeMins}); totalDelayMins+=state.shiftChangeMins; }
   if(state.lunchMins > 0)      { delayRows.push({label:'Day lunch',time:'1100',dur:state.lunchMins});         totalDelayMins+=state.lunchMins; }
   if(state.lunch2Mins > 0)     { delayRows.push({label:'Night lunch',time:'2100',dur:state.lunch2Mins});      totalDelayMins+=state.lunch2Mins; }
@@ -6625,6 +6684,7 @@ function collectCurrentSettings(name, isDefault){
     upsBreak:gv('ups-break'), upsCount:gv('ups-count'),
     lunchBreak:gv('lunch-break'), lunchBreak2:gv('lunch-break2'),
     carsOnHand:gv('cars-on-hand'), flips:gv('flips'), prelifts:gv('prelifts'),
+    carryOverLifts:gv('carryover-lifts'), carryOverType:gs('carryover-type'),
     trainCount:trainCount, trainNames:Object.assign({},trainNames),
     trains:trains, unexpectedDelayMins:unexpectedDelayMins
   };
@@ -6644,6 +6704,7 @@ function applyProfile(p){
   set('lunch-break',p.lunchBreak); set('lunch-break2',p.lunchBreak2);
   set('cars-on-hand',p.carsOnHand);
   set('flips',p.flips); set('prelifts',p.prelifts);
+  set('carryover-lifts',p.carryOverLifts||0); set('carryover-type',p.carryOverType||'mhoas');
   // Sync display values that aren't updated by simulate() before reading
   document.getElementById('v-rate').textContent=p.rate;
   document.getElementById('v-swing-hours').textContent=(p.swingHours||0)+'h';
