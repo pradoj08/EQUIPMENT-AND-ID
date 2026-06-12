@@ -1881,6 +1881,117 @@ body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{background:linea
 
 
 
+
+
+/* ── TOPBAR COMPACT FIX — prevents second-row overlap after Supabase buttons ── */
+body:not(.print-mode) > .topbar{
+  height:58px !important;
+  min-height:58px !important;
+  padding:0 16px !important;
+  gap:10px !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  overflow:visible !important;
+}
+body:not(.print-mode) > .topbar .brand{
+  min-width:250px !important;
+  max-width:250px !important;
+  flex:0 0 250px !important;
+}
+body:not(.print-mode) > .topbar .brand-mark{
+  width:34px !important;
+  height:34px !important;
+}
+body:not(.print-mode) > .topbar .brand-name{
+  font-size:18px !important;
+  line-height:1 !important;
+}
+body:not(.print-mode) > .topbar .brand-tagline{
+  font-size:7.5px !important;
+  letter-spacing:0.18em !important;
+  white-space:nowrap !important;
+}
+body:not(.print-mode) > .topbar .tb-sep{
+  height:30px !important;
+  flex:0 0 1px !important;
+}
+body:not(.print-mode) > .topbar .terminal-id{
+  min-height:34px !important;
+  padding:0 10px !important;
+  font-size:10px !important;
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+body:not(.print-mode) > .topbar .tb-spacer{
+  flex:1 1 auto !important;
+  min-width:8px !important;
+}
+body:not(.print-mode) > .topbar #supabase-sync-status{
+  flex:0 0 auto !important;
+  font-size:7.5px !important;
+  letter-spacing:.08em !important;
+}
+body:not(.print-mode) > .topbar .tb-time-wrap{
+  height:34px !important;
+  min-width:126px !important;
+  padding:0 10px !important;
+  flex:0 0 126px !important;
+}
+body:not(.print-mode) > .topbar .tb-time-lbl{
+  font-size:7px !important;
+}
+body:not(.print-mode) > .topbar .tb-time-wrap input[type=time]{
+  width:72px !important;
+  font-size:14px !important;
+}
+body:not(.print-mode) > .topbar .tb-btn{
+  height:34px !important;
+  padding:0 10px !important;
+  font-size:8px !important;
+  letter-spacing:0.10em !important;
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+body:not(.print-mode) > .topbar #sidebar-toggle-btn{min-width:90px !important;}
+body:not(.print-mode) > .topbar #manual-save-btn{min-width:72px !important;}
+body:not(.print-mode) > .topbar #reset-inputs-btn{min-width:112px !important;}
+body:not(.print-mode) > .topbar .tb-handoff-btn{min-width:94px !important;}
+body:not(.print-mode) > .topbar .tb-print-report-btn{min-width:82px !important;}
+body:not(.print-mode) > .topbar #ppe-toggle-btn{min-width:66px !important;}
+body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:80px !important;}
+body:not(.print-mode) > .topbar .tb-controls{
+  height:34px !important;
+  padding:0 7px !important;
+  flex:0 0 auto !important;
+  min-width:116px !important;
+}
+body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{
+  width:54px !important;
+}
+@media(max-width:1400px){
+  body:not(.print-mode) > .topbar{gap:7px !important;padding:0 10px !important;}
+  body:not(.print-mode) > .topbar .brand{min-width:210px !important;max-width:210px !important;flex-basis:210px !important;}
+  body:not(.print-mode) > .topbar .brand-name{font-size:16px !important;}
+  body:not(.print-mode) > .topbar .brand-tagline{font-size:6.7px !important;letter-spacing:0.14em !important;}
+  body:not(.print-mode) > .topbar .tb-btn{padding:0 8px !important;font-size:7.5px !important;}
+  body:not(.print-mode) > .topbar #reset-inputs-btn{min-width:96px !important;}
+  body:not(.print-mode) > .topbar .tb-time-wrap{min-width:112px !important;flex-basis:112px !important;}
+  body:not(.print-mode) > .topbar .tb-controls{min-width:96px !important;}
+  body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{width:42px !important;}
+}
+@media(max-width:1100px){
+  body:not(.print-mode) > .topbar{
+    height:auto !important;
+    min-height:58px !important;
+    flex-wrap:wrap !important;
+    padding:8px 10px !important;
+  }
+  body:not(.print-mode) > .topbar .brand{
+    flex:1 1 220px !important;
+    max-width:none !important;
+  }
+}
+
 /* ── METRIC CARD OPACITY BOOST ──────────────────────────────
    Keeps the command-center color glow, but gives every metric-style
    card a more solid backplate so the grid/background does not bleed
@@ -1966,6 +2077,20 @@ body:not(.print-mode) .tavg-grade-card.bad{
 .rampiq-sync-callout.error strong{color:var(--red);}
 @media print{.rampiq-sync-callout{display:none!important;}}
 
+
+/* Hide simulation current-time control from top bar while preserving JS/state binding */
+.hidden-current-time-input{
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !important;}
+
 </style>
 </head>
 <body>
@@ -1976,7 +2101,7 @@ body:not(.print-mode) .tavg-grade-card.bad{
     <div class="brand-mark">🚂</div>
     <div>
       <div class="brand-name">Settegast</div>
-      <div class="brand-tagline">Intermodal Terminal Intelligence</div>
+      <div class="brand-tagline">Terminal Forecastor</div>
     </div>
   </div>
   <div class="tb-sep"></div>
@@ -1984,10 +2109,7 @@ body:not(.print-mode) .tavg-grade-card.bad{
   
   <div class="tb-spacer"></div>
   <div id="supabase-sync-status" class="sb-item" style="font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--text3);white-space:nowrap;">LOCAL CACHE</div>
-  <div class="tb-time-wrap">
-    <span class="tb-time-lbl">CURRENT</span>
-    <input type="time" id="current-time">
-  </div>
+  <input type="time" id="current-time" class="hidden-current-time-input" aria-hidden="true" tabindex="-1">
   
   <button class="tb-btn" onclick="toggleSidebar()" id="sidebar-toggle-btn">HIDE INPUTS</button>
 
@@ -1995,11 +2117,11 @@ body:not(.print-mode) .tavg-grade-card.bad{
 
   <button class="tb-btn tb-reset-btn" onclick="resetLeftInputs()" id="reset-inputs-btn" title="Reset left-side simulation inputs to defaults">&#x21BA; RESET INPUTS</button>
 
-  <button class="tb-btn tb-handoff-btn" onclick="openHandoff()">&#x1F4CB; HANDOFF REPORT</button>
+  <button class="tb-btn tb-handoff-btn" onclick="openHandoff()">&#x1F4CB; HANDOFF</button>
 
-  <button class="tb-btn tb-print-report-btn" onclick="printRampReport()">&#x1F5A8; PRINT REPORT</button>
+  <button class="tb-btn tb-print-report-btn" onclick="printRampReport()">&#x1F5A8; PRINT</button>
 
-  <button class="tb-btn" onclick="togglePPEScreen()" id="ppe-toggle-btn">PPE OPS</button>
+  <button class="tb-btn" onclick="togglePPEScreen()" id="ppe-toggle-btn">PPE</button>
 
   <button class="tb-btn" onclick="showTrends()" id="trends-toggle-btn">&#x1F4C8; TRENDS</button>
 
@@ -3625,7 +3747,7 @@ function goToScreen(screenId, toggleBtnId, onLabel, offLabel){
   const target = document.getElementById(screenId);
   const isAlreadyActive = target.classList.contains('active-screen');
 
-  document.getElementById('ppe-toggle-btn').textContent = 'PPE OPS';
+  document.getElementById('ppe-toggle-btn').textContent = 'PPE';
   document.getElementById('trends-toggle-btn').innerHTML = '&#x1F4C8; TRENDS';
 
   document.querySelectorAll('.screen').forEach(function(el){
@@ -3665,7 +3787,7 @@ function goToScreen(screenId, toggleBtnId, onLabel, offLabel){
 }
 
 function togglePPEScreen(){
-  goToScreen('ppe-screen','ppe-toggle-btn','PPE OPS','CLOSE PPE');
+  goToScreen('ppe-screen','ppe-toggle-btn','PPE','CLOSE PPE');
   // Re-run PPE init in case the screen was never visible when it first built
   if(document.getElementById('ppe-screen').classList.contains('active-screen')){
     buildPPETable();
