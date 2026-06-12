@@ -6292,38 +6292,51 @@ async function rampiqManualSave(){
   rampiqSetManualSaveButton('SAVING...', true);
   rampiqSyncBadge('SAVING', 'syncing');
 
-  // Save current simulation inputs as the active profile when one is loaded; otherwise create/update a durable Manual Save profile.
+  // Save current simulation inputs as the durable startup profile.
+  // Previous build wrote the profile but did NOT mark it as the default/autoload profile,
+  // so a refresh could reload old defaults and make the save appear lost.
   var arr = loadProfilesDB();
   var nowLabel = new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
   var existingIdx = _activeProfileId ? arr.findIndex(function(p){ return String(p.id) === String(_activeProfileId); }) : -1;
+  var savedProfile = null;
+
+  // Only one saved startup profile should be marked default at a time.
+  arr.forEach(function(p){ if(p) p.isDefault = false; });
 
   if(existingIdx >= 0){
     var existing = arr[existingIdx];
-    var updated = collectCurrentSettings(existing.name || 'Manual Save', existing.isDefault);
+    var updated = collectCurrentSettings(existing.name || 'Manual Save', true);
     updated.id = existing.id;
     updated.createdAt = existing.createdAt || nowLabel;
     updated.lastManualSave = nowLabel;
+    updated.isDefault = true;
     arr[existingIdx] = updated;
-    updateProfileLoadedBar(updated);
+    savedProfile = updated;
   } else {
     var manual = arr.find(function(p){ return p && p.name === 'Manual Save'; });
     if(manual){
       var mi = arr.findIndex(function(p){ return String(p.id) === String(manual.id); });
-      var updatedManual = collectCurrentSettings('Manual Save', !!manual.isDefault);
+      var updatedManual = collectCurrentSettings('Manual Save', true);
       updatedManual.id = manual.id;
       updatedManual.createdAt = manual.createdAt || nowLabel;
       updatedManual.lastManualSave = nowLabel;
+      updatedManual.isDefault = true;
       arr[mi] = updatedManual;
-      _activeProfileId = updatedManual.id;
-      updateProfileLoadedBar(updatedManual);
+      savedProfile = updatedManual;
     } else {
-      var fresh = collectCurrentSettings('Manual Save', false);
+      var fresh = collectCurrentSettings('Manual Save', true);
       fresh.createdAt = nowLabel;
       fresh.lastManualSave = nowLabel;
+      fresh.isDefault = true;
       arr.unshift(fresh);
-      _activeProfileId = fresh.id;
-      updateProfileLoadedBar(fresh);
+      savedProfile = fresh;
     }
+  }
+
+  if(savedProfile){
+    _activeProfileId = savedProfile.id;
+    setAutoloadId(String(savedProfile.id));
+    updateProfileLoadedBar(savedProfile);
   }
 
   try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(arr)); }catch(e){}
@@ -6343,7 +6356,7 @@ async function rampiqManualSave(){
     // Reports/trends remain synced too, but do not block the main input save if no reports exist.
     try{ await rampiqSaveReportsRemote(loadReports()); }catch(reportErr){ console.warn(reportErr); }
     rampiqSyncBadge('SUPABASE SAVED', 'ok');
-    rampiqShowSyncCallout('Saved to Supabase', 'Current inputs are synced globally.', 'ok');
+    rampiqShowSyncCallout('Saved to Supabase', 'Current inputs are synced globally and will reload after refresh.', 'ok');
     rampiqSetManualSaveButton('✓ SAVED', false);
     setTimeout(function(){ rampiqSetManualSaveButton(btnReset, false); rampiqSyncBadge('SUPABASE ONLINE', 'ok'); }, 1800);
   }catch(e){
