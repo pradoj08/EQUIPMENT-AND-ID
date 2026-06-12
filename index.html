@@ -3363,53 +3363,9 @@ function togglePanel(id){document.getElementById(id).classList.toggle('collapsed
 </div>
 
 <script>
-
-
-
-const ppeRoster = [
-  { shift: 'First Shift', name: 'Keyston Player', offDays: ['Mon', 'Sun'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Makia Hickman', offDays: ['Mon', 'Sun'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Demeatrius Towler', offDays: ['Thurs', 'Fri'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Dante Citizen', offDays: ['Thurs', 'Fri'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Alton Branford', offDays: ['Mon', 'Tues'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Dacoyea Frazer', offDays: ['Mon', 'Tues'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Myles Wanza', offDays: ['Mon', 'Tues'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Ramon Nava', offDays: ['Sat', 'Sun'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Tran Tyler', offDays: ['Thurs', 'Fri'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Dorrean Gardner', offDays: ['Tues', 'Wed'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Nelson Romero', offDays: ['Tues', 'Wed'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Mikey Dever', offDays: ['Tues', 'Wed'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Armando Castruita', offDays: ['Wed', 'Thurs'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'James Brown', offDays: ['Thurs', 'Fri'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Dexter Stewart', offDays: ['Sat', 'Sun'], task: 'Hostler' },
-  { shift: 'First Shift', name: 'Henry Thomas', offDays: ['Sat', 'Sun'], task: 'Hostler' },
-
-  { shift: 'Second Shift', name: 'Timothy Carruthers', offDays: ['Mon', 'Sun'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Victor Caceres Virula', offDays: ['Mon', 'Tues'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Aweri Keme Jr.', offDays: ['Mon', 'Tues'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Kevin Hosey', offDays: ['Mon', 'Tues'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Brandy Brown', offDays: ['Wed', 'Thurs'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Aaron Mejia', offDays: ['Thurs', 'Fri'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Derrell Bookman', offDays: ['Thurs', 'Fri'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Jason Tingle', offDays: ['Sat', 'Sun'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Marco Contrerras', offDays: ['Sat', 'Sun'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Robert Benavides', offDays: ['Wed', 'Sun'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Ernest Urtado', offDays: ['Tues', 'Wed'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Messiah Johnson', offDays: ['Tues', 'Thurs'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Rufus Gilder II', offDays: ['Tues', 'Wed'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Chimeniem Echendu', offDays: ['Wed', 'Thurs'], task: 'Hostler' },
-  { shift: 'Second Shift', name: 'Jose Delgado', offDays: ['Fri', 'Sat'], task: 'Hostler' },
-
-  { shift: 'Gate', name: 'Candace Warren', offDays: ['Sat', 'Sun'], task: 'Gate' },
-  { shift: 'Gate', name: 'Connie Johnson', offDays: ['Sat', 'Sun'], task: 'Gate' },
-  { shift: 'Gate', name: 'Jarade Douglas', offDays: ['Sat', 'Sun'], task: 'Gate' },
-  { shift: 'Gate', name: 'Gregory Watson II', offDays: ['Sat', 'Sun'], task: 'Gate' },
-  { shift: 'Gate', name: 'Bryce Alexander', offDays: ['Thurs', 'Fri'], task: 'Gate' },
-  { shift: 'Gate', name: 'Naomisha Hunt', offDays: ['Thurs', 'Fri', 'Sat'], task: 'Gate' },
-  { shift: 'Gate', name: 'Kane Cabral', offDays: ['Mon', 'Tues'], task: 'Gate' },
-  { shift: 'Gate', name: 'Ramacacondra Pratt', offDays: ['Thurs', 'Fri'], task: 'Gate' },
-  { shift: 'Gate', name: 'Tavares Gariet', offDays: ['Mon', 'Tues'], task: 'Gate' },
-];
+// PPE roster — loaded from the Supabase `rampiq_roster` table at startup (see rampiq_setup.sql).
+// Names are deliberately NOT hardcoded: this HTML file gets shared/emailed, and the roster is PII.
+let ppeRoster = [];
 
 const ppeShiftOptions = ['First Shift', 'Second Shift', 'Gate'];
 const ppeTaskOptions = ['Hostler', 'Groundman', 'Crane', 'Ops Vehicle', 'Gate'];
@@ -3570,6 +3526,10 @@ function renderPpeRow(person){
 function buildPPETable(){
   const body = document.getElementById('ppe-table-body');
   if(!body) return;
+  if(!ppeRoster.length){
+    body.innerHTML = '<tr><td colspan="16" style="padding:22px;text-align:center;color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:0.06em;">ROSTER NOT LOADED — populate the rampiq_roster table in Supabase (see rampiq_setup.sql)</td></tr>';
+    return;
+  }
   body.innerHTML = ppeShiftOptions.map(shift => {
     const people = ppeRoster.filter(p => p.shift === shift);
     if(!people.length) return '';
@@ -3841,6 +3801,27 @@ var LOADOUT_CONTINUE_THRESHOLD_UNITS=25;
 var LPMH_TARGET=2.4;
 var IHOSA_DL=17;
 var MHOAS_DL=27;
+
+// localStorage keys (versioned — bump suffix on breaking schema changes)
+var PROFILES_KEY = 'settegast_profiles_v1';
+var AUTOLOAD_KEY = 'settegast_autoload_v1';
+var TRENDS_KEY   = 'settegast_trends_v1';
+
+// Escape user-entered text before it is interpolated into innerHTML.
+// Use this for ANY string that originated in a text input (notes, names, times typed by users).
+function escHtml(v){
+  return String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Parse a numeric text input. Returns a finite number (including 0) or null when blank/invalid.
+// Use this instead of `parseFloat(x) || null`, which silently turns a legitimate 0 into "not entered".
+function parseNumOrNull(v){
+  if(v == null || String(v).trim() === '') return null;
+  var n = parseFloat(v);
+  return Number.isFinite(n) ? n : null;
+}
 
 function fmtH(h){var hh=Math.floor(h)%24;var mm=Math.round((h-Math.floor(h))*60);return String(hh).padStart(2,'0')+String(mm).padStart(2,'0');}
 function fmtHR(h){return h.toFixed(1)+' HR';}
@@ -5885,7 +5866,6 @@ function collectState(){
   return state;
 }
 
-function fmtReportTime(t){ return fmtH(t); }
 function fmtHMins(mins){ var h=Math.floor(mins/60),m=mins%60; return h>0?(h+'h'+(m>0?' '+m+'m':'')):(m+'m'); }
 
 function generateHandoffReport(state){
@@ -5935,7 +5915,7 @@ function generateHandoffReport(state){
     if(!state.trainDetails || !state.trainDetails.length) return '<div class="hr-none-row">No inbound train data.</div>';
     return state.trainDetails.map(function(t){
       var pct = t.units > 0 ? 100 : 0; // full units as configured (runtime rem not available here)
-      var arrLabel = fmtReportTime(t.arr);
+      var arrLabel = fmtH(t.arr);
       return '<div class="hr-train-row">'+
         '<div class="hr-train-name" style="color:'+t.color+';">'+t.name+'</div>'+
         '<div class="hr-train-meta">Arrived '+arrLabel+' · '+t.units+' units</div>'+
@@ -5967,10 +5947,10 @@ function generateHandoffReport(state){
 
   // Pivot points
   if(state.ihosaPivot){
-    crewItems.push('IHOSA pivot was at <strong>'+fmtReportTime(state.ihosaPivot)+'</strong> — outbound loading began at that point. Track car generation against this if the crew is still catching up.');
+    crewItems.push('IHOSA pivot was at <strong>'+fmtH(state.ihosaPivot)+'</strong> — outbound loading began at that point. Track car generation against this if the crew is still catching up.');
   }
   if(state.mhoasPivot){
-    crewItems.push('MHOAS pivot is at <strong>'+fmtReportTime(state.mhoasPivot)+'</strong> — that is the latest the crew can start loading MHOAS and still make 0300.');
+    crewItems.push('MHOAS pivot is at <strong>'+fmtH(state.mhoasPivot)+'</strong> — that is the latest the crew can start loading MHOAS and still make 0300.');
   }
 
   // Inbound drop status and times
@@ -6175,7 +6155,7 @@ function generateHandoffReport(state){
   plain += '--- FOR THE CREW ---\n';
   crewItems.forEach(function(item,i){ plain += (i+1)+'. '+item+'\n'; });
   plain += '\n--- FOR THE SUPERVISOR ---\n';
-  if(state.trainDetails) state.trainDetails.forEach(function(t){ plain += t.name+': arrived '+fmtReportTime(t.arr)+', '+t.units+' units\n'; });
+  if(state.trainDetails) state.trainDetails.forEach(function(t){ plain += t.name+': arrived '+fmtH(t.arr)+', '+t.units+' units\n'; });
   plain += '\nDelays:\n';
   if(delayRows.length){ delayRows.forEach(function(d){ plain += '  '+d.label+' @ '+d.time+' — '+fmtHMins(d.dur)+'\n'; }); plain += '  Total: '+fmtHMins(totalDelayMins)+'\n'; }
   else plain += '  None active.\n';
@@ -6232,7 +6212,7 @@ function copyHandoff(){
 
 // ── SUPABASE COMPATIBILITY ───────────────────────────────────────────────
 // Client-side REST sync. LocalStorage remains the instant/offline cache; Supabase becomes the shared/global store.
-var RAMPiq_SUPABASE = {
+var RAMPIQ_SUPABASE = {
   enabled: true,
   restUrl: 'https://jznqyngrtmfkivddgxhv.supabase.co/rest/v1',
   anonKey: 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy',
@@ -6241,15 +6221,15 @@ var RAMPiq_SUPABASE = {
 
 function rampiqSupabaseHeaders(extra){
   var h = {
-    'apikey': RAMPiq_SUPABASE.anonKey,
-    'Authorization': 'Bearer ' + RAMPiq_SUPABASE.anonKey,
+    'apikey': RAMPIQ_SUPABASE.anonKey,
+    'Authorization': 'Bearer ' + RAMPIQ_SUPABASE.anonKey,
     'Content-Type': 'application/json'
   };
   if(extra){ Object.keys(extra).forEach(function(k){ h[k]=extra[k]; }); }
   return h;
 }
 function rampiqApiUrl(table, query){
-  var base = (RAMPiq_SUPABASE.restUrl || '').replace(/\/$/, '');
+  var base = (RAMPIQ_SUPABASE.restUrl || '').replace(/\/$/, '');
   return base + '/' + table + (query ? ('?' + query) : '');
 }
 function rampiqSyncBadge(text, status){
@@ -6261,10 +6241,10 @@ function rampiqSyncBadge(text, status){
       el.dataset.status = status || '';
       el.style.color = status === 'error' ? 'var(--red)' : (status === 'ok' ? 'var(--green)' : 'var(--text3)');
     }
-  }catch(e){}
+  }catch(e){ /* badge is cosmetic — never let it break a save */ }
 }
 function rampiqRemoteEnabled(){
-  return !!(RAMPiq_SUPABASE && RAMPiq_SUPABASE.enabled && RAMPiq_SUPABASE.restUrl && RAMPiq_SUPABASE.anonKey);
+  return !!(RAMPIQ_SUPABASE && RAMPIQ_SUPABASE.enabled && RAMPIQ_SUPABASE.restUrl && RAMPIQ_SUPABASE.anonKey);
 }
 function rampiqShowSyncCallout(title, message, type){
   try{
@@ -6275,7 +6255,7 @@ function rampiqShowSyncCallout(title, message, type){
     requestAnimationFrame(function(){ el.classList.add('show'); });
     clearTimeout(window._rampiqSyncCalloutTimer);
     window._rampiqSyncCalloutTimer = setTimeout(function(){ el.classList.remove('show'); }, type === 'error' ? 6200 : 2600);
-  }catch(e){}
+  }catch(e){ /* callout is cosmetic — never let it break a save */ }
 }
 
 function rampiqSetManualSaveButton(stateText, busy){
@@ -6284,7 +6264,7 @@ function rampiqSetManualSaveButton(stateText, busy){
     if(!btn) return;
     btn.classList.toggle('saving', !!busy);
     btn.innerHTML = stateText || '&#x1F4BE; SAVE';
-  }catch(e){}
+  }catch(e){ /* button state is cosmetic — never let it break a save */ }
 }
 
 async function rampiqManualSave(){
@@ -6339,7 +6319,7 @@ async function rampiqManualSave(){
     updateProfileLoadedBar(savedProfile);
   }
 
-  try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(arr)); }catch(e){}
+  try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(arr)); }catch(e){ console.warn('localStorage write failed (profiles):', e); }
   renderProfileDropdown();
   var sel = document.getElementById('profile-select');
   if(sel && _activeProfileId) sel.value = _activeProfileId;
@@ -6368,13 +6348,30 @@ async function rampiqManualSave(){
   }
 }
 
-function rampiqEncodeList(arr){
-  return arr.map(function(x){ return encodeURIComponent(String(x)); }).join(',');
+// ── Targeted remote deletes (only ever called on explicit user action) ──
+async function rampiqDeleteRowRemote(table, id){
+  if(!rampiqRemoteEnabled()) return;
+  var q = 'terminal_id=eq.' + encodeURIComponent(RAMPIQ_SUPABASE.terminalId) + '&id=eq.' + encodeURIComponent(String(id));
+  var res = await fetch(rampiqApiUrl(table, q), { method:'DELETE', headers: rampiqSupabaseHeaders() });
+  if(!res.ok) throw new Error('Supabase delete failed (' + table + '): ' + res.status);
+}
+function rampiqDeleteRowRemoteSafe(table, id){
+  rampiqDeleteRowRemote(table, id).catch(function(e){
+    console.warn(e);
+    rampiqSyncBadge('LOCAL CACHE', 'error');
+    rampiqShowSyncCallout('Supabase delete failed', 'Deleted locally, but the remote copy may reappear after refresh.', 'error');
+  });
+}
+async function rampiqDeleteAllReportsRemote(){
+  if(!rampiqRemoteEnabled()) return;
+  var q = 'terminal_id=eq.' + encodeURIComponent(RAMPIQ_SUPABASE.terminalId);
+  var res = await fetch(rampiqApiUrl('rampiq_reports', q), { method:'DELETE', headers: rampiqSupabaseHeaders() });
+  if(!res.ok) throw new Error('Supabase clear-all failed: ' + res.status);
 }
 
 async function rampiqLoadProfilesRemote(){
   if(!rampiqRemoteEnabled()) return null;
-  var q = 'select=id,name,is_default,payload,updated_at&terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId) + '&order=updated_at.desc';
+  var q = 'select=id,name,is_default,payload,updated_at&terminal_id=eq.' + encodeURIComponent(RAMPIQ_SUPABASE.terminalId) + '&order=updated_at.desc';
   var res = await fetch(rampiqApiUrl('rampiq_profiles', q), { headers: rampiqSupabaseHeaders() });
   if(!res.ok) throw new Error('Supabase profiles load failed: ' + res.status);
   var rows = await res.json();
@@ -6392,7 +6389,7 @@ async function rampiqSaveProfilesRemote(arr){
   var rows = (arr || []).map(function(p){
     return {
       id: String(p.id),
-      terminal_id: RAMPiq_SUPABASE.terminalId,
+      terminal_id: RAMPIQ_SUPABASE.terminalId,
       name: p.name || 'Unnamed profile',
       is_default: !!p.isDefault,
       payload: p,
@@ -6407,11 +6404,10 @@ async function rampiqSaveProfilesRemote(arr){
     });
     if(!up.ok) throw new Error('Supabase profiles save failed: ' + up.status);
   }
-  // Delete remote rows that were removed locally so deleted profiles do not come back on reload.
-  var delQuery = 'terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId);
-  if(rows.length){ delQuery += '&id=not.in.(' + rampiqEncodeList(rows.map(function(r){return r.id;})) + ')'; }
-  var del = await fetch(rampiqApiUrl('rampiq_profiles', delQuery), { method:'DELETE', headers:rampiqSupabaseHeaders() });
-  if(!del.ok) throw new Error('Supabase profiles delete-sync failed: ' + del.status);
+  // NOTE: saves are upsert-only. We deliberately do NOT delete remote rows that are
+  // missing from the local array — a stale tab on another machine must never be able
+  // to wipe profiles saved elsewhere. Deletions sync individually via
+  // rampiqDeleteRowRemoteSafe() at the moment the user deletes in the UI.
 }
 
 async function rampiqRefreshProfilesFromSupabase(autoApply){
@@ -6441,7 +6437,7 @@ async function rampiqRefreshProfilesFromSupabase(autoApply){
 
 async function rampiqLoadReportsRemote(){
   if(!rampiqRemoteEnabled()) return null;
-  var q = 'select=id,saved_at,payload,updated_at&terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId) + '&order=saved_at.desc';
+  var q = 'select=id,saved_at,payload,updated_at&terminal_id=eq.' + encodeURIComponent(RAMPIQ_SUPABASE.terminalId) + '&order=saved_at.desc';
   var res = await fetch(rampiqApiUrl('rampiq_reports', q), { headers: rampiqSupabaseHeaders() });
   if(!res.ok) throw new Error('Supabase reports load failed: ' + res.status);
   var rows = await res.json();
@@ -6458,7 +6454,7 @@ async function rampiqSaveReportsRemote(arr){
     var savedIso = new Date(Number(r.id) || Date.now()).toISOString();
     return {
       id: String(r.id),
-      terminal_id: RAMPiq_SUPABASE.terminalId,
+      terminal_id: RAMPIQ_SUPABASE.terminalId,
       saved_at: savedIso,
       report_time: r.currentTime || null,
       actual_lpmh: Number(r.actualLpmh || 0),
@@ -6475,10 +6471,8 @@ async function rampiqSaveReportsRemote(arr){
     });
     if(!up.ok) throw new Error('Supabase reports save failed: ' + up.status);
   }
-  var delQuery = 'terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId);
-  if(rows.length){ delQuery += '&id=not.in.(' + rampiqEncodeList(rows.map(function(r){return r.id;})) + ')'; }
-  var del = await fetch(rampiqApiUrl('rampiq_reports', delQuery), { method:'DELETE', headers:rampiqSupabaseHeaders() });
-  if(!del.ok) throw new Error('Supabase reports delete-sync failed: ' + del.status);
+  // Upsert-only — see note in rampiqSaveProfilesRemote(). Single-report deletion and
+  // the explicit "clear all" action sync via the dedicated delete helpers below.
 }
 
 async function rampiqRefreshReportsFromSupabase(){
@@ -6496,17 +6490,15 @@ async function rampiqRefreshReportsFromSupabase(){
 }
 
 // ── PROFILE SYSTEM ──────────────────────────────────────────────────
-var PROFILES_KEY = 'settegast_profiles_v1';
-var AUTOLOAD_KEY = 'settegast_autoload_v1';
 var _activeProfileId = null;
 
 function loadProfilesDB(){ try{ return JSON.parse(localStorage.getItem(PROFILES_KEY)||'[]'); }catch(e){ return []; } }
 function saveProfilesDB(arr){
-  try{ localStorage.setItem(PROFILES_KEY,JSON.stringify(arr)); }catch(e){}
+  try{ localStorage.setItem(PROFILES_KEY,JSON.stringify(arr)); }catch(e){ console.warn('localStorage write failed (profiles):', e); }
   rampiqSaveProfilesRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); rampiqShowSyncCallout('Supabase save failed', 'Profile changes were saved locally, but did not reach Supabase.', 'error'); });
 }
 function getAutoloadId(){ try{ return localStorage.getItem(AUTOLOAD_KEY)||null; }catch(e){ return null; } }
-function setAutoloadId(id){ try{ if(id) localStorage.setItem(AUTOLOAD_KEY,id); else localStorage.removeItem(AUTOLOAD_KEY); }catch(e){} }
+function setAutoloadId(id){ try{ if(id) localStorage.setItem(AUTOLOAD_KEY,id); else localStorage.removeItem(AUTOLOAD_KEY); }catch(e){ console.warn('localStorage write failed (autoload):', e); } }
 
 
 // Option 3 fix: old saved profiles may still carry the prior 0900 second-inbound arrival.
@@ -6753,6 +6745,7 @@ function deleteSelectedProfile(){
   var arr = loadProfilesDB();
   var filtered = arr.filter(function(x){ return String(x.id) !== String(id); });
   saveProfilesDB(filtered);
+  rampiqDeleteRowRemoteSafe('rampiq_profiles', id);
   if(getAutoloadId() === String(id)) setAutoloadId(null);
   if(String(_activeProfileId) === String(id)){ _activeProfileId = null; updateProfileLoadedBar(null); }
   renderProfileDropdown();
@@ -6793,14 +6786,40 @@ function toggleAutoload(){
 
 // ── END PROFILE SYSTEM ──────────────────────────────────────────────
 
+// ── PPE ROSTER: loaded from Supabase ────────────────────────────────
+async function rampiqLoadRosterRemote(){
+  if(!rampiqRemoteEnabled()) return null;
+  var q = 'select=name,shift,off_days,task&terminal_id=eq.' + encodeURIComponent(RAMPIQ_SUPABASE.terminalId) + '&order=name.asc';
+  var res = await fetch(rampiqApiUrl('rampiq_roster', q), { headers: rampiqSupabaseHeaders() });
+  if(!res.ok) throw new Error('Supabase roster load failed: ' + res.status);
+  var rows = await res.json();
+  return (rows || []).map(function(row){
+    return {
+      name: row.name,
+      shift: row.shift || 'First Shift',
+      offDays: Array.isArray(row.off_days) ? row.off_days : [],
+      task: row.task || 'Hostler'
+    };
+  });
+}
+(function initRoster(){
+  rampiqLoadRosterRemote().then(function(rows){
+    if(rows && rows.length){
+      ppeRoster = rows;
+      buildPPESummary(); buildPPETable(); applyPPEFilters(); updatePPEScores();
+    } else if(rows){
+      console.warn('rampiq_roster is empty — PPE screen will show an empty state. Seed it with rampiq_setup.sql.');
+    }
+  }).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); });
+})();
+
 var _lastSimMetrics = {};
 function updateSimMetrics(obj){ _lastSimMetrics = obj; }
 
 // ── TRENDS: local cache + Supabase helpers ──
-var TRENDS_KEY = 'settegast_trends_v1';
 function loadReports(){ try{ return JSON.parse(localStorage.getItem(TRENDS_KEY)||'[]'); }catch(e){ return []; } }
 function saveReports(arr){
-  try{ localStorage.setItem(TRENDS_KEY,JSON.stringify(arr)); }catch(e){}
+  try{ localStorage.setItem(TRENDS_KEY,JSON.stringify(arr)); }catch(e){ console.warn('localStorage write failed (trends):', e); }
   rampiqSaveReportsRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); rampiqShowSyncCallout('Supabase save failed', 'Report/trend changes were saved locally, but did not reach Supabase.', 'error'); });
 }
 (function initReportSync(){ setTimeout(function(){ rampiqRefreshReportsFromSupabase(); }, 500); })();
@@ -6855,13 +6874,20 @@ function undoTrends(){
 function deleteReport(id){
   _setTrendsUndo(loadReports(), 'delete record');
   saveReports(loadReports().filter(function(r){ return r.id !== id; }));
+  rampiqDeleteRowRemoteSafe('rampiq_reports', id);
   renderTrendsPage();
 }
 
 function clearAllReports(){
   if(!confirm('Delete all saved reports?')) return;
   _setTrendsUndo(loadReports(), 'clear all');
-  saveReports([]); renderTrendsPage();
+  saveReports([]);
+  rampiqDeleteAllReportsRemote().catch(function(e){
+    console.warn(e);
+    rampiqSyncBadge('LOCAL CACHE', 'error');
+    rampiqShowSyncCallout('Supabase clear failed', 'Cleared locally, but remote reports may reappear after refresh.', 'error');
+  });
+  renderTrendsPage();
 }
 
 function viewReport(id){
@@ -7091,8 +7117,8 @@ function renderTrendsPage(){
   if(reconRecords.length){
     var totalVariance = reconRecords.reduce(function(s,r){
       var a = r.actuals;
-      var iVar = r.ihosaUnits>0 ? Math.abs((a.ihosaUnits||r.ihosaLoaded) - r.ihosaLoaded)/Math.max(1,r.ihosaUnits)*100 : 0;
-      var mVar = r.mhoasUnits>0 ? Math.abs((a.mhoasUnits||r.mhoasLoaded) - r.mhoasLoaded)/Math.max(1,r.mhoasUnits)*100 : 0;
+      var iVar = r.ihosaUnits>0 ? Math.abs(((a.ihosaUnits!=null?a.ihosaUnits:r.ihosaLoaded)) - r.ihosaLoaded)/Math.max(1,r.ihosaUnits)*100 : 0;
+      var mVar = r.mhoasUnits>0 ? Math.abs(((a.mhoasUnits!=null?a.mhoasUnits:r.mhoasLoaded)) - r.mhoasLoaded)/Math.max(1,r.mhoasUnits)*100 : 0;
       var count = (r.ihosaUnits>0?1:0)+(r.mhoasUnits>0?1:0);
       return s + (count>0?(iVar+mVar)/count:0);
     },0)/reconRecords.length;
@@ -7162,7 +7188,7 @@ function renderTrendsPage(){
         listHtml += '<div style="margin-top:5px;display:flex;align-items:center;gap:5px;">';
         listHtml += '<span class="tr-recon-badge">&#x2713; RECONCILED</span>';
         listHtml += '</div>';
-        if(a.enteredBy) listHtml += '<div class="tr-card-simtime" style="margin-top:2px;">by '+a.enteredBy+'</div>';
+        if(a.enteredBy) listHtml += '<div class="tr-card-simtime" style="margin-top:2px;">by '+escHtml(a.enteredBy)+'</div>';
       } else {
         listHtml += '<div style="margin-top:5px;"><span class="tr-pending-badge">&#x25CB; PENDING</span></div>';
       }
@@ -7183,15 +7209,15 @@ function renderTrendsPage(){
         listHtml += '<div class="tr-recon-grid">';
 
         // IHOSA
-        var iActPct = r.ihosaUnits>0&&a.ihosaUnits ? Math.round(a.ihosaUnits/r.ihosaUnits*100) : null;
+        var iActPct = r.ihosaUnits>0&&a.ihosaUnits!=null ? Math.round(a.ihosaUnits/r.ihosaUnits*100) : null;
         listHtml += '<div class="tr-recon-row">';
         listHtml += '<div class="tr-recon-label">IHOSA units</div>';
         listHtml += '<div class="tr-recon-forecast">'+(r.ihosaLoaded||'—')+'</div>';
         listHtml += '<div class="tr-recon-arrow">→</div>';
-        listHtml += '<div class="tr-recon-actual">'+(a.ihosaUnits||'—')+'</div>';
+        listHtml += '<div class="tr-recon-actual">'+(a.ihosaUnits!=null?a.ihosaUnits:'—')+'</div>';
         listHtml += '<div class="tr-recon-delta">'+delta(r.ihosaLoaded, a.ihosaUnits, 'u', false)+'</div>';
         listHtml += '<div class="tr-recon-status">';
-        listHtml += a.ihosaOnTime ? '<span class="tr-recon-met">ON TIME</span>' : a.ihosaDep ? '<span class="tr-recon-missed">DEP '+a.ihosaDep+'</span>' : '';
+        listHtml += a.ihosaOnTime ? '<span class="tr-recon-met">ON TIME</span>' : a.ihosaDep ? '<span class="tr-recon-missed">DEP '+escHtml(a.ihosaDep)+'</span>' : '';
         listHtml += '</div></div>';
 
         // MHOAS
@@ -7199,14 +7225,14 @@ function renderTrendsPage(){
         listHtml += '<div class="tr-recon-label">MHOAS units</div>';
         listHtml += '<div class="tr-recon-forecast">'+(r.mhoasLoaded||'—')+'</div>';
         listHtml += '<div class="tr-recon-arrow">→</div>';
-        listHtml += '<div class="tr-recon-actual">'+(a.mhoasUnits||'—')+'</div>';
+        listHtml += '<div class="tr-recon-actual">'+(a.mhoasUnits!=null?a.mhoasUnits:'—')+'</div>';
         listHtml += '<div class="tr-recon-delta">'+delta(r.mhoasLoaded, a.mhoasUnits, 'u', false)+'</div>';
         listHtml += '<div class="tr-recon-status">';
-        listHtml += a.mhoasOnTime ? '<span class="tr-recon-met">ON TIME</span>' : a.mhoasDep ? '<span class="tr-recon-missed">DEP '+a.mhoasDep+'</span>' : '';
+        listHtml += a.mhoasOnTime ? '<span class="tr-recon-met">ON TIME</span>' : a.mhoasDep ? '<span class="tr-recon-missed">DEP '+escHtml(a.mhoasDep)+'</span>' : '';
         listHtml += '</div></div>';
 
         // Pivot
-        if(a.actualPivot && r.ihosaPivot){
+        if(a.actualPivot != null && r.ihosaPivot != null){
           var pivotForecast = parseFloat(r.ihosaPivot);
           var pivotActual = parseFloat(a.actualPivot);
           listHtml += '<div class="tr-recon-row">';
@@ -7219,7 +7245,7 @@ function renderTrendsPage(){
         }
 
         if(a.notes){
-          listHtml += '<div style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.05);font-size:10.5px;color:var(--text3);line-height:1.5;font-style:italic;">&#x1F4AC; '+a.notes+'</div>';
+          listHtml += '<div style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.05);font-size:10.5px;color:var(--text3);line-height:1.5;font-style:italic;">&#x1F4AC; '+escHtml(a.notes)+'</div>';
         }
         listHtml += '</div></div>'; // tr-recon-grid, tr-recon-panel
       }
@@ -7251,13 +7277,13 @@ function openActualsPanel(id){
   document.getElementById('ap-mhoas-forecast').textContent = r.mhoasLoaded ? Math.round(r.mhoasLoaded)+' / '+r.mhoasUnits+' u' : '—';
   document.getElementById('ap-pivot-forecast').textContent = r.ihosaPivot ? fmtH(r.ihosaPivot) : '—';
 
-  document.getElementById('ap-ihosa-units').value   = a.ihosaUnits   || '';
+  document.getElementById('ap-ihosa-units').value   = a.ihosaUnits   != null ? a.ihosaUnits : '';
   document.getElementById('ap-ihosa-ontime').checked = !!a.ihosaOnTime;
   document.getElementById('ap-ihosa-dep').value      = a.ihosaDep     || '';
-  document.getElementById('ap-mhoas-units').value   = a.mhoasUnits   || '';
+  document.getElementById('ap-mhoas-units').value   = a.mhoasUnits   != null ? a.mhoasUnits : '';
   document.getElementById('ap-mhoas-ontime').checked = !!a.mhoasOnTime;
   document.getElementById('ap-mhoas-dep').value      = a.mhoasDep     || '';
-  document.getElementById('ap-pivot-actual').value  = a.actualPivot  || '';
+  document.getElementById('ap-pivot-actual').value  = a.actualPivot  != null ? a.actualPivot : '';
   document.getElementById('ap-entered-by').value    = a.enteredBy    || '';
   document.getElementById('ap-notes').value         = a.notes        || '';
 
@@ -7275,8 +7301,8 @@ function saveActuals(){
   var idx = arr.findIndex(function(x){ return x.id === _actualsTargetId; });
   if(idx === -1) return;
 
-  var iU = parseFloat(document.getElementById('ap-ihosa-units').value) || null;
-  var mU = parseFloat(document.getElementById('ap-mhoas-units').value) || null;
+  var iU = parseNumOrNull(document.getElementById('ap-ihosa-units').value);
+  var mU = parseNumOrNull(document.getElementById('ap-mhoas-units').value);
   var iOn = document.getElementById('ap-ihosa-ontime').checked;
   var mOn = document.getElementById('ap-mhoas-ontime').checked;
   var iDep = document.getElementById('ap-ihosa-dep').value.trim();
@@ -7294,7 +7320,7 @@ function saveActuals(){
   arr[idx].actuals = {
     ihosaUnits: iU, ihosaOnTime: iOn, ihosaDep: iDep||null,
     mhoasUnits: mU, mhoasOnTime: mOn, mhoasDep: mDep||null,
-    actualPivot: piv ? parseFloat(piv) : null,
+    actualPivot: parseNumOrNull(piv),
     enteredBy: by||null, notes: notes||null,
     enteredAt: new Date().toISOString(),
     needsAttention: needsAttention
