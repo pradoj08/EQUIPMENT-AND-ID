@@ -1751,6 +1751,179 @@ body.print-mode .time-lbl{
   #print-report .seq-meta{color:#111!important;font-size:8.5px!important;}
   #print-report .seq-pill,.now-pill,.badge{background:#eee!important;color:#111!important;border:1px solid #999!important;}
 }
+
+
+/* ── TOPBAR SAFE STYLE MATCH — header-only, no dashboard layout impact ── */
+body:not(.print-mode) > .topbar{
+  min-height:64px;
+  padding:0 20px;
+  gap:14px;
+  background:linear-gradient(180deg,rgba(10,14,20,0.98),rgba(5,8,13,0.98));
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 10px 28px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(245,158,11,0.08);
+}
+body:not(.print-mode) > .topbar::after{
+  background:linear-gradient(90deg,rgba(245,158,11,0.36),rgba(20,184,166,0.20),transparent 68%);
+  opacity:0.45;
+}
+body:not(.print-mode) > .topbar .brand{gap:12px;min-width:248px;}
+body:not(.print-mode) > .topbar .brand-mark{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,#F59E0B,#B45309);
+  color:#07070B;
+  font-size:0;
+  border:1px solid rgba(245,158,11,0.45);
+  box-shadow:0 0 0 1px rgba(0,0,0,0.35),0 0 20px rgba(245,158,11,0.16);
+}
+body:not(.print-mode) > .topbar .brand-mark::before{
+  content:'◆';
+  font-size:15px;
+  color:#111827;
+  transform:translateY(-1px);
+}
+body:not(.print-mode) > .topbar .brand-name{
+  font-family:var(--font);
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  color:#fff;
+  background:none;
+  -webkit-text-fill-color:currentColor;
+  text-transform:none;
+}
+body:not(.print-mode) > .topbar .brand-tagline{
+  margin-top:1px;
+  font-size:8px;
+  letter-spacing:0.23em;
+  color:rgba(255,255,255,0.46);
+}
+body:not(.print-mode) > .topbar .tb-sep{height:32px;background:rgba(255,255,255,0.10);}
+body:not(.print-mode) > .topbar .terminal-id{
+  display:flex;align-items:center;gap:8px;
+  min-height:38px;
+  padding:0 14px;
+  border-left:1px solid rgba(255,255,255,0.04);
+  border-right:1px solid rgba(255,255,255,0.04);
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:700;
+  color:rgba(255,255,255,0.82);
+  letter-spacing:0.14em;
+}
+body:not(.print-mode) > .topbar .terminal-caret{color:var(--amber);font-size:12px;letter-spacing:0;transform:translateY(-1px);}
+body:not(.print-mode) > .topbar .tb-time-wrap{
+  height:38px;
+  min-width:150px;
+  justify-content:center;
+  gap:10px;
+  padding:0 14px;
+  border-radius:7px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+body:not(.print-mode) > .topbar .tb-time-lbl{font-size:8px;color:rgba(255,255,255,0.34);letter-spacing:0.16em;}
+body:not(.print-mode) > .topbar .tb-time-wrap input[type=time]{font-size:15px;font-weight:700;letter-spacing:0.05em;width:82px;color:#fff;}
+body:not(.print-mode) > .topbar .tb-btn{
+  height:38px;
+  padding:0 16px;
+  border-radius:7px;
+  border:1px solid rgba(255,255,255,0.13);
+  background:rgba(255,255,255,0.025);
+  color:rgba(255,255,255,0.74);
+  font-size:9px;
+  letter-spacing:0.13em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+body:not(.print-mode) > .topbar .tb-btn:hover{
+  border-color:rgba(245,158,11,0.42);
+  color:#FBBF24;
+  background:rgba(245,158,11,0.055);
+}
+body:not(.print-mode) > .topbar #sidebar-toggle-btn{color:rgba(255,255,255,0.82);}
+body:not(.print-mode) > .topbar .tb-reset-btn{
+  border-color:rgba(239,68,68,0.25);
+  color:#fca5a5;
+  background:rgba(239,68,68,0.035);
+}
+body:not(.print-mode) > .topbar .tb-reset-btn:hover{
+  border-color:rgba(239,68,68,0.55);
+  color:#fff;
+  background:rgba(239,68,68,0.10);
+}
+body:not(.print-mode) > .topbar .tb-handoff-btn{
+  border-color:rgba(245,158,11,0.55)!important;
+  color:#FBBF24!important;
+  background:rgba(245,158,11,0.045)!important;
+}
+body:not(.print-mode) > .topbar .tb-print-report-btn{
+  border-color:rgba(20,184,166,0.48)!important;
+  color:#2DD4BF!important;
+  background:rgba(20,184,166,0.035)!important;
+}
+body:not(.print-mode) > .topbar #ppe-toggle-btn,
+body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:92px;justify-content:center;}
+body:not(.print-mode) > .topbar .tb-controls{
+  height:38px;
+  padding:0 8px;
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:7px;
+  background:rgba(255,255,255,0.025);
+}
+body:not(.print-mode) > .topbar .tb-font-wrap{background:transparent;border:none;padding:0;gap:8px;}
+body:not(.print-mode) > .topbar .tb-ctrl-lbl{color:rgba(255,255,255,0.45);}
+body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{background:linear-gradient(90deg,rgba(245,158,11,0.60),rgba(245,158,11,0.12));}
+@media(max-width:1100px){
+  body:not(.print-mode) > .topbar .brand{min-width:210px;}
+  body:not(.print-mode) > .topbar .tb-btn{padding:0 11px;font-size:8.5px;}
+  body:not(.print-mode) > .topbar .terminal-id{padding:0 10px;}
+}
+
+
+
+/* ── METRIC CARD OPACITY BOOST ──────────────────────────────
+   Keeps the command-center color glow, but gives every metric-style
+   card a more solid backplate so the grid/background does not bleed
+   through as much. Scoped away from print mode/report output. */
+body:not(.print-mode) .metric,
+body:not(.print-mode) .metric-commit,
+body:not(.print-mode) .top-grade-card,
+body:not(.print-mode) .rtb-card,
+body:not(.print-mode) .lpmh-card,
+body:not(.print-mode) .tblock-card,
+body:not(.print-mode) .tavg-grade-card,
+body:not(.print-mode) .tavg-stat,
+body:not(.print-mode) .tavg-hero,
+body:not(.print-mode) .tavg-quick,
+body:not(.print-mode) .tavg-drivers,
+body:not(.print-mode) .tavg-note,
+body:not(.print-mode) .coh-stat,
+body:not(.print-mode) .ppe-summary-card,
+body:not(.print-mode) .ppe-metric-card{
+  background-color:#111119 !important;
+}
+
+body:not(.print-mode) .top-grade-card.good,
+body:not(.print-mode) .metric-commit.met,
+body:not(.print-mode) .lpmh-card.lok,
+body:not(.print-mode) .rtb-good,
+body:not(.print-mode) .tavg-grade-card.good{
+  background-color:#101A17 !important;
+}
+
+body:not(.print-mode) .top-grade-card.warn,
+body:not(.print-mode) .rtb-warn,
+body:not(.print-mode) .tavg-grade-card.warn{
+  background-color:#1B1710 !important;
+}
+
+body:not(.print-mode) .top-grade-card.bad,
+body:not(.print-mode) .metric-commit.missed,
+body:not(.print-mode) .lpmh-card.lbad,
+body:not(.print-mode) .rtb-bad,
+body:not(.print-mode) .tavg-grade-card.bad{
+  background-color:#1A1013 !important;
+}
 </style>
 </head>
 <body>
@@ -1765,7 +1938,7 @@ body.print-mode .time-lbl{
     </div>
   </div>
   <div class="tb-sep"></div>
-  <div class="terminal-id">HOUSTON RAMP</div>
+  <div class="terminal-id">HOUSTON RAMP <span class="terminal-caret">⌄</span></div>
   
   <div class="tb-spacer"></div>
   <div class="tb-time-wrap">
@@ -1774,6 +1947,8 @@ body.print-mode .time-lbl{
   </div>
   
   <button class="tb-btn" onclick="toggleSidebar()" id="sidebar-toggle-btn">HIDE INPUTS</button>
+
+  <button class="tb-btn tb-reset-btn" onclick="resetLeftInputs()" id="reset-inputs-btn" title="Reset left-side simulation inputs to defaults">&#x21BA; RESET INPUTS</button>
 
   <button class="tb-btn tb-handoff-btn" onclick="openHandoff()">&#x1F4CB; HANDOFF REPORT</button>
 
@@ -5342,6 +5517,77 @@ renderTopGrades({
 
 document.getElementById('tavg-body').innerHTML=html + html2;
 
+}
+
+
+function setControlValue(id,value){
+  var el=document.getElementById(id);
+  if(el) el.value=value;
+}
+
+function updateStaticControlLabels(){
+  var pairs=[
+    ['ihosa-units','v-iu',''],
+    ['mhoas-units','v-mhoas',''],
+    ['rate','v-rate',''],
+    ['shift-change','v-sc','h'],
+    ['shift-change-0300','v-sc-0300','h'],
+    ['ups-count','v-ups-count',' units'],
+    ['ups-break','v-ups','h'],
+    ['lunch-break','v-lunch','h'],
+    ['lunch-break2','v-lunch2','h'],
+    ['crew1','v-crew1',''],
+    ['swing-hours','v-swing-hours','h'],
+    ['crew2','v-crew2',''],
+    ['prelifts','v-prelifts',''],
+    ['flips','v-flips','']
+  ];
+  pairs.forEach(function(p){
+    var input=document.getElementById(p[0]);
+    var label=document.getElementById(p[1]);
+    if(!input||!label)return;
+    var val=input.value;
+    if(p[2]==='h') label.textContent=(parseInt(val,10)/60).toFixed(1)+'h';
+    else if(p[1]==='v-swing-hours') label.textContent=val+'h';
+    else label.textContent=val+p[2];
+  });
+}
+
+function resetLeftInputs(){
+  // Reset the left-side simulation controls only. Field notes and saved profiles are preserved.
+  trainCount=2;
+  unexpectedDelayMins=0;
+  trainNames={zlbho1:'ZLBHO',zpbho:'ZPBHO',zlbho2:'ZLBHO-2'};
+
+  [1,2,3].forEach(function(i){
+    var btn=document.getElementById('btn'+i);
+    if(btn) btn.classList.toggle('active',i===2);
+  });
+
+  setControlValue('s1-start','03:00');
+  setControlValue('s1-end','15:00');
+  setControlValue('s2-start','15:00');
+  setControlValue('s2-end','03:00');
+  setControlValue('ihosa-units','110');
+  setControlValue('mhoas-units','120');
+  setControlValue('rate','20');
+  setControlValue('cars-on-hand','0');
+  setControlValue('shift-change','0');
+  setControlValue('shift-change-0300','0');
+  setControlValue('ups-count','0');
+  setControlValue('ups-break','0');
+  setControlValue('lunch-break','60');
+  setControlValue('lunch-break2','0');
+  setControlValue('crew1','10');
+  setControlValue('swing-hours','0');
+  setControlValue('crew2','10');
+  setControlValue('prelifts','0');
+  setControlValue('flips','0');
+
+  buildTrains();
+  updateStaticControlLabels();
+  updateCoh();
+  simulate();
 }
 
 
