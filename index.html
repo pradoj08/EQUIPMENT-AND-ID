@@ -1941,6 +1941,7 @@ body:not(.print-mode) .tavg-grade-card.bad{
   <div class="terminal-id">HOUSTON RAMP <span class="terminal-caret">⌄</span></div>
   
   <div class="tb-spacer"></div>
+  <div id="supabase-sync-status" class="sb-item" style="font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--text3);white-space:nowrap;">LOCAL CACHE</div>
   <div class="tb-time-wrap">
     <span class="tb-time-lbl">CURRENT</span>
     <input type="time" id="current-time">
@@ -6062,13 +6063,180 @@ function copyHandoff(){
   });
 }
 
+
+// ── SUPABASE COMPATIBILITY ───────────────────────────────────────────────
+// Client-side REST sync. LocalStorage remains the instant/offline cache; Supabase becomes the shared/global store.
+var RAMPiq_SUPABASE = {
+  enabled: true,
+  restUrl: 'https://jznqyngrtmfkivddgxhv.supabase.co/rest/v1',
+  anonKey: 'sb_publishable_vpxlAwOEjOFGTlsqZwv46g_QtqKozgy',
+  terminalId: 'settegast'
+};
+
+function rampiqSupabaseHeaders(extra){
+  var h = {
+    'apikey': RAMPiq_SUPABASE.anonKey,
+    'Authorization': 'Bearer ' + RAMPiq_SUPABASE.anonKey,
+    'Content-Type': 'application/json'
+  };
+  if(extra){ Object.keys(extra).forEach(function(k){ h[k]=extra[k]; }); }
+  return h;
+}
+function rampiqApiUrl(table, query){
+  var base = (RAMPiq_SUPABASE.restUrl || '').replace(/\/$/, '');
+  return base + '/' + table + (query ? ('?' + query) : '');
+}
+function rampiqSyncBadge(text, status){
+  // Small non-blocking sync status. Uses console if no badge exists in this build.
+  try{
+    var el = document.getElementById('supabase-sync-status');
+    if(el){
+      el.textContent = text;
+      el.dataset.status = status || '';
+      el.style.color = status === 'error' ? 'var(--red)' : (status === 'ok' ? 'var(--green)' : 'var(--text3)');
+    }
+  }catch(e){}
+}
+function rampiqRemoteEnabled(){
+  return !!(RAMPiq_SUPABASE && RAMPiq_SUPABASE.enabled && RAMPiq_SUPABASE.restUrl && RAMPiq_SUPABASE.anonKey);
+}
+function rampiqEncodeList(arr){
+  return arr.map(function(x){ return encodeURIComponent(String(x)); }).join(',');
+}
+
+async function rampiqLoadProfilesRemote(){
+  if(!rampiqRemoteEnabled()) return null;
+  var q = 'select=id,name,is_default,payload,updated_at&terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId) + '&order=updated_at.desc';
+  var res = await fetch(rampiqApiUrl('rampiq_profiles', q), { headers: rampiqSupabaseHeaders() });
+  if(!res.ok) throw new Error('Supabase profiles load failed: ' + res.status);
+  var rows = await res.json();
+  return (rows || []).map(function(row){
+    var payload = row.payload || {};
+    payload.id = payload.id || row.id;
+    payload.name = payload.name || row.name;
+    payload.isDefault = !!row.is_default;
+    return payload;
+  });
+}
+
+async function rampiqSaveProfilesRemote(arr){
+  if(!rampiqRemoteEnabled()) return;
+  var rows = (arr || []).map(function(p){
+    return {
+      id: String(p.id),
+      terminal_id: RAMPiq_SUPABASE.terminalId,
+      name: p.name || 'Unnamed profile',
+      is_default: !!p.isDefault,
+      payload: p,
+      updated_at: new Date().toISOString()
+    };
+  });
+  if(rows.length){
+    var up = await fetch(rampiqApiUrl('rampiq_profiles', 'on_conflict=id'), {
+      method: 'POST',
+      headers: rampiqSupabaseHeaders({'Prefer':'resolution=merge-duplicates'}),
+      body: JSON.stringify(rows)
+    });
+    if(!up.ok) throw new Error('Supabase profiles save failed: ' + up.status);
+  }
+  // Delete remote rows that were removed locally so deleted profiles do not come back on reload.
+  var delQuery = 'terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId);
+  if(rows.length){ delQuery += '&id=not.in.(' + rampiqEncodeList(rows.map(function(r){return r.id;})) + ')'; }
+  var del = await fetch(rampiqApiUrl('rampiq_profiles', delQuery), { method:'DELETE', headers:rampiqSupabaseHeaders() });
+  if(!del.ok) throw new Error('Supabase profiles delete-sync failed: ' + del.status);
+}
+
+async function rampiqRefreshProfilesFromSupabase(autoApply){
+  try{
+    rampiqSyncBadge('SYNCING PROFILES', 'syncing');
+    var remote = await rampiqLoadProfilesRemote();
+    if(!remote) return;
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(remote));
+    renderProfileDropdown();
+    var defaultProfile = remote.find(function(p){ return p.isDefault; });
+    if(defaultProfile){ setAutoloadId(String(defaultProfile.id)); }
+    if(autoApply){
+      var autoId = getAutoloadId();
+      var p = remote.find(function(x){ return String(x.id) === String(autoId); });
+      if(p){
+        var sel = document.getElementById('profile-select');
+        if(sel) sel.value = p.id;
+        setTimeout(function(){ applyProfile(p); }, 80);
+      }
+    }
+    rampiqSyncBadge('SUPABASE ONLINE', 'ok');
+  }catch(e){
+    console.warn(e);
+    rampiqSyncBadge('LOCAL CACHE', 'error');
+  }
+}
+
+async function rampiqLoadReportsRemote(){
+  if(!rampiqRemoteEnabled()) return null;
+  var q = 'select=id,saved_at,payload,updated_at&terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId) + '&order=saved_at.desc';
+  var res = await fetch(rampiqApiUrl('rampiq_reports', q), { headers: rampiqSupabaseHeaders() });
+  if(!res.ok) throw new Error('Supabase reports load failed: ' + res.status);
+  var rows = await res.json();
+  return (rows || []).map(function(row){
+    var payload = row.payload || {};
+    payload.id = payload.id || row.id;
+    return payload;
+  });
+}
+
+async function rampiqSaveReportsRemote(arr){
+  if(!rampiqRemoteEnabled()) return;
+  var rows = (arr || []).map(function(r){
+    var savedIso = new Date(Number(r.id) || Date.now()).toISOString();
+    return {
+      id: String(r.id),
+      terminal_id: RAMPiq_SUPABASE.terminalId,
+      saved_at: savedIso,
+      report_time: r.currentTime || null,
+      actual_lpmh: Number(r.actualLpmh || 0),
+      lpmh_target: Number(r.lpmhTarget || 2.4),
+      payload: r,
+      updated_at: new Date().toISOString()
+    };
+  });
+  if(rows.length){
+    var up = await fetch(rampiqApiUrl('rampiq_reports', 'on_conflict=id'), {
+      method:'POST',
+      headers:rampiqSupabaseHeaders({'Prefer':'resolution=merge-duplicates'}),
+      body:JSON.stringify(rows)
+    });
+    if(!up.ok) throw new Error('Supabase reports save failed: ' + up.status);
+  }
+  var delQuery = 'terminal_id=eq.' + encodeURIComponent(RAMPiq_SUPABASE.terminalId);
+  if(rows.length){ delQuery += '&id=not.in.(' + rampiqEncodeList(rows.map(function(r){return r.id;})) + ')'; }
+  var del = await fetch(rampiqApiUrl('rampiq_reports', delQuery), { method:'DELETE', headers:rampiqSupabaseHeaders() });
+  if(!del.ok) throw new Error('Supabase reports delete-sync failed: ' + del.status);
+}
+
+async function rampiqRefreshReportsFromSupabase(){
+  try{
+    rampiqSyncBadge('SYNCING REPORTS', 'syncing');
+    var remote = await rampiqLoadReportsRemote();
+    if(!remote) return;
+    localStorage.setItem(TRENDS_KEY, JSON.stringify(remote));
+    if(document.body.classList.contains('trends-open')) renderTrendsPage();
+    rampiqSyncBadge('SUPABASE ONLINE', 'ok');
+  }catch(e){
+    console.warn(e);
+    rampiqSyncBadge('LOCAL CACHE', 'error');
+  }
+}
+
 // ── PROFILE SYSTEM ──────────────────────────────────────────────────
 var PROFILES_KEY = 'settegast_profiles_v1';
 var AUTOLOAD_KEY = 'settegast_autoload_v1';
 var _activeProfileId = null;
 
 function loadProfilesDB(){ try{ return JSON.parse(localStorage.getItem(PROFILES_KEY)||'[]'); }catch(e){ return []; } }
-function saveProfilesDB(arr){ try{ localStorage.setItem(PROFILES_KEY,JSON.stringify(arr)); }catch(e){} }
+function saveProfilesDB(arr){
+  try{ localStorage.setItem(PROFILES_KEY,JSON.stringify(arr)); }catch(e){}
+  rampiqSaveProfilesRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); });
+}
 function getAutoloadId(){ try{ return localStorage.getItem(AUTOLOAD_KEY)||null; }catch(e){ return null; } }
 function setAutoloadId(id){ try{ if(id) localStorage.setItem(AUTOLOAD_KEY,id); else localStorage.removeItem(AUTOLOAD_KEY); }catch(e){} }
 
@@ -6341,11 +6509,10 @@ function toggleAutoload(){
   renderProfileDropdown();
 }
 
-// Auto-load default profile on startup
+// Auto-load default profile on startup, then refresh from Supabase when available.
 (function initProfiles(){
   renderProfileDropdown();
   var autoId=getAutoloadId();
-  if(!autoId) return;
   var arr=loadProfilesDB();
   var p=arr.find(function(x){ return String(x.id)===autoId; });
   if(p){
@@ -6353,6 +6520,7 @@ function toggleAutoload(){
     // Slight delay so the rest of the app initializes first
     setTimeout(function(){ applyProfile(p); },80);
   }
+  rampiqRefreshProfilesFromSupabase(!p);
 })();
 
 // ── END PROFILE SYSTEM ──────────────────────────────────────────────
@@ -6360,10 +6528,14 @@ function toggleAutoload(){
 var _lastSimMetrics = {};
 function updateSimMetrics(obj){ _lastSimMetrics = obj; }
 
-// ── TRENDS: localStorage helpers ──
+// ── TRENDS: local cache + Supabase helpers ──
 var TRENDS_KEY = 'settegast_trends_v1';
 function loadReports(){ try{ return JSON.parse(localStorage.getItem(TRENDS_KEY)||'[]'); }catch(e){ return []; } }
-function saveReports(arr){ try{ localStorage.setItem(TRENDS_KEY,JSON.stringify(arr)); }catch(e){} }
+function saveReports(arr){
+  try{ localStorage.setItem(TRENDS_KEY,JSON.stringify(arr)); }catch(e){}
+  rampiqSaveReportsRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); });
+}
+(function initReportSync(){ setTimeout(function(){ rampiqRefreshReportsFromSupabase(); }, 500); })();
 
 // ── Save current report to trends ──
 function saveHandoffReport(){
