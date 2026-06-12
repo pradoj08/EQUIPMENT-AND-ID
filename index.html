@@ -1924,6 +1924,48 @@ body:not(.print-mode) .rtb-bad,
 body:not(.print-mode) .tavg-grade-card.bad{
   background-color:#1A1013 !important;
 }
+
+
+/* ── SUPABASE SAVE BUTTON + NON-BLOCKING CALLOUT ───────────────── */
+.tb-save-btn{
+  border-color:rgba(16,185,129,0.36) !important;
+  color:var(--green) !important;
+  background:rgba(16,185,129,0.06) !important;
+}
+.tb-save-btn:hover{
+  border-color:var(--green) !important;
+  background:rgba(16,185,129,0.14) !important;
+}
+.tb-save-btn.saving{opacity:.75;pointer-events:none;}
+.rampiq-sync-callout{
+  position:fixed;
+  right:18px;
+  bottom:34px;
+  z-index:2400;
+  max-width:360px;
+  padding:11px 13px;
+  border-radius:10px;
+  background:rgba(13,13,20,0.96);
+  border:1px solid rgba(245,158,11,0.32);
+  box-shadow:0 14px 40px rgba(0,0,0,0.36);
+  color:var(--text2);
+  font-family:var(--mono);
+  font-size:10px;
+  line-height:1.45;
+  letter-spacing:.02em;
+  transform:translateY(18px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+}
+.rampiq-sync-callout.show{opacity:1;transform:translateY(0);}
+.rampiq-sync-callout strong{display:block;color:var(--amber);font-size:10px;margin-bottom:3px;letter-spacing:.08em;text-transform:uppercase;}
+.rampiq-sync-callout.ok{border-color:rgba(16,185,129,0.34);}
+.rampiq-sync-callout.ok strong{color:var(--green);}
+.rampiq-sync-callout.error{border-color:rgba(239,68,68,0.38);}
+.rampiq-sync-callout.error strong{color:var(--red);}
+@media print{.rampiq-sync-callout{display:none!important;}}
+
 </style>
 </head>
 <body>
@@ -1948,6 +1990,8 @@ body:not(.print-mode) .tavg-grade-card.bad{
   </div>
   
   <button class="tb-btn" onclick="toggleSidebar()" id="sidebar-toggle-btn">HIDE INPUTS</button>
+
+  <button class="tb-btn tb-save-btn" onclick="rampiqManualSave()" id="manual-save-btn" title="Save current inputs to Supabase/global storage">&#x1F4BE; SAVE</button>
 
   <button class="tb-btn tb-reset-btn" onclick="resetLeftInputs()" id="reset-inputs-btn" title="Reset left-side simulation inputs to defaults">&#x21BA; RESET INPUTS</button>
 
@@ -6100,6 +6144,95 @@ function rampiqSyncBadge(text, status){
 function rampiqRemoteEnabled(){
   return !!(RAMPiq_SUPABASE && RAMPiq_SUPABASE.enabled && RAMPiq_SUPABASE.restUrl && RAMPiq_SUPABASE.anonKey);
 }
+function rampiqShowSyncCallout(title, message, type){
+  try{
+    var el = document.getElementById('rampiq-sync-callout');
+    if(!el) return;
+    el.className = 'rampiq-sync-callout ' + (type || '');
+    el.innerHTML = '<strong>' + title + '</strong><span>' + message + '</span>';
+    requestAnimationFrame(function(){ el.classList.add('show'); });
+    clearTimeout(window._rampiqSyncCalloutTimer);
+    window._rampiqSyncCalloutTimer = setTimeout(function(){ el.classList.remove('show'); }, type === 'error' ? 6200 : 2600);
+  }catch(e){}
+}
+
+function rampiqSetManualSaveButton(stateText, busy){
+  try{
+    var btn = document.getElementById('manual-save-btn');
+    if(!btn) return;
+    btn.classList.toggle('saving', !!busy);
+    btn.innerHTML = stateText || '&#x1F4BE; SAVE';
+  }catch(e){}
+}
+
+async function rampiqManualSave(){
+  var btnReset = '&#x1F4BE; SAVE';
+  rampiqSetManualSaveButton('SAVING...', true);
+  rampiqSyncBadge('SAVING', 'syncing');
+
+  // Save current simulation inputs as the active profile when one is loaded; otherwise create/update a durable Manual Save profile.
+  var arr = loadProfilesDB();
+  var nowLabel = new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  var existingIdx = _activeProfileId ? arr.findIndex(function(p){ return String(p.id) === String(_activeProfileId); }) : -1;
+
+  if(existingIdx >= 0){
+    var existing = arr[existingIdx];
+    var updated = collectCurrentSettings(existing.name || 'Manual Save', existing.isDefault);
+    updated.id = existing.id;
+    updated.createdAt = existing.createdAt || nowLabel;
+    updated.lastManualSave = nowLabel;
+    arr[existingIdx] = updated;
+    updateProfileLoadedBar(updated);
+  } else {
+    var manual = arr.find(function(p){ return p && p.name === 'Manual Save'; });
+    if(manual){
+      var mi = arr.findIndex(function(p){ return String(p.id) === String(manual.id); });
+      var updatedManual = collectCurrentSettings('Manual Save', !!manual.isDefault);
+      updatedManual.id = manual.id;
+      updatedManual.createdAt = manual.createdAt || nowLabel;
+      updatedManual.lastManualSave = nowLabel;
+      arr[mi] = updatedManual;
+      _activeProfileId = updatedManual.id;
+      updateProfileLoadedBar(updatedManual);
+    } else {
+      var fresh = collectCurrentSettings('Manual Save', false);
+      fresh.createdAt = nowLabel;
+      fresh.lastManualSave = nowLabel;
+      arr.unshift(fresh);
+      _activeProfileId = fresh.id;
+      updateProfileLoadedBar(fresh);
+    }
+  }
+
+  try{ localStorage.setItem(PROFILES_KEY, JSON.stringify(arr)); }catch(e){}
+  renderProfileDropdown();
+  var sel = document.getElementById('profile-select');
+  if(sel && _activeProfileId) sel.value = _activeProfileId;
+
+  if(!rampiqRemoteEnabled()){
+    rampiqSyncBadge('LOCAL CACHE', 'error');
+    rampiqShowSyncCallout('Saved locally only', 'Supabase is not configured/enabled. Your inputs were saved to this browser cache.', 'error');
+    rampiqSetManualSaveButton(btnReset, false);
+    return;
+  }
+
+  try{
+    await rampiqSaveProfilesRemote(arr);
+    // Reports/trends remain synced too, but do not block the main input save if no reports exist.
+    try{ await rampiqSaveReportsRemote(loadReports()); }catch(reportErr){ console.warn(reportErr); }
+    rampiqSyncBadge('SUPABASE SAVED', 'ok');
+    rampiqShowSyncCallout('Saved to Supabase', 'Current inputs are synced globally.', 'ok');
+    rampiqSetManualSaveButton('✓ SAVED', false);
+    setTimeout(function(){ rampiqSetManualSaveButton(btnReset, false); rampiqSyncBadge('SUPABASE ONLINE', 'ok'); }, 1800);
+  }catch(e){
+    console.warn(e);
+    rampiqSyncBadge('LOCAL CACHE', 'error');
+    rampiqShowSyncCallout('Supabase save failed', 'Saved locally for now. Check RLS policies, table setup, network, or API URL/key.', 'error');
+    rampiqSetManualSaveButton('LOCAL ONLY', false);
+    setTimeout(function(){ rampiqSetManualSaveButton(btnReset, false); }, 2400);
+  }
+}
+
 function rampiqEncodeList(arr){
   return arr.map(function(x){ return encodeURIComponent(String(x)); }).join(',');
 }
@@ -6235,7 +6368,7 @@ var _activeProfileId = null;
 function loadProfilesDB(){ try{ return JSON.parse(localStorage.getItem(PROFILES_KEY)||'[]'); }catch(e){ return []; } }
 function saveProfilesDB(arr){
   try{ localStorage.setItem(PROFILES_KEY,JSON.stringify(arr)); }catch(e){}
-  rampiqSaveProfilesRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); });
+  rampiqSaveProfilesRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); rampiqShowSyncCallout('Supabase save failed', 'Profile changes were saved locally, but did not reach Supabase.', 'error'); });
 }
 function getAutoloadId(){ try{ return localStorage.getItem(AUTOLOAD_KEY)||null; }catch(e){ return null; } }
 function setAutoloadId(id){ try{ if(id) localStorage.setItem(AUTOLOAD_KEY,id); else localStorage.removeItem(AUTOLOAD_KEY); }catch(e){} }
@@ -6533,7 +6666,7 @@ var TRENDS_KEY = 'settegast_trends_v1';
 function loadReports(){ try{ return JSON.parse(localStorage.getItem(TRENDS_KEY)||'[]'); }catch(e){ return []; } }
 function saveReports(arr){
   try{ localStorage.setItem(TRENDS_KEY,JSON.stringify(arr)); }catch(e){}
-  rampiqSaveReportsRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); });
+  rampiqSaveReportsRemote(arr).catch(function(e){ console.warn(e); rampiqSyncBadge('LOCAL CACHE', 'error'); rampiqShowSyncCallout('Supabase save failed', 'Report/trend changes were saved locally, but did not reach Supabase.', 'error'); });
 }
 (function initReportSync(){ setTimeout(function(){ rampiqRefreshReportsFromSupabase(); }, 500); })();
 
