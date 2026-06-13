@@ -728,8 +728,8 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:999px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);}
 .lpmh-breakdown{margin-top:8px;border-top:1px solid var(--border);padding-top:7px;}
 .lpmh-brow{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:2px 0;font-size:10px;}
-.lpmh-brow-label{color:var(--text3);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.lpmh-brow-time{color:var(--text3);font-family:var(--mono);flex-shrink:0;font-size:9px;}
+.lpmh-brow-label{color:var(--amber);opacity:0.75;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lpmh-brow-time{color:var(--amber);opacity:0.75;font-family:var(--mono);flex-shrink:0;font-size:9px;}
 .lpmh-brow-lifts{font-weight:700;color:var(--text2);font-family:var(--mono);min-width:28px;text-align:right;flex-shrink:0;}
 .lpmh-brow-manual .lpmh-brow-lifts{color:var(--amber);}
 
@@ -861,6 +861,18 @@ input[type=range]::-webkit-slider-thumb{
 .tavg-stat.warn{border-color:rgba(245,158,11,0.25);}
 .tavg-stat.bad{border-color:rgba(239,68,68,0.25);}
 .tavg-drivers{margin-top:12px;}
+.tavg-filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.tavg-filter-pill{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;
+  color:var(--text3);background:transparent;border:1px solid var(--border);
+  border-radius:999px;padding:4px 11px;cursor:pointer;transition:all .12s;
+}
+.tavg-filter-pill:hover{color:var(--text2);border-color:var(--border2);}
+.tavg-filter-pill.active{
+  color:var(--pill-color,var(--amber));
+  border-color:var(--pill-color,var(--amber));
+  background:color-mix(in srgb, var(--pill-color,var(--amber)) 12%, transparent);
+}
 .tavg-section-title{
   font-size:10px;
   font-family:var(--mono);
@@ -1195,11 +1207,12 @@ body.trends-open #trends-screen #tr-list{
 }
 
 .top-grade-letter{
-  font-size:52px;
+  font-size:64px;
   line-height:1;
   font-family:var(--mono);
   font-weight:700;
   letter-spacing:-0.04em;
+  margin-bottom:8px;
 }
 .top-grade-card.good .top-grade-letter{ color:#10B981; }
 .top-grade-card.warn .top-grade-letter{ color:#F59E0B; }
@@ -1230,6 +1243,56 @@ body.trends-open #trends-screen #tr-list{
   line-height:1.5;
   color:var(--text3);
 }
+
+/* ── Refreshed top-grade card internals: secondary value + progress bar + stat row ── */
+.top-grade-subvalue{
+  font-family:var(--mono);
+  font-size:16px;
+  font-weight:700;
+  margin:2px 0 12px;
+}
+.top-grade-card.good .top-grade-subvalue{ color:#10B981; }
+.top-grade-card.warn .top-grade-subvalue{ color:#F59E0B; }
+.top-grade-card.bad  .top-grade-subvalue{ color:#EF4444; }
+.top-grade-card:not(.good):not(.warn):not(.bad) .top-grade-subvalue{ color:var(--text2); }
+.top-grade-subvalue .unit{
+  font-size:11px;font-weight:500;color:var(--text3);margin-left:5px;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+
+.top-grade-bar-track{
+  height:7px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.top-grade-bar-fill{
+  height:100%;
+  border-radius:999px;
+  transition:width .3s ease;
+}
+.top-grade-card.good .top-grade-bar-fill{ background:linear-gradient(90deg,#0d8f63,#10B981); }
+.top-grade-card.warn .top-grade-bar-fill{ background:linear-gradient(90deg,#c97c08,#F59E0B); }
+.top-grade-card.bad  .top-grade-bar-fill{ background:linear-gradient(90deg,#c0392b,#EF4444); }
+.top-grade-card:not(.good):not(.warn):not(.bad) .top-grade-bar-fill{ background:var(--border2); }
+
+.top-grade-stats{
+  display:flex;align-items:stretch;
+  margin-top:auto;
+}
+.top-grade-stat{flex:1;min-width:0;}
+.top-grade-stat-sep{width:1px;background:var(--border);margin:0 14px;}
+.top-grade-stat-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;font-family:var(--cond);letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:6px;
+}
+.top-grade-stat-label svg{flex-shrink:0;opacity:0.7;width:13px;height:13px;}
+.top-grade-stat-val{
+  font-family:var(--mono);font-size:19px;font-weight:700;color:var(--text);
+}
+.top-grade-stat-val .unit{font-size:13px;font-weight:400;color:var(--text3);}
 
 @media(max-width:900px){
   .topbar{
@@ -2321,7 +2384,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
       <div class="ctrl-group" style="border:1px solid rgba(239,68,68,0.25);border-radius:6px;padding:8px;background:rgba(239,68,68,0.04);">
         <div class="ctrl-header">
-          <span class="ctrl-name" style="color:#EF4444;">&#x26A0; Carry-Over Lifts <span style="font-size:9px;color:var(--text3);">&middot; PRIOR DAY</span></span>
+          <span class="ctrl-name" style="color:#EF4444;">&#x26A0; Carry-Over Lifts <span style="font-size:9px;color:var(--text3);" id="carryover-header-range">&middot; 0300\u2013XXXX</span></span>
           <span class="ctrl-val" id="v-carryover-lifts">0</span>
         </div>
         <input type="range" min="0" max="300" step="5" value="0" id="carryover-lifts">
@@ -2329,7 +2392,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
           <span class="ctrl-name" style="font-size:10px;color:var(--text3);">Carry-over type</span>
         </div>
         <select class="profile-select" id="carryover-type" style="margin-bottom:0;">
-          <option value="mhoas">MHOA (Previous Day)</option>
+          <option value="mhoas">MHOAS (Previous Day)</option>
           <option value="inbound">Inbound (Previous Day)</option>
           <option value="both">Both</option>
         </select>
@@ -2437,7 +2500,27 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
       </div>
       <div class="panel-body panel-content">
-        <div id="lift-log" style="font-family:var(--mono);font-size:11px;line-height:1.8;"></div>
+        <div class="liftlog-grid">
+          <div class="liftlog-col">
+            <div class="liftlog-col-head">
+              <span class="liftlog-col-dot" style="background:var(--green);"></span>
+              <span class="liftlog-col-title">Forecast</span>
+              <span class="liftlog-col-sub">simulated</span>
+            </div>
+            <div id="lift-log" class="liftlog-rows"></div>
+          </div>
+          <div class="liftlog-col">
+            <div class="liftlog-col-head">
+              <span class="liftlog-col-dot" style="background:var(--amber);"></span>
+              <span class="liftlog-col-title">Actual</span>
+              <span class="liftlog-col-sub">manual entry</span>
+              <span id="liftlog-pace-summary" class="liftlog-pace-summary"></span>
+              <button class="liftlog-clear-btn" onclick="clearHourlyActuals()">Clear</button>
+            </div>
+            <div id="lift-log-actual" class="liftlog-rows"></div>
+          </div>
+        </div>
+        <div id="lift-log-timemap" style="overflow-x:auto;"></div>
       </div>
     </div>
 
@@ -2579,6 +2662,90 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .panel-content{overflow:hidden;max-height:4000px;transition:max-height 0.28s ease,opacity 0.22s ease,padding 0.22s ease;opacity:1;}
 .collapsible-panel.collapsed .panel-content{max-height:0!important;opacity:0;padding-top:0!important;padding-bottom:0!important;}
 .collapsible-panel.collapsed .collapse-chevron{transform:rotate(180deg);}
+
+/* ── Hourly Lift Log: forecast vs actual ── */
+.liftlog-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:860px){.liftlog-grid{grid-template-columns:1fr;}}
+.liftlog-col-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.liftlog-col-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.liftlog-col-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
+.liftlog-col-sub{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.liftlog-clear-btn{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s;}
+.liftlog-clear-btn:hover{color:var(--red);border-color:var(--red);}
+.liftlog-pace-summary{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.liftlog-pace-summary.is-ahead{color:var(--green);}
+.liftlog-pace-summary.is-behind{color:var(--red);}
+.liftlog-pace-summary.is-even{color:var(--text3);}
+.liftlog-rows{display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:11px;}
+
+.liftlog-row{display:grid;grid-template-columns:62px 56px 1fr;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;background:var(--bg3);transition:background .12s;min-height:34px;box-sizing:border-box;}
+.liftlog-row:hover{background:var(--s3);}
+.liftlog-row-time{color:var(--text2);font-weight:600;font-size:10.5px;}
+.liftlog-row-total{font-weight:700;color:var(--green);font-size:12px;}
+.liftlog-row-detail{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none;}
+.liftlog-row-detail::-webkit-scrollbar{display:none;}
+
+.liftlog-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.01em;color:var(--text2);background:rgba(255,255,255,0.04);border-radius:999px;padding:2px 8px 2px 6px;white-space:nowrap;flex-shrink:0;}
+.liftlog-chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+.liftlog-row.is-break{background:transparent;border:1px dashed var(--border);opacity:0.8;}
+.liftlog-row.is-break .liftlog-row-total{color:var(--text3);font-weight:600;}
+.liftlog-row.is-break .liftlog-row-detail{color:var(--text3);font-style:italic;font-size:10.5px;}
+
+/* Actual (manual entry) column */
+.liftlog-row.is-actual{grid-template-columns:62px 52px 1fr;}
+.liftlog-actual-input{width:48px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 5px;text-align:center;transition:border-color .12s;}
+.liftlog-actual-input:focus{outline:none;border-color:var(--amber);}
+.liftlog-actual-input::placeholder{color:var(--text3);font-weight:400;}
+.liftlog-forecast-ref{color:var(--text3);font-size:10px;white-space:nowrap;flex-shrink:0;}
+.liftlog-delta{display:inline-flex;align-items:center;font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:2px;flex-shrink:0;white-space:nowrap;}
+.liftlog-delta.is-pos{color:var(--green);background:rgba(16,185,129,0.12);}
+.liftlog-delta.is-neg{color:var(--red);background:rgba(239,68,68,0.12);}
+.liftlog-delta.is-zero{color:var(--text3);background:rgba(255,255,255,0.04);}
+.liftlog-src-select{background:var(--bg2);border:1px solid var(--border);border-radius:999px;color:var(--text2);font-family:var(--mono);font-size:10px;padding:2px 8px;max-width:118px;flex-shrink:0;cursor:pointer;transition:border-color .12s;}
+.liftlog-src-select:focus{outline:none;border-color:var(--amber);}
+.liftlog-src-select.is-set{color:var(--amber);border-color:rgba(245,158,11,0.35);}
+.liftlog-actual-tail{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:none;}
+.liftlog-actual-tail::-webkit-scrollbar{display:none;}
+
+/* ── Hourly Lift Time Map ── */
+.timemap-header{display:flex;align-items:center;gap:10px;margin:20px 0 16px;}
+.timemap-header svg{color:var(--blue);flex-shrink:0;}
+.timemap-title{font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text);}
+
+.timemap-scroll{overflow-x:auto;padding-bottom:4px;}
+.timemap-timeline{display:flex;align-items:center;min-width:max-content;padding:0 4px;}
+.timemap-node-wrap{display:flex;align-items:center;flex:1;min-width:160px;}
+.timemap-node{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:2px solid;
+}
+.timemap-line{height:3px;flex:1;border-radius:2px;}
+
+.timemap-cards{display:flex;min-width:max-content;gap:0;margin-top:10px;}
+.timemap-card{flex:1;min-width:160px;padding:0 12px;display:flex;flex-direction:column;gap:8px;}
+.timemap-range{
+  display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;
+  border:1px solid;border-radius:5px;padding:3px 9px;align-self:flex-start;
+}
+.timemap-rate{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.timemap-total{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--text);
+  line-height:1;padding-top:4px;border-top:1px solid var(--border);padding-bottom:8px;
+  display:flex;align-items:baseline;gap:8px;}
+.timemap-total-unit{font-size:13px;font-weight:500;color:var(--text3);text-transform:lowercase;}
+.timemap-srcs{display:flex;flex-direction:column;gap:4px;}
+.timemap-src{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;}
+.timemap-src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+.timemap-legend{
+  display:flex;flex-wrap:wrap;gap:22px;margin-top:18px;padding-top:14px;
+  border-top:1px solid var(--border);
+}
+.timemap-legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);font-weight:600;}
+.timemap-legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+
+
 
 
 /* ══════════════════════════════════════════════════════════════════
@@ -3838,6 +4005,7 @@ var MHOAS_DL=27;
 var PROFILES_KEY = 'settegast_profiles_v1';
 var AUTOLOAD_KEY = 'settegast_autoload_v1';
 var TRENDS_KEY   = 'settegast_trends_v1';
+var HOURLY_ACTUALS_KEY = 'settegast_hourly_actuals_v1';
 
 // Escape user-entered text before it is interpolated into innerHTML.
 // Use this for ANY string that originated in a text input (notes, names, times typed by users).
@@ -3969,87 +4137,104 @@ function gradeFromCommitment(short, units, late){
 
 
 function gradeToneClass(tone){
-  return tone === 'good' ? 'good' : tone === 'warn' ? 'warn' : 'bad';
+  return tone === 'good' ? 'good' : tone === 'warn' ? 'warn' : tone === 'neutral' ? '' : 'bad';
 }
 
 function renderTopGrades(data){
   const el = document.getElementById('top-grade-banner');
   if(!el) return;
 
-  el.innerHTML = `
-    <div class="top-grade-grid">
-      <div class="top-grade-card ${gradeToneClass(data.ihosa.tone)}">
-        <div class="top-grade-label">IHOSA Release · 1700${data.ihosaLate ? ' <span style="color:#F59E0B;">(LATE)</span>' : ''}</div>
-        <div class="top-grade-main">
-          <div class="top-grade-letter">${data.ihosa.grade}</div>
-          <div class="top-grade-value">${data.ihosaTime}</div>
-        </div>
-        <div class="top-grade-divider"></div>
-        <div style="display:flex;gap:0;align-items:stretch;margin-bottom:4px;">
-          <div style="flex:1;">
-            <div style="font-size:8px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;">Loaded</div>
-            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);">${data.ihosaLoaded}<span style="font-size:10px;font-weight:400;color:var(--text3);"> / ${data.ihosaUnits}</span></div>
-          </div>
-          <div style="width:1px;background:var(--border);margin:0 10px;"></div>
-          <div style="flex:1;">
-            <div style="font-size:8px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;">Pivot</div>
-            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:${data.ihosaPivot ? 'var(--amber)' : 'var(--text3)'};">${data.ihosaPivot ? fmtH(data.ihosaPivot) : '—'}</div>
-          </div>
-        </div>
-        <div class="top-grade-sub">On-time = A+. Graded by % of commitment loaded.</div>
-      </div>
+  // Small inline stroke icons, matching the reference card's stat-row style.
+  const ICONS = {
+    box: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    target: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+    clock: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+  };
 
-      <div class="top-grade-card ${gradeToneClass(data.mhoas.tone)}">
-        <div class="top-grade-label">MHOAS Release · 0300${data.mhoasLate ? ' <span style="color:#F59E0B;">(LATE)</span>' : ''}</div>
+  // IHOSA / MHOAS commitment cards: big letter, "X units short" / "On time" subvalue,
+  // a progress bar for loaded-vs-committed, then a Loaded / Pivot stat row.
+  function commitmentCard(label, dlLabel, isLate, g, loaded, units, pivot, short){
+    const pct = units>0 ? Math.min(100, Math.round(loaded/units*100)) : 0;
+    const subText = short>0 ? (short+' units short') : (units<=0 ? 'No commitment set' : (isLate ? 'Released late' : 'On time'));
+    return `
+      <div class="top-grade-card ${gradeToneClass(g.tone)}">
+        <div class="top-grade-label">${label} · ${dlLabel}${isLate ? ' <span style="color:#F59E0B;">(LATE)</span>' : ''}</div>
         <div class="top-grade-main">
-          <div class="top-grade-letter">${data.mhoas.grade}</div>
-          <div class="top-grade-value">${data.mhoasTime}</div>
+          <div class="top-grade-letter">${g.grade}</div>
         </div>
-        <div class="top-grade-divider"></div>
-        <div style="display:flex;gap:0;align-items:stretch;margin-bottom:4px;">
-          <div style="flex:1;">
-            <div style="font-size:8px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;">Loaded</div>
-            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);">${data.mhoasLoaded}<span style="font-size:10px;font-weight:400;color:var(--text3);"> / ${data.mhoasUnits}</span></div>
+        <div class="top-grade-subvalue">${subText}</div>
+        <div class="top-grade-bar-track"><div class="top-grade-bar-fill" style="width:${pct}%;"></div></div>
+        <div class="top-grade-stats">
+          <div class="top-grade-stat">
+            <div class="top-grade-stat-label">${ICONS.box} Loaded</div>
+            <div class="top-grade-stat-val">${loaded}<span class="unit"> / ${units}</span></div>
           </div>
-          <div style="width:1px;background:var(--border);margin:0 10px;"></div>
-          <div style="flex:1;">
-            <div style="font-size:8px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;">Pivot</div>
-            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:${data.mhoasPivot ? 'var(--amber)' : 'var(--text3)'};">${data.mhoasPivot ? fmtH(data.mhoasPivot) : '—'}</div>
+          <div class="top-grade-stat-sep"></div>
+          <div class="top-grade-stat">
+            <div class="top-grade-stat-label">${ICONS.target} Pivot</div>
+            <div class="top-grade-stat-val" style="color:${pivot ? 'var(--amber)' : 'var(--text3)'};">${pivot ? fmtH(pivot) : '—'}</div>
           </div>
         </div>
+        <div class="top-grade-divider" style="margin-top:10px;"></div>
         <div class="top-grade-sub">On-time = A+. Graded by % of commitment loaded.</div>
-      </div>
+      </div>`;
+  }
 
+  // Weighted Avg Inbound: big letter, dwell time as the subvalue (no bar — there's no
+  // natural 0–100% denominator), then Wtd Avg / Simple Avg stat row.
+  const avgCard = `
       <div class="top-grade-card ${gradeToneClass(data.avg.tone)}">
         <div class="top-grade-label">Weighted Avg Inbound</div>
         <div class="top-grade-main">
           <div class="top-grade-letter">${data.avg.grade}</div>
-          <div class="top-grade-value">${data.avgTime}</div>
         </div>
-        <div class="top-grade-divider"></div>
-        <div style="display:flex;gap:0;align-items:stretch;margin-bottom:4px;">
-          <div style="flex:1;">
-            <div style="font-size:8px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;">Wtd Avg</div>
-            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);">${data.avgTime}</div>
+        <div class="top-grade-subvalue">${data.avgTime}</div>
+        <div class="top-grade-stats">
+          <div class="top-grade-stat">
+            <div class="top-grade-stat-label">${ICONS.clock} Wtd Avg</div>
+            <div class="top-grade-stat-val">${data.avgTime}</div>
           </div>
-          <div style="width:1px;background:var(--border);margin:0 10px;"></div>
-          <div style="flex:1;">
-            <div style="font-size:8px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;">Simple Avg</div>
-            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text2);">${data.simpleAvgTime}</div>
+          <div class="top-grade-stat-sep"></div>
+          <div class="top-grade-stat">
+            <div class="top-grade-stat-label">${ICONS.clock} Simple Avg</div>
+            <div class="top-grade-stat-val" style="color:var(--text2);">${data.simpleAvgTime}</div>
           </div>
         </div>
+        <div class="top-grade-divider" style="margin-top:10px;"></div>
         <div class="top-grade-sub">Actual unit-weighted dwell; A+ begins under 6 hours.</div>
-      </div>
+      </div>`;
 
+  // LPMH Goal: big letter, ratio as the subvalue, progress bar vs target (capped at 100%).
+  const lpmhPct = data.lpmhTargetRaw>0 ? Math.min(100, Math.round(data.actualLpmhRaw/data.lpmhTargetRaw*100)) : 0;
+  const lpmhCard = `
       <div class="top-grade-card ${gradeToneClass(data.lpmh.tone)}">
         <div class="top-grade-label">LPMH Goal</div>
         <div class="top-grade-main">
           <div class="top-grade-letter">${data.lpmh.grade}</div>
-          <div class="top-grade-value">${data.lpmhActual}</div>
         </div>
-        <div class="top-grade-divider"></div>
+        <div class="top-grade-subvalue">${data.actualLpmhRaw.toFixed(2)}<span class="unit"> / ${data.lpmhTargetRaw.toFixed(2)}</span></div>
+        <div class="top-grade-bar-track"><div class="top-grade-bar-fill" style="width:${lpmhPct}%;"></div></div>
+        <div class="top-grade-stats">
+          <div class="top-grade-stat">
+            <div class="top-grade-stat-label">${ICONS.target} Actual LPMH</div>
+            <div class="top-grade-stat-val">${data.actualLpmhRaw.toFixed(2)}</div>
+          </div>
+          <div class="top-grade-stat-sep"></div>
+          <div class="top-grade-stat">
+            <div class="top-grade-stat-label">${ICONS.target} Target LPMH</div>
+            <div class="top-grade-stat-val" style="color:var(--text2);">${data.lpmhTargetRaw.toFixed(2)}</div>
+          </div>
+        </div>
+        <div class="top-grade-divider" style="margin-top:10px;"></div>
         <div class="top-grade-sub">Ramp productivity vs target.</div>
-      </div>
+      </div>`;
+
+  el.innerHTML = `
+    <div class="top-grade-grid">
+      ${commitmentCard('IHOSA Release', '1700', data.ihosaLate, data.ihosa, data.ihosaLoaded, data.ihosaUnits, data.ihosaPivot, data.ihosaShortCalc)}
+      ${commitmentCard('MHOAS Release', '0300', data.mhoasLate, data.mhoas, data.mhoasLoaded, data.mhoasUnits, data.mhoasPivot, data.mhoasShortCalc)}
+      ${avgCard}
+      ${lpmhCard}
     </div>
   `;
 }
@@ -4647,13 +4832,25 @@ function runPhase(trains,clockIn,commitment,rate,outRem,outLoaded,carsIn,segs,ev
 }
 
 
-function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap){
+// Source colors shared by the lift log breakdown and the hourly time map.
+var LIFT_SOURCE_COLORS={
+  ihosa:'#f0a030', mhoas:'#7F77DD', coh:'#A78BFA', ups_work:'#D4537E', carryover:'#EF4444'
+};
+function liftSourceColor(k,trainLabelMap){
+  if(LIFT_SOURCE_COLORS[k]) return LIFT_SOURCE_COLORS[k];
+  var t=TRAINS&&TRAINS[k];
+  return (t&&t.color) || '#4a9eff';
+}
+
+function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,paceCtx){
   var rows=[];
   var buckets=[];
+  var renderedBuckets=[]; // only hours shown in either column — keeps left/right aligned
 
   for(var h=0;h<27;h++){
     var total=0;
     var detail=[];
+    var sources=[];
 
     activeKeys.concat(['ihosa','mhoas','coh','ups_work','carryover']).forEach(function(k){
       if(!segs[k]) return;
@@ -4679,29 +4876,353 @@ function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap){
           ihosa:'IHOSA load',
           mhoas:'MHOAS load',
           coh:'COH load',
-          ups_work:'UPS lift credit'
+          ups_work:'UPS lift credit',
+          carryover:'Carry-over'
         };
 
         var lbl=labelMap[k] || (trainLabelMap[k] || k) + ' drop';
         detail.push(lbl+': '+lifts);
+        sources.push({key:k,label:lbl,lifts:lifts,color:liftSourceColor(k,trainLabelMap)});
       }
     });
 
-    buckets.push({hour:h,total:total,detail:detail});
+    buckets.push({hour:h,total:total,detail:detail,sources:sources});
 
     if(total>0){
+      var chips=sources.map(function(s){
+        return '<span class="liftlog-chip"><span class="liftlog-chip-dot" style="background:'+s.color+';"></span>'+escHtml(s.label)+': '+s.lifts+'</span>';
+      }).join('');
       rows.push(
-        '<div style="display:grid;grid-template-columns:70px 70px 1fr;gap:12px;border-bottom:1px solid rgba(255,255,255,0.06);padding:4px 0;">'+
-        '<div>'+String(h).padStart(2,'0')+'00-'+String(h).padStart(2,'0')+'59</div>'+
-        '<div style="font-weight:600;color:var(--green);">'+total+' lifts</div>'+
-        '<div style="color:var(--text2);">'+detail.join(' · ')+'</div>'+
+        '<div class="liftlog-row">'+
+        '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+        '<div class="liftlog-row-total">'+total+'</div>'+
+        '<div class="liftlog-row-detail">'+chips+'</div>'+
         '</div>'
       );
+      renderedBuckets.push({hour:h,total:total,detail:detail,sources:sources,isBreak:false});
+    } else {
+      // No lift activity this hour — note why, if it's covered by a scheduled break.
+      var breakOverlaps=getDelayIntervals(segs,h,h+1);
+      if(breakOverlaps.length>0){
+        var breakLabels=breakOverlaps.map(function(d){return d.label;}).join(' + ');
+        rows.push(
+          '<div class="liftlog-row is-break">'+
+          '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+          '<div class="liftlog-row-total">0</div>'+
+          '<div class="liftlog-row-detail">No activity \u2014 '+escHtml(breakLabels)+'</div>'+
+          '</div>'
+        );
+        renderedBuckets.push({hour:h,total:0,detail:[],sources:[],isBreak:true,breakLabels:breakLabels});
+      }
     }
   }
 
-  document.getElementById('lift-log').innerHTML=rows.join('');
+  document.getElementById('lift-log').innerHTML=rows.length?rows.join(''):'<div style="color:var(--text3);padding:6px 2px;">No forecast activity yet \u2014 run the simulation.</div>';
+  buildHourlyLiftLogActual(renderedBuckets,activeKeys,trainLabelMap,paceCtx);
+  buildHourlyLiftTimeMap(buckets);
   return buckets;
+}
+
+// ── HOURLY ACTUALS (manual entry, local-only comparison against the forecast) ──
+function loadHourlyActuals(){
+  try{ return JSON.parse(localStorage.getItem(HOURLY_ACTUALS_KEY)||'{}'); }catch(e){ return {}; }
+}
+function saveHourlyActuals(map){
+  try{ localStorage.setItem(HOURLY_ACTUALS_KEY, JSON.stringify(map)); }catch(e){ console.warn('localStorage write failed (hourly actuals):', e); }
+}
+function clearHourlyActuals(){
+  if(!confirm('Clear all manually entered actual lift counts?')) return;
+  saveHourlyActuals({});
+  if(typeof simulate==='function') simulate();
+}
+// Normalize a stored entry to {value, src1, src2}. Older entries were a bare number.
+function normalizeActualEntry(entry){
+  if(entry==null) return {value:null,src1:'',src2:''};
+  if(typeof entry==='number') return {value:entry,src1:'',src2:''};
+  return {value:(entry.value!=null?entry.value:null),src1:entry.src1||'',src2:entry.src2||''};
+}
+function setHourlyActual(hour, val){
+  var map=loadHourlyActuals();
+  var n=parseFloat(val);
+  var entry=normalizeActualEntry(map[hour]);
+  if(val===''||!Number.isFinite(n)) entry.value=null;
+  else entry.value=n;
+  if(entry.value==null && !entry.src1 && !entry.src2) delete map[hour];
+  else map[hour]=entry;
+  saveHourlyActuals(map);
+  if(typeof simulate==='function') simulate();
+}
+function setHourlyActualSource(hour, slot, val){
+  var map=loadHourlyActuals();
+  var entry=normalizeActualEntry(map[hour]);
+  if(slot===1) entry.src1=val; else entry.src2=val;
+  if(entry.value==null && !entry.src1 && !entry.src2) delete map[hour];
+  else map[hour]=entry;
+  saveHourlyActuals(map);
+  if(typeof simulate==='function') simulate();
+}
+
+// Mirrors buildHourlyLiftLog's rows, but with an editable input for the actual
+// lift count per hour and a delta vs. the forecast total for that hour.
+function liftSourceOptionList(activeKeys,trainLabelMap){
+  var opts=[{key:'',label:'\u2014'}];
+  opts.push({key:'ihosa',label:'IHOSA load'});
+  opts.push({key:'mhoas',label:'MHOAS load'});
+  opts.push({key:'coh',label:'COH load'});
+  opts.push({key:'carryover',label:'Carry-over'});
+  (activeKeys||[]).forEach(function(k){
+    opts.push({key:k,label:(trainLabelMap&&trainLabelMap[k]||k)+' drop'});
+  });
+  opts.push({key:'ups_work',label:'UPS lift credit'});
+  return opts;
+}
+
+// Renders the "(-10 lifts) 22 LPH until release to catch up" indicator in the
+// Actual column header, comparing cumulative manual entries against the
+// forecast for the same hours, then translating any gap into an LPH target
+// for whichever outbound commitment is still open and due soonest.
+function renderLiftLogPaceSummary(delta, anyActual, ctx){
+  var el=document.getElementById('liftlog-pace-summary');
+  if(!el) return;
+
+  if(!anyActual || !ctx){
+    el.textContent='';
+    el.className='liftlog-pace-summary';
+    return;
+  }
+
+  function pendingDelayHours(from,to){
+    var d=0;
+    if(to<=from) return 0;
+    if(ctx.lunchH>0 && from<11 && 11<to) d+=ctx.lunchH;
+    if(ctx.shiftH>0 && from<15 && 15<to) d+=ctx.shiftH;
+    if(ctx.upsH>0 && ctx.zpbhoArr>from && ctx.zpbhoArr<to) d+=ctx.upsH;
+    if(ctx.lunch2H>0 && from<21 && 21<to) d+=ctx.lunch2H;
+    if(ctx.shift0300H>0 && from<27 && 27<to) d+=ctx.shift0300H;
+    return d;
+  }
+
+  // Whichever outbound commitment is still open and due soonest.
+  var target=null;
+  if(ctx.ihosaUnits>0 && Math.round(ctx.ihosaLoaded)<ctx.ihosaUnits){
+    target={label:'IHOSA',dl:ctx.ihosaCommitment,units:ctx.ihosaUnits,loaded:ctx.ihosaLoaded,dlLabel:'1700'};
+  }
+  if(ctx.mhoasUnits>0 && Math.round(ctx.mhoasLoaded)<ctx.mhoasUnits){
+    var m={label:'MHOAS',dl:ctx.mhoasCommitment,units:ctx.mhoasUnits,loaded:ctx.mhoasLoaded,dlLabel:'0300'};
+    if(!target || m.dl<target.dl) target=m;
+  }
+
+  var deltaSign=delta>0?'+':'';
+  var deltaText='('+deltaSign+delta+' lifts)';
+  var paceClass=delta>0?'is-ahead':(delta<0?'is-behind':'is-even');
+
+  if(!target){
+    // Both commitments already met/no longer open — just show the running tally.
+    el.textContent=deltaText+(delta===0?' on pace':(delta>0?' ahead of forecast':' behind forecast'));
+    el.className='liftlog-pace-summary '+paceClass;
+    return;
+  }
+
+  var remaining=Math.max(0,target.units-Math.round(target.loaded));
+  var hoursLeft=target.dl-ctx.currentTime;
+
+  if(hoursLeft<=0){
+    el.textContent=deltaText+' \u2014 '+target.label+' deadline ('+target.dlLabel+') has passed';
+    el.className='liftlog-pace-summary '+paceClass;
+    return;
+  }
+
+  var usable=Math.max(0.01, hoursLeft-pendingDelayHours(ctx.currentTime,target.dl));
+  var neededUnits=Math.max(0, remaining-delta);
+  var requiredLph=neededUnits/usable;
+
+  var verb=delta<0?'to catch up':(delta>0?'to hold the lead':'to stay on pace');
+  el.textContent=deltaText+' '+requiredLph.toFixed(0)+' LPH until '+target.label+' release '+verb;
+  el.className='liftlog-pace-summary '+paceClass;
+}
+
+// Mirrors buildHourlyLiftLog's rows, but with an editable input for the actual
+// lift count per hour, plus up to two source tags (dropdowns) describing what
+// that actual count was made up of.
+function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
+  var el=document.getElementById('lift-log-actual');
+  if(!el) return;
+
+  var actuals=loadHourlyActuals();
+  var optionList=liftSourceOptionList(activeKeys,trainLabelMap);
+  var rows=[];
+
+  // ── Pace summary: cumulative actual vs forecast for hours already logged, plus
+  // the LPH needed on the next open commitment to absorb that deficit/surplus. ──
+  var cumForecast=0, cumActual=0, anyActual=false;
+  buckets.forEach(function(b){
+    if(b.isBreak) return;
+    var entry=normalizeActualEntry(actuals[b.hour]);
+    if(entry.value!=null && Number.isFinite(entry.value)){
+      anyActual=true;
+      cumActual+=entry.value;
+      cumForecast+=b.total;
+    }
+  });
+  renderLiftLogPaceSummary(cumActual-cumForecast, anyActual, paceCtx);
+
+  function selectHtml(hour,slot,selected){
+    var opts=optionList.map(function(o){
+      return '<option value="'+o.key+'"'+(o.key===selected?' selected':'')+'>'+escHtml(o.label)+'</option>';
+    }).join('');
+    var setClass=selected?' is-set':'';
+    return '<select class="liftlog-src-select'+setClass+'" onchange="setHourlyActualSource('+hour+','+slot+',this.value)">'
+      +opts+'</select>';
+  }
+
+  buckets.forEach(function(b){
+    var h=b.hour;
+    if(b.isBreak){
+      // Mirror the forecast's "no activity" row so the two columns stay aligned.
+      rows.push(
+        '<div class="liftlog-row is-actual is-break">'+
+        '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+        '<div></div>'+
+        '<div class="liftlog-row-detail">No activity \u2014 '+escHtml(b.breakLabels||'')+'</div>'+
+        '</div>'
+      );
+      return;
+    }
+    var entry=normalizeActualEntry(actuals[h]);
+    var actualVal=entry.value;
+    var hasActual=actualVal!=null && Number.isFinite(actualVal);
+    var delta=hasActual?(actualVal-b.total):null;
+    var deltaHtml='';
+    if(hasActual){
+      var dCls=delta===0?'is-zero':(delta>0?'is-pos':'is-neg');
+      var dSign=delta>0?'+':'';
+      deltaHtml='<span class="liftlog-delta '+dCls+'">'+dSign+delta+'</span>';
+    }
+    rows.push(
+      '<div class="liftlog-row is-actual">'+
+      '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+      '<div>'+
+        '<input type="number" min="0" step="1" class="liftlog-actual-input" value="'+(hasActual?actualVal:'')+'" placeholder="'+b.total+'" '+
+        'onchange="setHourlyActual('+h+',this.value)">'+
+      '</div>'+
+      '<div class="liftlog-actual-tail">'+
+        '<span class="liftlog-forecast-ref">fcst '+b.total+'</span>'+
+        deltaHtml+
+        selectHtml(h,1,entry.src1)+
+        selectHtml(h,2,entry.src2)+
+      '</div>'+
+      '</div>'
+    );
+  });
+
+  if(!rows.length){
+    el.innerHTML='<div style="color:var(--text3);padding:6px 2px;">No forecast activity to compare yet.</div>';
+    return;
+  }
+
+  el.innerHTML=rows.join('');
+}
+
+// Staircase time map: one offset box per active hour, color-coded by dominant lift
+// source for that hour. Mirrors the Hourly Lift Log directly above it.
+function buildHourlyLiftTimeMap(buckets){
+  var el=document.getElementById('lift-log-timemap');
+  if(!el) return;
+
+  var active=buckets.filter(function(b){return b.total>0;});
+  if(!active.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px 0;">No lift activity to map yet.</div>';
+    return;
+  }
+
+  function dominantOf(b){
+    return b.sources.slice().sort(function(a,c){return c.lifts-a.lifts;})[0];
+  }
+
+  // Group consecutive hours that share the same dominant source into one step,
+  // so a long IHOSA or MHOAS run renders as a single labeled block instead of
+  // one staircase step per hour. Source totals are summed across the group.
+  var groups=[];
+  active.forEach(function(b){
+    var dom=dominantOf(b);
+    var key=dom?dom.key:'none';
+    var last=groups[groups.length-1];
+    if(last && last.key===key && b.hour===last.lastHour+1){
+      last.lastHour=b.hour;
+      last.total+=b.total;
+      b.sources.forEach(function(s){
+        var ex=last.sourceTotals[s.key];
+        if(ex) ex.lifts+=s.lifts;
+        else last.sourceTotals[s.key]={label:s.label,lifts:s.lifts,color:s.color};
+      });
+    } else {
+      var sourceTotals={};
+      b.sources.forEach(function(s){ sourceTotals[s.key]={label:s.label,lifts:s.lifts,color:s.color}; });
+      groups.push({key:key,color:dom?dom.color:'#F59E0B',firstHour:b.hour,lastHour:b.hour,total:b.total,sourceTotals:sourceTotals});
+    }
+  });
+
+  function hourStart(h){
+    return String(h%24).padStart(2,'0')+'00'+(h>=24?' (+1)':'');
+  }
+  function hourEnd(h){
+    return String(h%24).padStart(2,'0')+'59'+(h>=24?' (+1)':'');
+  }
+  function rangeLabel(g){
+    if(g.firstHour===g.lastHour) return hourStart(g.firstHour)+'\u2013'+hourEnd(g.firstHour);
+    return hourStart(g.firstHour)+'\u2013'+hourEnd(g.lastHour);
+  }
+
+  var CLOCK_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+
+  // ── Connected timeline of node + line segments, one per group ──
+  var nodes=groups.map(function(g,i){
+    var lineHtml = i<groups.length-1
+      ? '<div class="timemap-line" style="background:'+g.color+';"></div>'
+      : '<div class="timemap-line" style="background:transparent;"></div>';
+    return '<div class="timemap-node-wrap">'
+      +'<div class="timemap-node" style="color:'+g.color+';border-color:'+g.color+';box-shadow:0 0 12px '+g.color+'55;">'+CLOCK_ICON+'</div>'
+      +lineHtml
+      +'</div>';
+  }).join('');
+
+  // ── Cards below the timeline, one per group ──
+  var cards=groups.map(function(g,i){
+    var color=g.color;
+    var hours=g.lastHour-g.firstHour+1;
+    var rateLabel=hours+'h \u00d7 ~'+Math.round(g.total/hours)+'/hr';
+    var breakdown=Object.keys(g.sourceTotals).map(function(k){
+      var s=g.sourceTotals[k];
+      return '<div class="timemap-src" style="color:'+s.color+';"><span class="timemap-src-dot" style="background:'+s.color+';"></span>'+escHtml(s.label)+': '+s.lifts+'</div>';
+    }).join('');
+    return '<div class="timemap-card">'
+      +'<div class="timemap-range" style="color:'+color+';border-color:'+color+'55;background:'+color+'1a;">'+rangeLabel(g)+'</div>'
+      +'<div class="timemap-rate">'+rateLabel+'</div>'
+      +'<div class="timemap-total">'+g.total+'<span class="timemap-total-unit">lifts</span></div>'
+      +'<div class="timemap-srcs">'+breakdown+'</div>'
+      +'</div>';
+  }).join('');
+
+  // ── Legend ──
+  var legendItems=[
+    {key:'ihosa',label:'IHOSA'},
+    {key:'mhoas',label:'MHOAS'},
+    {key:'coh',label:'COH'},
+    {key:'ups_work',label:'UPS'},
+    {key:'carryover',label:'Carry-over'}
+  ];
+  var legend=legendItems.map(function(item){
+    return '<div class="timemap-legend-item"><span class="timemap-legend-dot" style="background:'+LIFT_SOURCE_COLORS[item.key]+';"></span>'+item.label+'</div>';
+  }).join('')
+  + '<div class="timemap-legend-item"><span class="timemap-legend-dot" style="background:#4a9eff;"></span>Inbound train drops</div>';
+
+  el.innerHTML=''
+    +'<div class="timemap-header">'+CLOCK_ICON+'<span class="timemap-title">Hourly Lift Time Map</span></div>'
+    +'<div class="timemap-scroll">'
+    +'<div class="timemap-timeline">'+nodes+'</div>'
+    +'<div class="timemap-cards">'+cards+'</div>'
+    +'</div>'
+    +'<div class="timemap-legend">'+legend+'</div>';
 }
 
 function sumHourBuckets(buckets,startHour,endHour){
@@ -5053,7 +5574,7 @@ function simulate(){
   (function(){
     var noteEl=document.getElementById('carryover-note');
     if(!noteEl) return;
-    var typeLabel=carryOverType==='mhoas'?'MHOA (previous day)':carryOverType==='inbound'?'inbound freight (previous day)':'MHOA + inbound (previous day)';
+    var typeLabel=carryOverType==='mhoas'?'MHOAS (previous day)':carryOverType==='inbound'?'inbound freight (previous day)':'MHOAS + inbound (previous day)';
     if(carryOverLifts>0){
       noteEl.textContent='PRIOR-DAY '+typeLabel+' \u2014 '+carryOverLifts+' units must be cleared before today\'s operations can begin ('+fmtDur(carryOverLifts/Math.max(1,rate))+' at current rate).';
     } else {
@@ -5128,8 +5649,13 @@ function simulate(){
   var carryOverH=carryOverLifts>0?carryOverLifts/rate:0;
   var carryOverStart=cohInitialEmptyCars>0?s1Start:trains[0].arr;
   var carryOverEnd=carryOverStart+carryOverH;
+  (function(){
+    var rangeEl=document.getElementById('carryover-header-range');
+    if(!rangeEl) return;
+    rangeEl.textContent='\u00b7 '+fmtH(carryOverStart)+'\u2013'+(carryOverLifts>0?fmtH(carryOverEnd):'XXXX');
+  })();
   if(carryOverLifts>0){
-    var carryOverLabel=carryOverType==='mhoas'?'MHOA (previous day)':carryOverType==='inbound'?'inbound (previous day)':'MHOA + inbound (previous day)';
+    var carryOverLabel=carryOverType==='mhoas'?'MHOAS (previous day)':carryOverType==='inbound'?'inbound (previous day)':'MHOAS + inbound (previous day)';
     segs.carryover=[{start:carryOverStart,end:carryOverEnd}];
     events.push({
       time:carryOverStart,
@@ -5231,7 +5757,15 @@ function simulate(){
   // ── LPMH ──
   var trainLabelMap={};
   trains.forEach(function(t){trainLabelMap[t.key]=t.label;});
-  var hourlyBuckets=buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap);
+  var liftLogPaceCtx={
+    currentTime:currentTime,
+    ihosaUnits:ihosaUnits,mhoasUnits:mhoasUnits,
+    ihosaLoaded:ihosaLoaded,mhoasLoaded:mhoasLoaded,
+    ihosaCommitment:ihosaCommitment,mhoasCommitment:mhoasCommitment,
+    rate:rate,
+    lunchH:lunchH,shiftH:shiftH,upsH:upsH,lunch2H:lunch2H,shift0300H:shift0300H,zpbhoArr:zpbhoArr
+  };
+  var hourlyBuckets=buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,liftLogPaceCtx);
 
   var s1Sources=getShiftLiftSources(segs,s1Start,s1End,activeKeys,trainLabelMap,rate);
   var s2Lifts;
@@ -5291,7 +5825,6 @@ function simulate(){
   var s2Label=nightWraps?(fmtH(s2Start)+'-'+fmtH(s2End)+'+'):(fmtH(s2Start)+'-'+fmtH(s2End));
 
   var s1Manual=[];
-  if(preLifts>0)s1Manual.push({label:'pre-start lifts (since midnight, not counted)',lifts:preLifts});
   if(flips>0)s1Manual.push({label:'flips',lifts:flips});
 
   function lpmhCard(cardClass, labelText, lpmhVal, target, lifts, manHours, crew, gaugeHtml, breakdownHtml){
@@ -5355,7 +5888,7 @@ function simulate(){
   );
 
   document.getElementById('lpmh-grid').innerHTML=s1Html+s2Html+dHtml;
-  buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap);
+  buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,liftLogPaceCtx);
 
   // ── METRICS ──
   var mHTML='';
@@ -5506,8 +6039,68 @@ function simulate(){
       if(sortedEvts[j].time > currentTime){ nextEvt = sortedEvts[j]; break; }
     }
 
+    // Time consumed between `from` and `to` by scheduled delay blocks (shift change,
+    // lunches, UPS window) that haven't already been marked done.
+    function pendingDelayHours(from, to){
+      var d=0;
+      if(to<=from) return 0;
+      if(lunchH>0 && from<11 && 11<to) d+=lunchH;
+      if(shiftH>0 && from<15 && 15<to) d+=shiftH;
+      if(upsH>0 && zpbhoArr>from && zpbhoArr<to) d+=upsH;
+      if(lunch2H>0 && from<21 && 21<to) d+=lunch2H;
+      if(shift0300H>0 && from<27 && 27<to) d+=shift0300H;
+      return d;
+    }
+
+    // Required LPH (lifts per man-hour... here: units/hour) to clear the next
+    // un-met outbound commitment exactly on time from currentTime.
+    function requiredRateFor(commitment, units, loaded){
+      var remaining=Math.max(0, units-Math.round(loaded));
+      if(remaining<=0 || units<=0) return null;
+      var hoursLeft=commitment-currentTime;
+      if(hoursLeft<=0) return {remaining:remaining,hoursLeft:0,usable:0,required:Infinity};
+      var usable=Math.max(0.01, hoursLeft-pendingDelayHours(currentTime,commitment));
+      return {remaining:remaining,hoursLeft:hoursLeft,usable:usable,required:remaining/usable};
+    }
+
+    // Pick whichever commitment is still open and due soonest — that's the one
+    // the current block's pace needs to be measured against.
+    function nextOpenCommitment(){
+      var cands=[];
+      if(ihosaUnits>0 && Math.round(ihosaLoaded)<ihosaUnits){
+        cands.push({label:'IHOSA',dl:ihosaCommitment,units:ihosaUnits,loaded:ihosaLoaded,color:'#f0a030'});
+      }
+      if(mhoasUnits>0 && Math.round(mhoasLoaded)<mhoasUnits){
+        cands.push({label:'MHOAS',dl:mhoasCommitment,units:mhoasUnits,loaded:mhoasLoaded,color:'#7F77DD'});
+      }
+      if(!cands.length) return null;
+      cands.sort(function(a,b){return a.dl-b.dl;});
+      return cands[0];
+    }
+
+    function requiredRateHtml(){
+      var target=nextOpenCommitment();
+      if(!target) return '';
+      var calc=requiredRateFor(target.dl,target.units,target.loaded);
+      if(!calc) return '';
+      if(!isFinite(calc.required)){
+        return '<div class="tblock-meta" style="margin-top:6px;color:var(--red);font-weight:600;">'
+          +'&#x26A0; '+target.label+' deadline ('+fmtH(target.dl)+') has passed with '+calc.remaining+' units remaining \u2014 commitment will be missed.'
+          +'</div>';
+      }
+      var ok=calc.required<=rate;
+      var color=ok?'var(--green)':'var(--red)';
+      return '<div class="tblock-meta" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">'
+        +'<span style="color:var(--text3);">To make </span>'
+        +'<span style="color:'+target.color+';font-weight:700;">'+target.label+'</span>'
+        +'<span style="color:var(--text3);"> by '+fmtH(target.dl)+', need </span>'
+        +'<span style="font-family:var(--mono);font-weight:700;color:'+color+';">'+calc.required.toFixed(1)+' LPH</span>'
+        +'<span style="color:var(--text3);"> (current rate: '+rate+' LPH) \u2014 '+calc.remaining+' units in '+fmtDur(calc.usable)+' usable</span>'
+        +'</div>';
+    }
+
     function cardHTML(evt, isCurrent){
-      if(!evt) return '<div class="tblock-header"><div class="tblock-label"><div class="tblock-dot"></div>'+(isCurrent?'Current Block':'Next Block')+'</div></div><div class="tblock-empty">Run simulation to populate.</div>';
+      if(!evt) return '<div class="tblock-header"><div class="tblock-label"><div class="tblock-dot"></div>'+(isCurrent?'Current Block':'Next Block')+'</div></div><div class="tblock-empty">Run simulation to populate.</div>'+(isCurrent?requiredRateHtml():'');
       var timeUntil = isCurrent ? null : evt.time - currentTime;
       var countdownHtml = (!isCurrent && timeUntil !== null)
         ? '<div class="tblock-countdown">in '+fmtDur(timeUntil)+'</div>' : '';
@@ -5524,7 +6117,8 @@ function simulate(){
         +'<div class="tblock-divider"></div>'
         +pillHtml
         +'<div class="tblock-title">'+evt.title+'</div>'
-        +'<div class="tblock-meta">'+evt.meta+'</div>';
+        +'<div class="tblock-meta">'+evt.meta+'</div>'
+        +(isCurrent?requiredRateHtml():'');
     }
 
     var curEl = document.getElementById('tblock-current');
@@ -5594,7 +6188,7 @@ function buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
     var lockout=(segs.ihosa||[]).filter(function(s){return s.start>=t.arr&&s.start<IHOSA_DL;})
       .reduce(function(s,seg){return s+(seg.end-seg.start);},0);
     if(lockout>0.05)contributors.push({
-      label:'IHOSA lockout on '+t.label,hours:lockout,color:'#f0a030',
+      label:'IHOSA lockout on '+t.label,hours:lockout,color:'#f0a030',trainKey:t.key,
       cost:'Added '+fmtDur(lockout)+' to '+t.label+"'s drop clock while the ramp pivoted to load the outbound.",
       why:'This pivot was unavoidable. IHOSA had a hard 1700 departure and without pivoting at '+fmtH(ihosaPivot||IHOSA_DL)+' the outbound would have departed short — downstream rail network penalties far outweigh the grade impact.'
     });
@@ -5605,35 +6199,73 @@ function buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
     return s+(active?(seg.end-seg.start):0);
   },0);
   if(mhoasLock>0.05)contributors.push({
-    label:'MHOAS loading lockout (overnight)',hours:mhoasLock,color:'#7F77DD',
+    label:'MHOAS loading lockout (overnight)',hours:mhoasLock,color:'#7F77DD',trainKey:null,
     cost:'The ramp spent '+fmtDur(mhoasLock)+' loading MHOAS while inbound was still on the ground.',
     why:'The 0300 MHOAS commitment is non-negotiable. The pivot at '+fmtH(mhoasPivot||MHOAS_DL)+' was the latest possible moment to make the commitment. Delaying further would have caused MHOAS to depart short.'
   });
 
   var firstTrain=trains[0];
-  if(firstTrain&&firstTrain.arr>1)contributors.push({
-    label:'Late first arrival — '+firstTrain.label+' at '+fmtH(firstTrain.arr),hours:firstTrain.arr,color:firstTrain.color,
-    cost:'The ramp sat idle from midnight until '+fmtH(firstTrain.arr)+'. That is '+fmtDur(firstTrain.arr)+' where the drop clock had not started but the day window was shrinking.',
-    why:'Train arrival times are set by the rail network and origin terminal — the ramp has no control over dispatch. Earlier ZLBHO dispatch at origin is the single biggest lever for grade improvement.'
-  });
+  if(firstTrain&&firstTrain.arr>2){
+    // Check whether the ramp was actually idle before the first train arrived, or
+    // whether it was loading from cars-on-hand (COH) and/or clearing carry-over
+    // lifts from the prior shift during that window.
+    var preArrivalLoaded=0;
+    var preArrivalSources=[];
+    [
+      {key:'ihosa',label:'cars on hand (COH)'},
+      {key:'mhoas',label:'cars on hand (COH)'},
+      {key:'coh',label:'cars on hand (COH)'},
+      {key:'carryover',label:'carry-over from the prior shift'}
+    ].forEach(function(src){
+      var units=0;
+      (segs[src.key]||[]).forEach(function(seg){
+        var overlap=Math.max(0,Math.min(seg.end,firstTrain.arr)-Math.max(seg.start,0));
+        if(overlap>0.01)units+=overlap*rate;
+      });
+      units=Math.round(units);
+      if(units>0){
+        preArrivalLoaded+=units;
+        if(!preArrivalSources.some(function(s){return s.label===src.label;})){
+          preArrivalSources.push({label:src.label,units:units});
+        } else {
+          preArrivalSources.forEach(function(s){if(s.label===src.label)s.units+=units;});
+        }
+      }
+    });
+
+    if(preArrivalLoaded>0){
+      var sourceText=preArrivalSources.map(function(s){return s.units+' units from '+s.label;}).join(' and ');
+      contributors.push({
+        label:'Late first arrival — '+firstTrain.label+' at '+fmtH(firstTrain.arr),hours:firstTrain.arr,color:firstTrain.color,trainKey:firstTrain.key,
+        cost:'From midnight until '+fmtH(firstTrain.arr)+' ('+fmtDur(firstTrain.arr)+'), the ramp loaded '+sourceText+' \u2014 it was not idle, but '+firstTrain.label+"'s drop clock had not started and the day window was still shrinking.",
+        why:'Train arrival times are set by the rail network and origin terminal — the ramp has no control over dispatch. Pre-positioned work covered the gap this time; if it runs out before the next inbound arrives, this window becomes true idle time. Earlier ZLBHO dispatch at origin remains the single biggest lever for grade improvement.'
+      });
+    } else {
+      contributors.push({
+        label:'Late first arrival — '+firstTrain.label+' at '+fmtH(firstTrain.arr),hours:firstTrain.arr,color:firstTrain.color,trainKey:firstTrain.key,
+        cost:'The ramp sat idle from midnight until '+fmtH(firstTrain.arr)+'. That is '+fmtDur(firstTrain.arr)+' where the drop clock had not started but the day window was shrinking.',
+        why:'Train arrival times are set by the rail network and origin terminal — the ramp has no control over dispatch. Earlier ZLBHO dispatch at origin is the single biggest lever for grade improvement.'
+      });
+    }
+  }
 
   if(shiftH>0.01)contributors.push({
-    label:'Shift change at 1500',hours:shiftH,color:'#7F77DD',
+    label:'Shift change at 1500',hours:shiftH,color:'#7F77DD',trainKey:null,
     cost:'All ramp activity paused for '+fmtDur(shiftH)+' at 1500 for crew handoff.',
     why:'Mandatory operational requirement — equipment safety checks, briefings, and physical crew relief cannot be skipped or deferred regardless of volume. Appears in every day\'s TAVG.'
   });
   if(lunchH>0.01)contributors.push({
-    label:'Day shift lunch at 1100',hours:lunchH,color:'#D85A30',
+    label:'Day shift lunch at 1100',hours:lunchH,color:'#D85A30',trainKey:null,
     cost:fmtDur(lunchH)+' midday stop while inbound trains were still on the ramp.',
     why:'Required under labor agreements. Cannot be skipped or deferred. Timing at 1100 minimizes impact by placing it before the 1700 outbound window opens.'
   });
   if(lunch2H>0.01)contributors.push({
-    label:'Night shift lunch at 2100',hours:lunch2H,color:'#D85A30',
+    label:'Night shift lunch at 2100',hours:lunch2H,color:'#D85A30',trainKey:null,
     cost:fmtDur(lunch2H)+' overnight stop, reducing available time to clear remaining inbound.',
     why:'Same labor requirement as the day shift break — contractually mandated. The 2100 timing is chosen to fall before the MHOAS pivot window opens.'
   });
   if(upsH>0.01)contributors.push({
-    label:'UPS window on ZPBHO arrival at '+fmtH(zpbhoArr),hours:upsH,color:'#D4537E',
+    label:'UPS window on ZPBHO arrival at '+fmtH(zpbhoArr),hours:upsH,color:'#D4537E',trainKey:(trains.filter(function(t){return t.label==='ZPBHO';})[0]||{}).key||null,
     cost:fmtDur(upsH)+' protected UPS handling window. UPS units inside this window now count as lift credit instead of looking like pure downtime.',
     why:'Triggered by ZPBHO arrival because that train carries UPS volume requiring special handling. The UPS unit slider controls how many credited lifts are earned during this window.'
   });
@@ -5749,29 +6381,12 @@ function buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
 
   html2+='<div class="tavg-drivers">';
   html2+='<div class="tavg-section-title">Primary drivers</div>';
-
-  contributors.forEach(function(c,i){
-    var pct=Math.min(100,(c.hours/maxH)*100).toFixed(1);
-    var sharePct=((c.hours/Math.max(0.1,totalDelayH))*100).toFixed(1);
-    var chip = i===0 ? 'Top driver' : (i===1 ? 'Secondary' : 'Supporting');
-    var impactColor=i===0?'var(--red)':i===1?'var(--amber)':'var(--text2)';
-    html2+='<div class="tavg-item">';
-    html2+='<div class="tavg-rank">#'+(i+1)+'</div>';
-    html2+='<div class="tavg-content">';
-    html2+='<div class="tavg-label">'+c.label+' <span class="tavg-chip">'+chip+'</span></div>';
-    html2+='<div class="tavg-impact" style="color:'+impactColor+';">'+fmtDur(c.hours)+' impact · '+sharePct+'% of total interruption time</div>';
-    html2+='<div class="tavg-cost">'+c.cost+'</div>';
-    html2+='<div class="tavg-why">'+c.why+'</div>';
-    html2+='</div>';
-    html2+='<div style="text-align:right;min-width:72px;">';
-    html2+='<div style="font-family:var(--mono);font-size:18px;font-weight:700;color:'+impactColor+';">'+pct+'%</div>';
-    html2+='<div style="font-size:9px;font-family:var(--mono);letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);">of max</div>';
-    html2+='</div>';
-    html2+='<div class="tavg-bar-wrap"><div class="tavg-bar" style="width:'+pct+'%;background:'+c.color+';opacity:0.8;"></div></div>';
-    html2+='</div>';
-  });
-
+  html2+=buildTavgFilterBar(trains);
+  html2+='<div id="tavg-drivers-list"></div>';
   html2+='</div>';
+
+  // Stash for renderTavgDrivers, which redraws just the filtered list on pill click.
+  window._tavgState={contributors:contributors,maxH:maxH,totalDelayH:totalDelayH,filter:window._tavgFilter||'all'};
 
   html2+='<div class="tavg-note">';
   html2+='<p><strong>Operational read:</strong> the delays matter because they squeezed the same target into less usable time. <strong>Supervisor read:</strong> this is a pacing problem, not just a headcount problem. <strong>Management read:</strong> productivity fell because the schedule lost flexibility, so the ramp needed a higher active lift rate to hold the same commitment.</p>';
@@ -5783,11 +6398,86 @@ renderTopGrades({
   ihosaTime: ihosaDisplayVal, mhoasTime: mhoasDisplayVal,
   avgTime: fmtDur(avgDropH), simpleAvgTime: fmtDur(simpleAvgDropH), lpmhActual: actualLpmh.toFixed(2)+' / '+LPMH_TARGET.toFixed(2),
   ihosaLoaded: Math.round(ihosaLoaded), ihosaUnits: ihosaUnits, ihosaPivot: ihosaPivot, ihosaLate: ihosaLate,
-  mhoasLoaded: Math.round(mhoasLoaded), mhoasUnits: mhoasUnits, mhoasPivot: mhoasPivot, mhoasLate: mhoasLate
+  mhoasLoaded: Math.round(mhoasLoaded), mhoasUnits: mhoasUnits, mhoasPivot: mhoasPivot, mhoasLate: mhoasLate,
+  ihosaShortCalc: ihosaShortCalc, mhoasShortCalc: mhoasShortCalc,
+  avgDropH: avgDropH, simpleAvgDropH: simpleAvgDropH,
+  actualLpmhRaw: actualLpmh, lpmhTargetRaw: LPMH_TARGET
 });
 
 document.getElementById('tavg-body').innerHTML=html + html2;
+renderTavgDrivers();
 
+}
+
+// Filter pill bar: "All inbound" + one pill per active train + "Shift-wide" for
+// delays that aren't tied to a specific inbound (lunches, shift change, MHOAS lockout).
+function buildTavgFilterBar(trains){
+  var current=window._tavgFilter||'all';
+  var pills=[];
+  pills.push(tavgPill('all','All inbound',current==='all','var(--text2)'));
+  trains.forEach(function(t){
+    pills.push(tavgPill(t.key,t.label,current===t.key,t.color));
+  });
+  pills.push(tavgPill('shift','Shift-wide',current==='shift','var(--text3)'));
+  return '<div class="tavg-filter-bar">'+pills.join('')+'</div>';
+}
+function tavgPill(key,label,active,color){
+  return '<button type="button" class="tavg-filter-pill'+(active?' active':'')+'" '
+    +'style="--pill-color:'+color+';" onclick="setTavgFilter(\''+key+'\')">'+escHtml(label)+'</button>';
+}
+function setTavgFilter(key){
+  window._tavgFilter=key;
+  // Update pill active states without a full re-simulate.
+  document.querySelectorAll('.tavg-filter-pill').forEach(function(p){
+    p.classList.toggle('active', p.getAttribute('onclick')==="setTavgFilter('"+key+"')");
+  });
+  renderTavgDrivers();
+}
+
+// Renders the (filtered) Primary Drivers list using the data stashed by buildTavg.
+function renderTavgDrivers(){
+  var el=document.getElementById('tavg-drivers-list');
+  if(!el) return;
+  var state=window._tavgState;
+  if(!state){ el.innerHTML=''; return; }
+
+  var filter=window._tavgFilter||'all';
+  var contributors=state.contributors;
+  var maxH=state.maxH, totalDelayH=state.totalDelayH;
+
+  var filtered=contributors.filter(function(c){
+    if(filter==='all') return true;
+    if(filter==='shift') return c.trainKey==null;
+    return c.trainKey===filter;
+  });
+
+  if(!filtered.length){
+    el.innerHTML='<div style="color:var(--text3);padding:12px 0;font-size:12px;">No drivers match this filter.</div>';
+    return;
+  }
+
+  var out='';
+  filtered.forEach(function(c,i){
+    var pct=Math.min(100,(c.hours/maxH)*100).toFixed(1);
+    var sharePct=((c.hours/Math.max(0.1,totalDelayH))*100).toFixed(1);
+    var chip = i===0 ? 'Top driver' : (i===1 ? 'Secondary' : 'Supporting');
+    var impactColor=i===0?'var(--red)':i===1?'var(--amber)':'var(--text2)';
+    out+='<div class="tavg-item">';
+    out+='<div class="tavg-rank">#'+(i+1)+'</div>';
+    out+='<div class="tavg-content">';
+    out+='<div class="tavg-label">'+c.label+' <span class="tavg-chip">'+chip+'</span></div>';
+    out+='<div class="tavg-impact" style="color:'+impactColor+';">'+fmtDur(c.hours)+' impact · '+sharePct+'% of total interruption time</div>';
+    out+='<div class="tavg-cost">'+c.cost+'</div>';
+    out+='<div class="tavg-why">'+c.why+'</div>';
+    out+='</div>';
+    out+='<div style="text-align:right;min-width:72px;">';
+    out+='<div style="font-family:var(--mono);font-size:18px;font-weight:700;color:'+impactColor+';">'+pct+'%</div>';
+    out+='<div style="font-size:9px;font-family:var(--mono);letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);">of max</div>';
+    out+='</div>';
+    out+='<div class="tavg-bar-wrap"><div class="tavg-bar" style="width:'+pct+'%;background:'+c.color+';opacity:0.8;"></div></div>';
+    out+='</div>';
+  });
+  el.innerHTML=out;
 }
 
 
@@ -6031,7 +6721,7 @@ function generateHandoffReport(state){
   var delayRows = [];
   var totalDelayMins = 0;
   if(state.carryOverLifts > 0){
-    var carryLabel = state.carryOverType==='mhoas' ? 'Carry-over (MHOA, prior day)' : state.carryOverType==='inbound' ? 'Carry-over (inbound, prior day)' : 'Carry-over (MHOA + inbound, prior day)';
+    var carryLabel = state.carryOverType==='mhoas' ? 'Carry-over (MHOAS, prior day)' : state.carryOverType==='inbound' ? 'Carry-over (inbound, prior day)' : 'Carry-over (MHOAS + inbound, prior day)';
     var carryMins = Math.round(state.carryOverLifts/Math.max(1,state.rate)*60);
     delayRows.push({label:carryLabel,time:'0300 (before today\'s work)',dur:carryMins});
     totalDelayMins+=carryMins;
