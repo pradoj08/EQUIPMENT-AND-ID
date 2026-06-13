@@ -985,22 +985,37 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── TIMELINE ───────────────────────────────────────────────────── */
 .seq{display:flex;flex-direction:column;gap:4px;}
-.seq-item{display:grid;grid-template-columns:58px 16px 1fr;gap:12px;align-items:flex-start;}
-.seq-time{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text2);padding-top:13px;text-align:right;}
-.seq-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:16px;}
-.seq-dot{width:10px;height:10px;border-radius:50%;border:2px solid;background:var(--bg2);flex-shrink:0;}
-.seq-dot-now{background:var(--amber);border-color:var(--amber);width:12px;height:12px;box-shadow:0 0 10px rgba(245,158,11,0.6);}
-.seq-line{width:1px;background:var(--border2);flex:1;min-height:22px;margin-top:4px;}
-.seq-block{background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:9px 13px;margin-bottom:8px;}
-.seq-now{border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.05);}
-.seq-past{opacity:0.4;}
+.seq-item{display:grid;grid-template-columns:64px 20px 1fr;gap:14px;align-items:flex-start;}
+.seq-time-col{padding-top:14px;text-align:right;display:flex;flex-direction:column;gap:2px;}
+.seq-time{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text2);line-height:1;}
+.seq-time-now{color:var(--amber);}
+.seq-elapsed{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--text3);}
+.seq-elapsed-now{color:rgba(245,158,11,0.65);}
+.seq-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:18px;}
+.seq-dot{width:14px;height:14px;border-radius:50%;border:2px solid;background:var(--bg2);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.seq-dot-core{width:5px;height:5px;border-radius:50%;background:var(--text3);}
+.seq-dot-now{background:rgba(245,158,11,0.12);border-color:var(--amber);width:18px;height:18px;box-shadow:0 0 12px rgba(245,158,11,0.55);}
+.seq-dot-now .seq-dot-core{background:var(--amber);width:7px;height:7px;box-shadow:0 0 8px rgba(245,158,11,0.8);}
+.seq-line{width:1px;background:var(--border2);flex:1;min-height:30px;margin-top:4px;border-left:1px dashed var(--border2);}
+.seq-block{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.seq-block-body{flex:1;min-width:0;}
+.seq-icon{flex-shrink:0;display:flex;align-items:center;}
+.seq-now{border-color:rgba(245,158,11,0.5);background:linear-gradient(90deg,rgba(245,158,11,0.10),rgba(245,158,11,0.02));position:relative;overflow:hidden;}
+.seq-now-arrow{position:absolute;left:-1px;top:50%;transform:translateY(-50%) rotate(45deg);width:14px;height:14px;background:var(--s2);border-left:1px solid rgba(245,158,11,0.5);border-bottom:1px solid rgba(245,158,11,0.5);margin-left:-7px;}
+.seq-now-body{flex:1;min-width:0;z-index:1;}
+.seq-now-graphic{flex-shrink:0;width:110px;height:42px;opacity:0.6;display:none;}
+@media (min-width:640px){.seq-now-graphic{display:block;}}
+.seq-now-svg{width:100%;height:100%;}
+.seq-now-svg path{fill:none;stroke:var(--amber);stroke-width:1.5;}
+.seq-now-dot{fill:var(--amber);}
+.seq-past{}
 .seq-warn{border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.04);}
 .seq-bad{border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.04);}
 .seq-ok{border-color:rgba(16,185,129,0.25);background:rgba(16,185,129,0.04);}
-.seq-headline{font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.seq-meta{font-size:10px;color:var(--text3);margin-top:3px;}
-.seq-pill{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700;flex-shrink:0;font-family:var(--mono);}
-.now-pill{background:var(--amber);color:#000;font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700;font-family:var(--mono);}
+.seq-headline{font-size:13px;font-weight:700;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.seq-meta{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5;}
+.seq-pill{font-size:9.5px;padding:2px 8px;border-radius:4px;font-weight:700;flex-shrink:0;font-family:var(--mono);letter-spacing:.04em;}
+.now-pill{background:var(--amber);color:#000;font-size:9.5px;padding:2px 8px;border-radius:4px;font-weight:700;font-family:var(--mono);letter-spacing:.04em;}
 .badge{font-size:9.5px;font-family:var(--mono);background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:3px 9px;border-radius:20px;letter-spacing:0.06em;}
 
 /* ── STATUS BAR ─────────────────────────────────────────────────── */
@@ -1813,6 +1828,9 @@ body.print-mode .time-lbl{
   #print-report .seq-headline{color:#111!important;font-size:9.5px!important;}
   #print-report .seq-meta{color:#111!important;font-size:8.5px!important;}
   #print-report .seq-pill,.now-pill,.badge{background:#eee!important;color:#111!important;border:1px solid #999!important;}
+  #print-report .seq-icon,#print-report .seq-now-graphic,#print-report .seq-now-arrow{display:none!important;}
+  #print-report .seq-time-col{padding-top:8px!important;}
+  #print-report .seq-elapsed{display:none!important;}
 }
 
 
@@ -2500,22 +2518,33 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
       </div>
       <div class="panel-body panel-content">
+        <div id="liftlog-summary-bar"></div>
         <div class="liftlog-grid">
           <div class="liftlog-col">
             <div class="liftlog-col-head">
-              <span class="liftlog-col-dot" style="background:var(--green);"></span>
-              <span class="liftlog-col-title">Forecast</span>
-              <span class="liftlog-col-sub">simulated</span>
+              <span class="liftlog-col-title liftlog-col-title-fcst">Forecast</span>
+              <span class="liftlog-col-sub">/ simulated</span>
+            </div>
+            <div class="liftlog-table-head liftlog-table-head-fcst">
+              <div class="liftlog-cell-time">Time Window</div>
+              <div class="liftlog-cell-count">Forecast Lifts</div>
+              <div class="liftlog-cell-rest">Work Types (Simulated)</div>
             </div>
             <div id="lift-log" class="liftlog-rows"></div>
           </div>
           <div class="liftlog-col">
             <div class="liftlog-col-head">
-              <span class="liftlog-col-dot" style="background:var(--amber);"></span>
-              <span class="liftlog-col-title">Actual</span>
-              <span class="liftlog-col-sub">manual entry</span>
-              <span id="liftlog-pace-summary" class="liftlog-pace-summary"></span>
-              <button class="liftlog-clear-btn" onclick="clearHourlyActuals()">Clear</button>
+              <span class="liftlog-col-title liftlog-col-title-actual">Actual</span>
+              <span class="liftlog-col-sub">/ manual entry</span>
+              <span id="liftlog-deadline-banner" class="liftlog-deadline-banner"></span>
+              <button class="liftlog-clear-btn" onclick="clearHourlyActuals(this)">Clear</button>
+            </div>
+            <div class="liftlog-table-head liftlog-table-head-actual">
+              <div class="liftlog-cell-time">Time Window</div>
+              <div class="liftlog-cell-count">Actual Lifts</div>
+              <div class="liftlog-cell-var">Var vs Fcst</div>
+              <div class="liftlog-cell-worktype">Work Type</div>
+              <div class="liftlog-cell-rest">Notes</div>
             </div>
             <div id="lift-log-actual" class="liftlog-rows"></div>
           </div>
@@ -2664,49 +2693,96 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .collapsible-panel.collapsed .collapse-chevron{transform:rotate(180deg);}
 
 /* ── Hourly Lift Log: forecast vs actual ── */
-.liftlog-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-@media (max-width:860px){.liftlog-grid{grid-template-columns:1fr;}}
-.liftlog-col-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.liftlog-col-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.liftlog-col-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);}
-.liftlog-col-sub{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.liftlog-grid{display:flex;gap:0;}
+.liftlog-col{flex:1 1 50%;min-width:0;padding:0 18px;}
+.liftlog-col:first-child{padding-left:0;border-right:1px solid var(--border);}
+.liftlog-col:last-child{padding-right:0;}
+@media (max-width:860px){
+  .liftlog-grid{flex-direction:column;}
+  .liftlog-col:first-child{border-right:none;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:18px;}
+  .liftlog-col{padding:0;}
+}
+
+/* ── Summary bar ── */
+.liftlog-summary-bar{display:flex;align-items:center;gap:32px;flex-wrap:wrap;
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:14px 20px;margin-bottom:16px;}
+.liftlog-summary-stat{display:flex;flex-direction:column;gap:4px;}
+.liftlog-summary-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.liftlog-summary-val{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--text);line-height:1;}
+.liftlog-summary-val .unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:5px;}
+.liftlog-summary-val.is-pos{color:var(--green);}
+.liftlog-summary-val.is-neg{color:var(--red);}
+.liftlog-summary-completion{display:flex;align-items:center;gap:10px;}
+.liftlog-summary-ring{flex-shrink:0;}
+.liftlog-summary-banner{display:flex;align-items:center;gap:12px;margin-left:auto;
+  background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);
+  border-radius:8px;padding:8px 16px;}
+.liftlog-summary-banner-icon{color:var(--red);flex-shrink:0;}
+.liftlog-summary-banner-title{font-size:12px;font-weight:700;color:var(--red);}
+.liftlog-summary-banner-sub{font-size:11px;color:var(--text3);}
+
+/* ── Column headers ── */
+.liftlog-col-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
+.liftlog-col-title{font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.liftlog-col-title-fcst{color:var(--green);}
+.liftlog-col-title-actual{color:var(--amber);}
+.liftlog-col-sub{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
 .liftlog-clear-btn{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s;}
 .liftlog-clear-btn:hover{color:var(--red);border-color:var(--red);}
-.liftlog-pace-summary{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.liftlog-pace-summary.is-ahead{color:var(--green);}
-.liftlog-pace-summary.is-behind{color:var(--red);}
-.liftlog-pace-summary.is-even{color:var(--text3);}
-.liftlog-rows{display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:11px;}
+.liftlog-clear-btn.confirm-armed{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.1);}
 
-.liftlog-row{display:grid;grid-template-columns:62px 56px 1fr;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;background:var(--bg3);transition:background .12s;min-height:34px;box-sizing:border-box;}
-.liftlog-row:hover{background:var(--s3);}
-.liftlog-row-time{color:var(--text2);font-weight:600;font-size:10.5px;}
-.liftlog-row-total{font-weight:700;color:var(--green);font-size:12px;}
-.liftlog-row-detail{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none;}
+.liftlog-deadline-banner{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--red);white-space:nowrap;}
+.liftlog-deadline-banner svg{flex-shrink:0;}
+
+/* ── Table head row (column labels) ── */
+.liftlog-table-head{
+  display:flex;gap:14px;align-items:center;padding:8px 6px;margin-bottom:2px;
+  border-bottom:1px solid var(--border);
+  font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);
+}
+.liftlog-rows{display:flex;flex-direction:column;font-family:var(--mono);font-size:12px;}
+
+/* ── Shared cell widths (kept identical across forecast/actual for alignment) ── */
+.liftlog-cell-time{width:78px;flex-shrink:0;}
+.liftlog-cell-count{width:64px;flex-shrink:0;}
+.liftlog-cell-var{width:56px;flex-shrink:0;}
+.liftlog-cell-worktype{width:130px;flex-shrink:0;}
+.liftlog-cell-rest{flex:1;min-width:0;}
+
+/* ── Forecast rows ── */
+.liftlog-row{display:flex;align-items:center;gap:14px;padding:9px 6px;border-bottom:1px solid var(--border);min-height:44px;box-sizing:border-box;transition:background .12s;}
+.liftlog-row:hover{background:var(--bg3);}
+.liftlog-row-time{color:var(--text2);font-weight:600;font-size:11px;}
+.liftlog-row-total{font-weight:700;color:var(--green);font-size:13px;}
+.liftlog-row-detail{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none;}
 .liftlog-row-detail::-webkit-scrollbar{display:none;}
 
-.liftlog-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.01em;color:var(--text2);background:rgba(255,255,255,0.04);border-radius:999px;padding:2px 8px 2px 6px;white-space:nowrap;flex-shrink:0;}
-.liftlog-chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.liftlog-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;letter-spacing:.01em;color:var(--text2);white-space:nowrap;flex-shrink:0;}
+.liftlog-chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 
-.liftlog-row.is-break{background:transparent;border:1px dashed var(--border);opacity:0.8;}
+.liftlog-row.is-break{opacity:0.6;}
 .liftlog-row.is-break .liftlog-row-total{color:var(--text3);font-weight:600;}
-.liftlog-row.is-break .liftlog-row-detail{color:var(--text3);font-style:italic;font-size:10.5px;}
+.liftlog-row.is-break .liftlog-row-detail{color:var(--text3);font-style:italic;font-size:11px;}
 
-/* Actual (manual entry) column */
-.liftlog-row.is-actual{grid-template-columns:62px 52px 1fr;}
-.liftlog-actual-input{width:48px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 5px;text-align:center;transition:border-color .12s;}
+/* ── Actual (manual entry) rows ── */
+.liftlog-actual-input{width:54px;height:28px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;padding:0 6px;text-align:center;transition:border-color .12s;box-sizing:border-box;}
 .liftlog-actual-input:focus{outline:none;border-color:var(--amber);}
 .liftlog-actual-input::placeholder{color:var(--text3);font-weight:400;}
-.liftlog-forecast-ref{color:var(--text3);font-size:10px;white-space:nowrap;flex-shrink:0;}
-.liftlog-delta{display:inline-flex;align-items:center;font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:2px;flex-shrink:0;white-space:nowrap;}
+.liftlog-forecast-ref{color:var(--text3);font-size:10.5px;white-space:nowrap;flex-shrink:0;}
+.liftlog-delta{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;white-space:nowrap;min-width:34px;}
 .liftlog-delta.is-pos{color:var(--green);background:rgba(16,185,129,0.12);}
 .liftlog-delta.is-neg{color:var(--red);background:rgba(239,68,68,0.12);}
 .liftlog-delta.is-zero{color:var(--text3);background:rgba(255,255,255,0.04);}
-.liftlog-src-select{background:var(--bg2);border:1px solid var(--border);border-radius:999px;color:var(--text2);font-family:var(--mono);font-size:10px;padding:2px 8px;max-width:118px;flex-shrink:0;cursor:pointer;transition:border-color .12s;}
+.liftlog-src-select{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:10.5px;padding:0 8px;height:28px;width:100%;cursor:pointer;transition:border-color .12s;box-sizing:border-box;}
 .liftlog-src-select:focus{outline:none;border-color:var(--amber);}
 .liftlog-src-select.is-set{color:var(--amber);border-color:rgba(245,158,11,0.35);}
-.liftlog-actual-tail{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:none;}
-.liftlog-actual-tail::-webkit-scrollbar{display:none;}
+.liftlog-note-input{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:10.5px;padding:0 8px;height:28px;width:100%;transition:border-color .12s;box-sizing:border-box;}
+.liftlog-note-input:focus{outline:none;border-color:var(--amber);}
+.liftlog-note-input::placeholder{color:var(--text3);}
+
+.liftlog-fcst-ref-cell{color:var(--text3);font-size:10.5px;white-space:nowrap;}
+.liftlog-varcell{display:flex;flex-direction:column;gap:2px;align-items:flex-start;}
 
 /* ── Hourly Lift Time Map ── */
 .timemap-header{display:flex;align-items:center;gap:10px;margin:20px 0 16px;}
@@ -3997,7 +4073,7 @@ var UNITS_PER_CAR=2;
 // the remaining empty-car loadout is small enough to finish quickly.
 // Otherwise pivot to inbound drop and preserve the outbound commitment window.
 var LOADOUT_CONTINUE_THRESHOLD_UNITS=25;
-var LPMH_TARGET=2.4;
+var LPMH_TARGET=2.0;
 var IHOSA_DL=17;
 var MHOAS_DL=27;
 
@@ -4024,6 +4100,36 @@ function parseNumOrNull(v){
 }
 
 function fmtH(h){var hh=Math.floor(h)%24;var mm=Math.round((h-Math.floor(h))*60);return String(hh).padStart(2,'0')+String(mm).padStart(2,'0');}
+// Elapsed time *since* a reference point (e.g. shift start), formatted HH:MM —
+// used as the small sub-label under each timeline event's clock time.
+function fmtElapsed(hours){
+  var h=Math.max(0,hours);
+  var hh=Math.floor(h);
+  var mm=Math.round((h-hh)*60);
+  if(mm===60){mm=0;hh+=1;}
+  return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+}
+
+// Returns a decorative inline SVG icon for the timeline card, matched to the
+// event's pill type. Falls back to a generic inbound-train marker icon.
+function seqIcon(pill,color){
+  var common='width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"';
+  var p=String(pill||'').toUpperCase();
+  if(p==='COH' || p==='CARRY-OVER'){
+    return '<svg '+common+'><rect x="3" y="6" width="18" height="11" rx="1.5"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="7" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
+  }
+  if(p==='PRELOAD' || p==='LOADED'){
+    // Crane: vertical mast, horizontal jib, hook line, and base
+    return '<svg '+common+'><line x1="6" y1="21" x2="6" y2="4"/><line x1="6" y1="4" x2="20" y2="9"/><line x1="17" y1="10" x2="17" y2="16"/><line x1="3" y1="21" x2="9" y2="21"/><circle cx="17" cy="17.5" r="1.3"/></svg>';
+  }
+  if(p.indexOf('SHIFT')===0 || p.indexOf('LUNCH')===0 || p==='UPS' || p==='CLEAR'){
+    return '<svg '+common+'><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>';
+  }
+  if(p==='IHOSA' || p==='MHOAS'){
+    return '<svg '+common+'><rect x="3" y="7" width="14" height="9" rx="1.5"/><line x1="17" y1="10" x2="21" y2="10"/><line x1="17" y1="13" x2="21" y2="13"/><circle cx="7" cy="18" r="1.4"/><circle cx="14" cy="18" r="1.4"/></svg>';
+  }
+  return '<svg '+common+'><rect x="4" y="5" width="16" height="12" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="17" x2="9" y2="19"/><line x1="15" y1="17" x2="15" y2="19"/><circle cx="9" cy="13.5" r="1"/><circle cx="15" cy="13.5" r="1"/></svg>';
+}
 function fmtHR(h){return h.toFixed(1)+' HR';}
 function fmtDur(h){var m=Math.round(h*60);return m>=60?fmtHR(h):m+'m';}
 function fmtDelayMins(mins){
@@ -4894,9 +5000,9 @@ function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,paceCtx){
       }).join('');
       rows.push(
         '<div class="liftlog-row">'+
-        '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-        '<div class="liftlog-row-total">'+total+'</div>'+
-        '<div class="liftlog-row-detail">'+chips+'</div>'+
+        '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+        '<div class="liftlog-row-total liftlog-cell-count">'+total+'</div>'+
+        '<div class="liftlog-row-detail liftlog-cell-rest">'+chips+'</div>'+
         '</div>'
       );
       renderedBuckets.push({hour:h,total:total,detail:detail,sources:sources,isBreak:false});
@@ -4907,9 +5013,9 @@ function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,paceCtx){
         var breakLabels=breakOverlaps.map(function(d){return d.label;}).join(' + ');
         rows.push(
           '<div class="liftlog-row is-break">'+
-          '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-          '<div class="liftlog-row-total">0</div>'+
-          '<div class="liftlog-row-detail">No activity \u2014 '+escHtml(breakLabels)+'</div>'+
+          '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+          '<div class="liftlog-row-total liftlog-cell-count">0</div>'+
+          '<div class="liftlog-row-detail liftlog-cell-rest">No activity \u2014 '+escHtml(breakLabels)+'</div>'+
           '</div>'
         );
         renderedBuckets.push({hour:h,total:0,detail:[],sources:[],isBreak:true,breakLabels:breakLabels});
@@ -4930,16 +5036,33 @@ function loadHourlyActuals(){
 function saveHourlyActuals(map){
   try{ localStorage.setItem(HOURLY_ACTUALS_KEY, JSON.stringify(map)); }catch(e){ console.warn('localStorage write failed (hourly actuals):', e); }
 }
-function clearHourlyActuals(){
-  if(!confirm('Clear all manually entered actual lift counts?')) return;
+function clearHourlyActuals(btn){
+  if(btn && !btn.classList.contains('confirm-armed')){
+    btn.classList.add('confirm-armed');
+    var original=btn.textContent;
+    btn.textContent='Confirm?';
+    btn.dataset.clearTimer=setTimeout(function(){
+      btn.classList.remove('confirm-armed');
+      btn.textContent=original;
+    }, 3000);
+    return;
+  }
+  if(btn){
+    clearTimeout(btn.dataset.clearTimer);
+    btn.classList.remove('confirm-armed');
+    btn.textContent='Clear';
+  }
   saveHourlyActuals({});
   if(typeof simulate==='function') simulate();
 }
-// Normalize a stored entry to {value, src1, src2}. Older entries were a bare number.
+// Normalize a stored entry to {value, src1, src2, note}. Older entries were a bare number.
 function normalizeActualEntry(entry){
-  if(entry==null) return {value:null,src1:'',src2:''};
-  if(typeof entry==='number') return {value:entry,src1:'',src2:''};
-  return {value:(entry.value!=null?entry.value:null),src1:entry.src1||'',src2:entry.src2||''};
+  if(entry==null) return {value:null,src1:'',src2:'',note:''};
+  if(typeof entry==='number') return {value:entry,src1:'',src2:'',note:''};
+  return {value:(entry.value!=null?entry.value:null),src1:entry.src1||'',src2:entry.src2||'',note:entry.note||''};
+}
+function entryIsEmpty(entry){
+  return entry.value==null && !entry.src1 && !entry.src2 && !entry.note;
 }
 function setHourlyActual(hour, val){
   var map=loadHourlyActuals();
@@ -4947,7 +5070,7 @@ function setHourlyActual(hour, val){
   var entry=normalizeActualEntry(map[hour]);
   if(val===''||!Number.isFinite(n)) entry.value=null;
   else entry.value=n;
-  if(entry.value==null && !entry.src1 && !entry.src2) delete map[hour];
+  if(entryIsEmpty(entry)) delete map[hour];
   else map[hour]=entry;
   saveHourlyActuals(map);
   if(typeof simulate==='function') simulate();
@@ -4956,10 +5079,19 @@ function setHourlyActualSource(hour, slot, val){
   var map=loadHourlyActuals();
   var entry=normalizeActualEntry(map[hour]);
   if(slot===1) entry.src1=val; else entry.src2=val;
-  if(entry.value==null && !entry.src1 && !entry.src2) delete map[hour];
+  if(entryIsEmpty(entry)) delete map[hour];
   else map[hour]=entry;
   saveHourlyActuals(map);
   if(typeof simulate==='function') simulate();
+}
+function setHourlyActualNote(hour, val){
+  var map=loadHourlyActuals();
+  var entry=normalizeActualEntry(map[hour]);
+  entry.note=val||'';
+  if(entryIsEmpty(entry)) delete map[hour];
+  else map[hour]=entry;
+  saveHourlyActuals(map);
+  // Notes don't need to trigger a full re-simulate/re-render — avoid losing focus.
 }
 
 // Mirrors buildHourlyLiftLog's rows, but with an editable input for the actual
@@ -4977,68 +5109,95 @@ function liftSourceOptionList(activeKeys,trainLabelMap){
   return opts;
 }
 
-// Renders the "(-10 lifts) 22 LPH until release to catch up" indicator in the
-// Actual column header, comparing cumulative manual entries against the
-// forecast for the same hours, then translating any gap into an LPH target
-// for whichever outbound commitment is still open and due soonest.
-function renderLiftLogPaceSummary(delta, anyActual, ctx){
-  var el=document.getElementById('liftlog-pace-summary');
+// Renders the top summary bar: Forecast Total / Actual Total / Variance /
+// Completion % (with a progress ring) and a deadline-passed banner if the
+// next open commitment's deadline has already gone by.
+function renderLiftLogSummaryBar(buckets, ctx){
+  var el=document.getElementById('liftlog-summary-bar');
+  var bannerEl=document.getElementById('liftlog-deadline-banner');
   if(!el) return;
 
-  if(!anyActual || !ctx){
-    el.textContent='';
-    el.className='liftlog-pace-summary';
-    return;
+  var actuals=loadHourlyActuals();
+  var forecastTotal=0, actualTotal=0;
+  buckets.forEach(function(b){
+    if(b.isBreak) return;
+    forecastTotal+=b.total;
+    var entry=normalizeActualEntry(actuals[b.hour]);
+    if(entry.value!=null && Number.isFinite(entry.value)) actualTotal+=entry.value;
+  });
+
+  var variance=actualTotal-forecastTotal;
+  var completionPct=forecastTotal>0 ? Math.round((actualTotal/forecastTotal)*100) : 0;
+  var ringPct=Math.max(0,Math.min(100,completionPct));
+
+  var R=20, C=2*Math.PI*R;
+  var dash=(ringPct/100)*C;
+  var ringColor=completionPct>=100?'var(--green)':(completionPct>=70?'var(--blue)':'var(--amber)');
+  var ringSvg='<svg width="56" height="56" viewBox="0 0 56 56" class="liftlog-summary-ring">'
+    +'<circle cx="28" cy="28" r="'+R+'" fill="none" stroke="var(--border)" stroke-width="5"/>'
+    +'<circle cx="28" cy="28" r="'+R+'" fill="none" stroke="'+ringColor+'" stroke-width="5" '
+    +'stroke-dasharray="'+dash.toFixed(1)+' '+C.toFixed(1)+'" stroke-linecap="round" '
+    +'transform="rotate(-90 28 28)"/>'
+    +'</svg>';
+
+  var varClass=variance>0?'is-pos':(variance<0?'is-neg':'');
+  var varSign=variance>0?'+':'';
+
+  var html=''
+    +'<div class="liftlog-summary-stat">'
+    +'<div class="liftlog-summary-label">Forecast Total</div>'
+    +'<div class="liftlog-summary-val" style="color:var(--green);">'+forecastTotal+'<span class="unit">Lifts</span></div>'
+    +'</div>'
+    +'<div class="liftlog-summary-stat">'
+    +'<div class="liftlog-summary-label">Actual Total</div>'
+    +'<div class="liftlog-summary-val">'+actualTotal+'<span class="unit">Lifts</span></div>'
+    +'</div>'
+    +'<div class="liftlog-summary-stat">'
+    +'<div class="liftlog-summary-label">Variance</div>'
+    +'<div class="liftlog-summary-val '+varClass+'">'+varSign+variance+'<span class="unit">Lifts</span></div>'
+    +'</div>'
+    +'<div class="liftlog-summary-stat">'
+    +'<div class="liftlog-summary-label">Completion</div>'
+    +'<div class="liftlog-summary-completion">'
+    +'<div class="liftlog-summary-val">'+completionPct+'%<span class="unit">of Forecast</span></div>'
+    +ringSvg
+    +'</div>'
+    +'</div>';
+
+  // ── Deadline-passed banner: whichever outbound commitment is open and due
+  // soonest, if its deadline has already gone by. ──
+  var bannerHtml='';
+  if(ctx){
+    var target=null;
+    if(ctx.ihosaUnits>0 && Math.round(ctx.ihosaLoaded)<ctx.ihosaUnits){
+      target={label:'IHOSA',dl:ctx.ihosaCommitment,dlLabel:'1700'};
+    }
+    if(ctx.mhoasUnits>0 && Math.round(ctx.mhoasLoaded)<ctx.mhoasUnits){
+      var m={label:'MHOAS',dl:ctx.mhoasCommitment,dlLabel:'0300'};
+      if(!target || m.dl<target.dl) target=m;
+    }
+    if(target && (target.dl-ctx.currentTime)<=0){
+      var warnIcon='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      bannerHtml='<div class="liftlog-summary-banner">'
+        +'<span class="liftlog-summary-banner-icon">'+warnIcon+'</span>'
+        +'<div><div class="liftlog-summary-banner-title">'+target.label+' deadline ('+target.dlLabel+') has passed</div>'
+        +'<div class="liftlog-summary-banner-sub">Manual entry only for remaining hours</div></div>'
+        +'</div>';
+
+      if(bannerEl){
+        var smallWarnIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+        bannerEl.innerHTML=smallWarnIcon+' '+target.label+' deadline ('+target.dlLabel+') has passed';
+      }
+    } else if(bannerEl){
+      bannerEl.innerHTML='';
+    }
+  } else if(bannerEl){
+    bannerEl.innerHTML='';
   }
 
-  function pendingDelayHours(from,to){
-    var d=0;
-    if(to<=from) return 0;
-    if(ctx.lunchH>0 && from<11 && 11<to) d+=ctx.lunchH;
-    if(ctx.shiftH>0 && from<15 && 15<to) d+=ctx.shiftH;
-    if(ctx.upsH>0 && ctx.zpbhoArr>from && ctx.zpbhoArr<to) d+=ctx.upsH;
-    if(ctx.lunch2H>0 && from<21 && 21<to) d+=ctx.lunch2H;
-    if(ctx.shift0300H>0 && from<27 && 27<to) d+=ctx.shift0300H;
-    return d;
-  }
-
-  // Whichever outbound commitment is still open and due soonest.
-  var target=null;
-  if(ctx.ihosaUnits>0 && Math.round(ctx.ihosaLoaded)<ctx.ihosaUnits){
-    target={label:'IHOSA',dl:ctx.ihosaCommitment,units:ctx.ihosaUnits,loaded:ctx.ihosaLoaded,dlLabel:'1700'};
-  }
-  if(ctx.mhoasUnits>0 && Math.round(ctx.mhoasLoaded)<ctx.mhoasUnits){
-    var m={label:'MHOAS',dl:ctx.mhoasCommitment,units:ctx.mhoasUnits,loaded:ctx.mhoasLoaded,dlLabel:'0300'};
-    if(!target || m.dl<target.dl) target=m;
-  }
-
-  var deltaSign=delta>0?'+':'';
-  var deltaText='('+deltaSign+delta+' lifts)';
-  var paceClass=delta>0?'is-ahead':(delta<0?'is-behind':'is-even');
-
-  if(!target){
-    // Both commitments already met/no longer open — just show the running tally.
-    el.textContent=deltaText+(delta===0?' on pace':(delta>0?' ahead of forecast':' behind forecast'));
-    el.className='liftlog-pace-summary '+paceClass;
-    return;
-  }
-
-  var remaining=Math.max(0,target.units-Math.round(target.loaded));
-  var hoursLeft=target.dl-ctx.currentTime;
-
-  if(hoursLeft<=0){
-    el.textContent=deltaText+' \u2014 '+target.label+' deadline ('+target.dlLabel+') has passed';
-    el.className='liftlog-pace-summary '+paceClass;
-    return;
-  }
-
-  var usable=Math.max(0.01, hoursLeft-pendingDelayHours(ctx.currentTime,target.dl));
-  var neededUnits=Math.max(0, remaining-delta);
-  var requiredLph=neededUnits/usable;
-
-  var verb=delta<0?'to catch up':(delta>0?'to hold the lead':'to stay on pace');
-  el.textContent=deltaText+' '+requiredLph.toFixed(0)+' LPH until '+target.label+' release '+verb;
-  el.className='liftlog-pace-summary '+paceClass;
+  html+=bannerHtml;
+  el.className='liftlog-summary-bar';
+  el.innerHTML=html;
 }
 
 // Mirrors buildHourlyLiftLog's rows, but with an editable input for the actual
@@ -5052,26 +5211,14 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
   var optionList=liftSourceOptionList(activeKeys,trainLabelMap);
   var rows=[];
 
-  // ── Pace summary: cumulative actual vs forecast for hours already logged, plus
-  // the LPH needed on the next open commitment to absorb that deficit/surplus. ──
-  var cumForecast=0, cumActual=0, anyActual=false;
-  buckets.forEach(function(b){
-    if(b.isBreak) return;
-    var entry=normalizeActualEntry(actuals[b.hour]);
-    if(entry.value!=null && Number.isFinite(entry.value)){
-      anyActual=true;
-      cumActual+=entry.value;
-      cumForecast+=b.total;
-    }
-  });
-  renderLiftLogPaceSummary(cumActual-cumForecast, anyActual, paceCtx);
+  renderLiftLogSummaryBar(buckets, paceCtx);
 
-  function selectHtml(hour,slot,selected){
+  function workTypeSelect(hour,selected){
     var opts=optionList.map(function(o){
       return '<option value="'+o.key+'"'+(o.key===selected?' selected':'')+'>'+escHtml(o.label)+'</option>';
     }).join('');
     var setClass=selected?' is-set':'';
-    return '<select class="liftlog-src-select'+setClass+'" onchange="setHourlyActualSource('+hour+','+slot+',this.value)">'
+    return '<select class="liftlog-src-select'+setClass+'" onchange="setHourlyActualSource('+hour+',1,this.value)">'
       +opts+'</select>';
   }
 
@@ -5081,9 +5228,11 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
       // Mirror the forecast's "no activity" row so the two columns stay aligned.
       rows.push(
         '<div class="liftlog-row is-actual is-break">'+
-        '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-        '<div></div>'+
-        '<div class="liftlog-row-detail">No activity \u2014 '+escHtml(b.breakLabels||'')+'</div>'+
+        '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+        '<div class="liftlog-cell-count"></div>'+
+        '<div class="liftlog-fcst-ref-cell liftlog-cell-var">fcst 0</div>'+
+        '<div class="liftlog-cell-worktype"></div>'+
+        '<div class="liftlog-row-detail liftlog-cell-rest">No activity \u2014 '+escHtml(b.breakLabels||'')+'</div>'+
         '</div>'
       );
       return;
@@ -5092,7 +5241,7 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
     var actualVal=entry.value;
     var hasActual=actualVal!=null && Number.isFinite(actualVal);
     var delta=hasActual?(actualVal-b.total):null;
-    var deltaHtml='';
+    var deltaHtml='<span class="liftlog-fcst-ref-cell">\u2014</span>';
     if(hasActual){
       var dCls=delta===0?'is-zero':(delta>0?'is-pos':'is-neg');
       var dSign=delta>0?'+':'';
@@ -5100,16 +5249,19 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
     }
     rows.push(
       '<div class="liftlog-row is-actual">'+
-      '<div class="liftlog-row-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-      '<div>'+
+      '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+      '<div class="liftlog-cell-count">'+
         '<input type="number" min="0" step="1" class="liftlog-actual-input" value="'+(hasActual?actualVal:'')+'" placeholder="'+b.total+'" '+
         'onchange="setHourlyActual('+h+',this.value)">'+
       '</div>'+
-      '<div class="liftlog-actual-tail">'+
-        '<span class="liftlog-forecast-ref">fcst '+b.total+'</span>'+
+      '<div class="liftlog-varcell liftlog-cell-var">'+
         deltaHtml+
-        selectHtml(h,1,entry.src1)+
-        selectHtml(h,2,entry.src2)+
+        '<span class="liftlog-forecast-ref">fcst '+b.total+'</span>'+
+      '</div>'+
+      '<div class="liftlog-cell-worktype">'+workTypeSelect(h,entry.src1)+'</div>'+
+      '<div class="liftlog-cell-rest">'+
+        '<input type="text" class="liftlog-note-input" value="'+escHtml(entry.note)+'" placeholder="\u2014" '+
+        'onchange="setHourlyActualNote('+h+',this.value)">'+
       '</div>'+
       '</div>'
     );
@@ -6131,20 +6283,21 @@ function simulate(){
   events.forEach(function(e,i){
     var isLast=i===events.length-1;
     var lineHtml=isLast?'':'<div class="seq-line"></div>';
+    var elapsed=fmtElapsed(e.time-s1Start);
     if(e.isNow){
       seqHtml+='<div class="seq-item">';
-      seqHtml+='<div class="seq-time" style="color:var(--blue);">'+fmtH(e.time)+'</div>';
-      seqHtml+='<div class="seq-dot-col"><div class="seq-dot seq-dot-now"></div>'+lineHtml+'</div>';
-      seqHtml+='<div class="seq-block seq-now"><div class="seq-headline"><span class="now-pill">NOW</span>'+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div>';
+      seqHtml+='<div class="seq-time-col"><div class="seq-time seq-time-now">'+fmtH(e.time)+'</div><div class="seq-elapsed seq-elapsed-now">'+elapsed+'</div></div>';
+      seqHtml+='<div class="seq-dot-col"><div class="seq-dot seq-dot-now"><div class="seq-dot-core"></div></div>'+lineHtml+'</div>';
+      seqHtml+='<div class="seq-block seq-now"><div class="seq-now-arrow"></div><div class="seq-now-body"><div class="seq-headline"><span class="now-pill">NOW</span>'+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div><div class="seq-now-graphic"><svg viewBox="0 0 160 60" preserveAspectRatio="none" class="seq-now-svg"><path d="M0,30 C30,30 40,10 60,10 C80,10 80,45 100,45 C120,45 125,30 160,30" /><circle cx="160" cy="30" r="4" class="seq-now-dot"/></svg></div></div>';
       seqHtml+='</div>';
     } else {
       var past=e.time<currentTime;
       var sc=e.status?'seq-'+e.status:'';
       var pillHtml='<span class="seq-pill" style="background:'+e.pillBg+';color:'+e.pillColor+';">'+e.pill+'</span>';
       seqHtml+='<div class="seq-item">';
-      seqHtml+='<div class="seq-time">'+fmtH(e.time)+'</div>';
-      seqHtml+='<div class="seq-dot-col"><div class="seq-dot" style="border-color:'+e.color+';"></div>'+lineHtml+'</div>';
-      seqHtml+='<div class="seq-block '+(past?'seq-past':'')+' '+sc+'"><div class="seq-headline">'+pillHtml+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div>';
+      seqHtml+='<div class="seq-time-col"><div class="seq-time">'+fmtH(e.time)+'</div><div class="seq-elapsed">'+elapsed+'</div></div>';
+      seqHtml+='<div class="seq-dot-col"><div class="seq-dot" style="border-color:'+e.color+';"><div class="seq-dot-core" style="background:'+e.color+';"></div></div>'+lineHtml+'</div>';
+      seqHtml+='<div class="seq-block '+(past?'seq-past':'')+' '+sc+'" style="border-color:'+e.color+'40;"><div class="seq-block-body"><div class="seq-headline">'+pillHtml+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div><div class="seq-icon">'+seqIcon(e.pill,e.color)+'</div></div>';
       seqHtml+='</div>';
     }
   });
