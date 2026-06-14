@@ -298,6 +298,60 @@ input[type=range]::-webkit-slider-thumb{
 }
 .time-input-icon:hover{opacity:0.9;}
 
+/* ── Shift Windows redesign ── */
+.sw-card{padding:14px;}
+.sw-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sw-head-icon{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid rgba(74,158,255,0.4);color:var(--blue);
+  background:rgba(74,158,255,0.08);box-shadow:0 0 10px rgba(74,158,255,0.18);
+}
+.sw-head-title{
+  font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text);
+}
+.sw-divider{height:1px;background:var(--border);margin:10px 0;}
+.sw-shift-label{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  font-family:var(--cond);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+}
+.sw-shift-label.sw-day{color:var(--blue);}
+.sw-shift-label.sw-night{color:var(--purple);}
+.sw-bar{width:3px;height:14px;border-radius:2px;background:currentColor;flex-shrink:0;box-shadow:0 0 6px currentColor;}
+.sw-wraps{font-family:var(--font);font-size:10px;font-weight:400;letter-spacing:normal;text-transform:none;color:var(--text3);margin-left:4px;}
+.sw-time-grid{display:flex;align-items:stretch;gap:10px;}
+.sw-time-field{flex:1;min-width:0;display:flex;flex-direction:column;}
+.sw-time-field .time-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;}
+.sw-divider-v{width:1px;min-width:1px;background:var(--border2);flex-shrink:0;margin:18px 0 2px;align-self:stretch;}
+.sw-time-box{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  border-radius:7px;border:1px solid var(--border2);background:var(--s3);
+  padding:7px 9px;transition:border-color .15s,box-shadow .15s;
+}
+.sw-time-box input[type=time]{
+  border:none;background:transparent;color:var(--text);padding:0;
+  font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.02em;
+  width:100%;min-width:0;
+}
+.sw-time-box input[type=time]:focus{outline:none;}
+.sw-time-box input[type=time]::-webkit-calendar-picker-indicator{display:none;}
+.sw-time-icon{flex-shrink:0;display:flex;align-items:center;cursor:pointer;opacity:0.7;transition:opacity .15s;}
+.sw-time-icon:hover{opacity:1;}
+.sw-day-box{border-color:rgba(74,158,255,0.22);}
+.sw-day-box:has(input:focus){border-color:rgba(74,158,255,0.55);box-shadow:0 0 0 2px rgba(74,158,255,0.12);}
+.sw-day-box .sw-time-icon{color:var(--blue);}
+.sw-night-box{border-color:rgba(127,119,221,0.22);}
+.sw-night-box:has(input:focus){border-color:rgba(127,119,221,0.55);box-shadow:0 0 0 2px rgba(127,119,221,0.12);}
+.sw-night-box .sw-time-icon{color:var(--purple);}
+.sw-info-bar{
+  display:flex;align-items:flex-start;gap:8px;margin-top:12px;
+  border:1px solid var(--border);border-radius:7px;background:var(--s3);
+  padding:8px 10px;
+}
+.sw-info-icon{flex-shrink:0;display:flex;align-items:center;color:var(--blue);margin-top:1px;}
+.sw-info-bar .note{font-size:10.5px;color:var(--text2);}
+
 /* Inbound Trains */
 .sb-train-card{
   border-radius:7px;border:1px solid var(--border2);
@@ -360,69 +414,6 @@ input[type=range]::-webkit-slider-thumb{
   flex-shrink:0;
 }
 .content-head::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
-
-
-/* ── METRICS ─────────────────────────────────────────────────────── */
-.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px;margin-bottom:16px;}
-.metric{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;padding:14px 15px;position:relative;overflow:hidden;
-}
-.metric::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--amber),transparent);opacity:0.4;
-}
-.metric:hover{border-color:var(--border2);}
-.metric-label{
-  font-size:8px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--text2);margin-bottom:8px;font-family:var(--cond);
-}
-.metric-val{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1;letter-spacing:-0.02em;}
-.metric-sub{font-size:9.5px;color:var(--text3);margin-top:6px;font-family:var(--mono);line-height:1.4;}
-
-/* ── Commitment cards (IHOSA / MHOAS) ── */
-.metric-commit{
-  border-radius:10px;padding:16px 18px;position:relative;overflow:hidden;
-  display:flex;flex-direction:column;gap:0;
-}
-.metric-commit::before{
-  content:'';position:absolute;top:0;left:0;bottom:0;width:4px;border-radius:10px 0 0 10px;
-}
-.metric-commit.met{
-  background:rgba(16,185,129,0.07);
-  border:1px solid rgba(16,185,129,0.35);
-}
-.metric-commit.met::before{background:var(--green);}
-.metric-commit.missed{
-  background:rgba(239,68,68,0.07);
-  border:1px solid rgba(239,68,68,0.35);
-}
-.metric-commit.missed::before{background:var(--red);}
-.mc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.mc-name{
-  font-family:var(--cond);font-size:11px;font-weight:700;
-  letter-spacing:0.14em;text-transform:uppercase;color:var(--text2);
-}
-.mc-dl{
-  font-family:var(--mono);font-size:9px;color:var(--text3);
-  background:var(--s3);border:1px solid var(--border);
-  padding:2px 7px;border-radius:3px;
-}
-.mc-status{
-  font-family:var(--cond);font-size:36px;font-weight:700;
-  line-height:1;letter-spacing:-0.01em;margin-bottom:10px;
-}
-.mc-status.met{color:var(--green);}
-.mc-status.missed{color:var(--red);}
-.mc-divider{height:1px;background:var(--border);margin-bottom:10px;}
-.mc-row{display:flex;justify-content:space-between;align-items:center;gap:8px;}
-.mc-field{}
-.mc-field-label{font-size:8px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);font-family:var(--cond);margin-bottom:3px;}
-.mc-field-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);}
-.mc-field-val.amber{color:var(--amber);}
-.mc-field-val.green{color:var(--green);}
-.mc-field-val.red{color:var(--red);}
-.mc-field-val.muted{color:var(--text3);font-weight:400;}
 
 .ok{color:var(--green);}.warn{color:var(--amber);}.bad{color:var(--red);}.neutral{color:var(--text);}
 
@@ -840,6 +831,7 @@ input[type=range]::-webkit-slider-thumb{
   border-radius:8px;
   padding:8px 9px;
   margin-top:4px;
+  margin-bottom:8px;
   background:rgba(255,255,255,0.015);
 }
 .lpmh-breakdown-head{
@@ -848,7 +840,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .lpmh-breakdown-title{
   display:flex;align-items:center;gap:5px;
-  font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.08em;
+  font-family:var(--cond);font-size:10.5px;font-weight:700;letter-spacing:0.08em;
   text-transform:uppercase;color:var(--text);
   min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
@@ -856,27 +848,27 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-breakdown-cols>*+*{margin-left:10px;}
 .lpmh-bd-col-time,.lpmh-bd-col-lifts{
   display:flex;align-items:center;gap:3px;
-  font-family:var(--cond);font-size:7.5px;font-weight:700;letter-spacing:0.06em;
+  font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.06em;
   text-transform:uppercase;color:var(--text3);
 }
 .lpmh-bd-icon{display:inline-flex;align-items:center;color:inherit;}
-.lpmh-bd-icon svg{width:10px;height:10px;}
-.lpmh-breakdown-title .lpmh-bd-icon svg{width:11px;height:11px;}
+.lpmh-bd-icon svg{width:11px;height:11px;}
+.lpmh-breakdown-title .lpmh-bd-icon svg{width:12px;height:12px;}
 
-.lpmh-brow{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:10px;border-bottom:1px dashed var(--border);}
+.lpmh-brow{display:flex;align-items:center;gap:7px;padding:5px 0;font-size:12px;border-bottom:1px dashed var(--border);}
 .lpmh-brow:last-child{border-bottom:none;}
 .lpmh-brow-icon{
-  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  width:19px;height:19px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   border:1px solid var(--border2);color:var(--text3);
 }
-.lpmh-brow-icon svg{width:9px;height:9px;}
+.lpmh-brow-icon svg{width:11px;height:11px;}
 .lpmh-brow-icon-down{color:#10B981;border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.06);}
 .lpmh-brow-icon-up{color:#10B981;border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.06);}
 .lpmh-brow-icon-star{color:var(--amber);border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);}
 .lpmh-brow-label{color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
-.lpmh-brow-time{color:#10B981;font-family:var(--mono);flex-shrink:0;font-size:9px;min-width:58px;text-align:left;white-space:nowrap;}
-.lpmh-brow-lifts{font-weight:700;color:#fff;font-family:var(--mono);min-width:24px;text-align:right;flex-shrink:0;font-size:10px;}
+.lpmh-brow-time{color:#10B981;font-family:var(--mono);flex-shrink:0;font-size:11px;min-width:70px;text-align:left;white-space:nowrap;}
+.lpmh-brow-lifts{font-weight:700;color:#fff;font-family:var(--mono);min-width:28px;text-align:right;flex-shrink:0;font-size:12px;}
 .lpmh-brow-lifts-manual{color:var(--amber);}
 
 .lpmh-brow-downtime{
@@ -889,7 +881,7 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-brow-downtime .lpmh-brow-icon{color:var(--amber);border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);}
 .lpmh-brow-downtime .lpmh-brow-label{color:var(--amber);font-weight:700;white-space:normal;overflow:visible;text-overflow:clip;}
 .lpmh-brow-downtime .lpmh-brow-time{color:var(--amber);font-weight:700;}
-.lpmh-brow-downtime .lpmh-brow-lifts{color:var(--amber);font-weight:700;min-width:62px;}
+.lpmh-brow-downtime .lpmh-brow-lifts{color:var(--amber);font-weight:700;min-width:72px;}
 .lpmh-brow-downtime.critical{
   border-top-color:rgba(239,68,68,0.22);
   border-bottom-color:rgba(239,68,68,0.14);
@@ -901,9 +893,21 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-brow-downtime.critical .lpmh-brow-lifts{color:var(--red);}
 .lpmh-brow-downtime.critical .lpmh-brow-icon{border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);}
 
+/* Accounted-for pause (shift change, lunch, UPS window, etc.) — neutral, not a warning */
+.lpmh-brow-downtime.delay{
+  border-top-color:var(--border);
+  border-bottom-color:var(--border);
+  background:rgba(255,255,255,0.015);
+}
+.lpmh-brow-downtime.delay .lpmh-brow-icon,
+.lpmh-brow-downtime.delay .lpmh-brow-time,
+.lpmh-brow-downtime.delay .lpmh-brow-lifts{color:var(--text3);}
+.lpmh-brow-downtime.delay .lpmh-brow-icon{border-color:var(--border2);background:rgba(255,255,255,0.03);}
+.lpmh-brow-downtime.delay .lpmh-brow-label{color:var(--text2);font-weight:600;white-space:normal;overflow:visible;text-overflow:clip;}
+
 /* ── Shift total banner ── */
 .lpmh-total-banner{
-  margin-top:8px;
+  margin-top:auto;
   border-radius:8px;
   border:1px solid var(--border);
   background:rgba(255,255,255,0.03);
@@ -1726,6 +1730,57 @@ body.print-mode .time-lbl{
 /* Neutrals */
 .rtb-past-msg{font-family:var(--mono);font-size:12px;font-weight:700;margin-top:6px;}
 
+/* ── INBOUND TRAIN STATUS CARDS ─────────────────────────────────── */
+.its-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:14px;}
+.its-card{
+  border-radius:14px;border:1px solid var(--border);background:var(--surface);
+  overflow:hidden;
+}
+.its-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.its-head-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.its-icon-badge{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(74,158,255,0.12);border:1px solid rgba(74,158,255,0.3);color:var(--blue);
+}
+.its-title{
+  font-family:var(--cond);font-size:16px;font-weight:700;letter-spacing:0.06em;
+  color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.its-pills{display:flex;gap:8px;flex-shrink:0;}
+.its-pill{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:1px solid var(--border2);border-radius:8px;background:var(--s3);
+  padding:4px 12px;min-width:54px;
+}
+.its-pill-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue);line-height:1.2;}
+.its-pill-label{font-family:var(--cond);font-size:8px;font-weight:700;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;}
+.its-stats{display:grid;grid-template-columns:repeat(4,1fr);}
+.its-stat{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 8px;text-align:center;border-right:1px solid var(--border);
+}
+.its-stat:last-child{border-right:none;}
+.its-stat-icon{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);color:var(--text3);
+}
+.its-stat-icon svg{width:14px;height:14px;}
+.its-stat-icon.arrived{color:var(--blue);border-color:rgba(74,158,255,0.35);background:rgba(74,158,255,0.08);}
+.its-stat-icon.drop{color:var(--red);border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);}
+.its-stat-icon.dwell{color:var(--amber);border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);}
+.its-stat-label{
+  font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text3);
+}
+.its-stat-val{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1;color:var(--text);}
+.its-stat-val.drop{color:var(--red);}
+.its-stat-val.dwell{color:var(--amber);}
+.its-stat-unit{font-size:11px;font-weight:500;color:var(--text3);margin-left:2px;}
+
 /* PPE balance rehaul */
 .ppe-grid{
   display:grid;
@@ -2412,25 +2467,44 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
     </div>
 
-    <div class="sb-card">
-      <div class="sb-card-head">
-        <span class="sb-card-icon">&#x1F550;</span>
-        <span class="sb-card-title">Shift Windows</span>
+    <div class="sb-card sw-card">
+      <div class="sw-head">
+        <span class="sw-head-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
+        <span class="sw-head-title">Shift Windows</span>
       </div>
+      <div class="sw-divider"></div>
       <div class="shift-block">
-        <div class="time-lbl shift-name" style="color:var(--blue);">Day Shift</div>
-        <div class="time-grid">
-          <div><div class="time-lbl">Clock in</div><div class="time-input-wrap"><input type="time" id="s1-start" value="03:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
-          <div><div class="time-lbl">Clock out</div><div class="time-input-wrap"><input type="time" id="s1-end" value="15:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
+        <div class="sw-shift-label sw-day"><span class="sw-bar"></span>Day Shift</div>
+        <div class="sw-time-grid">
+          <div class="sw-time-field">
+            <div class="time-lbl">Clock in</div>
+            <div class="sw-time-box sw-day-box"><input type="time" id="s1-start" value="03:00"><span class="sw-time-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span></div>
+          </div>
+          <div class="sw-divider-v"></div>
+          <div class="sw-time-field">
+            <div class="time-lbl">Clock out</div>
+            <div class="sw-time-box sw-day-box"><input type="time" id="s1-end" value="15:00"><span class="sw-time-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span></div>
+          </div>
         </div>
       </div>
+      <div class="sw-divider"></div>
       <div class="shift-block">
-        <div class="time-lbl shift-name" style="color:var(--purple);">Night Shift <span style="font-weight:400;color:var(--text3);text-transform:none;letter-spacing:normal;">(wraps midnight)</span></div>
-        <div class="time-grid">
-          <div><div class="time-lbl">Clock in</div><div class="time-input-wrap"><input type="time" id="s2-start" value="15:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
-          <div><div class="time-lbl">Clock out</div><div class="time-input-wrap"><input type="time" id="s2-end" value="03:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
+        <div class="sw-shift-label sw-night"><span class="sw-bar"></span>Night Shift <span class="sw-wraps">(wraps midnight)</span></div>
+        <div class="sw-time-grid">
+          <div class="sw-time-field">
+            <div class="time-lbl">Clock in</div>
+            <div class="sw-time-box sw-night-box"><input type="time" id="s2-start" value="15:00"><span class="sw-time-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span></div>
+          </div>
+          <div class="sw-divider-v"></div>
+          <div class="sw-time-field">
+            <div class="time-lbl">Clock out</div>
+            <div class="sw-time-box sw-night-box"><input type="time" id="s2-end" value="03:00"><span class="sw-time-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span></div>
+          </div>
         </div>
-        <div class="note" id="night-hours-note">Night: crew &times; 12h</div>
+      </div>
+      <div class="sw-info-bar">
+        <span class="sw-info-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="7.5" x2="12.01" y2="7.5"/></svg></span>
+        <span class="note" id="night-hours-note" style="margin:0;">Night: crew &times; 12h</span>
       </div>
     </div>
 
@@ -2663,9 +2737,8 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
     <div class="content-head">PERFORMANCE GRADES</div>
     <div id="top-grade-banner"></div>
 
-    <div class="content-head" style="margin-top:20px;">COMMITMENT STATUS</div>
-    <div id="rate-target-banner"></div>
-    <div class="metrics-row" id="metrics"></div>
+    <div class="content-head" style="margin-top:20px;">INBOUND TRAIN STATUS</div>
+    <div id="inbound-train-status"></div>
 
     <div class="content-head" style="margin-top:20px;">LIFTS PER MAN-HOUR</div>
     <div class="lpmh-grid" id="lpmh-grid"></div>
@@ -2715,7 +2788,6 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
               <button class="liftlog-import-btn" onclick="openImpModal()" title="Import actuals from Excel/CSV">&#x2191; Import</button>
               <button class="liftlog-clear-btn" onclick="clearHourlyActuals(this)">Clear</button>
             </div>
-            <div id="liftlog-import-status" class="liftlog-import-status"></div>
             <div class="liftlog-table-head liftlog-table-head-actual">
               <div class="liftlog-cell-time">Time Window</div>
               <div class="liftlog-cell-count">Actual Lifts</div>
@@ -2929,12 +3001,6 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-clear-btn.confirm-armed{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.1);}
 .liftlog-import-btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--amber);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.3);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;}
 .liftlog-import-btn:hover{background:rgba(245,158,11,0.14);border-color:var(--amber);}
-.liftlog-import-status{
-  font-family:var(--mono);font-size:10px;letter-spacing:.02em;
-  margin-top:4px;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.liftlog-import-status.ok{color:var(--green);}
-.liftlog-import-status.err{color:var(--red);}
 
 .liftlog-deadline-banner{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--red);white-space:nowrap;}
 .liftlog-deadline-banner svg{flex-shrink:0;}
@@ -2978,6 +3044,10 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-row.is-break{opacity:0.6;}
 .liftlog-row.is-break .liftlog-row-total{color:var(--text3);font-weight:600;}
 .liftlog-row.is-break .liftlog-row-detail{color:var(--text3);font-style:italic;font-size:11px;}
+/* Actual column rows stay fully interactive even during scheduled breaks —
+   only dim the per-row chrome that isn't an input/control. */
+#lift-log-actual .liftlog-row.is-break{opacity:1;}
+#lift-log-actual .liftlog-row.is-break .liftlog-forecast-ref{color:var(--text3);font-style:italic;}
 
 /* ── Actual (manual entry) rows ── */
 .liftlog-actual-input{width:54px;height:28px;line-height:26px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;padding:0 6px;text-align:center;transition:border-color .12s;box-sizing:border-box;display:block;vertical-align:middle;}
@@ -2993,8 +3063,8 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-src-select.is-set{color:var(--amber);border-color:rgba(245,158,11,0.35);}
 .liftlog-worktype-row{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;height:28px;}
 .liftlog-worktype-row::-webkit-scrollbar{display:none;}
-.liftlog-worktype-slot{display:flex;align-items:center;gap:2px;flex-shrink:0;width:100px;}
-.liftlog-worktype-slot .liftlog-src-select{width:82px;}
+.liftlog-worktype-slot{display:flex;align-items:center;gap:2px;flex:1 1 auto;min-width:100px;}
+.liftlog-worktype-slot .liftlog-src-select{flex:1;min-width:0;}
 .liftlog-src-remove{
   flex-shrink:0;width:16px;height:16px;border-radius:4px;border:1px solid var(--border);
   background:transparent;color:var(--text3);font-size:8px;line-height:1;cursor:pointer;
@@ -3040,7 +3110,6 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;
   border:1px solid;border-radius:5px;padding:3px 9px;align-self:flex-start;
 }
-.timemap-rate{font-size:11px;color:var(--text3);font-family:var(--mono);}
 .timemap-total{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--text);
   line-height:1;padding-top:4px;border-top:1px solid var(--border);padding-bottom:8px;
   display:flex;align-items:baseline;gap:8px;}
@@ -3048,6 +3117,11 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .timemap-srcs{display:flex;flex-direction:column;gap:4px;}
 .timemap-src{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;}
 .timemap-src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.timemap-card-gap .timemap-src{font-weight:500;color:var(--text3);font-style:italic;}
+.timemap-gap-label{
+  font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:0.1em;
+  color:var(--red);padding-top:4px;border-top:1px solid var(--border);padding-bottom:4px;
+}
 
 .timemap-legend{
   display:flex;flex-wrap:wrap;gap:22px;margin-top:18px;padding-top:14px;
@@ -3601,50 +3675,6 @@ th.ppe-col-name{ text-align:center; padding-left:0; }
   .ppe-filter-bar{ flex-wrap:wrap; }
   .ppe-filter-search-group{ flex:none; width:100%; }
 }
-
-/* ── Train cards (ZLBHO / ZPBHO) ── */
-.train-card{
-  grid-column:span 2;
-  min-width:0;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:14px 16px;
-  position:relative;
-  overflow:hidden;
-  border-left:3px solid var(--tc,var(--amber));
-}
-.train-card::before{
-  content:'';
-  position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--tc,var(--amber)),transparent);
-  opacity:0.6;
-}
-.tc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;}
-.tc-name-row{display:flex;align-items:center;gap:8px;}
-.tc-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.tc-name{
-  font-family:var(--cond);font-size:16px;font-weight:700;
-  letter-spacing:0.08em;text-transform:uppercase;color:var(--text);
-}
-.tc-badge{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  padding:3px 9px;border-radius:20px;border:1px solid;
-  background:transparent;letter-spacing:0.05em;white-space:nowrap;flex-shrink:0;
-}
-.tc-divider{height:1px;background:var(--border);margin-bottom:12px;}
-.tc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.tc-stat{}
-.tc-stat-label{
-  font-family:var(--cond);font-size:8px;font-weight:700;
-  letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);
-  margin-bottom:4px;
-}
-.tc-stat-val{
-  font-family:var(--mono);font-size:20px;font-weight:700;
-  line-height:1;letter-spacing:-0.02em;
-}
-.tc-unit{font-size:11px;font-weight:500;opacity:0.6;letter-spacing:0;}
 
 /* ── Handoff button ── */
 .tb-handoff-btn{
@@ -4448,7 +4478,7 @@ function seqIcon(pill,color){
     return '<svg '+common+'><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>';
   }
   if(p==='IHOSA' || p==='MHOAS'){
-    return '<svg '+common+'><rect x="3" y="7" width="14" height="9" rx="1.5"/><line x1="17" y1="10" x2="21" y2="10"/><line x1="17" y1="13" x2="21" y2="13"/><circle cx="7" cy="18" r="1.4"/><circle cx="14" cy="18" r="1.4"/></svg>';
+    return '<svg '+common+'><rect x="2" y="6" width="13" height="10" rx="2"/><path d="M2 11h13"/><circle cx="6" cy="18" r="1.4"/><circle cx="11" cy="18" r="1.4"/><path d="M16.5 11h6M20.5 8l2.5 3-2.5 3"/></svg>';
   }
   return '<svg '+common+'><rect x="4" y="5" width="16" height="12" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="17" x2="9" y2="19"/><line x1="15" y1="17" x2="15" y2="19"/><circle cx="9" cy="13.5" r="1"/><circle cx="15" cy="13.5" r="1"/></svg>';
 }
@@ -4935,28 +4965,43 @@ function getShiftDowntimeFlags(segs,ws,we,shiftSources,allSources,minGapMins){
     if(b-a<minGap)continue;
     var hasLift=lifts.some(function(l){return intervalOverlap(a,b,l.from,l.to)>0.01;});
     if(hasLift)continue;
-    if(isCoveredByDelay(a,b,delays))continue;
+    var dur=b-a;
+    if(isCoveredByDelay(a,b,delays)){
+      // Accounted-for gap (shift change, lunch, UPS window, etc.) — still shown
+      // in the breakdown so the timeline has no unexplained jumps, just styled
+      // as an expected pause rather than a warning.
+      var covering=delays.filter(function(d){return intervalOverlap(a,b,d.from,d.to)>0.01;});
+      var delayLabel=covering.map(function(d){return d.label;}).join(' + ')||'scheduled pause';
+      flags.push({
+        label:'\u23F1 '+delayLabel,
+        from:a,
+        to:b,
+        duration:dur,
+        severity:'delay'
+      });
+      continue;
+    }
     var next=findNextLiftAfter(a,allSources);
     if(!next)continue; // do not flag true end-of-work idle.
     // If the next known lift is far outside the card window, still flag only if it starts before or near the shift end.
     if(next.from>we+0.25)continue;
-    var dur=b-a;
     var reason='no credited lifts';
     if(next.from>=b-0.001)reason+='; next work '+next.label;
     flags.push({
-      label:'⚠ DOWNTIME — '+reason,
+      label:'\u26A0 DOWNTIME \u2014 '+reason,
       from:a,
       to:b,
       duration:dur,
       severity:dur>=1?'critical':'warn'
     });
   }
-  // Merge adjacent downtime windows that touch.
+  // Merge adjacent windows of the same kind that touch.
   var merged=[];
   flags.forEach(function(f){
     var last=merged[merged.length-1];
     if(last&&Math.abs(last.to-f.from)<0.01&&last.label===f.label){
-      last.to=f.to;last.duration=last.to-last.from;last.severity=last.duration>=1?'critical':'warn';
+      last.to=f.to;last.duration=last.to-last.from;
+      if(last.severity!=='delay') last.severity=last.duration>=1?'critical':'warn';
     }else merged.push(f);
   });
   return merged;
@@ -5018,6 +5063,12 @@ function lpmhIcon(name){
       return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a2 2 0 0 0 0 4h1.5"/><path d="M17 5h3a2 2 0 0 1 0 4h-1.5"/></svg>';
     case 'alert':
       return '<svg '+s+'><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    case 'gauge': // avg dwell per car
+      return '<svg '+s+'><path d="M4.5 19a8 8 0 1 1 15 0"/><line x1="12" y1="13" x2="15" y2="9"/><circle cx="12" cy="13" r="1" fill="currentColor" stroke="none"/></svg>';
+    case 'trend': // delta vs plan
+      return '<svg '+s+'><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></svg>';
+    case 'train':
+      return '<svg '+s+'><rect x="4" y="3" width="16" height="13" rx="2"/><path d="M4 11h16"/><circle cx="8.5" cy="18.5" r="1.5"/><circle cx="15.5" cy="18.5" r="1.5"/><path d="M8 16l-2 3M16 16l2 3"/></svg>';
     default:
       return '';
   }
@@ -5041,6 +5092,15 @@ function renderBreakdown(sources,manualItems,totalLabel,totalValue,downtimeItems
 
   rows.forEach(function(r){
     if(r.type==='downtime'){
+      if(r.severity==='delay'){
+        html+='<div class="lpmh-brow lpmh-brow-downtime delay">';
+        html+='<span class="lpmh-brow-icon">'+lpmhIcon('clock')+'</span>';
+        html+='<span class="lpmh-brow-label">'+r.label+'</span>';
+        html+='<span class="lpmh-brow-time">'+fmtH(r.from)+'-'+fmtH(r.to)+'</span>';
+        html+='<span class="lpmh-brow-lifts">'+fmtDur(r.duration)+'</span>';
+        html+='</div>';
+        return;
+      }
       html+='<div class="lpmh-brow lpmh-brow-downtime '+(r.severity==='critical'?'critical':'')+'">';
       html+='<span class="lpmh-brow-icon">'+lpmhIcon('alert')+'</span>';
       html+='<span class="lpmh-brow-label">'+r.label+'</span>';
@@ -5460,12 +5520,6 @@ function clearHourlyActuals(btn){
 // Either way, rows are bucketed by hour and counted; those counts are added
 // to whatever Actual Lifts value is already entered for that hour (so the
 // two reports can be imported one after another and their counts combine).
-function importHourlyActualsStatus(msg, cls){
-  var el=document.getElementById('liftlog-import-status');
-  if(!el) return;
-  el.textContent=msg||'';
-  el.className='liftlog-import-status'+(cls?(' '+cls):'');
-}
 // Pull an hour-of-day (0-23) out of a "Completion Time" cell. Handles the
 // "MM/DD/YYYY HH:MM" string format used by the ramp's export tools, JS Date
 // objects (if SheetJS parsed it as a date), and Excel's numeric date serials.
@@ -5777,14 +5831,6 @@ function applyImpPreview(){
   saveHourlyActuals(map);
   if(typeof simulate==='function') simulate();
 
-  var files={};
-  matched.forEach(function(r){files[r.file]=true;});
-  var msg='Imported '+matched.reduce(function(s,r){return s+r.units;},0)+' units across '+hourKeys.length+' hour'+(hourKeys.length===1?'':'s')
-    +' from '+Object.keys(files).join(', ')+'.';
-  var hasUnmatched=_impPreviewRows.some(function(r){return r.sourceKey==null;});
-  if(hasUnmatched) msg+=' Some rows were unmatched and skipped.';
-  importHourlyActualsStatus(msg, hasUnmatched?'err':'ok');
-
   closeImpModal();
 }
 
@@ -5915,9 +5961,11 @@ function renderLiftLogSummaryBar(buckets, ctx){
   var forecastTotal=0, actualTotal=0;
   buckets.forEach(function(b){
     if(b.isBreak) return;
-    forecastTotal+=b.total;
     var entry=normalizeActualEntry(actuals[b.hour]);
-    if(entry.value!=null && Number.isFinite(entry.value)) actualTotal+=entry.value;
+    if(entry.value!=null && Number.isFinite(entry.value)){
+      forecastTotal+=b.total;
+      actualTotal+=entry.value;
+    }
   });
 
   var variance=actualTotal-forecastTotal;
@@ -5938,7 +5986,7 @@ function renderLiftLogSummaryBar(buckets, ctx){
   var varSign=variance>0?'+':'';
 
   var html=''
-    +'<div class="liftlog-summary-stat">'
+    +'<div class="liftlog-summary-stat" title="Forecast for the hours you\'ve entered an actual for">'
     +'<div class="liftlog-summary-label">Forecast Total</div>'
     +'<div class="liftlog-summary-val" style="color:var(--green);">'+forecastTotal+'<span class="unit">Lifts</span></div>'
     +'</div>'
@@ -6120,39 +6168,31 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
 
   buckets.forEach(function(b){
     var h=b.hour;
-    if(b.isBreak){
-      // Mirror the forecast's "no activity" row so the two columns stay aligned.
-      rows.push(
-        '<div class="liftlog-row is-actual is-break">'+
-        '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-        '<div class="liftlog-cell-count"></div>'+
-        '<div class="liftlog-fcst-ref-cell liftlog-cell-var">fcst 0</div>'+
-        '<div class="liftlog-row-detail liftlog-cell-worktype">No activity \u2014 '+escHtml(b.breakLabels||'')+'</div>'+
-        '<div class="liftlog-cell-notes"></div>'+
-        '</div>'
-      );
-      return;
-    }
     var entry=normalizeActualEntry(actuals[h]);
     var actualVal=entry.value;
     var hasActual=actualVal!=null && Number.isFinite(actualVal);
     var delta=hasActual?(actualVal-b.total):null;
-    var deltaHtml='<span class="liftlog-fcst-ref-cell">\u2014</span>';
+    var deltaHtml='';
     if(hasActual){
       var dCls=delta===0?'is-zero':(delta>0?'is-pos':'is-neg');
       var dSign=delta>0?'+':'';
       deltaHtml='<span class="liftlog-delta '+dCls+'">'+dSign+delta+'</span>';
     }
+    var fcstRefHtml='';
+    if(!hasActual){
+      var fcstLabel='fcst '+b.total;
+      if(b.isBreak && b.breakLabels) fcstLabel+=' \u2014 '+b.breakLabels;
+      fcstRefHtml='<span class="liftlog-forecast-ref">'+escHtml(fcstLabel)+'</span>';
+    }
     rows.push(
-      '<div class="liftlog-row is-actual">'+
+      '<div class="liftlog-row is-actual'+(b.isBreak?' is-break':'')+'">'+
       '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
       '<div class="liftlog-cell-count">'+
-        '<input type="number" min="0" step="1" class="liftlog-actual-input" value="'+(hasActual?actualVal:'')+'" placeholder="'+b.total+'" '+
+        '<input type="number" min="0" step="1" class="liftlog-actual-input" value="'+(hasActual?actualVal:'')+'" placeholder="\u2014" '+
         'onchange="setHourlyActual('+h+',this.value)">'+
       '</div>'+
       '<div class="liftlog-varcell liftlog-cell-var">'+
-        deltaHtml+
-        (hasActual?'':'<span class="liftlog-forecast-ref">fcst '+b.total+'</span>')+
+        deltaHtml+fcstRefHtml+
       '</div>'+
       '<div class="liftlog-cell-worktype">'+workTypeCell(h,entry.srcs)+'</div>'+
       '<div class="liftlog-cell-notes">'+noteButton(h,entry.note)+'</div>'+
@@ -6187,8 +6227,21 @@ function buildHourlyLiftTimeMap(buckets){
   // Group consecutive hours that share the same dominant source into one step,
   // so a long IHOSA or MHOAS run renders as a single labeled block instead of
   // one staircase step per hour. Source totals are summed across the group.
+  // Hours with zero lift activity that AREN'T a scheduled break (lunch, etc.)
+  // are called out as their own "downtime" group instead of being silently
+  // skipped, so a gap like 0800-0859 between two active hours is visible.
   var groups=[];
-  active.forEach(function(b){
+  buckets.forEach(function(b){
+    if(b.total<=0){
+      if(b.isBreak) return; // scheduled breaks aren't "downtime" — leave them out of the map
+      var last0=groups[groups.length-1];
+      if(last0 && last0.key==='__gap__' && b.hour===last0.lastHour+1){
+        last0.lastHour=b.hour;
+      } else {
+        groups.push({key:'__gap__',color:'#EF4444',firstHour:b.hour,lastHour:b.hour,total:0,sourceTotals:{},isGap:true});
+      }
+      return;
+    }
     var dom=dominantOf(b);
     var key=dom?dom.key:'none';
     var last=groups[groups.length-1];
@@ -6206,6 +6259,10 @@ function buildHourlyLiftTimeMap(buckets){
       groups.push({key:key,color:dom?dom.color:'#F59E0B',firstHour:b.hour,lastHour:b.hour,total:b.total,sourceTotals:sourceTotals});
     }
   });
+  // Drop leading/trailing gap groups (idle time before the day starts or after
+  // it ends isn't "downtime" worth flagging — only gaps between active groups are).
+  while(groups.length && groups[0].isGap) groups.shift();
+  while(groups.length && groups[groups.length-1].isGap) groups.pop();
 
   function hourStart(h){
     return String(h%24).padStart(2,'0')+'00'+(h>=24?' (+1)':'');
@@ -6219,6 +6276,7 @@ function buildHourlyLiftTimeMap(buckets){
   }
 
   var CLOCK_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  var ALERT_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
 
   // ── Connected timeline of node + line segments, one per group ──
   var nodes=groups.map(function(g,i){
@@ -6226,7 +6284,7 @@ function buildHourlyLiftTimeMap(buckets){
       ? '<div class="timemap-line" style="background:'+g.color+';"></div>'
       : '<div class="timemap-line" style="background:transparent;"></div>';
     return '<div class="timemap-node-wrap">'
-      +'<div class="timemap-node" style="color:'+g.color+';border-color:'+g.color+';box-shadow:0 0 12px '+g.color+'55;">'+CLOCK_ICON+'</div>'
+      +'<div class="timemap-node" style="color:'+g.color+';border-color:'+g.color+';box-shadow:0 0 12px '+g.color+'55;">'+(g.isGap?ALERT_ICON:CLOCK_ICON)+'</div>'
       +lineHtml
       +'</div>';
   }).join('');
@@ -6234,15 +6292,20 @@ function buildHourlyLiftTimeMap(buckets){
   // ── Cards below the timeline, one per group ──
   var cards=groups.map(function(g,i){
     var color=g.color;
-    var hours=g.lastHour-g.firstHour+1;
-    var rateLabel=hours+'h \u00d7 ~'+Math.round(g.total/hours)+'/hr';
+    if(g.isGap){
+      var hours=g.lastHour-g.firstHour+1;
+      return '<div class="timemap-card timemap-card-gap">'
+        +'<div class="timemap-range" style="color:'+color+';border-color:'+color+'55;background:'+color+'1a;">'+rangeLabel(g)+'</div>'
+        +'<div class="timemap-gap-label">\u26A0 DOWNTIME</div>'
+        +'<div class="timemap-srcs"><div class="timemap-src" style="color:'+color+';">No scheduled lifts ('+hours+'h)</div></div>'
+        +'</div>';
+    }
     var breakdown=Object.keys(g.sourceTotals).map(function(k){
       var s=g.sourceTotals[k];
       return '<div class="timemap-src" style="color:'+s.color+';"><span class="timemap-src-dot" style="background:'+s.color+';"></span>'+escHtml(s.label)+': '+s.lifts+'</div>';
     }).join('');
     return '<div class="timemap-card">'
       +'<div class="timemap-range" style="color:'+color+';border-color:'+color+'55;background:'+color+'1a;">'+rangeLabel(g)+'</div>'
-      +'<div class="timemap-rate">'+rateLabel+'</div>'
       +'<div class="timemap-total">'+g.total+'<span class="timemap-total-unit">lifts</span></div>'
       +'<div class="timemap-srcs">'+breakdown+'</div>'
       +'</div>';
@@ -6572,6 +6635,53 @@ function buildRateTargetBanner(currentTime, rate, ihosaUnits, ihosaLoaded, ihosa
   if(rtbEl) rtbEl.innerHTML = html;
 }
 
+// ── INBOUND TRAIN STATUS — one card per active inbound train ──
+// Shows when it arrived, how long the full drop took (vs the ideal "units/rate"
+// plan), and the unit-weighted average dwell time (same calculation as the
+// "Weighted Avg Inbound" grade card — NOT a naive totalDrop/cars average).
+function renderInboundTrainStatus(trains, trainDropEnd, rate, segs, trainArrivalTimes){
+  var el=document.getElementById('inbound-train-status');
+  if(!el) return;
+  if(!trains || !trains.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px 0;">No inbound trains configured.</div>';
+    return;
+  }
+  var weighted=calcInboundWeightedDrop(trains,segs,rate,trainArrivalTimes);
+  var html='<div class="its-wrap">';
+  trains.forEach(function(t){
+    var units=Math.round(t.units);
+    var cars=Math.max(1,Math.round(units/UNITS_PER_CAR));
+    var totalDrop=Math.max(0,trainDropEnd[t.key]-t.arr);
+    var tw=weighted.trains.find(function(x){return x.key===t.key;});
+    var wAvg=tw?tw.wAvg:calcWeightedAvgDrop(segs[t.key]||[],t.arr,rate);
+    var delta=totalDrop-wAvg;
+    var deltaSign = delta>0 ? '+' : (delta<0 ? '\u2212' : '');
+    var deltaVal = fmtHR(Math.abs(delta));
+
+    html+='<div class="its-card">';
+    html+='<div class="its-head">';
+    html+='<div class="its-head-left">';
+    html+='<span class="its-icon-badge">'+lpmhIcon('train')+'</span>';
+    html+='<span class="its-title">'+escHtml(t.label)+'</span>';
+    html+='</div>';
+    html+='<div class="its-pills">';
+    html+='<div class="its-pill"><span class="its-pill-val">'+units+'</span><span class="its-pill-label">Units</span></div>';
+    html+='<div class="its-pill"><span class="its-pill-val">'+cars+'</span><span class="its-pill-label">Cars</span></div>';
+    html+='</div>';
+    html+='</div>';
+    html+='<div class="its-stats">';
+    html+='<div class="its-stat"><span class="its-stat-icon arrived">'+lpmhIcon('clock')+'</span><span class="its-stat-label">Arrived</span><span class="its-stat-val">'+fmtH(t.arr)+'</span></div>';
+    html+='<div class="its-stat"><span class="its-stat-icon drop">'+lpmhIcon('down')+'</span><span class="its-stat-label">Total Drop</span><span class="its-stat-val drop">'+fmtHR(totalDrop)+'</span></div>';
+    html+='<div class="its-stat"><span class="its-stat-icon dwell">'+lpmhIcon('gauge')+'</span><span class="its-stat-label">Wtd Avg Dwell</span><span class="its-stat-val dwell">'+fmtHR(wAvg)+'</span></div>';
+    html+='<div class="its-stat"><span class="its-stat-icon">'+lpmhIcon('trend')+'</span><span class="its-stat-label">Delta (vs Plan)</span><span class="its-stat-val">'+deltaSign+deltaVal+'</span></div>';
+    html+='</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+
 function simulate(){
   updateCoh();
   var rate=parseInt(document.getElementById('rate').value);
@@ -6799,6 +6909,8 @@ function simulate(){
     }
   });
 
+  renderInboundTrainStatus(trains, trainDropEnd, rate, segs, trainArrivalTimes);
+
   // ── LPMH ──
   var trainLabelMap={};
   trains.forEach(function(t){trainLabelMap[t.key]=t.label;});
@@ -6937,83 +7049,6 @@ function simulate(){
 
   document.getElementById('lpmh-grid').innerHTML=s1Html+s2Html+dHtml;
   buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,liftLogPaceCtx);
-
-  // ── METRICS ──
-  var mHTML='';
-
-  function commitCard(name,dl,short,loaded,total,pivot){
-    var met=short<=0;
-    var statusClass=met?'met':'missed';
-    var statusText=met?'MET':'MISSED';
-    var shortStr=short>0?short+' units short':'On time';
-    var pivotStr=pivot?fmtH(pivot):'—';
-    var loadedPct=total>0?Math.round((loaded/total)*100):0;
-    var c='<div class="metric-commit '+statusClass+'">';
-    c+='<div class="mc-header">';
-    c+='<span class="mc-name">'+name+'</span>';
-    c+='<span class="mc-dl">DL '+dl+'</span>';
-    c+='</div>';
-    c+='<div class="mc-status '+statusClass+'">'+statusText+'</div>';
-    c+='<div class="mc-divider"></div>';
-    c+='<div class="mc-row">';
-    c+='<div class="mc-field"><div class="mc-field-label">Loaded</div><div class="mc-field-val '+(met?'green':'red')+'">'+Math.round(loaded)+' / '+total+'</div></div>';
-    c+='<div class="mc-field"><div class="mc-field-label">Pivot</div><div class="mc-field-val '+(pivot?'amber':'muted')+'">'+pivotStr+'</div></div>';
-    c+='<div class="mc-field"><div class="mc-field-label">Fill</div><div class="mc-field-val '+(loadedPct>=100?'green':loadedPct>=85?'amber':'red')+'">'+loadedPct+'%</div></div>';
-    c+='</div>';
-    c+='</div>';
-    return c;
-  }
-
-  mHTML+='';
-  
-  trains.forEach(function(t){
-    var de=trainDropEnd[t.key]||t.arr;
-    var dh=de-t.arr;
-    var wAvg=calcWeightedAvgDrop(segs[t.key]||[],t.arr,rate);
-    var cars2=Math.round(t.units/UNITS_PER_CAR);
-    var dhClass=dh>5?'bad':dh>3?'warn':'ok';
-    var wAvgClass=wAvg>4?'bad':wAvg>2?'warn':'ok';
-    var ohStr=wAvg>0?'+'+fmtDur(dh-wAvg):'—';
-    // colour-coded arrival pill
-    var arrH=trainArrivalTimes[t.key]||t.arr;
-    var c='<div class="train-card" style="--tc:'+t.color+';">';
-    // header row
-    c+='<div class="tc-header">';
-    c+='<div class="tc-name-row">';
-    c+='<span class="tc-dot" style="background:'+t.color+';box-shadow:0 0 8px '+t.color+'88;"></span>';
-    c+='<span class="tc-name">'+t.label+'</span>';
-    c+='</div>';
-    c+='<span class="tc-badge" style="border-color:'+t.color+'55;color:'+t.color+';">'+Math.round(t.units)+' units &middot; '+cars2+' cars</span>';
-    c+='</div>';
-    // divider
-    c+='<div class="tc-divider"></div>';
-    // three stat cols
-    c+='<div class="tc-stats">';
-    // Arrival
-    c+='<div class="tc-stat">';
-    c+='<div class="tc-stat-label">Arrived</div>';
-    c+='<div class="tc-stat-val" style="color:'+t.color+';">'+fmtH(arrH)+'</div>';
-    c+='</div>';
-    // Total drop
-    c+='<div class="tc-stat">';
-    c+='<div class="tc-stat-label">Total drop</div>';
-    c+='<div class="tc-stat-val '+dhClass+'">'+dh.toFixed(1)+'<span class="tc-unit"> HR</span></div>';
-    c+='</div>';
-    // Wtd avg
-    c+='<div class="tc-stat">';
-    c+='<div class="tc-stat-label">Avg dwell / car</div>';
-    c+='<div class="tc-stat-val '+wAvgClass+'">'+wAvg.toFixed(1)+'<span class="tc-unit"> HR</span></div>';
-    c+='</div>';
-    // Overhead
-    c+='<div class="tc-stat" style="opacity:0.8;">';
-    c+='<div class="tc-stat-label" style="font-size:4px;">Overhead</div>';
-    c+='<div class="tc-stat-val" style="font-size:10px;color:var(--text2);">'+ohStr+'</div>';
-    c+='</div>';
-    c+='</div>';
-    c+='</div>';
-    mHTML+=c;
-  });
-  document.getElementById('metrics').innerHTML=mHTML;
 
   // ── ALERTS ──
   var alerts=[];
