@@ -18,8 +18,8 @@
 
   /* These names must stay – JS inline styles reference them */
   --text:#FFFFFF;
-  --text2:#A8A090;
-  --text3:#5A5248;
+  --text2:#FFFFFF;
+  --text3:#FFFFFF;
   --bg2:#0D0D14;
   --bg3:#191924;
   --border:rgba(245,158,11,0.14);
@@ -264,6 +264,73 @@ input[type=range]::-webkit-slider-thumb{
 .shift-badge{display:inline-block;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;font-family:var(--mono);}
 .divider{display:none;}
 
+/* ── Simulation Parameters card-based redesign ── */
+.sb-card{
+  margin:10px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--s2);padding:13px 15px;
+}
+.sb-card-head{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.sb-card-icon{font-size:15px;line-height:1;flex-shrink:0;filter:saturate(1.4);}
+.sb-card-title{
+  font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--text2);font-family:var(--cond);
+}
+.sb-card-params{display:flex;flex-direction:column;gap:10px;}
+.sb-card-params .sb-card-head{margin-bottom:0;}
+.sb-card-params .sb-size-wrap{width:100%;}
+.sb-card-params .sb-size-slider{flex:1;width:auto;}
+
+/* Shift Windows */
+.shift-block{margin-bottom:12px;}
+.shift-block:last-child{margin-bottom:0;}
+.time-lbl.shift-name{
+  font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
+  margin-bottom:8px;display:flex;align-items:baseline;gap:6px;
+}
+.time-input-wrap{position:relative;}
+.time-input-wrap input[type=time]{padding-right:26px;}
+.time-input-wrap input[type=time]::-webkit-calendar-picker-indicator{
+  opacity:0;position:absolute;right:0;width:26px;height:100%;margin:0;cursor:pointer;
+}
+.time-input-icon{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-size:11px;opacity:0.55;cursor:pointer;pointer-events:auto;
+}
+.time-input-icon:hover{opacity:0.9;}
+
+/* Inbound Trains */
+.sb-train-card{
+  border-radius:7px;border:1px solid var(--border2);
+  background:rgba(255,255,255,0.02);padding:11px 12px;margin-bottom:10px;
+}
+.sb-train-card:last-child{margin-bottom:0;}
+.sb-train-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.sb-train-card-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
+.sb-train-card-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.sb-train-card-badge{
+  font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;
+  border-radius:4px;border:1px solid;letter-spacing:0.04em;
+  width:90px;flex-shrink:0;
+}
+.sb-train-card-badge:focus{outline:none;}
+
+/* Outbound Commitments sub-cards */
+.commit-card{
+  border-radius:7px;border:1px solid;padding:11px 12px;margin-bottom:10px;
+}
+.commit-card:last-child{margin-bottom:0;}
+.commit-ihosa{border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.05);}
+.commit-mhoas{border-color:rgba(127,119,221,0.3);background:rgba(127,119,221,0.05);}
+.ctrl-val-amber{color:var(--amber);background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);}
+.ctrl-val-purple{color:var(--purple);background:rgba(127,119,221,0.12);border-color:rgba(127,119,221,0.35);}
+.slider-amber::-webkit-slider-thumb{background:var(--amber);box-shadow:0 0 8px rgba(245,158,11,0.55);}
+.slider-amber{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.25);}
+.slider-purple::-webkit-slider-thumb{background:var(--purple);box-shadow:0 0 8px rgba(127,119,221,0.55);}
+.slider-purple{background:rgba(127,119,221,0.15);border-color:rgba(127,119,221,0.3);}
+.slider-train{background:color-mix(in srgb, var(--thumb-color) 18%, transparent);border-color:color-mix(in srgb, var(--thumb-color) 35%, transparent);}
+.slider-train::-webkit-slider-thumb{background:var(--thumb-color);box-shadow:0 0 8px color-mix(in srgb, var(--thumb-color) 60%, transparent);}
+
+
 /* ── MAIN CONTENT ─────────────────────────────────────────────────── */
 .main-content{
   overflow-y:auto;overflow-x:hidden;padding:18px 22px;
@@ -363,17 +430,17 @@ input[type=range]::-webkit-slider-thumb{
 .tblock-row{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-bottom:16px;
+  gap:8px;
+  margin-bottom:10px;
 }
 
 /* Base card */
 .tblock-card{
   position:relative;
-  border-radius:14px;
-  padding:20px 22px 18px;
+  border-radius:10px;
+  padding:12px 13px 11px;
   overflow:hidden;
-  min-height:130px;
+  min-height:0;
   display:flex;
   flex-direction:column;
   gap:0;
@@ -416,22 +483,22 @@ input[type=range]::-webkit-slider-thumb{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:14px;
+  margin-bottom:8px;
 }
 .tblock-label{
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:5px;
   font-family:var(--cond);
-  font-size:9px;
+  font-size:8px;
   font-weight:700;
-  letter-spacing:0.18em;
+  letter-spacing:0.12em;
   text-transform:uppercase;
 }
 #tblock-current .tblock-label{ color:rgba(74,158,255,0.8); }
 #tblock-next    .tblock-label{ color:rgba(245,158,11,0.8); }
 .tblock-dot{
-  width:7px;height:7px;
+  width:6px;height:6px;
   border-radius:50%;
   flex-shrink:0;
 }
@@ -444,13 +511,13 @@ input[type=range]::-webkit-slider-thumb{
 }
 .tblock-countdown{
   font-family:var(--mono);
-  font-size:10px;
+  font-size:9px;
   font-weight:700;
   color:var(--amber);
   background:rgba(245,158,11,0.1);
   border:1px solid rgba(245,158,11,0.22);
   border-radius:5px;
-  padding:3px 9px;
+  padding:2px 7px;
   white-space:nowrap;
   letter-spacing:0.04em;
 }
@@ -459,12 +526,12 @@ input[type=range]::-webkit-slider-thumb{
 .tblock-time-display{
   display:flex;
   align-items:baseline;
-  gap:8px;
-  margin-bottom:8px;
+  gap:6px;
+  margin-bottom:5px;
 }
 .tblock-time-val{
   font-family:var(--mono);
-  font-size:36px;
+  font-size:24px;
   font-weight:700;
   line-height:1;
   letter-spacing:-0.04em;
@@ -473,11 +540,11 @@ input[type=range]::-webkit-slider-thumb{
 #tblock-next    .tblock-time-val{ color:var(--amber); }
 .tblock-time-label{
   font-family:var(--mono);
-  font-size:9px;
+  font-size:8px;
   font-weight:700;
-  letter-spacing:0.1em;
+  letter-spacing:0.08em;
   text-transform:uppercase;
-  padding-bottom:3px;
+  padding-bottom:2px;
 }
 #tblock-current .tblock-time-label{ color:rgba(74,158,255,0.5); }
 #tblock-next    .tblock-time-label{ color:rgba(245,158,11,0.5); }
@@ -487,37 +554,37 @@ input[type=range]::-webkit-slider-thumb{
   display:inline-flex;
   align-items:center;
   font-family:var(--mono);
-  font-size:9px;
+  font-size:8px;
   font-weight:700;
-  letter-spacing:0.07em;
-  padding:3px 10px;
+  letter-spacing:0.06em;
+  padding:2px 8px;
   border-radius:4px;
-  margin-bottom:8px;
+  margin-bottom:5px;
   align-self:flex-start;
 }
 
 /* Title */
 .tblock-title{
   font-family:var(--cond);
-  font-size:17px;
+  font-size:13px;
   font-weight:700;
-  letter-spacing:0.05em;
+  letter-spacing:0.04em;
   color:var(--text);
   line-height:1.2;
-  margin-bottom:6px;
+  margin-bottom:3px;
 }
 
 /* Meta */
 .tblock-meta{
-  font-size:11.5px;
+  font-size:10px;
   color:var(--text3);
-  line-height:1.6;
+  line-height:1.4;
 }
 
 /* Divider between time and content */
 .tblock-divider{
   height:1px;
-  margin:10px 0 10px;
+  margin:6px 0 6px;
 }
 #tblock-current .tblock-divider{ background:linear-gradient(90deg,rgba(74,158,255,0.2),transparent); }
 #tblock-next    .tblock-divider{ background:linear-gradient(90deg,rgba(245,158,11,0.18),transparent); }
@@ -533,11 +600,12 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ── LPMH GRID ───────────────────────────────────────────────────── */
 .lpmh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+@media (max-width:980px){.lpmh-grid{display:flex;flex-direction:column;}}
 
 .lpmh-card{
   position:relative;
-  border-radius:14px;
-  padding:20px 22px 18px;
+  border-radius:10px;
+  padding:12px 13px 11px;
   overflow:hidden;
   min-height:130px;
   display:flex;
@@ -576,18 +644,23 @@ input[type=range]::-webkit-slider-thumb{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:14px;
+  gap:6px;
+  margin-bottom:8px;
 }
 .lpmh-label{
   font-family:var(--cond);
-  font-size:9px;
+  font-size:8px;
   font-weight:700;
-  letter-spacing:0.18em;
+  letter-spacing:0.12em;
   text-transform:uppercase;
   color:var(--text3);
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:5px;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .lpmh-dot{
   width:7px;height:7px;
@@ -603,19 +676,25 @@ input[type=range]::-webkit-slider-thumb{
   font-family:var(--mono);
   font-size:9px;
   font-weight:700;
-  letter-spacing:0.06em;
-  padding:3px 8px;
-  border-radius:5px;
+  letter-spacing:0.04em;
+  padding:3px 7px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  flex-shrink:0;
+  white-space:nowrap;
 }
+.lpmh-target-badge .lpmh-bd-icon svg{width:11px;height:11px;}
 .lpmh-card.lok .lpmh-target-badge{
   color:#10B981;
   background:rgba(16,185,129,0.1);
-  border:1px solid rgba(16,185,129,0.22);
+  border:1px solid rgba(16,185,129,0.32);
 }
 .lpmh-card.lbad .lpmh-target-badge{
   color:#EF4444;
   background:rgba(239,68,68,0.1);
-  border:1px solid rgba(239,68,68,0.22);
+  border:1px solid rgba(239,68,68,0.32);
 }
 .lpmh-card:not(.lok):not(.lbad) .lpmh-target-badge{
   color:var(--text3);
@@ -627,12 +706,12 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-val-display{
   display:flex;
   align-items:baseline;
-  gap:8px;
+  gap:6px;
   margin-bottom:8px;
 }
 .lpmh-val{
   font-family:var(--mono);
-  font-size:40px;
+  font-size:26px;
   font-weight:700;
   line-height:1;
   letter-spacing:-0.04em;
@@ -643,11 +722,11 @@ input[type=range]::-webkit-slider-thumb{
 
 .lpmh-unit{
   font-family:var(--mono);
-  font-size:10px;
+  font-size:9px;
   font-weight:700;
-  letter-spacing:0.1em;
+  letter-spacing:0.06em;
   text-transform:uppercase;
-  padding-bottom:4px;
+  padding-bottom:2px;
 }
 .lpmh-card.lok  .lpmh-unit{ color:rgba(16,185,129,0.5); }
 .lpmh-card.lbad .lpmh-unit{ color:rgba(239,68,68,0.45); }
@@ -665,12 +744,12 @@ input[type=range]::-webkit-slider-thumb{
 /* Progress bar */
 .lpmh-bar-wrap{
   position:relative;
-  height:6px;
+  height:5px;
   background:rgba(255,255,255,0.05);
   border-radius:999px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,0.04);
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 .lpmh-bar-fill{
   position:absolute;
@@ -695,29 +774,57 @@ input[type=range]::-webkit-slider-thumb{
   font-family:var(--mono);
   line-height:1.5;
 }
+
+/* Stat boxes: 2x2 grid of bordered cards with circular icons */
 .lpmh-stat-row{
   display:flex;
-  gap:14px;
   flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:8px;
 }
-.lpmh-stat{
+.lpmh-statbox{
   display:flex;
-  flex-direction:column;
-  gap:2px;
+  flex:1 1 calc(50% - 3px);
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:7px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  min-width:0;
+  box-sizing:border-box;
 }
+.lpmh-statbox-icon{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,0.03);
+}
+.lpmh-card.lok .lpmh-statbox-icon{ color:#10B981; border-color:rgba(16,185,129,0.35); background:rgba(16,185,129,0.08); }
+.lpmh-card.lbad .lpmh-statbox-icon{ color:#EF4444; border-color:rgba(239,68,68,0.35); background:rgba(239,68,68,0.08); }
+.lpmh-card:not(.lok):not(.lbad) .lpmh-statbox-icon{ color:var(--text3); }
+.lpmh-statbox-icon svg{width:13px;height:13px;}
+.lpmh-statbox-text{display:flex;flex-direction:row;align-items:baseline;gap:6px;min-width:0;overflow:hidden;}
 .lpmh-stat-val{
   font-family:var(--mono);
-  font-size:13px;
+  font-size:18px;
   font-weight:700;
-  color:var(--text2);
-  line-height:1;
+  color:#fff;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .lpmh-stat-label{
-  font-size:8px;
+  font-size:10px;
   font-family:var(--cond);
-  letter-spacing:0.12em;
+  letter-spacing:0.08em;
   text-transform:uppercase;
   color:var(--text3);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 /* Gauge elements (kept for renderGauge compat) */
@@ -726,31 +833,107 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-gauge-target{display:none;}
 .lpmh-gap{font-size:10.5px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
 .lpmh-pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:999px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);}
-.lpmh-breakdown{margin-top:8px;border-top:1px solid var(--border);padding-top:7px;}
-.lpmh-brow{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:2px 0;font-size:10px;}
-.lpmh-brow-label{color:var(--amber);opacity:0.75;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.lpmh-brow-time{color:var(--amber);opacity:0.75;font-family:var(--mono);flex-shrink:0;font-size:9px;}
-.lpmh-brow-lifts{font-weight:700;color:var(--text2);font-family:var(--mono);min-width:28px;text-align:right;flex-shrink:0;}
-.lpmh-brow-manual .lpmh-brow-lifts{color:var(--amber);}
+
+/* ── Work breakdown card ── */
+.lpmh-breakdown-card{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 9px;
+  margin-top:4px;
+  background:rgba(255,255,255,0.015);
+}
+.lpmh-breakdown-head{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  padding-bottom:5px;margin-bottom:3px;border-bottom:1px solid var(--border);
+}
+.lpmh-breakdown-title{
+  display:flex;align-items:center;gap:5px;
+  font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text);
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lpmh-breakdown-cols{display:flex;gap:10px;flex-shrink:0;}
+.lpmh-breakdown-cols>*+*{margin-left:10px;}
+.lpmh-bd-col-time,.lpmh-bd-col-lifts{
+  display:flex;align-items:center;gap:3px;
+  font-family:var(--cond);font-size:7.5px;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text3);
+}
+.lpmh-bd-icon{display:inline-flex;align-items:center;color:inherit;}
+.lpmh-bd-icon svg{width:10px;height:10px;}
+.lpmh-breakdown-title .lpmh-bd-icon svg{width:11px;height:11px;}
+
+.lpmh-brow{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:10px;border-bottom:1px dashed var(--border);}
+.lpmh-brow:last-child{border-bottom:none;}
+.lpmh-brow-icon{
+  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);color:var(--text3);
+}
+.lpmh-brow-icon svg{width:9px;height:9px;}
+.lpmh-brow-icon-down{color:#10B981;border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.06);}
+.lpmh-brow-icon-up{color:#10B981;border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.06);}
+.lpmh-brow-icon-star{color:var(--amber);border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);}
+.lpmh-brow-label{color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+.lpmh-brow-time{color:#10B981;font-family:var(--mono);flex-shrink:0;font-size:9px;min-width:58px;text-align:left;white-space:nowrap;}
+.lpmh-brow-lifts{font-weight:700;color:#fff;font-family:var(--mono);min-width:24px;text-align:right;flex-shrink:0;font-size:10px;}
+.lpmh-brow-lifts-manual{color:var(--amber);}
 
 .lpmh-brow-downtime{
   margin-top:4px;
-  padding:5px 0;
+  padding:8px 0;
   border-top:1px solid rgba(245,158,11,0.16);
   border-bottom:1px solid rgba(245,158,11,0.10);
   background:rgba(245,158,11,0.035);
 }
+.lpmh-brow-downtime .lpmh-brow-icon{color:var(--amber);border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);}
 .lpmh-brow-downtime .lpmh-brow-label{color:var(--amber);font-weight:700;white-space:normal;overflow:visible;text-overflow:clip;}
 .lpmh-brow-downtime .lpmh-brow-time{color:var(--amber);font-weight:700;}
-.lpmh-brow-downtime .lpmh-brow-lifts{color:var(--amber);font-weight:700;min-width:52px;}
+.lpmh-brow-downtime .lpmh-brow-lifts{color:var(--amber);font-weight:700;min-width:62px;}
 .lpmh-brow-downtime.critical{
   border-top-color:rgba(239,68,68,0.22);
   border-bottom-color:rgba(239,68,68,0.14);
   background:rgba(239,68,68,0.04);
 }
+.lpmh-brow-downtime.critical .lpmh-brow-icon,
 .lpmh-brow-downtime.critical .lpmh-brow-label,
 .lpmh-brow-downtime.critical .lpmh-brow-time,
 .lpmh-brow-downtime.critical .lpmh-brow-lifts{color:var(--red);}
+.lpmh-brow-downtime.critical .lpmh-brow-icon{border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);}
+
+/* ── Shift total banner ── */
+.lpmh-total-banner{
+  margin-top:8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;
+  position:relative;
+  overflow:hidden;
+}
+.lpmh-card.lok .lpmh-total-banner{
+  border-color:rgba(16,185,129,0.4);
+  background:linear-gradient(90deg,rgba(16,185,129,0.05) 0%,rgba(16,185,129,0.05) 55%,rgba(16,185,129,0.35) 65%,rgba(16,185,129,0.35) 100%);
+}
+.lpmh-card.lbad .lpmh-total-banner{
+  border-color:rgba(239,68,68,0.4);
+  background:linear-gradient(90deg,rgba(239,68,68,0.05) 0%,rgba(239,68,68,0.05) 55%,rgba(239,68,68,0.35) 65%,rgba(239,68,68,0.35) 100%);
+}
+.lpmh-total-icon{
+  width:24px;height:24px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);background:rgba(255,255,255,0.04);
+  color:var(--text3);
+}
+.lpmh-card.lok .lpmh-total-icon{ color:#10B981; }
+.lpmh-card.lbad .lpmh-total-icon{ color:#EF4444; }
+.lpmh-total-icon svg{width:14px;height:14px;}
+.lpmh-total-label{font-size:10px;font-weight:700;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lpmh-total-value{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);flex-shrink:0;}
+.lpmh-card.lok .lpmh-total-value{ color:#07140f; }
+.lpmh-card.lbad .lpmh-total-value{ color:#1a0707; }
+
 
 /* ── ALERTS ─────────────────────────────────────────────────────── */
 .alert-wrap{margin-bottom:16px;}
@@ -1327,13 +1510,12 @@ body.trends-open #trends-screen #tr-list{
   .tb-font-wrap input[type=range]{width:58px;}
   .app-body{grid-template-columns:1fr;}
   .sidebar{border-right:none;border-bottom:1px solid var(--border);max-height:40vh;}
-  .lpmh-grid{grid-template-columns:1fr 1fr;}
 }
 
 
 .tb-controls{display:flex;align-items:center;gap:8px;}
 .tb-font-wrap{display:flex;align-items:center;gap:7px;background:var(--s3);border:1px solid var(--border2);padding:5px 10px;border-radius:6px;}
-.tb-ctrl-lbl{font-family:var(--mono);font-weight:700;color:var(--text3);font-size:11px;line-height:1;user-select:none;flex-shrink:0;}
+.tb-ctrl-lbl{font-family:var(--mono);font-weight:700;color:var(--text3);font-size:22px;line-height:1;user-select:none;flex-shrink:0;}
 .tb-font-wrap input[type=range]{width:72px;height:3px;margin:0;border:none;background:var(--border2);}
 .tb-font-wrap input[type=range]::-webkit-slider-thumb{width:11px;height:11px;box-shadow:none;border:2px solid var(--s3);}
 .sb-size-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0;}
@@ -1709,6 +1891,9 @@ body.print-mode .time-lbl{
   #print-report .rtb-card,
   #print-report .metric,
   #print-report .lpmh-card,
+  #print-report .lpmh-statbox,
+  #print-report .lpmh-breakdown-card,
+  #print-report .lpmh-brow-icon,
   #print-report .tblock-card,
   #print-report .tavg-grade-card,
   #print-report .tavg-hero,
@@ -1731,6 +1916,10 @@ body.print-mode .time-lbl{
   #print-report .rtb-label,
   #print-report .metric-label,
   #print-report .lpmh-label,
+  #print-report .lpmh-breakdown-title,
+  #print-report .lpmh-bd-col-time,
+  #print-report .lpmh-bd-col-lifts,
+  #print-report .lpmh-target-badge,
   #print-report .tblock-label,
   #print-report .tavg-grade-label,
   #print-report .tavg-section-title,
@@ -1752,6 +1941,8 @@ body.print-mode .time-lbl{
   #print-report .lpmh-brow-label,
   #print-report .lpmh-brow-time,
   #print-report .lpmh-brow-lifts,
+  #print-report .lpmh-total-label,
+  #print-report .lpmh-total-value,
   #print-report .tblock-time-val,
   #print-report .tblock-time-label,
   #print-report .tblock-title,
@@ -1784,15 +1975,24 @@ body.print-mode .time-lbl{
   #print-report .metric::before{display:none!important;}
   #print-report .metric-val{font-size:16px!important;}
 
-  #print-report .lpmh-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:7px!important;margin-bottom:0!important;}
+  #print-report .lpmh-grid{display:flex!important;flex-direction:column!important;gap:7px!important;margin-bottom:0!important;}
   #print-report .lpmh-card{padding:8px!important;border-radius:6px!important;min-height:0!important;}
   #print-report .lpmh-header{margin-bottom:5px!important;}
   #print-report .lpmh-val-display{margin-bottom:3px!important;}
   #print-report .lpmh-divider{margin:5px 0!important;background:#bbb!important;}
   #print-report .lpmh-bar-wrap{height:5px!important;background:#eee!important;border:1px solid #bbb!important;}
   #print-report .lpmh-bar-fill{background:#777!important;}
-  #print-report .lpmh-breakdown{margin-top:5px!important;padding-top:5px!important;border-top:1px solid #bbb!important;}
-  #print-report .lpmh-brow{font-size:8.5px!important;padding:1px 0!important;}
+  #print-report .lpmh-breakdown-card{margin-top:5px!important;padding:5px!important;border:1px solid #bbb!important;}
+  #print-report .lpmh-breakdown-head{border-bottom:1px solid #bbb!important;}
+  #print-report .lpmh-brow{font-size:8.5px!important;padding:1px 0!important;border-bottom:none!important;}
+  #print-report .lpmh-stat-row{display:flex!important;gap:5px!important;margin-bottom:5px!important;}
+  #print-report .lpmh-statbox{padding:5px!important;border-radius:4px!important;}
+  #print-report .lpmh-statbox-icon{display:none!important;}
+  #print-report .lpmh-bd-icon{display:none!important;}
+  #print-report .lpmh-brow-icon{width:14px!important;height:14px!important;}
+  #print-report .lpmh-brow-icon svg{width:8px!important;height:8px!important;}
+  #print-report .lpmh-total-banner{background:#eee!important;border:1px solid #bbb!important;}
+  #print-report .lpmh-total-icon{display:none!important;}
 
   #print-report .tblock-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:0!important;}
   #print-report .tblock-card{padding:8px!important;min-height:0!important;border-radius:6px!important;}
@@ -1836,35 +2036,35 @@ body.print-mode .time-lbl{
 
 /* ── TOPBAR SAFE STYLE MATCH — header-only, no dashboard layout impact ── */
 body:not(.print-mode) > .topbar{
-  min-height:64px;
-  padding:0 20px;
-  gap:14px;
+  min-height:128px;
+  padding:0 40px;
+  gap:28px;
   background:linear-gradient(180deg,rgba(10,14,20,0.98),rgba(5,8,13,0.98));
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  box-shadow:0 10px 28px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(245,158,11,0.08);
+  border-bottom:2px solid rgba(255,255,255,0.08);
+  box-shadow:0 20px 56px rgba(0,0,0,0.35), inset 0 -2px 0 rgba(245,158,11,0.08);
 }
 body:not(.print-mode) > .topbar::after{
   background:linear-gradient(90deg,rgba(245,158,11,0.36),rgba(20,184,166,0.20),transparent 68%);
   opacity:0.45;
 }
-body:not(.print-mode) > .topbar .brand{gap:12px;min-width:248px;}
+body:not(.print-mode) > .topbar .brand{gap:18px;}
 body:not(.print-mode) > .topbar .brand-mark{
-  width:38px;height:38px;
+  width:76px;height:76px;
   background:linear-gradient(135deg,#F59E0B,#B45309);
   color:#07070B;
   font-size:0;
-  border:1px solid rgba(245,158,11,0.45);
-  box-shadow:0 0 0 1px rgba(0,0,0,0.35),0 0 20px rgba(245,158,11,0.16);
+  border:2px solid rgba(245,158,11,0.45);
+  box-shadow:0 0 0 2px rgba(0,0,0,0.35),0 0 40px rgba(245,158,11,0.16);
 }
 body:not(.print-mode) > .topbar .brand-mark::before{
   content:'◆';
-  font-size:15px;
+  font-size:30px;
   color:#111827;
-  transform:translateY(-1px);
+  transform:translateY(-2px);
 }
 body:not(.print-mode) > .topbar .brand-name{
   font-family:var(--font);
-  font-size:20px;
+  font-size:40px;
   font-weight:700;
   letter-spacing:0.06em;
   color:#fff;
@@ -1873,46 +2073,27 @@ body:not(.print-mode) > .topbar .brand-name{
   text-transform:none;
 }
 body:not(.print-mode) > .topbar .brand-tagline{
-  margin-top:1px;
-  font-size:8px;
+  margin-top:2px;
+  font-size:16px;
   letter-spacing:0.23em;
   color:rgba(255,255,255,0.46);
 }
-body:not(.print-mode) > .topbar .tb-sep{height:32px;background:rgba(255,255,255,0.10);}
-body:not(.print-mode) > .topbar .terminal-id{
-  display:flex;align-items:center;gap:8px;
-  min-height:38px;
-  padding:0 14px;
-  border-left:1px solid rgba(255,255,255,0.04);
-  border-right:1px solid rgba(255,255,255,0.04);
-  font-family:var(--mono);
-  font-size:11px;
-  font-weight:700;
-  color:rgba(255,255,255,0.82);
-  letter-spacing:0.14em;
-}
-body:not(.print-mode) > .topbar .terminal-caret{color:var(--amber);font-size:12px;letter-spacing:0;transform:translateY(-1px);}
+body:not(.print-mode) > .topbar .tb-sep{height:58px;background:rgba(255,255,255,0.10);}
 body:not(.print-mode) > .topbar .tb-time-wrap{
-  height:38px;
-  min-width:150px;
   justify-content:center;
-  gap:10px;
-  padding:0 14px;
-  border-radius:7px;
+  gap:18px;
+  border-radius:12px;
   background:rgba(255,255,255,0.025);
-  border:1px solid rgba(255,255,255,0.12);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+  border:2px solid rgba(255,255,255,0.12);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.03);
 }
-body:not(.print-mode) > .topbar .tb-time-lbl{font-size:8px;color:rgba(255,255,255,0.34);letter-spacing:0.16em;}
-body:not(.print-mode) > .topbar .tb-time-wrap input[type=time]{font-size:15px;font-weight:700;letter-spacing:0.05em;width:82px;color:#fff;}
+body:not(.print-mode) > .topbar .tb-time-wrap input[type=time]{font-weight:700;letter-spacing:0.05em;color:#fff;}
 body:not(.print-mode) > .topbar .tb-btn{
-  height:38px;
-  padding:0 16px;
-  border-radius:7px;
-  border:1px solid rgba(255,255,255,0.13);
+  border-radius:12px;
+  border:2px solid rgba(255,255,255,0.13);
   background:rgba(255,255,255,0.025);
   color:rgba(255,255,255,0.74);
-  font-size:9px;
+  font-size:18px;
   letter-spacing:0.13em;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
 }
@@ -1945,19 +2126,19 @@ body:not(.print-mode) > .topbar .tb-print-report-btn{
 body:not(.print-mode) > .topbar #ppe-toggle-btn,
 body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:92px;justify-content:center;}
 body:not(.print-mode) > .topbar .tb-controls{
-  height:38px;
-  padding:0 8px;
-  border:1px solid rgba(255,255,255,0.13);
-  border-radius:7px;
+  height:76px;
+  padding:0 16px;
+  border:2px solid rgba(255,255,255,0.13);
+  border-radius:14px;
   background:rgba(255,255,255,0.025);
 }
-body:not(.print-mode) > .topbar .tb-font-wrap{background:transparent;border:none;padding:0;gap:8px;}
+body:not(.print-mode) > .topbar .tb-font-wrap{background:transparent;border:none;padding:0;gap:16px;}
 body:not(.print-mode) > .topbar .tb-ctrl-lbl{color:rgba(255,255,255,0.45);}
 body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{background:linear-gradient(90deg,rgba(245,158,11,0.60),rgba(245,158,11,0.12));}
 @media(max-width:1100px){
-  body:not(.print-mode) > .topbar .brand{min-width:210px;}
-  body:not(.print-mode) > .topbar .tb-btn{padding:0 11px;font-size:8.5px;}
-  body:not(.print-mode) > .topbar .terminal-id{padding:0 10px;}
+  body:not(.print-mode) > .topbar .brand{min-width:420px;}
+  body:not(.print-mode) > .topbar .tb-btn{padding:0 22px;font-size:17px;}
+  body:not(.print-mode) > .topbar .terminal-id{padding:0 20px;}
 }
 
 
@@ -1966,109 +2147,105 @@ body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{background:linea
 
 /* ── TOPBAR COMPACT FIX — prevents second-row overlap after Supabase buttons ── */
 body:not(.print-mode) > .topbar{
-  height:58px !important;
-  min-height:58px !important;
-  padding:0 16px !important;
-  gap:10px !important;
+  height:104px !important;
+  min-height:104px !important;
+  padding:0 26px !important;
+  gap:14px !important;
   flex-wrap:nowrap !important;
   align-items:center !important;
-  overflow:visible !important;
+  overflow:hidden !important;
+  width:100% !important;
+  box-sizing:border-box !important;
 }
 body:not(.print-mode) > .topbar .brand{
-  min-width:250px !important;
-  max-width:250px !important;
-  flex:0 0 250px !important;
+  min-width:0 !important;
+  max-width:450px !important;
+  flex:1 1 450px !important;
 }
 body:not(.print-mode) > .topbar .brand-mark{
-  width:34px !important;
-  height:34px !important;
+  width:61px !important;
+  height:61px !important;
 }
 body:not(.print-mode) > .topbar .brand-name{
-  font-size:18px !important;
+  font-size:32px !important;
   line-height:1 !important;
 }
 body:not(.print-mode) > .topbar .brand-tagline{
-  font-size:7.5px !important;
+  font-size:13px !important;
   letter-spacing:0.18em !important;
   white-space:nowrap !important;
 }
 body:not(.print-mode) > .topbar .tb-sep{
-  height:30px !important;
-  flex:0 0 1px !important;
-}
-body:not(.print-mode) > .topbar .terminal-id{
-  min-height:34px !important;
-  padding:0 10px !important;
-  font-size:10px !important;
-  flex:0 0 auto !important;
-  white-space:nowrap !important;
+  height:54px !important;
+  flex:0 0 2px !important;
 }
 body:not(.print-mode) > .topbar .tb-spacer{
   flex:1 1 auto !important;
-  min-width:8px !important;
+  min-width:0 !important;
 }
 body:not(.print-mode) > .topbar #supabase-sync-status{
   flex:0 0 auto !important;
-  font-size:7.5px !important;
+  font-size:13px !important;
   letter-spacing:.08em !important;
 }
 body:not(.print-mode) > .topbar .tb-time-wrap{
-  height:34px !important;
-  min-width:126px !important;
-  padding:0 10px !important;
-  flex:0 0 126px !important;
+  height:61px !important;
+  min-width:0 !important;
+  padding:0 18px !important;
+  flex:0 1 226px !important;
 }
 body:not(.print-mode) > .topbar .tb-time-lbl{
-  font-size:7px !important;
+  font-size:12px !important;
 }
 body:not(.print-mode) > .topbar .tb-time-wrap input[type=time]{
-  width:72px !important;
-  font-size:14px !important;
+  width:128px !important;
+  font-size:24px !important;
 }
 body:not(.print-mode) > .topbar .tb-btn{
-  height:34px !important;
-  padding:0 10px !important;
-  font-size:8px !important;
-  letter-spacing:0.10em !important;
-  flex:0 0 auto !important;
+  height:61px !important;
+  padding:0 14px !important;
+  font-size:13px !important;
+  letter-spacing:0.08em !important;
+  flex:0 1 auto !important;
   white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
 }
-body:not(.print-mode) > .topbar #sidebar-toggle-btn{min-width:90px !important;}
-body:not(.print-mode) > .topbar #manual-save-btn{min-width:72px !important;}
-body:not(.print-mode) > .topbar #reset-inputs-btn{min-width:112px !important;}
-body:not(.print-mode) > .topbar .tb-handoff-btn{min-width:94px !important;}
-body:not(.print-mode) > .topbar .tb-print-report-btn{min-width:82px !important;}
-body:not(.print-mode) > .topbar #ppe-toggle-btn{min-width:66px !important;}
-body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:80px !important;}
+body:not(.print-mode) > .topbar #sidebar-toggle-btn{min-width:0 !important;}
+body:not(.print-mode) > .topbar #manual-save-btn{min-width:0 !important;}
+body:not(.print-mode) > .topbar #reset-inputs-btn{min-width:0 !important;}
+body:not(.print-mode) > .topbar .tb-handoff-btn{min-width:0 !important;}
+body:not(.print-mode) > .topbar .tb-print-report-btn{min-width:0 !important;}
+body:not(.print-mode) > .topbar #ppe-toggle-btn{min-width:0 !important;}
+body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar .tb-controls{
-  height:34px !important;
-  padding:0 7px !important;
+  height:61px !important;
+  padding:0 12px !important;
   flex:0 0 auto !important;
-  min-width:116px !important;
+  min-width:0 !important;
 }
 body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{
-  width:54px !important;
+  width:80px !important;
 }
 @media(max-width:1400px){
-  body:not(.print-mode) > .topbar{gap:7px !important;padding:0 10px !important;}
-  body:not(.print-mode) > .topbar .brand{min-width:210px !important;max-width:210px !important;flex-basis:210px !important;}
-  body:not(.print-mode) > .topbar .brand-name{font-size:16px !important;}
-  body:not(.print-mode) > .topbar .brand-tagline{font-size:6.7px !important;letter-spacing:0.14em !important;}
-  body:not(.print-mode) > .topbar .tb-btn{padding:0 8px !important;font-size:7.5px !important;}
-  body:not(.print-mode) > .topbar #reset-inputs-btn{min-width:96px !important;}
-  body:not(.print-mode) > .topbar .tb-time-wrap{min-width:112px !important;flex-basis:112px !important;}
-  body:not(.print-mode) > .topbar .tb-controls{min-width:96px !important;}
-  body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{width:42px !important;}
+  body:not(.print-mode) > .topbar{gap:10px !important;padding:0 16px !important;}
+  body:not(.print-mode) > .topbar .brand{max-width:340px !important;}
+  body:not(.print-mode) > .topbar .brand-name{font-size:26px !important;}
+  body:not(.print-mode) > .topbar .brand-tagline{font-size:11px !important;letter-spacing:0.14em !important;}
+  body:not(.print-mode) > .topbar .tb-btn{padding:0 10px !important;font-size:12px !important;}
+  body:not(.print-mode) > .topbar .tb-time-wrap{flex-basis:180px !important;}
+  body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{width:60px !important;}
 }
 @media(max-width:1100px){
   body:not(.print-mode) > .topbar{
     height:auto !important;
-    min-height:58px !important;
+    min-height:104px !important;
     flex-wrap:wrap !important;
-    padding:8px 10px !important;
+    padding:14px 16px !important;
+    overflow:visible !important;
   }
   body:not(.print-mode) > .topbar .brand{
-    flex:1 1 220px !important;
+    flex:1 1 320px !important;
     max-width:none !important;
   }
 }
@@ -2185,11 +2362,9 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       <div class="brand-tagline">Terminal Forecastor</div>
     </div>
   </div>
-  <div class="tb-sep"></div>
-  <div class="terminal-id">HOUSTON RAMP <span class="terminal-caret">⌄</span></div>
   
   <div class="tb-spacer"></div>
-  <div id="supabase-sync-status" class="sb-item" style="font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--text3);white-space:nowrap;">LOCAL CACHE</div>
+  <div id="supabase-sync-status" class="sb-item" style="font-family:var(--mono);font-size:17px;letter-spacing:.1em;color:var(--text3);white-space:nowrap;">LOCAL CACHE</div>
   <input type="time" id="current-time" class="hidden-current-time-input" aria-hidden="true" tabindex="-1">
   
   <button class="tb-btn" onclick="toggleSidebar()" id="sidebar-toggle-btn">HIDE INPUTS</button>
@@ -2211,7 +2386,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
     <div class="tb-font-wrap">
       <span class="tb-ctrl-lbl">A</span>
       <input type="range" id="font-size-slider" min="11" max="18" step="1" value="13" oninput="setFontSize(this.value)">
-      <span class="tb-ctrl-lbl" style="font-size:14px;">A</span>
+      <span class="tb-ctrl-lbl" style="font-size:28px;">A</span>
     </div>
   </div>
 </div>
@@ -2224,8 +2399,11 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sb-cap" style="justify-content:space-between;">
-      <span>&#x2699; SIMULATION PARAMETERS</span>
+    <div class="sb-card sb-card-params">
+      <div class="sb-card-head">
+        <span class="sb-card-icon">&#x2699;</span>
+        <span class="sb-card-title">Simulation Parameters</span>
+      </div>
       <div class="sb-size-wrap">
         <span class="sb-size-icon">A</span>
         <input type="range" class="sb-size-slider" id="sb-font-slider" min="9" max="15" step="1" value="11" oninput="setSidebarSize(this.value)" title="Sidebar text size">
@@ -2233,27 +2411,33 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
     </div>
 
-    <div class="sb-section">
-      <div class="section-label">Shift Windows</div>
-      <div style="margin-bottom:10px;">
-        <div class="time-lbl" style="color:var(--blue);font-weight:600;font-size:10px;">Day Shift</div>
+    <div class="sb-card">
+      <div class="sb-card-head">
+        <span class="sb-card-icon">&#x1F550;</span>
+        <span class="sb-card-title">Shift Windows</span>
+      </div>
+      <div class="shift-block">
+        <div class="time-lbl shift-name" style="color:var(--blue);">Day Shift</div>
         <div class="time-grid">
-          <div><div class="time-lbl">Clock in</div><input type="time" id="s1-start" value="03:00"></div>
-          <div><div class="time-lbl">Clock out</div><input type="time" id="s1-end" value="15:00"></div>
+          <div><div class="time-lbl">Clock in</div><div class="time-input-wrap"><input type="time" id="s1-start" value="03:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
+          <div><div class="time-lbl">Clock out</div><div class="time-input-wrap"><input type="time" id="s1-end" value="15:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
         </div>
       </div>
-      <div>
-        <div class="time-lbl" style="color:var(--purple);font-weight:600;font-size:10px;">Night Shift <span style="font-weight:400;color:var(--text3);">(wraps midnight)</span></div>
+      <div class="shift-block">
+        <div class="time-lbl shift-name" style="color:var(--purple);">Night Shift <span style="font-weight:400;color:var(--text3);text-transform:none;letter-spacing:normal;">(wraps midnight)</span></div>
         <div class="time-grid">
-          <div><div class="time-lbl">Clock in</div><input type="time" id="s2-start" value="15:00"></div>
-          <div><div class="time-lbl">Clock out</div><input type="time" id="s2-end" value="03:00"></div>
+          <div><div class="time-lbl">Clock in</div><div class="time-input-wrap"><input type="time" id="s2-start" value="15:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
+          <div><div class="time-lbl">Clock out</div><div class="time-input-wrap"><input type="time" id="s2-end" value="03:00"><span class="time-input-icon" onclick="this.previousElementSibling.showPicker&amp;&amp;this.previousElementSibling.showPicker()">&#x1F550;</span></div></div>
         </div>
         <div class="note" id="night-hours-note">Night: crew &times; 12h</div>
       </div>
     </div>
 
-    <div class="sb-section">
-      <div class="section-label">Inbound Trains</div>
+    <div class="sb-card">
+      <div class="sb-card-head">
+        <span class="sb-card-icon">&#x1F686;</span>
+        <span class="sb-card-title">Inbound Trains</span>
+      </div>
       <div class="toggle-row">
         <button class="toggle-btn" id="btn1" onclick="setCount(1)">1</button>
         <button class="toggle-btn active" id="btn2" onclick="setCount(2)">2</button>
@@ -2263,36 +2447,44 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
     </div>
 
     <div class="sb-section">
-      <div class="section-label">Outbound Commitments</div>
-      <div class="ctrl-group">
-        <div class="ctrl-header">
-          <span class="ctrl-name" style="color:var(--amber);">IHOSA <span style="font-size:9px;color:var(--text3);">&middot; 1700 DL</span></span>
-          <span class="ctrl-val" id="v-iu">110</span>
-        </div>
-        <input type="range" min="0" max="200" step="5" value="110" id="ihosa-units">
+    <div class="sb-card">
+      <div class="sb-card-head">
+        <span class="sb-card-icon">&#x1F3D7;</span>
+        <span class="sb-card-title">Outbound Commitments</span>
       </div>
-      <div class="ctrl-group">
-        <div class="ctrl-header">
-          <span class="ctrl-name" style="color:var(--amber);">IHOSA release extension</span>
-          <span class="ctrl-val" id="v-ihosa-ext">0 min</span>
+      <div class="commit-card commit-ihosa">
+        <div class="ctrl-group">
+          <div class="ctrl-header">
+            <span class="ctrl-name" style="color:var(--amber);font-weight:700;">IHOSA <span style="font-size:9px;color:var(--text3);font-weight:400;">&middot; 1700 DL</span></span>
+            <span class="ctrl-val ctrl-val-amber" id="v-iu">110</span>
+          </div>
+          <input type="range" min="0" max="200" step="5" value="110" id="ihosa-units" class="slider-amber">
         </div>
-        <input type="range" min="0" max="180" step="15" value="0" id="ihosa-ext">
-        <div class="note" id="ihosa-ext-note">No extension &mdash; commitment must be loaded by 1700.</div>
+        <div class="ctrl-group" style="margin-bottom:0;">
+          <div class="ctrl-header">
+            <span class="ctrl-name" style="color:var(--amber);font-weight:700;">IHOSA release extension</span>
+            <span class="ctrl-val ctrl-val-amber" id="v-ihosa-ext">0 min</span>
+          </div>
+          <input type="range" min="0" max="180" step="15" value="0" id="ihosa-ext" class="slider-amber">
+          <div class="note" id="ihosa-ext-note">No extension &mdash; commitment must be loaded by 1700.</div>
+        </div>
       </div>
-      <div class="ctrl-group">
-        <div class="ctrl-header">
-          <span class="ctrl-name" style="color:var(--purple);">MHOAS <span style="font-size:9px;color:var(--text3);">&middot; 0300 DL</span></span>
-          <span class="ctrl-val" id="v-mhoas">120</span>
+      <div class="commit-card commit-mhoas">
+        <div class="ctrl-group">
+          <div class="ctrl-header">
+            <span class="ctrl-name" style="color:var(--purple);font-weight:700;">MHOAS <span style="font-size:9px;color:var(--text3);font-weight:400;">&middot; 0300 DL</span></span>
+            <span class="ctrl-val ctrl-val-purple" id="v-mhoas">120</span>
+          </div>
+          <input type="range" min="0" max="200" step="5" value="120" id="mhoas-units" class="slider-purple">
         </div>
-        <input type="range" min="0" max="200" step="5" value="120" id="mhoas-units">
-      </div>
-      <div class="ctrl-group">
-        <div class="ctrl-header">
-          <span class="ctrl-name" style="color:var(--purple);">MHOAS release extension</span>
-          <span class="ctrl-val" id="v-mhoas-ext">0 min</span>
+        <div class="ctrl-group" style="margin-bottom:0;">
+          <div class="ctrl-header">
+            <span class="ctrl-name" style="color:var(--purple);font-weight:700;">MHOAS release extension</span>
+            <span class="ctrl-val ctrl-val-purple" id="v-mhoas-ext">0 min</span>
+          </div>
+          <input type="range" min="0" max="180" step="15" value="0" id="mhoas-ext" class="slider-purple">
+          <div class="note" id="mhoas-ext-note">No extension &mdash; commitment must be loaded by 0300.</div>
         </div>
-        <input type="range" min="0" max="180" step="15" value="0" id="mhoas-ext">
-        <div class="note" id="mhoas-ext-note">No extension &mdash; commitment must be loaded by 0300.</div>
       </div>
     </div>
 
@@ -2492,25 +2684,6 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
     <div id="alert-wrap" class="alert-wrap"></div>
     <div id="ihosa-diagnosis"></div>
 
-    <div class="panel collapsible-panel collapsed" id="panel-timeline">
-      <div class="panel-head panel-toggle" onclick="togglePanel('panel-timeline')">
-        <div class="panel-dot" style="background:var(--blue);"></div>
-        DAY TIMELINE &mdash; EVENT SEQUENCE
-        <span style="font-size:9px;color:var(--text3);">ALL TIMES LOCAL</span>
-        <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
-      </div>
-      <div class="panel-body panel-content"><div class="seq" id="seq-timeline"></div></div>
-    </div>
-
-    <div class="tavg-panel collapsible-panel collapsed" id="panel-tavg">
-      <div class="tavg-head panel-toggle" onclick="togglePanel('panel-tavg')">
-        <div class="panel-dot" style="background:var(--amber);"></div>
-        TAVG IMPACT SNAPSHOT &mdash; OPS / SUPV / MGMT
-        <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
-      </div>
-      <div class="tavg-body panel-content" id="tavg-body"></div>
-    </div>
-
     <div class="panel collapsible-panel collapsed" id="panel-liftlog">
       <div class="panel-head panel-toggle" onclick="togglePanel('panel-liftlog')">
         <div class="panel-dot" style="background:var(--green);"></div>
@@ -2537,6 +2710,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
               <span class="liftlog-col-title liftlog-col-title-actual">Actual</span>
               <span class="liftlog-col-sub">/ manual entry</span>
               <span id="liftlog-deadline-banner" class="liftlog-deadline-banner"></span>
+              <span id="liftlog-pace-summary" class="liftlog-pace-summary"></span>
               <button class="liftlog-clear-btn" onclick="clearHourlyActuals(this)">Clear</button>
             </div>
             <div class="liftlog-table-head liftlog-table-head-actual">
@@ -2551,6 +2725,25 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         </div>
         <div id="lift-log-timemap" style="overflow-x:auto;"></div>
       </div>
+    </div>
+
+    <div class="panel collapsible-panel collapsed" id="panel-timeline">
+      <div class="panel-head panel-toggle" onclick="togglePanel('panel-timeline')">
+        <div class="panel-dot" style="background:var(--blue);"></div>
+        DAY TIMELINE &mdash; EVENT SEQUENCE
+        <span style="font-size:9px;color:var(--text3);">ALL TIMES LOCAL</span>
+        <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
+      </div>
+      <div class="panel-body panel-content"><div class="seq" id="seq-timeline"></div></div>
+    </div>
+
+    <div class="tavg-panel collapsible-panel collapsed" id="panel-tavg">
+      <div class="tavg-head panel-toggle" onclick="togglePanel('panel-tavg')">
+        <div class="panel-dot" style="background:var(--amber);"></div>
+        TAVG IMPACT SNAPSHOT &mdash; OPS / SUPV / MGMT
+        <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
+      </div>
+      <div class="tavg-body panel-content" id="tavg-body"></div>
     </div>
 
     <div class="panel collapsible-panel collapsed" id="panel-report">
@@ -2728,12 +2921,21 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-col-title-fcst{color:var(--green);}
 .liftlog-col-title-actual{color:var(--amber);}
 .liftlog-col-sub{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
-.liftlog-clear-btn{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s;}
+.liftlog-clear-btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s;flex-shrink:0;}
 .liftlog-clear-btn:hover{color:var(--red);border-color:var(--red);}
 .liftlog-clear-btn.confirm-armed{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.1);}
 
 .liftlog-deadline-banner{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--red);white-space:nowrap;}
 .liftlog-deadline-banner svg{flex-shrink:0;}
+
+.liftlog-pace-summary{
+  margin-left:auto;margin-right:10px;
+  font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.liftlog-pace-summary.is-ahead{color:var(--green);}
+.liftlog-pace-summary.is-behind{color:var(--red);}
+.liftlog-pace-summary.is-even{color:var(--text2);}
 
 /* ── Table head row (column labels) ── */
 .liftlog-table-head{
@@ -2751,7 +2953,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-cell-rest{flex:1;min-width:0;}
 
 /* ── Forecast rows ── */
-.liftlog-row{display:flex;align-items:center;gap:14px;padding:9px 6px;border-bottom:1px solid var(--border);min-height:44px;box-sizing:border-box;transition:background .12s;}
+.liftlog-row{display:flex;align-items:center;gap:14px;padding:8px 6px;border-bottom:1px solid var(--border);height:44px;min-height:44px;max-height:44px;overflow:hidden;box-sizing:border-box;transition:background .12s;}
 .liftlog-row:hover{background:var(--bg3);}
 .liftlog-row-time{color:var(--text2);font-weight:600;font-size:11px;}
 .liftlog-row-total{font-weight:700;color:var(--green);font-size:13px;}
@@ -2766,23 +2968,23 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-row.is-break .liftlog-row-detail{color:var(--text3);font-style:italic;font-size:11px;}
 
 /* ── Actual (manual entry) rows ── */
-.liftlog-actual-input{width:54px;height:28px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;padding:0 6px;text-align:center;transition:border-color .12s;box-sizing:border-box;}
+.liftlog-actual-input{width:54px;height:28px;line-height:26px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;padding:0 6px;text-align:center;transition:border-color .12s;box-sizing:border-box;display:block;vertical-align:middle;}
 .liftlog-actual-input:focus{outline:none;border-color:var(--amber);}
 .liftlog-actual-input::placeholder{color:var(--text3);font-weight:400;}
-.liftlog-forecast-ref{color:var(--text3);font-size:10.5px;white-space:nowrap;flex-shrink:0;}
-.liftlog-delta{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;white-space:nowrap;min-width:34px;}
+.liftlog-forecast-ref{color:var(--text3);font-size:10px;line-height:12px;white-space:nowrap;flex-shrink:0;}
+.liftlog-delta{display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:14px;font-weight:700;border-radius:5px;padding:1px 7px;white-space:nowrap;min-width:34px;}
 .liftlog-delta.is-pos{color:var(--green);background:rgba(16,185,129,0.12);}
 .liftlog-delta.is-neg{color:var(--red);background:rgba(239,68,68,0.12);}
 .liftlog-delta.is-zero{color:var(--text3);background:rgba(255,255,255,0.04);}
-.liftlog-src-select{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:10.5px;padding:0 8px;height:28px;width:100%;cursor:pointer;transition:border-color .12s;box-sizing:border-box;}
+.liftlog-src-select{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:10.5px;padding:0 8px;height:28px;line-height:26px;width:100%;cursor:pointer;transition:border-color .12s;box-sizing:border-box;display:block;vertical-align:middle;-webkit-appearance:menulist;}
 .liftlog-src-select:focus{outline:none;border-color:var(--amber);}
 .liftlog-src-select.is-set{color:var(--amber);border-color:rgba(245,158,11,0.35);}
-.liftlog-note-input{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:10.5px;padding:0 8px;height:28px;width:100%;transition:border-color .12s;box-sizing:border-box;}
+.liftlog-note-input{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:10.5px;padding:0 8px;height:28px;line-height:26px;width:100%;transition:border-color .12s;box-sizing:border-box;display:block;vertical-align:middle;}
 .liftlog-note-input:focus{outline:none;border-color:var(--amber);}
 .liftlog-note-input::placeholder{color:var(--text3);}
 
 .liftlog-fcst-ref-cell{color:var(--text3);font-size:10.5px;white-space:nowrap;}
-.liftlog-varcell{display:flex;flex-direction:column;gap:2px;align-items:flex-start;}
+.liftlog-varcell{display:flex;flex-direction:column;gap:1px;align-items:flex-start;}
 
 /* ── Hourly Lift Time Map ── */
 .timemap-header{display:flex;align-items:center;gap:10px;margin:20px 0 16px;}
@@ -4384,13 +4586,19 @@ function buildTrains(){
   keys.forEach(function(key,idx){
     var t=TRAINS[key];
     var div=document.createElement('div');
-    div.style.cssText='padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);margin-bottom:10px;';
-    if(idx===0)div.style.borderTop='none';
+    div.className='sb-train-card';
+    div.style.borderColor=t.color+'40';
+    div.style.background=t.color+'0d';
+
     var nameInput=document.createElement('input');
-    nameInput.className='name-field';
+    nameInput.className='sb-train-card-badge';
     nameInput.id=key+'-name';
     nameInput.placeholder=t.defLabel;
     nameInput.value=trainNames[key];
+    nameInput.style.color=t.color;
+    nameInput.style.borderColor=t.color+'55';
+    nameInput.style.background=t.color+'1a';
+    nameInput.style.textAlign='right';
 
     var arrDiv=document.createElement('div');arrDiv.className='ctrl-group';
     var arrHeader=document.createElement('div');arrHeader.className='ctrl-header';
@@ -4409,18 +4617,27 @@ function buildTrains(){
     uSlider.min=0;uSlider.max=300;uSlider.step=5;uSlider.value=t.uDef;uSlider.id=key+'-units';
 
     var titleDiv=document.createElement('div');
-    titleDiv.style.cssText='display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+    titleDiv.className='sb-train-card-head';
+    var titleLeft=document.createElement('div');
+    titleLeft.className='sb-train-card-title';
     var dot=document.createElement('span');
-    dot.style.cssText='width:8px;height:8px;border-radius:2px;background:'+t.color+';display:inline-block;';
+    dot.className='sb-train-card-dot';
+    dot.style.background=t.color;
     var trainLabel=document.createElement('span');
-    trainLabel.style.cssText='font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;';
     trainLabel.textContent='Train '+(idx+1);
-    titleDiv.appendChild(dot);titleDiv.appendChild(trainLabel);
+    titleLeft.appendChild(dot);titleLeft.appendChild(trainLabel);
+    titleDiv.appendChild(titleLeft);titleDiv.appendChild(nameInput);
 
     arrDiv.appendChild(arrHeader);arrDiv.appendChild(arrSlider);
     uDiv.appendChild(uHeader);uDiv.appendChild(uSlider);
-    div.appendChild(titleDiv);div.appendChild(nameInput);div.appendChild(arrDiv);div.appendChild(uDiv);
+    div.appendChild(titleDiv);div.appendChild(arrDiv);div.appendChild(uDiv);
     wrap.appendChild(div);
+
+    // Color this train's sliders to match its badge/dot color.
+    [arrSlider,uSlider].forEach(function(sl){
+      sl.style.setProperty('--thumb-color',t.color);
+      sl.classList.add('slider-train');
+    });
 
     nameInput.addEventListener('input',function(e){trainNames[key]=e.target.value;simulate();});
     arrSlider.addEventListener('input',function(e){
@@ -4653,24 +4870,68 @@ function renderGauge(val,target){
       '<strong style="color:'+cssvar+';">'+glabel+'</strong>'+
     '</div></div>';
 }
-function renderBreakdown(sources,manualItems,totalLabel,totalValue,downtimeItems){
+// ── Icon helpers for the redesigned LPMH cards ──
+function lpmhIcon(name){
+  var s='width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+  switch(name){
+    case 'target': // crosshair, used for ON TARGET badge + Target stat
+      return '<svg '+s+'><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>';
+    case 'lifts': // up/down arrows in a box
+      return '<svg '+s+'><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 14 9 6"/><polyline points="6 9 9 6 12 9"/><polyline points="15 10 15 18"/><polyline points="18 15 15 18 12 15"/></svg>';
+    case 'manhours': // person
+      return '<svg '+s+'><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>';
+    case 'crew': // group of people
+      return '<svg '+s+'><circle cx="9" cy="8" r="2.6"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="8" r="2"/><path d="M15.5 14c2.5 0.3 4.5 2 4.5 5"/></svg>';
+    case 'calendar':
+      return '<svg '+s+'><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>';
+    case 'clock':
+      return '<svg '+s+'><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>';
+    case 'chart':
+      return '<svg '+s+'><line x1="5" y1="20" x2="5" y2="11"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="14"/></svg>';
+    case 'down': // dropping
+      return '<svg '+s+'><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><polyline points="9 13 12 16 15 13"/></svg>';
+    case 'up': // loading
+      return '<svg '+s+'><circle cx="12" cy="12" r="9"/><line x1="12" y1="16" x2="12" y2="8"/><polyline points="9 11 12 8 15 11"/></svg>';
+    case 'star': // manual / pre-start
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+    case 'trophy':
+      return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a2 2 0 0 0 0 4h1.5"/><path d="M17 5h3a2 2 0 0 1 0 4h-1.5"/></svg>';
+    case 'alert':
+      return '<svg '+s+'><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    default:
+      return '';
+  }
+}
+function renderBreakdown(sources,manualItems,totalLabel,totalValue,downtimeItems,shiftWord){
   downtimeItems=downtimeItems||[];
-  if(sources.length===0&&manualItems.length===0&&downtimeItems.length===0&&!(totalLabel&&totalValue!==undefined))return '';
-  var html='<div class="lpmh-breakdown">';
+  if(sources.length===0&&manualItems.length===0&&downtimeItems.length===0)return {tableHtml:'',totalHtml:''};
+  var html='<div class="lpmh-breakdown-card">';
+  html+='<div class="lpmh-breakdown-head">';
+  html+='<div class="lpmh-breakdown-title"><span class="lpmh-bd-icon">'+lpmhIcon('calendar')+'</span>'+(shiftWord||'')+' BREAKDOWN</div>';
+  html+='<div class="lpmh-breakdown-cols">';
+  html+='<span class="lpmh-bd-col-time"><span class="lpmh-bd-icon">'+lpmhIcon('clock')+'</span>TIME</span>';
+  html+='<span class="lpmh-bd-col-lifts"><span class="lpmh-bd-icon">'+lpmhIcon('chart')+'</span>LIFTS</span>';
+  html+='</div>';
+  html+='</div>';
+
   var rows=[];
   sources.forEach(function(s){rows.push({type:'lift',from:s.from,to:s.to,label:s.label,lifts:s.lifts});});
   downtimeItems.forEach(function(d){rows.push({type:'downtime',from:d.from,to:d.to,label:d.label,severity:d.severity,duration:d.duration});});
   rows.sort(function(a,b){return a.from-b.from;});
+
   rows.forEach(function(r){
     if(r.type==='downtime'){
       html+='<div class="lpmh-brow lpmh-brow-downtime '+(r.severity==='critical'?'critical':'')+'">';
+      html+='<span class="lpmh-brow-icon">'+lpmhIcon('alert')+'</span>';
       html+='<span class="lpmh-brow-label">'+r.label+'</span>';
       html+='<span class="lpmh-brow-time">'+fmtH(r.from)+'-'+fmtH(r.to)+'</span>';
       html+='<span class="lpmh-brow-lifts">'+fmtDur(r.duration)+'</span>';
       html+='</div>';
       return;
     }
+    var dir=/^loading\b/i.test(r.label)?'up':'down';
     html+='<div class="lpmh-brow">';
+    html+='<span class="lpmh-brow-icon lpmh-brow-icon-'+dir+'">'+lpmhIcon(dir)+'</span>';
     html+='<span class="lpmh-brow-label">'+r.label+'</span>';
     html+='<span class="lpmh-brow-time">'+fmtH(r.from)+'-'+fmtH(r.to)+'</span>';
     html+='<span class="lpmh-brow-lifts">'+r.lifts+'</span>';
@@ -4678,20 +4939,22 @@ function renderBreakdown(sources,manualItems,totalLabel,totalValue,downtimeItems
   });
   manualItems.forEach(function(m){
     html+='<div class="lpmh-brow lpmh-brow-manual">';
+    html+='<span class="lpmh-brow-icon lpmh-brow-icon-star">'+lpmhIcon('star')+'</span>';
     html+='<span class="lpmh-brow-label">'+m.label+'</span>';
-    html+='<span class="lpmh-brow-time"></span>';
-    html+='<span class="lpmh-brow-lifts">+'+m.lifts+'</span>';
+    html+='<span class="lpmh-brow-time">&mdash;</span>';
+    html+='<span class="lpmh-brow-lifts lpmh-brow-lifts-manual">+'+m.lifts+'</span>';
     html+='</div>';
   });
-  if(totalLabel){
-    html+='<div class="lpmh-brow" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">';
-    html+='<span class="lpmh-brow-label" style="color:var(--text);font-weight:600;">'+totalLabel+'</span>';
-    html+='<span class="lpmh-brow-time"></span>';
-    html+='<span class="lpmh-brow-lifts" style="color:var(--text);font-weight:700;">'+totalValue+'</span>';
-    html+='</div>';
-  }
   html+='</div>';
-  return html;
+
+  var totalHtml='';
+  if(totalLabel){
+    totalHtml='<div class="lpmh-total-banner"><div class="lpmh-total-icon">'+lpmhIcon('trophy')+'</div>'
+      +'<div class="lpmh-total-label">'+totalLabel+'</div>'
+      +'<div class="lpmh-total-value">'+totalValue+'</div></div>';
+  }
+
+  return {tableHtml:html,totalHtml:totalHtml};
 }
 
 function runPhase(trains,clockIn,commitment,rate,outRem,outLoaded,carsIn,segs,events,activeKeys,segKey,
@@ -5203,6 +5466,70 @@ function renderLiftLogSummaryBar(buckets, ctx){
 // Mirrors buildHourlyLiftLog's rows, but with an editable input for the actual
 // lift count per hour, plus up to two source tags (dropdowns) describing what
 // that actual count was made up of.
+// Renders the "(-10 lifts) 22 LPH until release to catch up" indicator in the
+// Actual column header, comparing cumulative manual entries against the
+// forecast for the same hours, then translating any gap into an LPH target
+// for whichever outbound commitment is still open and due soonest.
+function renderLiftLogPaceSummary(delta, anyActual, ctx){
+  var el=document.getElementById('liftlog-pace-summary');
+  if(!el) return;
+
+  if(!anyActual || !ctx){
+    el.textContent='';
+    el.className='liftlog-pace-summary';
+    return;
+  }
+
+  function pendingDelayHours(from,to){
+    var d=0;
+    if(to<=from) return 0;
+    if(ctx.lunchH>0 && from<11 && 11<to) d+=ctx.lunchH;
+    if(ctx.shiftH>0 && from<15 && 15<to) d+=ctx.shiftH;
+    if(ctx.upsH>0 && ctx.zpbhoArr>from && ctx.zpbhoArr<to) d+=ctx.upsH;
+    if(ctx.lunch2H>0 && from<21 && 21<to) d+=ctx.lunch2H;
+    if(ctx.shift0300H>0 && from<27 && 27<to) d+=ctx.shift0300H;
+    return d;
+  }
+
+  // Whichever outbound commitment is still open and due soonest.
+  var target=null;
+  if(ctx.ihosaUnits>0 && Math.round(ctx.ihosaLoaded)<ctx.ihosaUnits){
+    target={label:'IHOSA',dl:ctx.ihosaCommitment,units:ctx.ihosaUnits,loaded:ctx.ihosaLoaded,dlLabel:'1700'};
+  }
+  if(ctx.mhoasUnits>0 && Math.round(ctx.mhoasLoaded)<ctx.mhoasUnits){
+    var m={label:'MHOAS',dl:ctx.mhoasCommitment,units:ctx.mhoasUnits,loaded:ctx.mhoasLoaded,dlLabel:'0300'};
+    if(!target || m.dl<target.dl) target=m;
+  }
+
+  var deltaSign=delta>0?'+':'';
+  var deltaText='('+deltaSign+delta+' lifts)';
+  var paceClass=delta>0?'is-ahead':(delta<0?'is-behind':'is-even');
+
+  if(!target){
+    // Both commitments already met/no longer open — just show the running tally.
+    el.textContent=deltaText+(delta===0?' on pace':(delta>0?' ahead of forecast':' behind forecast'));
+    el.className='liftlog-pace-summary '+paceClass;
+    return;
+  }
+
+  var remaining=Math.max(0,target.units-Math.round(target.loaded));
+  var hoursLeft=target.dl-ctx.currentTime;
+
+  if(hoursLeft<=0){
+    el.textContent=deltaText+' \u2014 '+target.label+' deadline ('+target.dlLabel+') has passed';
+    el.className='liftlog-pace-summary '+paceClass;
+    return;
+  }
+
+  var usable=Math.max(0.01, hoursLeft-pendingDelayHours(ctx.currentTime,target.dl));
+  var neededUnits=Math.max(0, remaining-delta);
+  var requiredLph=neededUnits/usable;
+
+  var verb=delta<0?'to catch up':(delta>0?'to hold the lead':'to stay on pace');
+  el.textContent=deltaText+' '+requiredLph.toFixed(0)+' LPH until '+target.label+' release '+verb;
+  el.className='liftlog-pace-summary '+paceClass;
+}
+
 function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
   var el=document.getElementById('lift-log-actual');
   if(!el) return;
@@ -5212,6 +5539,20 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
   var rows=[];
 
   renderLiftLogSummaryBar(buckets, paceCtx);
+
+  // ── Pace summary: cumulative actual vs forecast for hours already logged, plus
+  // the LPH needed on the next open commitment to absorb that deficit/surplus. ──
+  var cumForecast=0, cumActual=0, anyActual=false;
+  buckets.forEach(function(b){
+    if(b.isBreak) return;
+    var entry=normalizeActualEntry(actuals[b.hour]);
+    if(entry.value!=null && Number.isFinite(entry.value)){
+      anyActual=true;
+      cumActual+=entry.value;
+      cumForecast+=b.total;
+    }
+  });
+  renderLiftLogPaceSummary(cumActual-cumForecast, anyActual, paceCtx);
 
   function workTypeSelect(hour,selected){
     var opts=optionList.map(function(o){
@@ -5256,7 +5597,7 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
       '</div>'+
       '<div class="liftlog-varcell liftlog-cell-var">'+
         deltaHtml+
-        '<span class="liftlog-forecast-ref">fcst '+b.total+'</span>'+
+        (hasActual?'':'<span class="liftlog-forecast-ref">fcst '+b.total+'</span>')+
       '</div>'+
       '<div class="liftlog-cell-worktype">'+workTypeSelect(h,entry.src1)+'</div>'+
       '<div class="liftlog-cell-rest">'+
@@ -5979,18 +6320,20 @@ function simulate(){
   var s1Manual=[];
   if(flips>0)s1Manual.push({label:'flips',lifts:flips});
 
-  function lpmhCard(cardClass, labelText, lpmhVal, target, lifts, manHours, crew, gaugeHtml, breakdownHtml){
+  function lpmhCard(cardClass, labelText, lpmhVal, target, lifts, manHours, crew, gaugeHtml, breakdown){
     var hasData = lifts > 0;
     var pct = hasData ? Math.min(100, Math.round(lpmhVal / target * 100)) : 0;
     var targetPct = 100; // target line always at 100%
-    var badgeText = hasData ? (lpmhVal >= target ? '▲ ON TARGET' : '▼ '+Math.abs(lpmhVal - target).toFixed(2)+' SHORT') : 'NO DATA';
+    var onTarget = hasData && lpmhVal >= target;
+    var badgeIcon = onTarget ? lpmhIcon('target') : (hasData ? lpmhIcon('alert') : '');
+    var badgeText = hasData ? (onTarget ? 'ON TARGET' : Math.abs(lpmhVal - target).toFixed(2)+' SHORT') : 'NO DATA';
     var valStr = hasData ? lpmhVal.toFixed(2) : '—';
 
     var h = '<div class="lpmh-card '+cardClass+'">';
     // Header
     h += '<div class="lpmh-header">';
     h += '<div class="lpmh-label"><div class="lpmh-dot"></div>'+labelText+'</div>';
-    h += '<div class="lpmh-target-badge">'+badgeText+'</div>';
+    h += '<div class="lpmh-target-badge">'+(badgeIcon?'<span class="lpmh-bd-icon">'+badgeIcon+'</span>':'')+badgeText+'</div>';
     h += '</div>';
     // Big value
     h += '<div class="lpmh-val-display">';
@@ -6002,19 +6345,20 @@ function simulate(){
     h += '<div class="lpmh-bar-fill" style="width:'+pct+'%;"></div>';
     h += '<div class="lpmh-bar-target" style="left:'+Math.min(99,targetPct)+'%;"></div>';
     h += '</div>';
-    h += '<div class="lpmh-divider"></div>';
-    // Stat row
-    h += '<div class="lpmh-stat-row">';
+    // Stat boxes
     if(hasData){
-      h += '<div class="lpmh-stat"><div class="lpmh-stat-val">'+lifts+'</div><div class="lpmh-stat-label">Lifts</div></div>';
-      h += '<div class="lpmh-stat"><div class="lpmh-stat-val">'+manHours.toFixed(1)+'</div><div class="lpmh-stat-label">Man-hrs (net)</div></div>';
-      h += '<div class="lpmh-stat"><div class="lpmh-stat-val">'+crew+'</div><div class="lpmh-stat-label">Crew</div></div>';
-      h += '<div class="lpmh-stat"><div class="lpmh-stat-val">'+target+'</div><div class="lpmh-stat-label">Target</div></div>';
+      h += '<div class="lpmh-stat-row">';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('lifts')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+lifts+'</div><div class="lpmh-stat-label">Lifts</div></div></div>';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('manhours')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+manHours.toFixed(1)+'</div><div class="lpmh-stat-label">Man-hrs</div></div></div>';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('crew')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+crew+'</div><div class="lpmh-stat-label">Crew</div></div></div>';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('target')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+target+'</div><div class="lpmh-stat-label">Target</div></div></div>';
+      h += '</div>';
     } else {
+      h += '<div class="lpmh-divider"></div>';
       h += '<div class="lpmh-sub">No lift data yet</div>';
     }
-    h += '</div>';
-    if(breakdownHtml) h += breakdownHtml;
+    if(breakdown && breakdown.tableHtml) h += breakdown.tableHtml;
+    if(breakdown && breakdown.totalHtml) h += breakdown.totalHtml;
     h += '</div>';
     return h;
   }
@@ -6023,14 +6367,14 @@ function simulate(){
     s1Lifts>0?lc(s1LPMH):'',
     'Day LPMH &middot; '+s1Label,
     s1LPMH, LPMH_TARGET, s1Lifts, s1ManHours, crew1,
-    null, renderBreakdown(s1Sources,s1Manual,'Day shift total lifts',s1Lifts,s1Downtime)
+    null, renderBreakdown(s1Sources,s1Manual,'Day shift total',s1Lifts,s1Downtime,'DAY')
   );
 
   var s2Html = lpmhCard(
     s2Lifts>0?lc(s2LPMH):'',
     'Night LPMH &middot; '+s2Label,
     s2LPMH, LPMH_TARGET, s2Lifts, s2ManHours, crew2,
-    null, renderBreakdown(nightSources,s2Manual,'Night shift total lifts',s2Lifts,nightDowntime)
+    null, renderBreakdown(nightSources,s2Manual,'Night shift total',s2Lifts,nightDowntime,'NIGHT')
   );
   var dHtml = lpmhCard(
     (s1Lifts+s2Lifts)>0?lc(dailyLPMH):'',
@@ -6109,9 +6453,9 @@ function simulate(){
     c+='<div class="tc-stat-val '+wAvgClass+'">'+wAvg.toFixed(1)+'<span class="tc-unit"> HR</span></div>';
     c+='</div>';
     // Overhead
-    c+='<div class="tc-stat">';
-    c+='<div class="tc-stat-label">Overhead</div>';
-    c+='<div class="tc-stat-val" style="color:var(--text2);">'+ohStr+'</div>';
+    c+='<div class="tc-stat" style="opacity:0.8;">';
+    c+='<div class="tc-stat-label" style="font-size:4px;">Overhead</div>';
+    c+='<div class="tc-stat-val" style="font-size:10px;color:var(--text2);">'+ohStr+'</div>';
     c+='</div>';
     c+='</div>';
     c+='</div>';
@@ -6236,13 +6580,13 @@ function simulate(){
       var calc=requiredRateFor(target.dl,target.units,target.loaded);
       if(!calc) return '';
       if(!isFinite(calc.required)){
-        return '<div class="tblock-meta" style="margin-top:6px;color:var(--red);font-weight:600;">'
+        return '<div class="tblock-meta" style="margin-top:4px;color:var(--red);font-weight:600;">'
           +'&#x26A0; '+target.label+' deadline ('+fmtH(target.dl)+') has passed with '+calc.remaining+' units remaining \u2014 commitment will be missed.'
           +'</div>';
       }
       var ok=calc.required<=rate;
       var color=ok?'var(--green)':'var(--red)';
-      return '<div class="tblock-meta" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">'
+      return '<div class="tblock-meta" style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">'
         +'<span style="color:var(--text3);">To make </span>'
         +'<span style="color:'+target.color+';font-weight:700;">'+target.label+'</span>'
         +'<span style="color:var(--text3);"> by '+fmtH(target.dl)+', need </span>'
@@ -6275,8 +6619,8 @@ function simulate(){
 
     var curEl = document.getElementById('tblock-current');
     var nxtEl = document.getElementById('tblock-next');
-    if(curEl) curEl.innerHTML = '<div class="tblock-label">CURRENT BLOCK</div>' + cardHTML(curEvt, true);
-    if(nxtEl) nxtEl.innerHTML = '<div class="tblock-label">NEXT BLOCK</div>' + cardHTML(nextEvt, false);
+    if(curEl) curEl.innerHTML = cardHTML(curEvt, true);
+    if(nxtEl) nxtEl.innerHTML = cardHTML(nextEvt, false);
   })();
 
   var seqHtml='';
