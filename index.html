@@ -114,10 +114,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
 .brand{display:flex;align-items:center;gap:11px;flex-shrink:0;}
 .brand-mark{
   width:36px;height:36px;flex-shrink:0;
-  background:linear-gradient(135deg,#B45309,#F59E0B);
-  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 20px rgba(245,158,11,0.4);
 }
 .brand-name{
   font-family:var(--cond);font-size:22px;font-weight:700;
@@ -164,7 +161,7 @@ input[type=time]:focus{outline:none;}
 .tb-btn:hover{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,0.07);}
 
 /* ── LAYOUT ──────────────────────────────────────────────────────── */
-.app-body{display:grid;grid-template-columns:310px 1fr;flex:1;overflow:hidden;min-height:0;}
+.app-body{display:grid;grid-template-columns:350px 1fr;flex:1;overflow:hidden;min-height:0;}
 
 .app-body.sidebar-hidden{
   grid-template-columns:0 1fr !important;
@@ -1232,6 +1229,25 @@ body.trends-open #trends-screen #tr-list{
 }
 .top-grade-card.bad::after{ background:radial-gradient(circle,rgba(239,68,68,0.13) 0%,transparent 70%); }
 
+/* Composite shift score badge, shown in the Performance Grades header */
+.shift-score-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 12px;border-radius:20px;cursor:pointer;
+  border:1px solid var(--border2);background:var(--bg3);
+  font-family:var(--cond);text-transform:none;letter-spacing:normal;
+  transition:transform .12s, box-shadow .12s;
+}
+.shift-score-badge:hover{transform:translateY(-1px);}
+.shift-score-badge.good{border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.08);box-shadow:0 0 16px rgba(16,185,129,0.10);}
+.shift-score-badge.warn{border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.07);box-shadow:0 0 16px rgba(245,158,11,0.08);}
+.shift-score-badge.bad{border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);box-shadow:0 0 16px rgba(239,68,68,0.10);}
+.shift-score-val{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--text);}
+.shift-score-letter{font-family:var(--mono);font-size:13px;font-weight:700;}
+.shift-score-badge.good .shift-score-letter{color:var(--green);}
+.shift-score-badge.warn .shift-score-letter{color:var(--amber);}
+.shift-score-badge.bad .shift-score-letter{color:var(--red);}
+.shift-score-label{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);}
+
 /* Label row */
 .top-grade-label{
   display:flex;align-items:flex-start;gap:5px;
@@ -1597,6 +1613,22 @@ body.print-mode .time-lbl{
   border-radius:14px;border:1px solid var(--border);background:var(--surface);
   overflow:hidden;
 }
+.its-card.good{
+  border-color:rgba(16,185,129,0.30);
+  background:linear-gradient(135deg,rgba(16,185,129,0.09) 0%,rgba(16,185,129,0.03) 55%,transparent 100%);
+  box-shadow:0 0 28px rgba(16,185,129,0.07),inset 0 1px 0 rgba(16,185,129,0.18);
+}
+.its-card.warn{
+  border-color:rgba(245,158,11,0.30);
+  background:linear-gradient(135deg,rgba(245,158,11,0.08) 0%,rgba(245,158,11,0.03) 55%,transparent 100%);
+  box-shadow:0 0 26px rgba(245,158,11,0.06),inset 0 1px 0 rgba(245,158,11,0.14);
+}
+.its-card.bad{
+  border-color:rgba(239,68,68,0.30);
+  background:linear-gradient(135deg,rgba(239,68,68,0.09) 0%,rgba(239,68,68,0.03) 55%,transparent 100%);
+  box-shadow:0 0 28px rgba(239,68,68,0.07),inset 0 1px 0 rgba(239,68,68,0.15);
+}
+.its-card.good .its-head,.its-card.warn .its-head,.its-card.bad .its-head{border-bottom-color:var(--border2);}
 .its-head{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:14px 16px;border-bottom:1px solid var(--border);
@@ -1958,17 +1990,12 @@ body:not(.print-mode) > .topbar::after{
 body:not(.print-mode) > .topbar .brand{gap:18px;}
 body:not(.print-mode) > .topbar .brand-mark{
   width:76px;height:76px;
-  background:linear-gradient(135deg,#F59E0B,#B45309);
-  color:#07070B;
   font-size:0;
-  border:2px solid rgba(245,158,11,0.45);
-  box-shadow:0 0 0 2px rgba(0,0,0,0.35),0 0 40px rgba(245,158,11,0.16);
 }
 body:not(.print-mode) > .topbar .brand-mark::before{
-  content:'◆';
-  font-size:30px;
-  color:#111827;
-  transform:translateY(-2px);
+  content:'🚂';
+  font-size:54px;
+  transform:translateY(-1px);
 }
 body:not(.print-mode) > .topbar .brand-name{
   font-family:var(--font);
@@ -2074,6 +2101,9 @@ body:not(.print-mode) > .topbar .brand-mark{
   width:61px !important;
   height:61px !important;
 }
+body:not(.print-mode) > .topbar .brand-mark::before{
+  font-size:44px !important;
+}
 body:not(.print-mode) > .topbar .brand-name{
   font-size:32px !important;
   line-height:1 !important;
@@ -2111,7 +2141,7 @@ body:not(.print-mode) > .topbar .tb-time-wrap input[type=time]{
 }
 body:not(.print-mode) > .topbar .tb-btn{
   height:61px !important;
-  padding:0 14px !important;
+  padding:0 20px !important;
   font-size:13px !important;
   letter-spacing:0.08em !important;
   flex:0 1 auto !important;
@@ -2140,7 +2170,7 @@ body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{
   body:not(.print-mode) > .topbar .brand{max-width:340px !important;}
   body:not(.print-mode) > .topbar .brand-name{font-size:26px !important;}
   body:not(.print-mode) > .topbar .brand-tagline{font-size:11px !important;letter-spacing:0.14em !important;}
-  body:not(.print-mode) > .topbar .tb-btn{padding:0 10px !important;font-size:12px !important;}
+  body:not(.print-mode) > .topbar .tb-btn{padding:0 16px !important;font-size:12px !important;}
   body:not(.print-mode) > .topbar .tb-time-wrap{flex-basis:180px !important;}
   body:not(.print-mode) > .topbar .tb-font-wrap input[type=range]{width:60px !important;}
 }
@@ -2586,7 +2616,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   <main class="main-content screen active-screen" id="main-dashboard">
 
 
-    <div class="content-head">PERFORMANCE GRADES</div>
+    <div class="content-head">PERFORMANCE GRADES<span id="shift-score-badge" style="margin-left:auto;"></span></div>
     <div id="top-grade-banner"></div>
 
     <div class="content-head" style="margin-top:20px;">INBOUND TRAIN STATUS</div>
@@ -2800,7 +2830,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   padding:16px 12px;margin-bottom:16px;
 }
 .liftlog-summary-grid{
-  display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;
+  display:grid;grid-template-columns:repeat(6,1fr);align-items:stretch;
 }
 .liftlog-summary-stat{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -2820,6 +2850,18 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-summary-val .unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:5px;}
 .liftlog-summary-val.is-pos{color:var(--green);}
 .liftlog-summary-val.is-neg{color:var(--red);}
+.liftlog-summary-sub{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.04em;}
+.liftlog-summary-sub.is-pos{color:var(--green);}
+.liftlog-summary-sub.is-neg{color:var(--red);}
+.liftlog-summary-sub strong{font-weight:700;}
+.liftlog-summary-icon.is-streak{background:rgba(245,158,11,0.16);color:var(--amber);}
+.liftlog-crew-cmp{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
+  font-family:var(--cond);font-size:11px;font-weight:600;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--amber);
+}
+.liftlog-crew-cmp svg{width:14px;height:14px;flex-shrink:0;}
 @media (max-width:860px){
   .liftlog-summary-grid{grid-template-columns:repeat(2,1fr);row-gap:18px;}
   .liftlog-summary-stat:nth-child(2n)::after{display:none;}
@@ -3862,6 +3904,34 @@ body.print-mode .ho-header{background:#E4E8F4;}
 .lpmh-breakdown-table .lpmh-bd-fcst{color:var(--text3);}
 .lpmh-breakdown-result{margin-top:14px;padding-top:12px;border-top:1px solid var(--border2);font-size:13px;color:var(--text2);}
 .lpmh-breakdown-result .lpmh-bd-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);}
+
+/* ── Milestone toasts ── */
+.milestone-toast-stack{
+  position:fixed;right:18px;bottom:54px;z-index:1100;
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;
+  pointer-events:none;
+}
+.milestone-toast{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:10px 16px;box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  max-width:340px;pointer-events:auto;
+  animation:milestone-in 0.3s ease, milestone-out 0.4s ease 5.2s forwards;
+}
+.milestone-toast.good{border-color:rgba(16,185,129,0.4);box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 24px rgba(16,185,129,0.12);}
+.milestone-toast-icon{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(16,185,129,0.14);color:var(--green);
+}
+.milestone-toast-text{font-size:12.5px;line-height:1.4;color:var(--text2);}
+.milestone-toast-text strong{color:var(--text);}
+@keyframes milestone-in{from{opacity:0;transform:translateX(24px);}to{opacity:1;transform:none;}}
+@keyframes milestone-out{from{opacity:1;transform:none;}to{opacity:0;transform:translateX(24px);}}
+@media(max-width:600px){
+  .milestone-toast-stack{right:10px;left:10px;bottom:70px;align-items:stretch;}
+  .milestone-toast{max-width:none;}
+}
 </style>
 <script>
 function togglePanel(id){document.getElementById(id).classList.toggle('collapsed');}
@@ -4507,6 +4577,97 @@ function gradeToneClass(tone){
   return tone === 'good' ? 'good' : tone === 'warn' ? 'warn' : tone === 'neutral' ? '' : 'bad';
 }
 
+// GPA-style point values for the composite shift score. "—" (no commitment
+// set) is excluded from the average entirely rather than scored as a 0.
+var GRADE_POINTS={'A+':4.3,'A':4.0,'A-':3.7,'B+':3.3,'B':3.0,'B-':2.7,'C+':2.3,'C':2.0,'C-':1.7,'D+':1.3,'D':1.0,'D-':0.7,'F':0};
+
+// Blends the four Performance Grades cards (IHOSA Release, MHOAS Release,
+// Weighted Avg Inbound, LPMH Goal) into a single 0-100 "shift score" plus an
+// overall letter grade. Cards graded "—" (no commitment configured) are
+// excluded so an unused commitment doesn't drag the score down.
+function compositeShiftScore(grades){
+  var pts=[], maxPts=4.3;
+  grades.forEach(function(g){
+    if(g && GRADE_POINTS.hasOwnProperty(g.grade)) pts.push(GRADE_POINTS[g.grade]);
+  });
+  if(pts.length===0) return {score:null, grade:'\u2014', tone:'neutral', count:0};
+  var avg=pts.reduce(function(a,b){return a+b;},0)/pts.length;
+  var score=Math.round((avg/maxPts)*100);
+  var letter, tone;
+  if(avg>=4.15){letter='A+';tone='good';}
+  else if(avg>=3.85){letter='A';tone='good';}
+  else if(avg>=3.5){letter='A-';tone='good';}
+  else if(avg>=3.15){letter='B+';tone='warn';}
+  else if(avg>=2.85){letter='B';tone='warn';}
+  else if(avg>=2.5){letter='B-';tone='warn';}
+  else if(avg>=2.15){letter='C+';tone='warn';}
+  else if(avg>=1.85){letter='C';tone='bad';}
+  else if(avg>=1.5){letter='C-';tone='bad';}
+  else if(avg>=1.15){letter='D+';tone='bad';}
+  else if(avg>=0.85){letter='D';tone='bad';}
+  else if(avg>=0.5){letter='D-';tone='bad';}
+  else {letter='F';tone='bad';}
+  return {score:score, grade:letter, tone:tone, count:pts.length};
+}
+
+// ── Milestone toasts ──
+// Shows a short-lived toast in the bottom-right corner. Auto-dismisses via
+// CSS animation; also removed from the DOM after it finishes.
+function showMilestoneToast(text, opts){
+  opts=opts||{};
+  var stack=document.getElementById('milestone-toast-stack');
+  if(!stack) return;
+  var toast=document.createElement('div');
+  toast.className='milestone-toast '+(opts.tone||'good');
+  toast.innerHTML='<span class="milestone-toast-icon">'+(opts.icon||lpmhIcon('target'))+'</span>'
+    +'<span class="milestone-toast-text">'+text+'</span>';
+  stack.appendChild(toast);
+  setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 5700);
+}
+
+// Detects on-time-completion transitions for IHOSA/MHOAS and fires a toast
+// the moment a commitment first becomes "fully loaded, on time". Tracks
+// previous state in window._milestoneState so the toast only fires once per
+// transition (re-running simulate() with unchanged inputs won't re-fire).
+//
+// Also tracks a "comeback" narrative: if live LPMH ever dips meaningfully
+// below target during the shift (window._comebackState.worstDeficit), and
+// later recovers to on-target, a one-time toast calls out the recovery
+// ("Recovered from 0.25 SHORT to ON TARGET").
+function checkMilestones(state){
+  var prev=window._milestoneState;
+
+  var cb=window._comebackState || {worstDeficit:0, fired:false};
+  if(state.liveHasData){
+    var deficit=state.lpmhTarget-state.liveLpmh;
+    if(deficit>cb.worstDeficit) cb.worstDeficit=deficit;
+  }
+  var COMEBACK_THRESHOLD=0.15; // ignore noise — only call out a meaningful dip
+  if(!cb.fired && state.lpmhOnTarget && cb.worstDeficit>=COMEBACK_THRESHOLD){
+    showMilestoneToast('<strong>Comeback!</strong> Recovered from '+cb.worstDeficit.toFixed(2)+' SHORT to ON TARGET ('+state.liveLpmh.toFixed(2)+' / '+state.lpmhTarget.toFixed(2)+').', {tone:'good',icon:lpmhIcon('flame')});
+    cb.fired=true;
+  }
+  window._comebackState=cb;
+
+  if(!prev){
+    // First run: record current state without firing toasts, so reloading
+    // the page with data already entered doesn't spam toasts.
+    window._milestoneState=state;
+    return;
+  }
+  if(state.ihosaDone && !prev.ihosaDone){
+    showMilestoneToast('<strong>IHOSA released on time</strong> &mdash; commitment fully loaded before the 1700 deadline.', {tone:'good'});
+  }
+  if(state.mhoasDone && !prev.mhoasDone){
+    showMilestoneToast('<strong>MHOAS released on time</strong> &mdash; commitment fully loaded before the 0300 deadline.', {tone:'good'});
+  }
+  if(state.lpmhOnTarget && !prev.lpmhOnTarget && state.liveHasData){
+    showMilestoneToast('<strong>Live LPMH crossed target</strong> &mdash; current pace ('+state.liveLpmh.toFixed(2)+') is at or above goal ('+state.lpmhTarget.toFixed(2)+').', {tone:'good',icon:lpmhIcon('flame')});
+  }
+  window._milestoneState=state;
+}
+
+
 function renderTopGrades(data){
   const el = document.getElementById('top-grade-banner');
   if(!el) return;
@@ -4630,6 +4791,23 @@ function renderTopGrades(data){
       ${lpmhCard}
     </div>
   `;
+
+  // ── Composite shift score badge (header) ──
+  var scoreBadgeEl=document.getElementById('shift-score-badge');
+  if(scoreBadgeEl){
+    var composite=compositeShiftScore([data.ihosa, data.mhoas, data.avg, data.lpmh]);
+    if(composite.score==null){
+      scoreBadgeEl.innerHTML='';
+    } else {
+      scoreBadgeEl.innerHTML='<span class="shift-score-badge ' + gradeToneClass(composite.tone) + '" '
+        +'onclick="openGradeInfo(\'Shift Score\',\'Blended score across the '+composite.count+' graded Performance cards above (IHOSA/MHOAS release, weighted avg inbound, LPMH goal), each converted to GPA points and averaged. Cards showing \u2014 (no commitment set) are excluded.\')" '
+        +'title="Composite of '+composite.count+' graded cards">'
+        +'<span class="shift-score-val">'+composite.score+'</span>'
+        +'<span class="shift-score-letter">'+composite.grade+'</span>'
+        +'<span class="shift-score-label">SHIFT SCORE</span>'
+        +'</span>';
+    }
+  }
 }
 function parseTime(str){if(!str)return 0;var p=str.split(':').map(Number);return p[0]+(p[1]||0)/60;}
 function getLabel(key){return (trainNames[key]||TRAINS[key].defLabel).trim()||TRAINS[key].defLabel;}
@@ -5008,6 +5186,8 @@ function lpmhIcon(name){
       return '<svg '+s+'><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>';
     case 'moon':
       return '<svg '+s+'><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    case 'flame': // streak counter
+      return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-3 4.5-3 8a3 3 0 0 0 6 0c0-1-.5-2-1-2.5.5 2 2 3 2 5.5a5 5 0 0 1-10 0c0-5 4-6.5 4-11z"/></svg>';
     default:
       return '';
   }
@@ -6009,11 +6189,30 @@ function hourCrewSize(hour, ctx){
   return 0;
 }
 
+// Returns 'day', 'night', or null for a given hour bucket based on the
+// shift windows in ctx. Used to attribute logged hours to a crew for the
+// day-vs-night LPMH comparison.
+function hourShift(hour, ctx){
+  if(!ctx) return null;
+  var clockH=hour%24;
+  var s1Start=ctx.s1Start, s1End=ctx.s1End;
+  var s2Start=ctx.s2Start, s2End=ctx.s2End;
+  if(s1Start!=null && s1End!=null && s1End>s1Start){
+    if(clockH>=s1Start && clockH<s1End) return 'day';
+  }
+  if(s2Start!=null && s2End!=null){
+    var nightWraps=s2End<s2Start;
+    if(nightWraps){ if(clockH>=s2Start || clockH<s2End) return 'night'; }
+    else if(s2End>s2Start){ if(clockH>=s2Start && clockH<s2End) return 'night'; }
+  }
+  return null;
+}
+
 // Computes the "live"/actual LPMH from the hours where the user has entered
 // hourly actuals (via manual entry or import) — i.e. actual lifts logged so
 // far divided by the man-hours worked during those same logged hours.
 // Returns {actualTotal, forecastTotal, manHours, lpmh, hasData, rows}, where
-// rows is one entry per logged hour: {hour, label, crewHours, actual, forecast}.
+// rows is one entry per logged hour: {hour, label, crewHours, actual, forecast, shift}.
 function calcLiveLpmh(buckets, ctx){
   var actuals=loadHourlyActuals();
   var forecastTotal=0, actualTotal=0, manHours=0, hasData=false, rows=[];
@@ -6026,7 +6225,7 @@ function calcLiveLpmh(buckets, ctx){
       forecastTotal+=b.total;
       actualTotal+=entry.value;
       manHours+=crewHours;
-      rows.push({hour:b.hour, label:hourClockStart(b.hour)+'\u2013'+hourClockEnd(b.hour), crewHours:crewHours, actual:entry.value, forecast:b.total});
+      rows.push({hour:b.hour, label:hourClockStart(b.hour)+'\u2013'+hourClockEnd(b.hour), crewHours:crewHours, actual:entry.value, forecast:b.total, shift:hourShift(b.hour, ctx)});
     }
   });
   rows.sort(function(a,b){return a.hour-b.hour;});
@@ -6034,10 +6233,85 @@ function calcLiveLpmh(buckets, ctx){
   return {actualTotal:actualTotal, forecastTotal:forecastTotal, manHours:manHours, lpmh:lpmh, hasData:hasData, rows:rows};
 }
 
+// Counts the current run of consecutive logged hours (most recent first)
+// where actual lifts/man-hour for that hour met or beat the LPMH target.
+// A hour with no crew on duty (crewHours<=0) can't be evaluated and breaks
+// the streak (treated as neither a hit nor a continuation). Returns
+// {streak, best, lastHourHit} where `best` is the longest run seen this shift.
+function calcLpmhStreak(rows, target){
+  var streak=0, best=0, run=0, lastHourHit=null;
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    var hourLpmh=r.crewHours>0 ? (r.actual/r.crewHours) : null;
+    var hit=hourLpmh!=null && hourLpmh>=target;
+    if(hourLpmh==null){ run=0; continue; }
+    if(hit){ run+=1; if(run>best) best=run; lastHourHit=r.hour; }
+    else { run=0; }
+  }
+  streak=run;
+  return {streak:streak, best:best, lastHourHit:lastHourHit};
+}
 
-// Renders the top summary bar: Forecast Total / Actual Total / Variance /
-// Completion % (with a progress ring) and a deadline-passed banner if the
-// next open commitment's deadline has already gone by.
+// Tallies a "win/loss/tie" record for the shift: one record per logged hour,
+// comparing actual lifts to forecast lifts for that hour. A "win" beats
+// forecast, a "loss" misses it, and a "tie" matches it exactly.
+function calcVarianceRecord(rows){
+  var wins=0, losses=0, ties=0;
+  rows.forEach(function(r){
+    if(r.actual>r.forecast) wins+=1;
+    else if(r.actual<r.forecast) losses+=1;
+    else ties+=1;
+  });
+  return {wins:wins, losses:losses, ties:ties, total:rows.length};
+}
+
+// Sum of crew-hours across every non-break hour in the day (0-26 window),
+// on the same basis as calcLiveLpmh's manHours total — used as the
+// denominator for the end-of-shift pace projection.
+function totalScheduledManHours(buckets, ctx){
+  var total=0;
+  buckets.forEach(function(b){
+    if(b.isBreak) return;
+    total+=hourCrewSize(b.hour, ctx);
+  });
+  return total;
+}
+
+// Projects the final daily LPMH if the current live pace holds for the rest
+// of the shift: lifts logged so far, plus (live LPMH * remaining man-hours),
+// divided by total scheduled man-hours for the day. totalManHours is the
+// full-day man-hours figure (forecastedLpmhManHours / totalDisplayedManHours).
+// Returns null if there's no live data yet or no remaining time to project.
+function calcPaceProjection(live, totalManHours){
+  if(!live.hasData || live.manHours<=0 || !(totalManHours>0)) return null;
+  var remainingManHours=Math.max(0, totalManHours-live.manHours);
+  if(remainingManHours<=0){
+    // Whole shift already logged — "projection" is just the live LPMH.
+    return {projectedLpmh:live.lpmh, remainingManHours:0, loggedManHours:live.manHours, totalManHours:totalManHours};
+  }
+  var projectedLifts=live.actualTotal + (live.lpmh*remainingManHours);
+  var projectedLpmh=projectedLifts/totalManHours;
+  return {projectedLpmh:projectedLpmh, remainingManHours:remainingManHours, loggedManHours:live.manHours, totalManHours:totalManHours};
+}
+
+// Compares logged-hour LPMH between day shift and night shift crews. Each
+// crew's LPMH only reflects the hours that crew has logged actuals for so
+// far. Returns null for a crew with no logged hours yet.
+function calcCrewComparison(rows){
+  var day={lifts:0,manHours:0}, night={lifts:0,manHours:0};
+  rows.forEach(function(r){
+    if(r.shift==='day'){ day.lifts+=r.actual; day.manHours+=r.crewHours; }
+    else if(r.shift==='night'){ night.lifts+=r.actual; night.manHours+=r.crewHours; }
+  });
+  var dayLpmh=day.manHours>0?(day.lifts/day.manHours):null;
+  var nightLpmh=night.manHours>0?(night.lifts/night.manHours):null;
+  return {
+    day:{lpmh:dayLpmh, lifts:day.lifts, manHours:day.manHours},
+    night:{lpmh:nightLpmh, lifts:night.lifts, manHours:night.manHours}
+  };
+}
+
+
 function renderLiftLogSummaryBar(buckets, ctx){
   var el=document.getElementById('liftlog-summary-bar');
   var bannerEl=document.getElementById('liftlog-deadline-banner');
@@ -6057,6 +6331,33 @@ function renderLiftLogSummaryBar(buckets, ctx){
   var lpmhClass=manHours<=0?'':(liveLpmh>=lpmhTarget?'is-pos':'is-neg');
   var lpmhDisplay=manHours>0?liveLpmh.toFixed(2):'\u2014';
 
+  var streakInfo=calcLpmhStreak(live.rows, lpmhTarget);
+  var record=calcVarianceRecord(live.rows);
+  var recordHtml=record.total>0
+    ? '<div class="liftlog-summary-sub">'+record.wins+'-'+record.losses+(record.ties>0?'-'+record.ties:'')+' vs plan</div>'
+    : '';
+
+  var totalManHours=totalScheduledManHours(buckets, ctx);
+  var projection=calcPaceProjection(live, totalManHours);
+  var projectionHtml='';
+  if(projection && projection.remainingManHours>0){
+    var projClass=projection.projectedLpmh>=lpmhTarget?'is-pos':'is-neg';
+    projectionHtml='<div class="liftlog-summary-sub '+projClass+'" title="If the current pace ('+liveLpmh.toFixed(2)+') holds for the remaining '+projection.remainingManHours.toFixed(1)+' man-hours, the day finishes at this LPMH.">'
+      +'On track to finish at <strong>'+projection.projectedLpmh.toFixed(2)+'</strong></div>';
+  }
+
+  var crewCmp=calcCrewComparison(live.rows);
+  var crewCmpHtml='';
+  if(crewCmp.day.lpmh!=null && crewCmp.night.lpmh!=null){
+    var dayWins=crewCmp.day.lpmh>crewCmp.night.lpmh;
+    var nightWins=crewCmp.night.lpmh>crewCmp.day.lpmh;
+    var cmpText;
+    if(dayWins) cmpText='Day Shift is out-pacing Night ('+crewCmp.day.lpmh.toFixed(2)+' vs '+crewCmp.night.lpmh.toFixed(2)+')';
+    else if(nightWins) cmpText='Night Shift is out-pacing Day ('+crewCmp.night.lpmh.toFixed(2)+' vs '+crewCmp.day.lpmh.toFixed(2)+')';
+    else cmpText='Day and Night Shift are pacing evenly ('+crewCmp.day.lpmh.toFixed(2)+' each)';
+    crewCmpHtml='<div class="liftlog-crew-cmp">'+lpmhIcon('flame')+'<span>'+cmpText+'</span></div>';
+  }
+
   var html=''
     +'<div class="liftlog-summary-grid">'
     +'<div class="liftlog-summary-stat group-end" title="Forecast for the hours you\'ve entered an actual for">'
@@ -6067,9 +6368,10 @@ function renderLiftLogSummaryBar(buckets, ctx){
     +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('up')+'</span><span class="liftlog-summary-label">Actual Total</span></div>'
     +'<div class="liftlog-summary-val">'+actualTotal+'<span class="unit">Lifts</span></div>'
     +'</div>'
-    +'<div class="liftlog-summary-stat">'
+    +'<div class="liftlog-summary-stat" title="Win = hour beat its forecast lift count, loss = missed it, tie = matched it exactly.">'
     +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('trend')+'</span><span class="liftlog-summary-label">Variance</span></div>'
     +'<div class="liftlog-summary-val '+varClass+'">'+varSign+variance+'<span class="unit">Lifts</span></div>'
+    +recordHtml
     +'</div>'
     +'<div class="liftlog-summary-stat">'
     +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('target')+'</span><span class="liftlog-summary-label">Completion</span></div>'
@@ -6078,8 +6380,14 @@ function renderLiftLogSummaryBar(buckets, ctx){
     +'<div class="liftlog-summary-stat" title="Actual lifts per man-hour for the hours you\'ve logged, vs target '+lpmhTarget.toFixed(2)+'">'
     +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('gauge')+'</span><span class="liftlog-summary-label">Live LPMH</span></div>'
     +'<div class="liftlog-summary-val '+lpmhClass+'">'+lpmhDisplay+'<span class="unit">/ '+lpmhTarget.toFixed(2)+'</span></div>'
+    +projectionHtml
     +'</div>'
-    +'</div>';
+    +'<div class="liftlog-summary-stat group-end" title="Consecutive logged hours at or above target LPMH ('+lpmhTarget.toFixed(2)+'). Best streak this shift: '+streakInfo.best+'.">'
+    +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon '+(streakInfo.streak>0?'is-streak':'')+'">'+lpmhIcon('flame')+'</span><span class="liftlog-summary-label">On-Target Streak</span></div>'
+    +'<div class="liftlog-summary-val '+(streakInfo.streak>0?'is-pos':'')+'">'+streakInfo.streak+'<span class="unit">hr'+(streakInfo.streak===1?'':'s')+(streakInfo.best>streakInfo.streak?' &middot; best '+streakInfo.best:'')+'</span></div>'
+    +'</div>'
+    +'</div>'
+    +crewCmpHtml;
 
   // ── Deadline-passed banner: whichever outbound commitment is open and due
   // soonest, if its deadline has already gone by. ──
@@ -7016,7 +7324,9 @@ function renderInboundTrainStatus(trains, trainDropEnd, rate, segs, trainArrival
     var deltaSign = delta>0 ? '+' : (delta<0 ? '\u2212' : '');
     var deltaVal = fmtHR(Math.abs(delta));
 
-    html+='<div class="its-card">';
+    var dwellGrade=gradeFromHours(wAvg);
+
+    html+='<div class="its-card '+gradeToneClass(dwellGrade.tone)+'">';
     html+='<div class="its-head">';
     html+='<div class="its-head-left">';
     html+='<span class="its-icon-badge">'+lpmhIcon('train')+'</span>';
@@ -7741,6 +8051,15 @@ renderTopGrades({
   liveLpmhLifts: liveLpmhData.actualTotal, liveLpmhManHours: liveLpmhData.manHours,
   liveLpmhForecastLifts: liveLpmhData.forecastTotal, liveLpmhRows: liveLpmhData.rows
 });
+
+// ── Milestone toasts: on-time IHOSA/MHOAS completion, LPMH crossing target ──
+checkMilestones({
+  ihosaDone: ihosaUnits>0 && ihosaShortCalc<=0 && !ihosaLate,
+  mhoasDone: mhoasUnits>0 && mhoasShortCalc<=0 && !mhoasLate,
+  lpmhOnTarget: liveLpmhData.hasData && liveLpmhData.lpmh>=LPMH_TARGET,
+  liveLpmh: liveLpmhData.lpmh, lpmhTarget: LPMH_TARGET, liveHasData: liveLpmhData.hasData
+});
+
 
 document.getElementById('tavg-body').innerHTML=html + html2;
 renderTavgDrivers();
@@ -10102,6 +10421,9 @@ function printRampReport(){
     <div class="gradeinfo-body" id="gradeinfo-body"></div>
   </div>
 </div>
+
+<!-- MILESTONE TOASTS -->
+<div id="milestone-toast-stack" class="milestone-toast-stack"></div>
 
 </body>
 </html>
