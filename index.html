@@ -1572,14 +1572,15 @@ body.print-mode .time-lbl{
   font-family:var(--cond);font-size:16px;font-weight:700;letter-spacing:0.06em;
   color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.its-pills{display:flex;gap:8px;flex-shrink:0;}
+.its-pills{display:flex;gap:6px;flex-shrink:0;align-items:center;}
 .its-pill{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:row;align-items:baseline;gap:5px;
   border:1px solid var(--border2);border-radius:8px;background:var(--s3);
-  padding:4px 12px;min-width:54px;
+  padding:5px 12px;
 }
 .its-pill-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue);line-height:1.2;}
-.its-pill-label{font-family:var(--cond);font-size:8px;font-weight:700;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;}
+.its-pill-label{font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase;}
+.its-pill-sep{width:1px;height:14px;background:var(--border2);flex-shrink:0;}
 .its-stats{display:grid;grid-template-columns:repeat(4,1fr);}
 .its-stat{
   display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -2577,6 +2578,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         </div>
         <div id="lift-log" class="liftlog-rows"></div>
         <div id="lift-log-timemap" style="overflow-x:auto;"></div>
+        <div id="lift-log-timemap-actual" style="overflow-x:auto;"></div>
       </div>
     </div>
 
@@ -2914,6 +2916,9 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .timemap-scroll.is-fit .timemap-range{font-size:9px;padding:2px 5px;white-space:nowrap;}
 .timemap-scroll.is-fit .timemap-total{font-size:16px;padding-top:3px;padding-bottom:4px;gap:4px;white-space:nowrap;overflow:hidden;}
 .timemap-scroll.is-fit .timemap-total-unit{font-size:9px;}
+.timemap-scroll.is-fit .timemap-lpmh{margin-top:-2px;margin-bottom:1px;}
+.timemap-scroll.is-fit .timemap-lpmh-label{font-size:8px;}
+.timemap-scroll.is-fit .timemap-lpmh-val{font-size:10px;}
 .timemap-scroll.is-fit .timemap-srcs{min-width:0;}
 .timemap-scroll.is-fit .timemap-src{font-size:9px;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
 .timemap-scroll.is-fit .timemap-src-dot{width:5px;height:5px;}
@@ -2927,6 +2932,9 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   line-height:1;padding-top:4px;border-top:1px solid var(--border);padding-bottom:8px;
   display:flex;align-items:baseline;gap:8px;}
 .timemap-total-unit{font-size:13px;font-weight:500;color:var(--text3);text-transform:lowercase;}
+.timemap-lpmh{display:flex;align-items:baseline;gap:6px;margin-top:-4px;margin-bottom:2px;}
+.timemap-lpmh-label{font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);}
+.timemap-lpmh-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue);}
 .timemap-srcs{display:flex;flex-direction:column;gap:4px;}
 .timemap-src{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;}
 .timemap-src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
@@ -4255,17 +4263,20 @@ var AUTOLOAD_KEY = 'settegast_autoload_v1';
 var TRENDS_KEY   = 'settegast_trends_v1';
 var HOURLY_ACTUALS_KEY = 'settegast_hourly_actuals_v1';
 
-// Whether the Hourly Lift Time Map is in "fit to width" mode (shrinks nodes/cards
-// to fit the panel width instead of horizontally scrolling). Persists across
-// simulate() re-renders since buildHourlyLiftTimeMap rebuilds the whole section,
-// but toggling itself is a pure class flip on the existing DOM — no resimulate.
-var timemapFitMode = false;
-function toggleTimemapFit(){
-  timemapFitMode = !timemapFitMode;
-  var scrollEl=document.querySelector('#lift-log-timemap .timemap-scroll');
-  var btnEl=document.querySelector('#lift-log-timemap .timemap-fit-btn');
-  if(scrollEl) scrollEl.classList.toggle('is-fit', timemapFitMode);
-  if(btnEl) btnEl.classList.toggle('is-active', timemapFitMode);
+// Whether each Hourly Lift Time Map (forecast / actual) is in "fit to width"
+// mode (shrinks nodes/cards to fit the panel width instead of horizontally
+// scrolling). Persists across simulate() re-renders since the build function
+// rebuilds the whole section, but toggling itself is a pure class flip on the
+// existing DOM — no resimulate.
+var timemapFitMode = {forecast:false, actual:false};
+function toggleTimemapFit(which, elId){
+  which = which || 'forecast';
+  elId = elId || 'lift-log-timemap';
+  timemapFitMode[which] = !timemapFitMode[which];
+  var scrollEl=document.querySelector('#'+elId+' .timemap-scroll');
+  var btnEl=document.querySelector('#'+elId+' .timemap-fit-btn');
+  if(scrollEl) scrollEl.classList.toggle('is-fit', timemapFitMode[which]);
+  if(btnEl) btnEl.classList.toggle('is-active', timemapFitMode[which]);
 }
 
 // Escape user-entered text before it is interpolated into innerHTML.
@@ -4504,6 +4515,7 @@ function renderTopGrades(data){
 
   // LPMH Goal: big letter, ratio as the subvalue, progress bar vs target (capped at 100%).
   const lpmhPct = data.lpmhTargetRaw>0 ? Math.min(100, Math.round(data.actualLpmhRaw/data.lpmhTargetRaw*100)) : 0;
+  const liveLpmhDisplay = data.liveLpmhHasData ? data.liveLpmhRaw.toFixed(2) : '—';
   const lpmhCard = `
       <div class="top-grade-card ${gradeToneClass(data.lpmh.tone)}" onclick="openGradeInfo('LPMH Goal','Ramp productivity vs target.')">
         <div class="tg-left">
@@ -4518,13 +4530,13 @@ function renderTopGrades(data){
         <div class="tg-right">
           <div class="top-grade-stats">
             <div class="top-grade-stat">
-              <div class="top-grade-stat-label">${ICONS.target} Actual LPMH</div>
-              <div class="top-grade-stat-val">${data.actualLpmhRaw.toFixed(2)}</div>
+              <div class="top-grade-stat-label">${ICONS.target} Forecasted LPMH</div>
+              <div class="top-grade-stat-val" style="color:var(--text2);">${data.forecastedLpmhRaw.toFixed(2)}</div>
             </div>
             <div class="top-grade-stat-sep"></div>
             <div class="top-grade-stat">
-              <div class="top-grade-stat-label">${ICONS.target} Target LPMH</div>
-              <div class="top-grade-stat-val" style="color:var(--text2);">${data.lpmhTargetRaw.toFixed(2)}</div>
+              <div class="top-grade-stat-label">${ICONS.target} Live LPMH</div>
+              <div class="top-grade-stat-val">${liveLpmhDisplay}</div>
             </div>
           </div>
         </div>
@@ -5289,7 +5301,8 @@ function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,paceCtx){
   }
 
   buildHourlyLiftLogActual(renderedBuckets,activeKeys,trainLabelMap,paceCtx);
-  buildHourlyLiftTimeMap(buckets);
+  buildHourlyLiftTimeMap(buckets,paceCtx);
+  buildHourlyLiftTimeMapActual(renderedBuckets,activeKeys,trainLabelMap,paceCtx);
   return buckets;
 }
 
@@ -5814,6 +5827,27 @@ function hourCrewSize(hour, ctx){
   return 0;
 }
 
+// Computes the "live"/actual LPMH from the hours where the user has entered
+// hourly actuals (via manual entry or import) — i.e. actual lifts logged so
+// far divided by the man-hours worked during those same logged hours.
+// Returns {actualTotal, forecastTotal, manHours, lpmh, hasData}.
+function calcLiveLpmh(buckets, ctx){
+  var actuals=loadHourlyActuals();
+  var forecastTotal=0, actualTotal=0, manHours=0, hasData=false;
+  buckets.forEach(function(b){
+    if(b.isBreak) return;
+    var entry=normalizeActualEntry(actuals[b.hour]);
+    if(entry.value!=null && Number.isFinite(entry.value)){
+      hasData=true;
+      forecastTotal+=b.total;
+      actualTotal+=entry.value;
+      manHours+=hourCrewSize(b.hour, ctx);
+    }
+  });
+  var lpmh=manHours>0 ? (actualTotal/manHours) : 0;
+  return {actualTotal:actualTotal, forecastTotal:forecastTotal, manHours:manHours, lpmh:lpmh, hasData:hasData};
+}
+
 // Renders the top summary bar: Forecast Total / Actual Total / Variance /
 // Completion % (with a progress ring) and a deadline-passed banner if the
 // next open commitment's deadline has already gone by.
@@ -5822,17 +5856,8 @@ function renderLiftLogSummaryBar(buckets, ctx){
   var bannerEl=document.getElementById('liftlog-deadline-banner');
   if(!el) return;
 
-  var actuals=loadHourlyActuals();
-  var forecastTotal=0, actualTotal=0, manHours=0;
-  buckets.forEach(function(b){
-    if(b.isBreak) return;
-    var entry=normalizeActualEntry(actuals[b.hour]);
-    if(entry.value!=null && Number.isFinite(entry.value)){
-      forecastTotal+=b.total;
-      actualTotal+=entry.value;
-      manHours+=hourCrewSize(b.hour, ctx);
-    }
-  });
+  var live=calcLiveLpmh(buckets, ctx);
+  var forecastTotal=live.forecastTotal, actualTotal=live.actualTotal, manHours=live.manHours;
 
   var variance=actualTotal-forecastTotal;
   var completionPct=forecastTotal>0 ? Math.round((actualTotal/forecastTotal)*100) : 0;
@@ -5840,7 +5865,7 @@ function renderLiftLogSummaryBar(buckets, ctx){
   var varClass=variance>0?'is-pos':(variance<0?'is-neg':'');
   var varSign=variance>0?'+':'';
 
-  var liveLpmh=manHours>0 ? (actualTotal/manHours) : 0;
+  var liveLpmh=live.lpmh;
   var lpmhTarget=(ctx && ctx.rate!=null) ? LPMH_TARGET : LPMH_TARGET;
   var lpmhClass=manHours<=0?'':(liveLpmh>=lpmhTarget?'is-pos':'is-neg');
   var lpmhDisplay=manHours>0?liveLpmh.toFixed(2):'\u2014';
@@ -6088,13 +6113,24 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
 
 // Staircase time map: one offset box per active hour, color-coded by dominant lift
 // source for that hour. Mirrors the Hourly Lift Log directly above it.
-function buildHourlyLiftTimeMap(buckets){
-  var el=document.getElementById('lift-log-timemap');
+// Generic renderer shared by the forecast and actual Hourly Lift Time Maps.
+// `buckets` is an array of {hour, total, sources, isBreak, breakLabels} —
+// same shape as produced for the forecast in buildHourlyLiftLog, and built
+// from logged actuals for the actual map. `opts`:
+//   elId      — target container id
+//   which     — 'forecast' | 'actual', used as the fit-mode state key
+//   title     — header title text
+//   gapLabel  — label shown on downtime/gap cards (default '\u26A0 DOWNTIME')
+//   gapText   — fn(hours) -> text for the gap card body
+//   emptyMsg  — message when there's no activity to map at all
+function renderTimeMap(elId, buckets, opts){
+  opts=opts||{};
+  var el=document.getElementById(elId);
   if(!el) return;
 
   var active=buckets.filter(function(b){return b.total>0;});
   if(!active.length){
-    el.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px 0;">No lift activity to map yet.</div>';
+    el.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px 0;">'+(opts.emptyMsg||'No lift activity to map yet.')+'</div>';
     return;
   }
 
@@ -6168,14 +6204,31 @@ function buildHourlyLiftTimeMap(buckets){
   }).join('');
 
   // ── Cards below the timeline, one per group ──
+  // Achieved LPMH per window = lifts \u00f7 man-hours worked during that window
+  // (man-hours = crew size on shift summed across each hour in the range).
+  function groupManHours(g){
+    var mh=0;
+    for(var h=g.firstHour; h<=g.lastHour; h++){
+      mh += hourCrewSize(h, opts.paceCtx);
+    }
+    return mh;
+  }
+  function lpmhBadgeHtml(g){
+    var mh=groupManHours(g);
+    if(mh<=0) return '';
+    var lpmh=g.total/mh;
+    return '<div class="timemap-lpmh"><span class="timemap-lpmh-label">LPMH</span><span class="timemap-lpmh-val">'+lpmh.toFixed(2)+'</span></div>';
+  }
+  var gapLabel=opts.gapLabel||'\u26A0 DOWNTIME';
+  var gapText=opts.gapText||function(hours){return 'No scheduled lifts ('+hours+'h)';};
   var cards=groups.map(function(g,i){
     var color=g.color;
     if(g.isGap){
       var hours=g.lastHour-g.firstHour+1;
       return '<div class="timemap-card timemap-card-gap">'
         +'<div class="timemap-range" style="color:'+color+';border-color:'+color+'55;background:'+color+'1a;">'+rangeLabel(g)+'</div>'
-        +'<div class="timemap-gap-label">\u26A0 DOWNTIME</div>'
-        +'<div class="timemap-srcs"><div class="timemap-src" style="color:'+color+';">No scheduled lifts ('+hours+'h)</div></div>'
+        +'<div class="timemap-gap-label">'+gapLabel+'</div>'
+        +'<div class="timemap-srcs"><div class="timemap-src" style="color:'+color+';">'+gapText(hours)+'</div></div>'
         +'</div>';
     }
     var breakdown=Object.keys(g.sourceTotals).map(function(k){
@@ -6185,6 +6238,7 @@ function buildHourlyLiftTimeMap(buckets){
     return '<div class="timemap-card">'
       +'<div class="timemap-range" style="color:'+color+';border-color:'+color+'55;background:'+color+'1a;">'+rangeLabel(g)+'</div>'
       +'<div class="timemap-total">'+g.total+'<span class="timemap-total-unit">lifts</span></div>'
+      +lpmhBadgeHtml(g)
       +'<div class="timemap-srcs">'+breakdown+'</div>'
       +'</div>';
   }).join('');
@@ -6203,18 +6257,73 @@ function buildHourlyLiftTimeMap(buckets){
   + '<div class="timemap-legend-item"><span class="timemap-legend-dot" style="background:#4a9eff;"></span>Inbound train drops</div>';
 
   var FIT_ICON='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
-  var fitBtnActiveCls=timemapFitMode?' is-active':'';
-  var fitScrollCls=timemapFitMode?' is-fit':'';
+  var which=opts.which||'forecast';
+  var fitBtnActiveCls=timemapFitMode[which]?' is-active':'';
+  var fitScrollCls=timemapFitMode[which]?' is-fit':'';
 
   el.innerHTML=''
-    +'<div class="timemap-header">'+CLOCK_ICON+'<span class="timemap-title">Hourly Lift Time Map</span>'
-    +'<button type="button" class="timemap-fit-btn'+fitBtnActiveCls+'" onclick="toggleTimemapFit()" title="Shrink the timeline to fit the page width">'+FIT_ICON+'<span>Fit to width</span></button>'
+    +'<div class="timemap-header">'+CLOCK_ICON+'<span class="timemap-title">'+(opts.title||'Hourly Lift Time Map')+'</span>'
+    +'<button type="button" class="timemap-fit-btn'+fitBtnActiveCls+'" onclick="toggleTimemapFit(\''+which+'\',\''+elId+'\')" title="Shrink the timeline to fit the page width">'+FIT_ICON+'<span>Fit to width</span></button>'
     +'</div>'
     +'<div class="timemap-scroll'+fitScrollCls+'">'
     +'<div class="timemap-timeline">'+nodes+'</div>'
     +'<div class="timemap-cards">'+cards+'</div>'
     +'</div>'
     +'<div class="timemap-legend">'+legend+'</div>';
+}
+
+function buildHourlyLiftTimeMap(buckets,paceCtx){
+  renderTimeMap('lift-log-timemap', buckets, {
+    which:'forecast',
+    title:'Hourly Lift Time Map',
+    emptyMsg:'No lift activity to map yet.',
+    paceCtx:paceCtx
+  });
+}
+
+// Builds the "Actual" time map from the hours an actual lift count has been
+// logged (Hourly Lift Log). Mirrors the forecast map's grouping/visual style,
+// but groups by the manually-selected work type(s) for each hour instead of
+// the simulated forecast sources, and the total per hour is the entered
+// actual lift count (split evenly across selected work types when more than
+// one is selected).
+function buildHourlyLiftTimeMapActual(forecastBuckets,activeKeys,trainLabelMap,paceCtx){
+  var actuals=loadHourlyActuals();
+  var optionList=liftSourceOptionList(activeKeys,trainLabelMap);
+  var optionMap={};
+  optionList.forEach(function(o){ if(o.key) optionMap[o.key]=o.label; });
+
+  var buckets=forecastBuckets.map(function(fb){
+    var entry=normalizeActualEntry(actuals[fb.hour]);
+    var val=entry.value;
+    var hasActual=val!=null && Number.isFinite(val);
+    if(!hasActual){
+      // No actual logged for this hour — carry over isBreak/breakLabels so
+      // scheduled breaks are still excluded from the downtime gaps, but
+      // unlogged active hours show as gaps (logging is incomplete there).
+      return {hour:fb.hour,total:0,sources:[],isBreak:fb.isBreak,breakLabels:fb.breakLabels};
+    }
+    var srcs=entry.srcs.filter(function(s){return !!s;});
+    var sources;
+    if(srcs.length){
+      var per=val/srcs.length;
+      sources=srcs.map(function(k){
+        return {key:k,label:optionMap[k]||(trainLabelMap[k]||k)+' drop',lifts:Math.round(per),color:liftSourceColor(k,trainLabelMap)};
+      });
+    } else {
+      sources=[{key:'actual',label:'Logged actual',lifts:Math.round(val),color:'#4a9eff'}];
+    }
+    return {hour:fb.hour,total:Math.round(val),sources:sources,isBreak:false};
+  });
+
+  renderTimeMap('lift-log-timemap-actual', buckets, {
+    which:'actual',
+    title:'Hourly Lift Time Map \u2014 Actual',
+    gapLabel:'\u26A0 NOT LOGGED',
+    gapText:function(hours){return 'No actuals logged ('+hours+'h)';},
+    emptyMsg:'No actuals logged yet \u2014 enter hourly actuals in the Lift Log above to populate this map.',
+    paceCtx:paceCtx
+  });
 }
 
 function sumHourBuckets(buckets,startHour,endHour){
@@ -6549,8 +6658,7 @@ function renderInboundTrainStatus(trains, trainDropEnd, rate, segs, trainArrival
     html+='<span class="its-title">'+escHtml(t.label)+'</span>';
     html+='</div>';
     html+='<div class="its-pills">';
-    html+='<div class="its-pill"><span class="its-pill-val">'+units+'</span><span class="its-pill-label">Units</span></div>';
-    html+='<div class="its-pill"><span class="its-pill-val">'+cars+'</span><span class="its-pill-label">Cars</span></div>';
+    html+='<div class="its-pill"><span class="its-pill-val">'+units+'</span><span class="its-pill-label">Units</span><span class="its-pill-sep"></span><span class="its-pill-val">'+cars+'</span><span class="its-pill-label">Cars</span></div>';
     html+='</div>';
     html+='</div>';
     html+='<div class="its-stats">';
@@ -7024,7 +7132,7 @@ function simulate(){
 
   // ── TAVG ──
   buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
-    shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMH,s1Lifts+s2Lifts,s1ManHours+s2ManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt);
+    shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMH,s1Lifts+s2Lifts,s1ManHours+s2ManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt,hourlyBuckets,liftLogPaceCtx);
 
   var totalCrewHours=(crew1*s1Hours)+(crew2*nightHours);
   var avgHeadcount=totalCrewHours/Math.max(0.1,(s1Hours+nightHours));
@@ -7053,7 +7161,7 @@ function simulate(){
   });}
 
 function buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
-  shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMHOverride,totalDisplayedLifts,totalDisplayedManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt){
+  shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMHOverride,totalDisplayedLifts,totalDisplayedManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt,hourlyBuckets,liftLogPaceCtx){
   var contributors=[];
 
   trains.forEach(function(t){
@@ -7198,7 +7306,12 @@ function buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
   var avgDropH=inboundWeighted.weightedAvg;
   var simpleAvgDropH=inboundWeighted.simpleAvg;
   var avgDropGrade=gradeFromHours(avgDropH);
-  var actualLpmh=typeof dailyLPMHOverride==='number'?dailyLPMHOverride:(totalDisplayedLifts/Math.max(0.1,totalDisplayedManHours));
+  // "Forecasted" LPMH comes from the simulation totals (what the plan projects).
+  var forecastedLpmh=typeof dailyLPMHOverride==='number'?dailyLPMHOverride:(totalDisplayedLifts/Math.max(0.1,totalDisplayedManHours));
+  // "Live" LPMH comes from hours where the user has entered actuals (manual entry or import).
+  var liveLpmhData=calcLiveLpmh(hourlyBuckets, liftLogPaceCtx);
+  // Grade the card off live data when available, falling back to the forecast.
+  var actualLpmh=liveLpmhData.hasData ? liveLpmhData.lpmh : forecastedLpmh;
   var lpmhGrade=gradeFromRate(actualLpmh, LPMH_TARGET);
 
   var html='<div class="tavg-grade-grid">';
@@ -7273,7 +7386,9 @@ renderTopGrades({
   mhoasLoaded: Math.round(mhoasLoaded), mhoasUnits: mhoasUnits, mhoasPivot: mhoasPivot, mhoasLate: mhoasLate,
   ihosaShortCalc: ihosaShortCalc, mhoasShortCalc: mhoasShortCalc,
   avgDropH: avgDropH, simpleAvgDropH: simpleAvgDropH,
-  actualLpmhRaw: actualLpmh, lpmhTargetRaw: LPMH_TARGET
+  actualLpmhRaw: actualLpmh, lpmhTargetRaw: LPMH_TARGET,
+  forecastedLpmhRaw: forecastedLpmh,
+  liveLpmhRaw: liveLpmhData.lpmh, liveLpmhHasData: liveLpmhData.hasData
 });
 
 document.getElementById('tavg-body').innerHTML=html + html2;
