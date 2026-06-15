@@ -1343,6 +1343,9 @@ body.trends-open #trends-screen #tr-list{
 }
 .top-grade-stat{flex:1;min-width:0;}
 .top-grade-stat-sep{height:1px;background:var(--border);}
+.tg-stat-clickable{cursor:pointer;border-radius:6px;margin:-4px;padding:4px;transition:background .12s;}
+.tg-stat-clickable:hover{background:var(--border);}
+.tg-stat-clickable:hover .top-grade-stat-val{color:var(--amber);}
 .top-grade-stat-label{
   display:flex;align-items:center;gap:5px;
   font-size:11px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;
@@ -3844,7 +3847,21 @@ body.print-mode .ho-header{background:#E4E8F4;}
 .gradeinfo-overlay{display:none;position:fixed;inset:0;z-index:1002;background:rgba(0,0,0,0.78);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;}
 .gradeinfo-overlay.open{display:flex;}
 .gradeinfo-modal{background:var(--surface);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:420px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.6);animation:ho-in 0.2s ease;}
+.gradeinfo-modal.gradeinfo-modal-wide{max-width:560px;}
 .gradeinfo-body{padding:18px 20px;font-size:13px;line-height:1.5;color:var(--text2);}
+.gradeinfo-body.gradeinfo-body-wide{padding:14px 16px;max-height:70vh;overflow-y:auto;}
+.lpmh-breakdown-summary{font-size:13px;line-height:1.5;color:var(--text2);margin-bottom:12px;}
+.lpmh-breakdown-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+.lpmh-breakdown-table th{
+  text-align:right;font-family:var(--cond);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text3);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--border2);
+}
+.lpmh-breakdown-table th:first-child,.lpmh-breakdown-table td:first-child{text-align:left;}
+.lpmh-breakdown-table td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text);}
+.lpmh-breakdown-table tfoot td{font-weight:700;border-top:1px solid var(--border2);border-bottom:none;padding-top:8px;}
+.lpmh-breakdown-table .lpmh-bd-fcst{color:var(--text3);}
+.lpmh-breakdown-result{margin-top:14px;padding-top:12px;border-top:1px solid var(--border2);font-size:13px;color:var(--text2);}
+.lpmh-breakdown-result .lpmh-bd-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);}
 </style>
 <script>
 function togglePanel(id){document.getElementById(id).classList.toggle('collapsed');}
@@ -4564,6 +4581,20 @@ function renderTopGrades(data){
   // LPMH Goal: big letter, ratio as the subvalue, progress bar vs target (capped at 100%).
   const lpmhPct = data.lpmhTargetRaw>0 ? Math.min(100, Math.round(data.actualLpmhRaw/data.lpmhTargetRaw*100)) : 0;
   const liveLpmhDisplay = data.liveLpmhHasData ? data.liveLpmhRaw.toFixed(2) : '—';
+
+  // Stash breakdown figures so the per-stat click handlers can build their
+  // "how this is calculated" text without re-threading data through onclick attrs.
+  window._lpmhInfo={
+    forecastedLifts: data.forecastedLpmhLifts, forecastedManHours: data.forecastedLpmhManHours,
+    forecastedIsOverride: data.forecastedLpmhIsOverride, forecastedLpmh: data.forecastedLpmhRaw,
+    forecastedBreakdown: data.forecastedLpmhBreakdown,
+    forecastedCrew1: data.forecastedLpmhCrew1, forecastedCrew2: data.forecastedLpmhCrew2,
+    forecastedS1Hours: data.forecastedLpmhS1Hours, forecastedS2Hours: data.forecastedLpmhS2Hours,
+    liveLifts: data.liveLpmhLifts, liveManHours: data.liveLpmhManHours,
+    liveForecastLifts: data.liveLpmhForecastLifts, liveLpmh: data.liveLpmhRaw,
+    liveHasData: data.liveLpmhHasData, liveRows: data.liveLpmhRows||[]
+  };
+
   const lpmhCard = `
       <div class="top-grade-card ${gradeToneClass(data.lpmh.tone)}" onclick="openGradeInfo('LPMH Goal','Ramp productivity vs target.')">
         <div class="tg-left">
@@ -4577,18 +4608,19 @@ function renderTopGrades(data){
         <div class="tg-vdivider"></div>
         <div class="tg-right">
           <div class="top-grade-stats">
-            <div class="top-grade-stat">
+            <div class="top-grade-stat tg-stat-clickable" onclick="event.stopPropagation();openForecastedLpmhInfo();">
               <div class="top-grade-stat-label">${ICONS.target} Forecasted LPMH</div>
               <div class="top-grade-stat-val" style="color:var(--text2);">${data.forecastedLpmhRaw.toFixed(2)}</div>
             </div>
             <div class="top-grade-stat-sep"></div>
-            <div class="top-grade-stat">
+            <div class="top-grade-stat tg-stat-clickable" onclick="event.stopPropagation();openLiveLpmhInfo();">
               <div class="top-grade-stat-label">${ICONS.target} Live LPMH</div>
               <div class="top-grade-stat-val">${liveLpmhDisplay}</div>
             </div>
           </div>
         </div>
       </div>`;
+
 
   el.innerHTML = `
     <div class="top-grade-grid">
@@ -5818,6 +5850,17 @@ function closeNoteModalIfBg(e){
 function openGradeInfo(title, text){
   document.getElementById('gradeinfo-title').textContent=title;
   document.getElementById('gradeinfo-body').textContent=text;
+  document.getElementById('gradeinfo-body').classList.remove('gradeinfo-body-wide');
+  document.getElementById('gradeinfo-modal').classList.remove('gradeinfo-modal-wide');
+  document.getElementById('gradeinfo-overlay').classList.add('open');
+}
+// Variant that renders HTML (used for the Live LPMH hourly breakdown table)
+// in a wider modal. Content is built entirely from internal numeric data.
+function openGradeInfoHtml(title, html){
+  document.getElementById('gradeinfo-title').textContent=title;
+  document.getElementById('gradeinfo-body').innerHTML=html;
+  document.getElementById('gradeinfo-body').classList.add('gradeinfo-body-wide');
+  document.getElementById('gradeinfo-modal').classList.add('gradeinfo-modal-wide');
   document.getElementById('gradeinfo-overlay').classList.add('open');
 }
 function closeGradeInfo(){
@@ -5825,6 +5868,97 @@ function closeGradeInfo(){
 }
 function closeGradeInfoIfBg(e){
   if(e.target===document.getElementById('gradeinfo-overlay')) closeGradeInfo();
+}
+
+// "How is this calculated" breakdowns for the Forecasted/Live LPMH stat
+// blocks on the LPMH Goal card. Figures are stashed in window._lpmhInfo by
+// renderTopGrades each time the dashboard re-renders.
+function openForecastedLpmhInfo(){
+  var d=window._lpmhInfo||{};
+  var lifts=d.forecastedLifts||0, mh=d.forecastedManHours||0, lpmh=d.forecastedLpmh||0;
+  var b=d.forecastedBreakdown||{};
+
+  var overrideNote='';
+  if(d.forecastedIsOverride){
+    var simLpmh=mh>0?(lifts/mh):0;
+    overrideNote='<div class="lpmh-breakdown-summary">A manual daily LPMH override is active: <strong>'+lpmh.toFixed(2)+'</strong> lifts/man-hour. '
+      +'The table below shows the simulation totals the override replaces ('+simLpmh.toFixed(2)+' lifts/man-hour).</div>';
+  } else {
+    overrideNote='<div class="lpmh-breakdown-summary">Forecasted LPMH is calculated from the simulated work plan: total projected lifts \u00f7 total employee hours on duty, net of lunch.</div>';
+  }
+
+  var rows=[
+    {label:'Day Shift', crew:d.forecastedCrew1||0, hours:d.forecastedS1Hours||0,
+     lunch:b.s1LunchDeduct||0, manHours:b.s1ManHours!=null?b.s1ManHours:0, lifts:b.s1Lifts!=null?b.s1Lifts:0},
+    {label:'Night Shift', crew:d.forecastedCrew2||0, hours:d.forecastedS2Hours||0,
+     lunch:b.s2LunchDeduct||0, manHours:b.s2ManHours!=null?b.s2ManHours:0, lifts:b.s2Lifts!=null?b.s2Lifts:0}
+  ];
+
+  var html=overrideNote;
+  html+='<table class="lpmh-breakdown-table"><thead><tr>'
+    +'<th>Shift</th><th>Crew</th><th>Sched Hrs</th><th>Lunch</th><th>Net Man-Hrs</th><th>Fcst Lifts</th>'
+    +'</tr></thead><tbody>';
+  rows.forEach(function(r){
+    html+='<tr>'
+      +'<td>'+r.label+'</td>'
+      +'<td>'+r.crew+'</td>'
+      +'<td>'+r.hours.toFixed(1)+'</td>'
+      +'<td>'+(r.lunch>0?'\u2212'+r.lunch.toFixed(1):'\u2014')+'</td>'
+      +'<td>'+r.manHours.toFixed(1)+'</td>'
+      +'<td>'+r.lifts+'</td>'
+      +'</tr>';
+  });
+  html+='</tbody><tfoot><tr>'
+    +'<td>Total</td><td>\u2014</td><td>\u2014</td><td>\u2014</td>'
+    +'<td>'+mh.toFixed(1)+'</td>'
+    +'<td>'+lifts+'</td>'
+    +'</tr></tfoot></table>';
+
+  var simLpmhVal=mh>0?(lifts/mh):0;
+  html+='<div class="lpmh-breakdown-result">'
+    +'<span class="lpmh-bd-val">'+lifts+'</span> total forecast lifts \u00f7 <span class="lpmh-bd-val">'+mh.toFixed(1)+'</span> employee hours on duty '
+    +'= <span class="lpmh-bd-val">'+simLpmhVal.toFixed(2)+'</span> forecasted LPMH'
+    +(d.forecastedIsOverride?' &nbsp;(displayed value is overridden to '+lpmh.toFixed(2)+')':'')
+    +'</div>';
+
+  openGradeInfoHtml('Forecasted LPMH', html);
+}
+function openLiveLpmhInfo(){
+  var d=window._lpmhInfo||{};
+  if(!d.liveHasData){
+    openGradeInfo('Live LPMH','No hourly actuals have been entered yet. Enter actual lift counts in the Hourly Lift Log to calculate a live LPMH from real data.');
+    return;
+  }
+  var rows=d.liveRows||[];
+  var lifts=d.liveLifts||0, mh=d.liveManHours||0, lpmh=d.liveLpmh||0, fcst=d.liveForecastLifts||0;
+
+  var html='<div class="lpmh-breakdown-summary">Real-time LPMH is calculated from every hour with a logged actual: total imported lifts \u00f7 total employee hours on duty during those hours.</div>';
+
+  html+='<table class="lpmh-breakdown-table"><thead><tr>'
+    +'<th>Hour</th><th>Crew Hrs</th><th>Actual Lifts</th><th>Forecast Lifts</th>'
+    +'</tr></thead><tbody>';
+  rows.forEach(function(r){
+    html+='<tr>'
+      +'<td>'+r.label+'</td>'
+      +'<td>'+r.crewHours.toFixed(1)+'</td>'
+      +'<td>'+r.actual+'</td>'
+      +'<td class="lpmh-bd-fcst">'+r.forecast+'</td>'
+      +'</tr>';
+  });
+  html+='</tbody><tfoot><tr>'
+    +'<td>Total</td>'
+    +'<td>'+mh.toFixed(1)+'</td>'
+    +'<td>'+lifts+'</td>'
+    +'<td class="lpmh-bd-fcst">'+fcst+'</td>'
+    +'</tr></tfoot></table>';
+
+  html+='<div class="lpmh-breakdown-result">'
+    +'<span class="lpmh-bd-val">'+lifts+'</span> total lifts \u00f7 <span class="lpmh-bd-val">'+mh.toFixed(1)+'</span> employee hours on duty '
+    +'= <span class="lpmh-bd-val">'+lpmh.toFixed(2)+'</span> real-time LPMH'
+    +' &nbsp;(forecast for these hours: '+fcst+' lifts)'
+    +'</div>';
+
+  openGradeInfoHtml('Live LPMH', html);
 }
 function saveNoteModal(){
   if(_noteModalHour==null) return;
@@ -5878,23 +6012,28 @@ function hourCrewSize(hour, ctx){
 // Computes the "live"/actual LPMH from the hours where the user has entered
 // hourly actuals (via manual entry or import) — i.e. actual lifts logged so
 // far divided by the man-hours worked during those same logged hours.
-// Returns {actualTotal, forecastTotal, manHours, lpmh, hasData}.
+// Returns {actualTotal, forecastTotal, manHours, lpmh, hasData, rows}, where
+// rows is one entry per logged hour: {hour, label, crewHours, actual, forecast}.
 function calcLiveLpmh(buckets, ctx){
   var actuals=loadHourlyActuals();
-  var forecastTotal=0, actualTotal=0, manHours=0, hasData=false;
+  var forecastTotal=0, actualTotal=0, manHours=0, hasData=false, rows=[];
   buckets.forEach(function(b){
     if(b.isBreak) return;
     var entry=normalizeActualEntry(actuals[b.hour]);
     if(entry.value!=null && Number.isFinite(entry.value)){
       hasData=true;
+      var crewHours=hourCrewSize(b.hour, ctx);
       forecastTotal+=b.total;
       actualTotal+=entry.value;
-      manHours+=hourCrewSize(b.hour, ctx);
+      manHours+=crewHours;
+      rows.push({hour:b.hour, label:hourClockStart(b.hour)+'\u2013'+hourClockEnd(b.hour), crewHours:crewHours, actual:entry.value, forecast:b.total});
     }
   });
+  rows.sort(function(a,b){return a.hour-b.hour;});
   var lpmh=manHours>0 ? (actualTotal/manHours) : 0;
-  return {actualTotal:actualTotal, forecastTotal:forecastTotal, manHours:manHours, lpmh:lpmh, hasData:hasData};
+  return {actualTotal:actualTotal, forecastTotal:forecastTotal, manHours:manHours, lpmh:lpmh, hasData:hasData, rows:rows};
 }
+
 
 // Renders the top summary bar: Forecast Total / Actual Total / Variance /
 // Completion % (with a progress ring) and a deadline-passed banner if the
@@ -7336,7 +7475,8 @@ function simulate(){
 
   // ── TAVG ──
   buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
-    shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMH,s1Lifts+s2Lifts,s1ManHours+s2ManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt,hourlyBuckets,liftLogPaceCtx);
+    shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMH,s1Lifts+s2Lifts,s1ManHours+s2ManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt,hourlyBuckets,liftLogPaceCtx,
+    {s1Lifts:s1Lifts,s2Lifts:s2Lifts,s1ManHours:s1ManHours,s2ManHours:s2ManHours,s1LunchDeduct:s1LunchHours+swingLunchHours,s2LunchDeduct:s2LunchHours,s1WorkedHours:s1WorkedHours,s2WorkedHours:crew2*nightHours});
 
   var totalCrewHours=(crew1*s1Hours)+(crew2*nightHours);
   var avgHeadcount=totalCrewHours/Math.max(0.1,(s1Hours+nightHours));
@@ -7365,7 +7505,7 @@ function simulate(){
   });}
 
 function buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
-  shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMHOverride,totalDisplayedLifts,totalDisplayedManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt,hourlyBuckets,liftLogPaceCtx){
+  shiftH,upsH,lunchH,lunch2H,ihosaUnits,mhoasUnits,ihosaLoaded,mhoasLoaded,rate,activeKeys,segs,zpbhoArr,crew1,crew2,s1Hours,nightHours,dailyLPMHOverride,totalDisplayedLifts,totalDisplayedManHours,ihosaLate,mhoasLate,ihosaCompletedAt,mhoasCompletedAt,hourlyBuckets,liftLogPaceCtx,fcstBreakdown){
   var contributors=[];
 
   trains.forEach(function(t){
@@ -7592,7 +7732,14 @@ renderTopGrades({
   avgDropH: avgDropH, simpleAvgDropH: simpleAvgDropH,
   actualLpmhRaw: actualLpmh, lpmhTargetRaw: LPMH_TARGET,
   forecastedLpmhRaw: forecastedLpmh,
-  liveLpmhRaw: liveLpmhData.lpmh, liveLpmhHasData: liveLpmhData.hasData
+  forecastedLpmhLifts: totalDisplayedLifts, forecastedLpmhManHours: totalDisplayedManHours,
+  forecastedLpmhIsOverride: typeof dailyLPMHOverride==='number',
+  forecastedLpmhBreakdown: fcstBreakdown,
+  forecastedLpmhCrew1: crew1, forecastedLpmhCrew2: crew2,
+  forecastedLpmhS1Hours: s1Hours, forecastedLpmhS2Hours: nightHours,
+  liveLpmhRaw: liveLpmhData.lpmh, liveLpmhHasData: liveLpmhData.hasData,
+  liveLpmhLifts: liveLpmhData.actualTotal, liveLpmhManHours: liveLpmhData.manHours,
+  liveLpmhForecastLifts: liveLpmhData.forecastTotal, liveLpmhRows: liveLpmhData.rows
 });
 
 document.getElementById('tavg-body').innerHTML=html + html2;
@@ -9947,7 +10094,7 @@ function printRampReport(){
 
 <!-- PERFORMANCE GRADE CARD INFO MODAL -->
 <div id="gradeinfo-overlay" class="gradeinfo-overlay" onclick="closeGradeInfoIfBg(event)">
-  <div class="gradeinfo-modal">
+  <div class="gradeinfo-modal" id="gradeinfo-modal">
     <div class="note-head">
       <div class="note-title" id="gradeinfo-title">HOW THIS IS GRADED</div>
       <button class="ho-close" onclick="closeGradeInfo()">&#x2715;</button>
