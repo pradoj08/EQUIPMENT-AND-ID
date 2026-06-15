@@ -965,20 +965,56 @@ input[type=range]::-webkit-slider-thumb{
 
 
 /* ── TIMELINE ───────────────────────────────────────────────────── */
-.seq{display:flex;flex-direction:column;gap:4px;}
-.seq-item{display:grid;grid-template-columns:64px 20px 1fr;gap:14px;align-items:flex-start;}
-.seq-time-col{padding-top:14px;text-align:right;display:flex;flex-direction:column;gap:2px;}
+.seq-compare-heads{display:grid;grid-template-columns:1fr 84px 1fr;gap:0 14px;margin-bottom:14px;}
+.seq-col-head{display:flex;align-items:center;gap:8px;}
+.seq-col-head-actual{grid-column:3;}
+.seq-col-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:var(--cond);}
+.seq-col-title-fcst{color:var(--text3);}
+.seq-col-title-actual{color:var(--blue);}
+
+.seq-merged{display:flex;flex-direction:column;}
+.seq-row{display:grid;grid-template-columns:1fr 84px 1fr;gap:0 14px;align-items:stretch;}
+.seq-row-fcst,.seq-row-actual{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;min-width:0;}
+.seq-row-fcst{align-items:stretch;}
+.seq-row-actual{align-items:stretch;}
+.seq-row-fcst:empty,.seq-row-actual:empty{padding-bottom:0;}
+/* Empty-side placeholder so the row still reads as a deliberate gap rather
+   than a missing render. */
+.seq-row-empty{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  border:1px dashed var(--border);border-radius:9px;
+  color:var(--text3);font-size:11px;font-style:italic;
+  padding:14px 16px;min-height:54px;
+}
+.seq-row-spine{display:flex;flex-direction:column;align-items:center;}
+.seq-row-spine .seq-time{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text2);line-height:1;text-align:center;padding-top:2px;}
+.seq-row-spine .seq-elapsed{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--text3);text-align:center;margin-top:2px;}
+.seq-row-spine .seq-dot-col{display:flex;flex-direction:column;align-items:center;flex:1;padding-top:8px;}
+
+@media (max-width:860px){
+  .seq-compare-heads{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+  .seq-col-head-actual{grid-column:auto;}
+  .seq-row{grid-template-columns:1fr;gap:8px;}
+  .seq-row-spine{display:none;}
+  .seq-row-fcst::before,.seq-row-actual::before{
+    content:attr(data-label);display:block;font-size:9px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--text3);margin-bottom:2px;
+  }
+  .seq-row-fcst:empty::before,.seq-row-actual:empty::before{content:none;}
+  .seq-row-fcst{order:1;padding-bottom:4px;}
+  .seq-row-actual{order:2;padding-bottom:14px;}
+}
+
 .seq-time{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text2);line-height:1;}
 .seq-time-now{color:var(--amber);}
 .seq-elapsed{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--text3);}
 .seq-elapsed-now{color:rgba(245,158,11,0.65);}
-.seq-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:18px;}
 .seq-dot{width:14px;height:14px;border-radius:50%;border:2px solid;background:var(--bg2);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .seq-dot-core{width:5px;height:5px;border-radius:50%;background:var(--text3);}
 .seq-dot-now{background:rgba(245,158,11,0.12);border-color:var(--amber);width:18px;height:18px;box-shadow:0 0 12px rgba(245,158,11,0.55);}
 .seq-dot-now .seq-dot-core{background:var(--amber);width:7px;height:7px;box-shadow:0 0 8px rgba(245,158,11,0.8);}
 .seq-line{width:1px;background:var(--border2);flex:1;min-height:30px;margin-top:4px;border-left:1px dashed var(--border2);}
-.seq-block{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.seq-block{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
 .seq-block-body{flex:1;min-width:0;}
 .seq-icon{flex-shrink:0;display:flex;align-items:center;}
 .seq-now{border-color:rgba(245,158,11,0.5);background:linear-gradient(90deg,rgba(245,158,11,0.10),rgba(245,158,11,0.02));position:relative;overflow:hidden;}
@@ -1881,19 +1917,25 @@ body.print-mode .time-lbl{
   #print-report .tavg-bar-wrap{background:#eee!important;}
   #print-report .tavg-bar{background:#777!important;}
 
-  #print-report .seq{gap:0!important;}
-  #print-report .seq-item{display:grid!important;grid-template-columns:52px 12px 1fr!important;gap:7px!important;page-break-inside:avoid!important;}
+  #print-report .seq-merged{display:flex!important;flex-direction:column!important;gap:0!important;}
+  #print-report .seq-row{display:grid!important;grid-template-columns:1fr 40px 1fr!important;gap:6px!important;page-break-inside:avoid!important;}
+  #print-report .seq-row-fcst,#print-report .seq-row-actual{display:flex!important;flex-direction:column!important;gap:5px!important;padding-bottom:6px!important;}
+  #print-report .seq-row-empty{border-color:#ccc!important;color:#777!important;font-size:8.5px!important;padding:6px 8px!important;min-height:0!important;}
   #print-report .seq-time{color:#111!important;font-size:8.5px!important;padding-top:8px!important;}
+  #print-report .seq-row-spine{padding-top:0!important;}
   #print-report .seq-dot-col{padding-top:10px!important;}
   #print-report .seq-dot{width:7px!important;height:7px!important;border-color:#555!important;background:#fff!important;}
   #print-report .seq-line{background:#bbb!important;min-height:14px!important;}
-  #print-report .seq-block{background:#fff!important;border-color:#888!important;padding:6px 8px!important;border-radius:5px!important;margin-bottom:5px!important;}
+  #print-report .seq-block{background:#fff!important;border-color:#888!important;padding:6px 8px!important;border-radius:5px!important;}
   #print-report .seq-headline{color:#111!important;font-size:9.5px!important;}
   #print-report .seq-meta{color:#111!important;font-size:8.5px!important;}
   #print-report .seq-pill,.now-pill,.badge{background:#eee!important;color:#111!important;border:1px solid #999!important;}
   #print-report .seq-icon,#print-report .seq-now-graphic,#print-report .seq-now-arrow{display:none!important;}
-  #print-report .seq-time-col{padding-top:8px!important;}
   #print-report .seq-elapsed{display:none!important;}
+  #print-report .seq-compare-heads{display:grid!important;grid-template-columns:1fr 40px 1fr!important;gap:6px!important;margin-bottom:6px!important;}
+  #print-report .seq-col-head-actual{grid-column:3!important;}
+  #print-report .seq-col-title{font-size:8.5px!important;}
+  #print-report .seq-col-title-fcst,#print-report .seq-col-title-actual{color:#111!important;}
 }
 
 
@@ -2589,7 +2631,13 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         <span style="font-size:9px;color:var(--text3);">ALL TIMES LOCAL</span>
         <span class="collapse-chevron" style="margin-left:auto;">&#x25B2;</span>
       </div>
-      <div class="panel-body panel-content"><div class="seq" id="seq-timeline"></div></div>
+      <div class="panel-body panel-content">
+        <div class="seq-compare-heads">
+          <div class="seq-col-head"><span class="seq-col-title seq-col-title-fcst">Forecasted</span></div>
+          <div class="seq-col-head seq-col-head-actual"><span class="seq-col-title seq-col-title-actual">Actual &mdash; Imported Data</span></div>
+        </div>
+        <div class="seq-merged" id="seq-merged"></div>
+      </div>
     </div>
 
     <div class="tavg-panel collapsible-panel collapsed" id="panel-tavg">
@@ -6123,36 +6171,35 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
 //   gapLabel  — label shown on downtime/gap cards (default '\u26A0 DOWNTIME')
 //   gapText   — fn(hours) -> text for the gap card body
 //   emptyMsg  — message when there's no activity to map at all
-function renderTimeMap(elId, buckets, opts){
+// Groups consecutive hourly lift buckets (each {hour,total,sources,isBreak,
+// breakLabels}) that share the same dominant source into single steps, so a
+// long IHOSA or MHOAS run becomes one labeled block instead of one staircase
+// step per hour. Hours with zero lift activity that AREN'T a scheduled break
+// become their own "downtime"/gap group instead of being silently skipped, so
+// gaps between active groups are visible. Leading/trailing gaps are dropped.
+// Shared by the Hourly Lift Time Map (forecast + actual) and the Day Timeline
+// "Actual" comparison column.
+function groupLiftBuckets(buckets,opts){
   opts=opts||{};
-  var el=document.getElementById(elId);
-  if(!el) return;
-
-  var active=buckets.filter(function(b){return b.total>0;});
-  if(!active.length){
-    el.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px 0;">'+(opts.emptyMsg||'No lift activity to map yet.')+'</div>';
-    return;
-  }
-
   function dominantOf(b){
     return b.sources.slice().sort(function(a,c){return c.lifts-a.lifts;})[0];
   }
-
-  // Group consecutive hours that share the same dominant source into one step,
-  // so a long IHOSA or MHOAS run renders as a single labeled block instead of
-  // one staircase step per hour. Source totals are summed across the group.
-  // Hours with zero lift activity that AREN'T a scheduled break (lunch, etc.)
-  // are called out as their own "downtime" group instead of being silently
-  // skipped, so a gap like 0800-0859 between two active hours is visible.
   var groups=[];
   buckets.forEach(function(b){
     if(b.total<=0){
-      if(b.isBreak) return; // scheduled breaks aren't "downtime" — leave them out of the map
+      // In normal mode, scheduled breaks aren't "downtime" and are left out of
+      // the map entirely. In keepEdgeGaps mode (full-day coverage, used by the
+      // Day Timeline comparison) breaks are folded into the adjacent gap group
+      // instead, so every hour 0-26 ends up in exactly one group.
+      if(b.isBreak && !opts.keepEdgeGaps) return;
       var last0=groups[groups.length-1];
       if(last0 && last0.key==='__gap__' && b.hour===last0.lastHour+1){
         last0.lastHour=b.hour;
+        if(b.isBreak) last0.breakLabels=(last0.breakLabels||[]).concat(b.breakLabels?[b.breakLabels]:[]);
+        else last0.hasUnlogged=true;
       } else {
-        groups.push({key:'__gap__',color:'#EF4444',firstHour:b.hour,lastHour:b.hour,total:0,sourceTotals:{},isGap:true});
+        groups.push({key:'__gap__',color:'#EF4444',firstHour:b.hour,lastHour:b.hour,total:0,sourceTotals:{},isGap:true,
+          breakLabels:b.isBreak&&b.breakLabels?[b.breakLabels]:[], hasUnlogged:!b.isBreak});
       }
       return;
     }
@@ -6173,22 +6220,38 @@ function renderTimeMap(elId, buckets, opts){
       groups.push({key:key,color:dom?dom.color:'#F59E0B',firstHour:b.hour,lastHour:b.hour,total:b.total,sourceTotals:sourceTotals});
     }
   });
-  // Drop leading/trailing gap groups (idle time before the day starts or after
-  // it ends isn't "downtime" worth flagging — only gaps between active groups are).
-  while(groups.length && groups[0].isGap) groups.shift();
-  while(groups.length && groups[groups.length-1].isGap) groups.pop();
+  if(!opts.keepEdgeGaps){
+    while(groups.length && groups[0].isGap) groups.shift();
+    while(groups.length && groups[groups.length-1].isGap) groups.pop();
+  }
+  return groups;
+}
+// Hour-range label helpers shared by the time maps and the Day Timeline
+// "Actual" column. h is 0-26 (24-26 represent 0000-0259 the next day).
+function hourClockStart(h){
+  return String(h%24).padStart(2,'0')+'00'+(h>=24?' (+1)':'');
+}
+function hourClockEnd(h){
+  return String(h%24).padStart(2,'0')+'59'+(h>=24?' (+1)':'');
+}
+function hourRangeLabel(g){
+  if(g.firstHour===g.lastHour) return hourClockStart(g.firstHour)+'\u2013'+hourClockEnd(g.firstHour);
+  return hourClockStart(g.firstHour)+'\u2013'+hourClockEnd(g.lastHour);
+}
 
-  function hourStart(h){
-    return String(h%24).padStart(2,'0')+'00'+(h>=24?' (+1)':'');
-  }
-  function hourEnd(h){
-    return String(h%24).padStart(2,'0')+'59'+(h>=24?' (+1)':'');
-  }
-  function rangeLabel(g){
-    if(g.firstHour===g.lastHour) return hourStart(g.firstHour)+'\u2013'+hourEnd(g.firstHour);
-    return hourStart(g.firstHour)+'\u2013'+hourEnd(g.lastHour);
+function renderTimeMap(elId, buckets, opts){
+  opts=opts||{};
+  var el=document.getElementById(elId);
+  if(!el) return;
+
+  var active=buckets.filter(function(b){return b.total>0;});
+  if(!active.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:11px;padding:6px 0;">'+(opts.emptyMsg||'No lift activity to map yet.')+'</div>';
+    return;
   }
 
+  var groups=groupLiftBuckets(buckets);
+  var hourStart=hourClockStart, hourEnd=hourClockEnd, rangeLabel=hourRangeLabel;
   var CLOCK_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
   var ALERT_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
 
@@ -6272,6 +6335,41 @@ function renderTimeMap(elId, buckets, opts){
     +'<div class="timemap-legend">'+legend+'</div>';
 }
 
+// Converts the rendered forecast hourly buckets into "actual" buckets based
+// on logged hourly actuals (Hourly Lift Log manual entry / import). Each hour
+// with a logged actual gets its value split evenly across the selected work
+// type(s) (or attributed to a generic "Logged actual" source if none were
+// selected); hours with no logged actual carry over isBreak/breakLabels so
+// scheduled breaks aren't flagged as gaps, but unlogged active hours become
+// gap groups when grouped via groupLiftBuckets. Shared by the "Actual" Hourly
+// Lift Time Map and the Day Timeline "Actual" comparison column.
+function actualLiftBuckets(forecastBuckets,activeKeys,trainLabelMap){
+  var actuals=loadHourlyActuals();
+  var optionList=liftSourceOptionList(activeKeys,trainLabelMap);
+  var optionMap={};
+  optionList.forEach(function(o){ if(o.key) optionMap[o.key]=o.label; });
+
+  return forecastBuckets.map(function(fb){
+    var entry=normalizeActualEntry(actuals[fb.hour]);
+    var val=entry.value;
+    var hasActual=val!=null && Number.isFinite(val);
+    if(!hasActual){
+      return {hour:fb.hour,total:0,sources:[],isBreak:fb.isBreak,breakLabels:fb.breakLabels};
+    }
+    var srcs=entry.srcs.filter(function(s){return !!s;});
+    var sources;
+    if(srcs.length){
+      var per=val/srcs.length;
+      sources=srcs.map(function(k){
+        return {key:k,label:optionMap[k]||(trainLabelMap[k]||k)+' drop',lifts:Math.round(per),color:liftSourceColor(k,trainLabelMap)};
+      });
+    } else {
+      sources=[{key:'actual',label:'Logged actual',lifts:Math.round(val),color:'#4a9eff'}];
+    }
+    return {hour:fb.hour,total:Math.round(val),sources:sources,isBreak:false};
+  });
+}
+
 function buildHourlyLiftTimeMap(buckets,paceCtx){
   renderTimeMap('lift-log-timemap', buckets, {
     which:'forecast',
@@ -6288,33 +6386,7 @@ function buildHourlyLiftTimeMap(buckets,paceCtx){
 // actual lift count (split evenly across selected work types when more than
 // one is selected).
 function buildHourlyLiftTimeMapActual(forecastBuckets,activeKeys,trainLabelMap,paceCtx){
-  var actuals=loadHourlyActuals();
-  var optionList=liftSourceOptionList(activeKeys,trainLabelMap);
-  var optionMap={};
-  optionList.forEach(function(o){ if(o.key) optionMap[o.key]=o.label; });
-
-  var buckets=forecastBuckets.map(function(fb){
-    var entry=normalizeActualEntry(actuals[fb.hour]);
-    var val=entry.value;
-    var hasActual=val!=null && Number.isFinite(val);
-    if(!hasActual){
-      // No actual logged for this hour — carry over isBreak/breakLabels so
-      // scheduled breaks are still excluded from the downtime gaps, but
-      // unlogged active hours show as gaps (logging is incomplete there).
-      return {hour:fb.hour,total:0,sources:[],isBreak:fb.isBreak,breakLabels:fb.breakLabels};
-    }
-    var srcs=entry.srcs.filter(function(s){return !!s;});
-    var sources;
-    if(srcs.length){
-      var per=val/srcs.length;
-      sources=srcs.map(function(k){
-        return {key:k,label:optionMap[k]||(trainLabelMap[k]||k)+' drop',lifts:Math.round(per),color:liftSourceColor(k,trainLabelMap)};
-      });
-    } else {
-      sources=[{key:'actual',label:'Logged actual',lifts:Math.round(val),color:'#4a9eff'}];
-    }
-    return {hour:fb.hour,total:Math.round(val),sources:sources,isBreak:false};
-  });
+  var buckets=actualLiftBuckets(forecastBuckets,activeKeys,trainLabelMap);
 
   renderTimeMap('lift-log-timemap-actual', buckets, {
     which:'actual',
@@ -6325,6 +6397,160 @@ function buildHourlyLiftTimeMapActual(forecastBuckets,activeKeys,trainLabelMap,p
     paceCtx:paceCtx
   });
 }
+
+// Builds the merged Day Timeline comparison: one shared spine (time + dot +
+// connecting line) with the forecasted event sequence on the left and the
+// "Actual — Imported Data" sequence (derived from logged hourly actuals) on
+// the right, row-aligned by time window so corresponding periods sit side by
+// side. Row boundaries come from the actual side's hour-window groups (full
+// 0-26 coverage via groupLiftBuckets's keepEdgeGaps mode); each forecast event
+// is placed in the row whose hour window contains it. The NOW marker becomes
+// its own full-width row inserted at the matching position on both sides.
+function buildMergedDayTimeline(events,currentTime,s1Start,hourlyBuckets,segs,activeKeys,trainLabelMap,paceCtx){
+  var el=document.getElementById('seq-merged');
+  if(!el) return;
+
+  // ── Actual-side row groups (full 0-26 coverage) ──
+  var withBreaks=hourlyBuckets.map(function(b){
+    var isBreak=false, breakLabels='';
+    if(b.total<=0){
+      var overlaps=getDelayIntervals(segs,b.hour,b.hour+1);
+      if(overlaps.length>0){ isBreak=true; breakLabels=overlaps.map(function(d){return d.label;}).join(' + '); }
+    }
+    return {hour:b.hour,total:b.total,sources:b.sources,isBreak:isBreak,breakLabels:breakLabels};
+  });
+  var actualBuckets=actualLiftBuckets(withBreaks,activeKeys,trainLabelMap);
+  var groups=groupLiftBuckets(actualBuckets,{keepEdgeGaps:true});
+
+  if(!groups.length || !events.length){
+    el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);">No events</div>';
+    return;
+  }
+
+  // ── Forecast-side events, NOW marker pulled out separately ──
+  var fcstEvents=events.filter(function(e){return !e.isNow;});
+
+  // Bucket each forecast event into the actual-row whose hour window contains
+  // it (clamped to the covered range so out-of-range times land on an edge row).
+  var maxHour=groups[groups.length-1].lastHour;
+  function rowIndexForTime(t){
+    var h=Math.max(0,Math.min(maxHour,Math.floor(t)));
+    for(var i=0;i<groups.length;i++){
+      if(h>=groups[i].firstHour && h<=groups[i].lastHour) return i;
+    }
+    return groups.length-1;
+  }
+  var fcstByRow=groups.map(function(){return [];});
+  fcstEvents.forEach(function(e){ fcstByRow[rowIndexForTime(e.time)].push(e); });
+
+  // Position the NOW marker: the row whose hour window contains currentTime.
+  var nowRow=(currentTime>0&&currentTime<27) ? rowIndexForTime(currentTime) : -1;
+
+  function groupManHours(g){
+    var mh=0;
+    for(var h=g.firstHour; h<=g.lastHour; h++) mh += hourCrewSize(h,paceCtx);
+    return mh;
+  }
+
+  // ── Per-event forecast mini-block (left column) ──
+  function fcstBlockHtml(e){
+    var past=e.time<currentTime;
+    var sc=e.status?'seq-'+e.status:'';
+    var pillHtml='<span class="seq-pill" style="background:'+e.pillBg+';color:'+e.pillColor+';">'+e.pill+'</span>';
+    return '<div class="seq-block '+(past?'seq-past':'')+' '+sc+'" style="border-color:'+e.color+'40;">'
+      +'<div class="seq-block-body"><div class="seq-headline">'+pillHtml+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div>'
+      +'<div class="seq-icon">'+seqIcon(e.pill,e.color)+'</div>'
+      +'</div>';
+  }
+
+  // ── Per-group actual block (right column) ──
+  function actualBlockHtml(g){
+    var rangeTxt=hourRangeLabel(g);
+    if(g.isGap){
+      var hours=g.lastHour-g.firstHour+1;
+      var color='#EF4444';
+      if(g.breakLabels && g.breakLabels.length && !g.hasUnlogged){
+        // Entire window is a scheduled break — not a logging gap.
+        return '<div class="seq-block" style="border-color:var(--border);">'
+          +'<div class="seq-block-body"><div class="seq-headline"><span class="seq-pill" style="background:rgba(255,255,255,0.06);color:var(--text3);">BREAK</span>'+rangeTxt+'</div>'
+          +'<div class="seq-meta">'+escHtml(g.breakLabels.join(' + '))+'</div></div>'
+          +'</div>';
+      }
+      var noteTxt=g.breakLabels && g.breakLabels.length
+        ? 'No actuals logged ('+hours+'h, includes '+escHtml(g.breakLabels.join(' + '))+') \u2014 enter hourly actuals in the Lift Log to fill this window.'
+        : 'No actuals logged ('+hours+'h) \u2014 enter hourly actuals in the Lift Log to fill this window.';
+      return '<div class="seq-block seq-bad" style="border-color:'+color+'40;">'
+        +'<div class="seq-block-body"><div class="seq-headline"><span class="seq-pill" style="background:'+color+'22;color:'+color+';">NOT LOGGED</span>'+rangeTxt+'</div>'
+        +'<div class="seq-meta">'+noteTxt+'</div></div>'
+        +'</div>';
+    }
+    var srcKeys=Object.keys(g.sourceTotals);
+    var dominant=srcKeys.map(function(k){return g.sourceTotals[k];}).sort(function(a,b){return b.lifts-a.lifts;})[0];
+    var color=dominant?dominant.color:'#4a9eff';
+    var pillLabel=dominant?dominant.label:'ACTUAL';
+    var breakdown=srcKeys.map(function(k){
+      var s=g.sourceTotals[k];
+      return s.label+': '+s.lifts;
+    }).join(', ');
+    var mh=groupManHours(g);
+    var lpmhTxt=mh>0?(' \u00b7 '+(g.total/mh).toFixed(2)+' LPMH'):'';
+    var pillHtml='<span class="seq-pill" style="background:'+color+'22;color:'+color+';">'+escHtml(pillLabel)+'</span>';
+    return '<div class="seq-block seq-ok" style="border-color:'+color+'40;">'
+      +'<div class="seq-block-body"><div class="seq-headline">'+pillHtml+rangeTxt+'</div>'
+      +'<div class="seq-meta">'+g.total+' lifts logged'+lpmhTxt+' \u2014 '+escHtml(breakdown)+'</div></div>'
+      +'<div class="seq-icon">'+seqIcon(pillLabel,color)+'</div>'
+      +'</div>';
+  }
+
+  var EMPTY_FCST='<div class="seq-row-empty">No forecast events in this window</div>';
+  var EMPTY_ACTUAL='<div class="seq-row-empty">No actual data for this window</div>';
+
+  function nowBlockHtml(time){
+    var elapsed=fmtElapsed(time-s1Start);
+    return {
+      time:fmtH(time), elapsed:elapsed,
+      html:'<div class="seq-block seq-now"><div class="seq-now-arrow"></div><div class="seq-now-body"><div class="seq-headline"><span class="now-pill">NOW</span>Current time</div><div class="seq-meta">Live operational position</div></div><div class="seq-now-graphic"><svg viewBox="0 0 160 60" preserveAspectRatio="none" class="seq-now-svg"><path d="M0,30 C30,30 40,10 60,10 C80,10 80,45 100,45 C120,45 125,30 160,30" /><circle cx="160" cy="30" r="4" class="seq-now-dot"/></svg></div></div>'
+    };
+  }
+
+  var html='';
+  var totalRows=groups.length+(nowRow>=0?1:0);
+  var rendered=0;
+  groups.forEach(function(g,i){
+    if(i===nowRow){
+      rendered++;
+      var isLastNow=rendered===totalRows;
+      var lineHtml=isLastNow?'':'<div class="seq-line"></div>';
+      var now=nowBlockHtml(currentTime);
+      html+='<div class="seq-row">'
+        +'<div class="seq-row-fcst" data-label="Forecasted">'+now.html+'</div>'
+        +'<div class="seq-row-spine"><div class="seq-time seq-time-now">'+now.time+'</div><div class="seq-elapsed seq-elapsed-now">'+now.elapsed+'</div>'
+          +'<div class="seq-dot-col"><div class="seq-dot seq-dot-now"><div class="seq-dot-core"></div></div>'+lineHtml+'</div></div>'
+        +'<div class="seq-row-actual" data-label="Actual">'+now.html+'</div>'
+        +'</div>';
+    }
+
+    rendered++;
+    var isLast=rendered===totalRows;
+    var lineHtml2=isLast?'':'<div class="seq-line"></div>';
+    var elapsed=fmtElapsed(g.firstHour-s1Start);
+    var dotColor=g.isGap?(g.hasUnlogged?'#EF4444':'var(--border2)'):g.color;
+    var dotCore=dotColor;
+
+    var fcstHtml=fcstByRow[i].length ? fcstByRow[i].map(fcstBlockHtml).join('') : EMPTY_FCST;
+    var actualHtml=actualBlockHtml(g);
+
+    html+='<div class="seq-row">'
+      +'<div class="seq-row-fcst" data-label="Forecasted">'+fcstHtml+'</div>'
+      +'<div class="seq-row-spine"><div class="seq-time">'+fmtH(g.firstHour)+'</div><div class="seq-elapsed">'+elapsed+'</div>'
+        +'<div class="seq-dot-col"><div class="seq-dot" style="border-color:'+dotColor+';"><div class="seq-dot-core" style="background:'+dotCore+';"></div></div>'+lineHtml2+'</div></div>'
+      +'<div class="seq-row-actual" data-label="Actual">'+actualHtml+'</div>'
+      +'</div>';
+  });
+
+  el.innerHTML=html;
+}
+
 
 function sumHourBuckets(buckets,startHour,endHour){
   var total=0;
@@ -7106,29 +7332,7 @@ function simulate(){
     events.splice(nowIdx===-1?events.length:nowIdx,0,nowEvent);
   }
 
-  var seqHtml='';
-  events.forEach(function(e,i){
-    var isLast=i===events.length-1;
-    var lineHtml=isLast?'':'<div class="seq-line"></div>';
-    var elapsed=fmtElapsed(e.time-s1Start);
-    if(e.isNow){
-      seqHtml+='<div class="seq-item">';
-      seqHtml+='<div class="seq-time-col"><div class="seq-time seq-time-now">'+fmtH(e.time)+'</div><div class="seq-elapsed seq-elapsed-now">'+elapsed+'</div></div>';
-      seqHtml+='<div class="seq-dot-col"><div class="seq-dot seq-dot-now"><div class="seq-dot-core"></div></div>'+lineHtml+'</div>';
-      seqHtml+='<div class="seq-block seq-now"><div class="seq-now-arrow"></div><div class="seq-now-body"><div class="seq-headline"><span class="now-pill">NOW</span>'+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div><div class="seq-now-graphic"><svg viewBox="0 0 160 60" preserveAspectRatio="none" class="seq-now-svg"><path d="M0,30 C30,30 40,10 60,10 C80,10 80,45 100,45 C120,45 125,30 160,30" /><circle cx="160" cy="30" r="4" class="seq-now-dot"/></svg></div></div>';
-      seqHtml+='</div>';
-    } else {
-      var past=e.time<currentTime;
-      var sc=e.status?'seq-'+e.status:'';
-      var pillHtml='<span class="seq-pill" style="background:'+e.pillBg+';color:'+e.pillColor+';">'+e.pill+'</span>';
-      seqHtml+='<div class="seq-item">';
-      seqHtml+='<div class="seq-time-col"><div class="seq-time">'+fmtH(e.time)+'</div><div class="seq-elapsed">'+elapsed+'</div></div>';
-      seqHtml+='<div class="seq-dot-col"><div class="seq-dot" style="border-color:'+e.color+';"><div class="seq-dot-core" style="background:'+e.color+';"></div></div>'+lineHtml+'</div>';
-      seqHtml+='<div class="seq-block '+(past?'seq-past':'')+' '+sc+'" style="border-color:'+e.color+'40;"><div class="seq-block-body"><div class="seq-headline">'+pillHtml+e.title+'</div><div class="seq-meta">'+e.meta+'</div></div><div class="seq-icon">'+seqIcon(e.pill,e.color)+'</div></div>';
-      seqHtml+='</div>';
-    }
-  });
-  document.getElementById('seq-timeline').innerHTML=seqHtml||'<div style="padding:24px;text-align:center;color:var(--text3);">No events</div>';
+  buildMergedDayTimeline(events,currentTime,s1Start,hourlyBuckets,segs,activeKeys,trainLabelMap,liftLogPaceCtx);
 
   // ── TAVG ──
   buildTavg(trains,trainDropEnd,trainArrivalTimes,ihosaPivot,mhoasPivot,
@@ -9201,9 +9405,12 @@ function prLiveSection(title, selector, emptyText){
   return '<div class="pr-live-section"><div class="pr-live-title">'+prEsc(title)+'</div><div class="pr-live-grid">'+html+'</div></div>';
 }
 function prTimelineSection(){
-  var html=prCloneHtml('#seq-timeline');
-  if(!html || html.replace(/<[^>]*>/g,'').trim()==='') html='<div class="pr-note-box">No timeline events shown on dashboard.</div>';
-  return '<div class="pr-live-section"><div class="pr-live-title">Timeline — same event sequence shown on page</div>'+html+'</div>';
+  var heads=prCloneHtml('#panel-timeline .seq-compare-heads');
+  var merged=prCloneHtml('#seq-merged');
+  if(!merged || merged.replace(/<[^>]*>/g,'').trim()===''){
+    return '<div class="pr-live-section"><div class="pr-live-title">Timeline \u2014 same event sequence shown on page</div><div class="pr-note-box">No timeline events shown on dashboard.</div></div>';
+  }
+  return '<div class="pr-live-section"><div class="pr-live-title">Timeline \u2014 forecast vs actual, same comparison shown on page</div>'+(heads||'')+merged+'</div>';
 }
 function prNotesBox(){
   var notes=(document.getElementById('field-notes-input')||{}).value||'';
