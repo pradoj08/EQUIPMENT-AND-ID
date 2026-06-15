@@ -124,6 +124,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
   background-clip:text;
 }
 .brand-tagline{font-size:8px;color:var(--text3);font-family:var(--mono);letter-spacing:0.14em;text-transform:uppercase;margin-top:2px;}
+.prestige-rank-badge{
+  display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;
+  background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);
+  color:var(--amber);font-weight:700;letter-spacing:0.08em;
+}
 
 .tb-sep{width:1px;height:30px;background:var(--border2);flex-shrink:0;}
 
@@ -159,6 +164,28 @@ input[type=time]:focus{outline:none;}
   cursor:pointer;letter-spacing:0.08em;transition:all 0.15s;white-space:nowrap;
 }
 .tb-btn:hover{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,0.07);}
+
+/* ── Topbar dropdown (Trends / Report Score) ── */
+.tb-dropdown{position:relative;display:inline-flex;}
+.tb-dropdown-menu{
+  display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:200;
+  min-width:180px;background:var(--surface);border:1px solid var(--border2);
+  border-radius:8px;box-shadow:0 12px 32px rgba(0,0,0,0.45);overflow:hidden;
+  flex-direction:column;padding:4px;
+}
+.tb-dropdown.open .tb-dropdown-menu{display:flex;}
+.tb-dropdown-item{
+  display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:6px;
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.08em;
+  color:var(--text2);background:transparent;border:none;cursor:pointer;
+  text-align:left;white-space:nowrap;transition:all 0.12s;
+}
+.tb-dropdown-item:hover{background:rgba(245,158,11,0.08);color:var(--amber);}
+.rs-dropdown-badge{
+  margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:800;
+  background:rgba(16,185,129,0.16);color:var(--green);border-radius:999px;
+  padding:1px 7px;line-height:1.4;
+}
 
 /* ── LAYOUT ──────────────────────────────────────────────────────── */
 .app-body{display:grid;grid-template-columns:350px 1fr;flex:1;overflow:hidden;min-height:0;}
@@ -1990,12 +2017,7 @@ body:not(.print-mode) > .topbar::after{
 body:not(.print-mode) > .topbar .brand{gap:18px;}
 body:not(.print-mode) > .topbar .brand-mark{
   width:76px;height:76px;
-  font-size:0;
-}
-body:not(.print-mode) > .topbar .brand-mark::before{
-  content:'🚂';
-  font-size:54px;
-  transform:translateY(-1px);
+  font-size:54px;line-height:76px;text-align:center;
 }
 body:not(.print-mode) > .topbar .brand-name{
   font-family:var(--font);
@@ -2012,6 +2034,9 @@ body:not(.print-mode) > .topbar .brand-tagline{
   font-size:16px;
   letter-spacing:0.23em;
   color:rgba(255,255,255,0.46);
+}
+body:not(.print-mode) > .topbar .prestige-rank-badge{
+  font-size:11px;letter-spacing:0.06em;vertical-align:middle;
 }
 body:not(.print-mode) > .topbar .tb-sep{height:58px;background:rgba(255,255,255,0.10);}
 body:not(.print-mode) > .topbar .tb-time-wrap{
@@ -2100,9 +2125,8 @@ body:not(.print-mode) > .topbar .brand{
 body:not(.print-mode) > .topbar .brand-mark{
   width:61px !important;
   height:61px !important;
-}
-body:not(.print-mode) > .topbar .brand-mark::before{
   font-size:44px !important;
+  line-height:61px !important;
 }
 body:not(.print-mode) > .topbar .brand-name{
   font-size:32px !important;
@@ -2294,10 +2318,10 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="brand">
-    <div class="brand-mark">🚂</div>
+    <div class="brand-mark" id="prestige-emblem" onclick="openAchievementsPanel()" style="cursor:pointer;" title="Click to view your achievements">🚂</div>
     <div>
       <div class="brand-name">Settegast</div>
-      <div class="brand-tagline">Terminal Forecastor</div>
+      <div class="brand-tagline">Terminal Forecastor <span id="prestige-rank-badge" class="prestige-rank-badge">P0 &middot; R1</span></div>
     </div>
   </div>
   
@@ -2317,7 +2341,14 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 
   <button class="tb-btn" onclick="togglePPEScreen()" id="ppe-toggle-btn">PPE</button>
 
-  <button class="tb-btn" onclick="showTrends()" id="trends-toggle-btn">&#x1F4C8; TRENDS</button>
+  <div class="tb-dropdown" id="trends-dropdown">
+    <button class="tb-btn" onclick="toggleTrendsDropdown(event)" id="trends-toggle-btn">&#x1F4C8; TRENDS &#x25BE;</button>
+    <div class="tb-dropdown-menu">
+      <button class="tb-dropdown-item" onclick="closeTrendsDropdown();showTrends();">&#x1F4C8; Trends</button>
+      <button class="tb-dropdown-item" onclick="closeTrendsDropdown();showReportScore();">&#x1F3C6; Report Score <span id="rs-dropdown-badge" class="rs-dropdown-badge">0</span></button>
+      <button class="tb-dropdown-item" onclick="closeTrendsDropdown();showPrestige();">&#x1F396;&#xFE0F; Prestige <span id="prestige-dropdown-badge" class="rs-dropdown-badge">P0/R1</span></button>
+    </div>
+  </div>
 
 
   <div class="tb-controls">
@@ -3905,6 +3936,32 @@ body.print-mode .ho-header{background:#E4E8F4;}
 .lpmh-breakdown-result{margin-top:14px;padding-top:12px;border-top:1px solid var(--border2);font-size:13px;color:var(--text2);}
 .lpmh-breakdown-result .lpmh-bd-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);}
 
+/* ── Achievements panel ── */
+.ach-summary{display:flex;gap:10px;margin-bottom:14px;}
+.ach-summary-stat{flex:1;text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border2);}
+.ach-summary-val{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--amber);}
+.ach-summary-label{font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-top:2px;}
+.ach-section-title{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);margin:14px 0 8px;}
+.ach-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+.ach-table th{
+  text-align:right;font-family:var(--cond);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text3);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--border2);
+}
+.ach-table th:first-child,.ach-table td:first-child{text-align:left;}
+.ach-table td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text);}
+.ach-table .ach-xp-each{color:var(--text3);}
+.ach-table tr.ach-row-empty td{color:var(--text3);opacity:0.55;}
+.ach-note{font-size:11px;color:var(--text3);line-height:1.5;margin-top:8px;}
+.ach-emblem-gallery{display:flex;flex-wrap:wrap;gap:10px;}
+.ach-emblem{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 12px;border-radius:10px;background:var(--bg3);border:1px solid var(--border2);min-width:64px;
+}
+.ach-emblem.current{border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.08);box-shadow:0 0 16px rgba(245,158,11,0.10);}
+.ach-emblem-icon{font-size:28px;line-height:1;}
+.ach-emblem-label{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--text3);}
+.ach-emblem.current .ach-emblem-label{color:var(--amber);}
+
 /* ── Milestone toasts ── */
 .milestone-toast-stack{
   position:fixed;right:18px;bottom:54px;z-index:1100;
@@ -4298,7 +4355,7 @@ function goToScreen(screenId, toggleBtnId, onLabel, offLabel){
   const isAlreadyActive = target.classList.contains('active-screen');
 
   document.getElementById('ppe-toggle-btn').textContent = 'PPE';
-  document.getElementById('trends-toggle-btn').innerHTML = '&#x1F4C8; TRENDS';
+  document.getElementById('trends-toggle-btn').innerHTML = '&#x1F4C8; TRENDS &#x25BE;';
 
   document.querySelectorAll('.screen').forEach(function(el){
     el.classList.remove('active-screen');
@@ -4370,7 +4427,9 @@ document.addEventListener('DOMContentLoaded', function(){
   var sbBtn = document.getElementById('sidebar-toggle-btn');
   if(sbBtn) sbBtn.textContent = 'HIDE INPUTS';
   var trendsBtn = document.getElementById('trends-toggle-btn');
-  if(trendsBtn) trendsBtn.innerHTML = '&#x1F4C8; TRENDS';
+  if(trendsBtn) trendsBtn.innerHTML = '&#x1F4C8; TRENDS &#x25BE;';
+  refreshReportScoreBadge();
+  refreshPrestigeBadge();
 });
 
 var trainCount=2;
@@ -4397,6 +4456,7 @@ var PROFILES_KEY = 'settegast_profiles_v1';
 var AUTOLOAD_KEY = 'settegast_autoload_v1';
 var TRENDS_KEY   = 'settegast_trends_v1';
 var HOURLY_ACTUALS_KEY = 'settegast_hourly_actuals_v1';
+var REPORT_SCORE_KEY = 'settegast_report_score_v1';
 
 // Whether each Hourly Lift Time Map (forecast / actual) is in "fit to width"
 // mode (shrinks nodes/cards to fit the panel width instead of horizontally
@@ -4646,6 +4706,7 @@ function checkMilestones(state){
   if(!cb.fired && state.lpmhOnTarget && cb.worstDeficit>=COMEBACK_THRESHOLD){
     showMilestoneToast('<strong>Comeback!</strong> Recovered from '+cb.worstDeficit.toFixed(2)+' SHORT to ON TARGET ('+state.liveLpmh.toFixed(2)+' / '+state.lpmhTarget.toFixed(2)+').', {tone:'good',icon:lpmhIcon('flame')});
     cb.fired=true;
+    awardPrestigeXP('comeback','comeback:'+reportCycle());
   }
   window._comebackState=cb;
 
@@ -4657,14 +4718,23 @@ function checkMilestones(state){
   }
   if(state.ihosaDone && !prev.ihosaDone){
     showMilestoneToast('<strong>IHOSA released on time</strong> &mdash; commitment fully loaded before the 1700 deadline.', {tone:'good'});
+    awardPrestigeXP('ihosaOnTime','ihosaOnTime:'+reportCycle());
   }
   if(state.mhoasDone && !prev.mhoasDone){
     showMilestoneToast('<strong>MHOAS released on time</strong> &mdash; commitment fully loaded before the 0300 deadline.', {tone:'good'});
+    awardPrestigeXP('mhoasOnTime','mhoasOnTime:'+reportCycle());
   }
   if(state.lpmhOnTarget && !prev.lpmhOnTarget && state.liveHasData){
     showMilestoneToast('<strong>Live LPMH crossed target</strong> &mdash; current pace ('+state.liveLpmh.toFixed(2)+') is at or above goal ('+state.lpmhTarget.toFixed(2)+').', {tone:'good',icon:lpmhIcon('flame')});
+    awardPrestigeXP('lpmhCrossed','lpmhCrossed:'+reportCycle());
   }
   window._milestoneState=state;
+}
+// Current report cycle number (bumped each Reset Inputs). Used to give
+// per-report-scoped achievements (milestones, save) a fresh lifetime XP
+// slot each report without allowing infinite re-simulation farming.
+function reportCycle(){
+  return loadReportScore().cycle||0;
 }
 
 
@@ -5573,6 +5643,205 @@ function loadHourlyActuals(){
 function saveHourlyActuals(map){
   try{ localStorage.setItem(HOURLY_ACTUALS_KEY, JSON.stringify(map)); }catch(e){ console.warn('localStorage write failed (hourly actuals):', e); }
 }
+
+// ── REPORT SCORE (gamified per-report scoring, reset via Reset Inputs) ──
+// Each entry below is a one-time-awardable "achievement" for the current
+// report. `events` is a set of award keys (strings) that have already been
+// granted; once a key is in the set it can never be awarded again, which is
+// what prevents gaming the score by editing the same hour repeatedly.
+//
+// Award categories, all worth 1 point each:
+//   fill:{hour}    - entered any actual value for that hour
+//   ontime:{hour}  - entered it within 1hr of the hour block ending
+//   target:{hour}  - that hour's actual LPMH met or beat the target
+//   save           - used the SAVE button at least once this report
+function loadReportScore(){
+  try{
+    var raw=JSON.parse(localStorage.getItem(REPORT_SCORE_KEY)||'{}');
+    return {
+      events: raw.events && typeof raw.events==='object' ? raw.events : {},
+      cycle: typeof raw.cycle==='number' ? raw.cycle : 0
+    };
+  }catch(e){ return {events:{}, cycle:0}; }
+}
+function saveReportScore(state){
+  try{ localStorage.setItem(REPORT_SCORE_KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage write failed (report score):', e); }
+}
+function resetReportScore(){
+  // Bump the cycle counter (used to give "save" a fresh lifetime XP slot
+  // each report) before clearing this report's events.
+  var prev=loadReportScore();
+  saveReportScore({events:{}, cycle:(prev.cycle||0)+1});
+  refreshReportScoreBadge();
+}
+// Awards `key` (1 point) if it hasn't been awarded yet this report. Returns
+// true if newly awarded, false if it was already present (no-op).
+function awardReportScore(key){
+  var state=loadReportScore();
+  if(state.events[key]) return false;
+  state.events[key]=true;
+  saveReportScore(state);
+  refreshReportScoreBadge();
+  return true;
+}
+// Total points earned so far this report.
+function getReportScoreTotal(){
+  var state=loadReportScore();
+  return Object.keys(state.events).length;
+}
+// Keeps the small badge on the "Report Score" dropdown item in sync with
+// the current total. Called after any award and on page load.
+function refreshReportScoreBadge(){
+  var el=document.getElementById('rs-dropdown-badge');
+  if(el) el.textContent=getReportScoreTotal();
+}
+// Called whenever an hour's actual lift value is set (including edits).
+// Checks and awards the "filled in", "on time", and "met target" points for
+// that hour based on the current simulation state. Re-entering the same
+// hour again is a no-op since awardReportScore is idempotent per key.
+function checkHourlyEntryScore(hour, value){
+  if(value==null || !Number.isFinite(value)) return;
+  if(awardReportScore('fill:'+hour)) awardPrestigeXP('fill','fill:'+hour);
+
+  // On-time: the simulation clock hasn't yet passed more than 1hr beyond the
+  // end of this hour's block. Hours logged well after the fact ("catching
+  // up") don't earn this bonus.
+  try{
+    var currentTime=parseTime(document.getElementById('current-time').value);
+    var blockEnd=hourClockEndDecimal(hour);
+    if(currentTime <= blockEnd+1+0.0001){
+      if(awardReportScore('ontime:'+hour)) awardPrestigeXP('ontime','ontime:'+hour);
+    }
+  }catch(e){}
+
+  // Met target: this hour's actual lifts/man-hour reached the LPMH goal.
+  // Win: this hour's actual lifts beat its forecast (W-L scoreboard "win").
+  try{
+    if(window._lpmhInfo && window._lpmhInfo.liveRows){
+      var row=window._lpmhInfo.liveRows.find(function(r){return r.hour===hour;});
+      if(row){
+        if(row.crewHours>0 && (row.actual/row.crewHours)>=LPMH_TARGET){
+          if(awardReportScore('target:'+hour)) awardPrestigeXP('target','target:'+hour);
+        }
+        if(row.actual>row.forecast){
+          if(awardReportScore('win:'+hour)) awardPrestigeXP('win','win:'+hour);
+        }
+      }
+    }
+  }catch(e){}
+}
+// hourClockEnd() returns a display string like "0259"; this returns the
+// same boundary as a decimal hour (e.g. hour 2 -> 2.983) for comparison
+// against currentTime.
+function hourClockEndDecimal(hour){
+  return hour + (59/60);
+}
+
+// ── PRESTIGE SYSTEM ──
+// A long-running (lifetime, never reset by Reset Inputs) XP/rank/prestige
+// track, MW2-style: earn XP -> rank up every XP_PER_RANK -> at
+// RANKS_PER_PRESTIGE hit max rank -> prestige (xp resets to 0, rank resets
+// to 1, prestige count +1, a new emblem is unlocked and shown in place of
+// the train logo).
+//
+// XP values per category are user-configurable (xpValues), with the
+// defaults below as starting points. Awarding XP is driven by the same
+// one-time-per-hour event keys used by the Report Score system, so editing
+// the same hour repeatedly can't farm XP. A separate, NEVER-reset set of
+// "ever awarded" keys (allEvents) tracks which keys have already granted XP
+// over the lifetime of the dashboard, independent of the per-report
+// Report Score reset.
+var PRESTIGE_KEY = 'settegast_prestige_v1';
+var RANKS_PER_PRESTIGE = 10;
+var XP_PER_RANK = 200;
+var XP_PER_PRESTIGE = RANKS_PER_PRESTIGE * XP_PER_RANK; // 2000
+
+// Default XP awarded the first time each event key is ever earned.
+var DEFAULT_PRESTIGE_XP = {
+  fill: 10,      // logged an hour's actual
+  ontime: 15,    // logged within 1hr of the hour block ending
+  target: 20,    // that hour met the LPMH target
+  win: 5,        // that hour beat its forecast (W-L scoreboard "win")
+  save: 25,      // used SAVE
+  ihosaOnTime: 50,
+  mhoasOnTime: 50,
+  lpmhCrossed: 30,
+  comeback: 75
+};
+
+function loadPrestige(){
+  try{
+    var raw=JSON.parse(localStorage.getItem(PRESTIGE_KEY)||'{}');
+    return {
+      xp: typeof raw.xp==='number' ? raw.xp : 0,
+      prestige: typeof raw.prestige==='number' ? raw.prestige : 0,
+      xpValues: Object.assign({}, DEFAULT_PRESTIGE_XP, raw.xpValues||{}),
+      allEvents: raw.allEvents && typeof raw.allEvents==='object' ? raw.allEvents : {}
+    };
+  }catch(e){
+    return {xp:0, prestige:0, xpValues:Object.assign({},DEFAULT_PRESTIGE_XP), allEvents:{}};
+  }
+}
+function savePrestige(state){
+  try{ localStorage.setItem(PRESTIGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage write failed (prestige):', e); }
+}
+function getRank(xp){
+  return Math.min(RANKS_PER_PRESTIGE, Math.floor(xp/XP_PER_RANK)+1);
+}
+// Awards XP for `category` the first time `eventKey` is ever seen (lifetime,
+// never reset). Handles rank-up and prestige rollover. Returns
+// {awarded, xpGained, leveledUp, prestiged, newRank, newPrestige} so callers
+// (e.g. milestone toasts) can react.
+function awardPrestigeXP(category, eventKey){
+  var state=loadPrestige();
+  if(state.allEvents[eventKey]) return {awarded:false};
+  state.allEvents[eventKey]=true;
+
+  var gain=state.xpValues[category]||0;
+  var prevRank=getRank(state.xp);
+  state.xp+=gain;
+
+  var prestiged=false;
+  while(state.xp>=XP_PER_PRESTIGE){
+    state.xp-=XP_PER_PRESTIGE;
+    state.prestige+=1;
+    prestiged=true;
+  }
+  var newRank=getRank(state.xp);
+
+  savePrestige(state);
+  refreshPrestigeBadge();
+
+  if(prestiged){
+    var newEmblem=PRESTIGE_EMBLEMS[state.prestige % PRESTIGE_EMBLEMS.length];
+    showMilestoneToast('<strong>PRESTIGE '+state.prestige+'!</strong> New emblem unlocked '+newEmblem+' &mdash; rank reset to 1.', {tone:'good', icon:lpmhIcon('flame')});
+  } else if(newRank>prevRank){
+    showMilestoneToast('<strong>Rank up!</strong> Now Rank '+newRank+' (+'+gain+' XP).', {tone:'good'});
+  }
+
+  return {awarded:true, xpGained:gain, leveledUp:(newRank>prevRank)||prestiged, prestiged:prestiged, newRank:newRank, newPrestige:state.prestige};
+}
+function resetPrestigeAllTime(){
+  if(!confirm('This permanently resets ALL lifetime XP, rank, and prestige progress. This cannot be undone. Continue?')) return;
+  try{ localStorage.removeItem(PRESTIGE_KEY); }catch(e){}
+  refreshPrestigeBadge();
+  if(document.getElementById('prestige-screen').classList.contains('active-screen')) renderPrestigePage();
+}
+// Small badge shown next to the prestige emblem in the topbar (current rank).
+function refreshPrestigeBadge(){
+  var state=loadPrestige();
+  var rank=getRank(state.xp);
+  var el=document.getElementById('prestige-rank-badge');
+  if(el) el.textContent='P'+state.prestige+' \u00b7 R'+rank;
+  var emblemEl=document.getElementById('prestige-emblem');
+  if(emblemEl) emblemEl.textContent=PRESTIGE_EMBLEMS[state.prestige % PRESTIGE_EMBLEMS.length];
+  var dropdownBadge=document.getElementById('prestige-dropdown-badge');
+  if(dropdownBadge) dropdownBadge.textContent='P'+state.prestige+'/R'+rank;
+}
+// Placeholder prestige emblems (number emojis), cycling by prestige count.
+// Replace with custom uploaded emblems later.
+var PRESTIGE_EMBLEMS=['\u{1F682}','1\uFE0F\u20E3','2\uFE0F\u20E3','3\uFE0F\u20E3','4\uFE0F\u20E3','5\uFE0F\u20E3','6\uFE0F\u20E3','7\uFE0F\u20E3','8\uFE0F\u20E3','9\uFE0F\u20E3','\u{1F51F}'];
+
 function clearHourlyActuals(btn){
   if(btn && !btn.classList.contains('confirm-armed')){
     btn.classList.add('confirm-armed');
@@ -5958,6 +6227,9 @@ function setHourlyActual(hour, val){
   else map[hour]=entry;
   saveHourlyActuals(map);
   if(typeof simulate==='function') simulate();
+  checkHourlyEntryScore(hour, entry.value);
+  var scoreScreen=document.getElementById('score-screen');
+  if(scoreScreen && scoreScreen.classList.contains('active-screen')) renderReportScorePage();
 }
 // Set (or clear) the work-type at a given index. Clearing a non-last slot
 // removes it entirely; clearing the last slot leaves an empty "\u2014" dropdown.
@@ -8174,6 +8446,7 @@ function updateStaticControlLabels(){
 
 function resetLeftInputs(){
   // Reset the left-side simulation controls only. Field notes and saved profiles are preserved.
+  resetReportScore();
   trainCount=2;
   unexpectedDelayMins=0;
   trainNames={zlbho1:'ZLBHO',zpbho:'ZPBHO',zlbho2:'ZLBHO-2'};
@@ -8767,6 +9040,11 @@ async function rampiqManualSave(){
   var btnReset = '&#x1F4BE; SAVE';
   rampiqSetManualSaveButton('SAVING...', true);
   rampiqSyncBadge('SAVING', 'syncing');
+
+  if(awardReportScore('save')){
+    var rsState=loadReportScore();
+    awardPrestigeXP('save','save:'+(rsState.cycle||0));
+  }
 
   // Save current simulation inputs as the durable startup profile.
   // Previous build wrote the profile but did NOT mark it as the default/autoload profile,
@@ -9574,6 +9852,218 @@ function renderTrendChart(){
   chartWrap.innerHTML = html;
 }
 
+// ── Report Score page ──
+// Renders the gamified per-report score: total points, a breakdown by
+// category, and an hour-by-hour table showing which awards each logged hour
+// earned. Reads from the same award-key set used by checkHourlyEntryScore
+// (loadReportScore), so this page always reflects exactly what's been
+// awarded — it doesn't recompute or re-grade past hours.
+function renderReportScorePage(){
+  var state=loadReportScore();
+  var events=state.events;
+  var actuals=loadHourlyActuals();
+
+  var counts={fill:0, ontime:0, target:0, save:0};
+  Object.keys(events).forEach(function(key){
+    if(key==='save'){ counts.save+=1; return; }
+    var parts=key.split(':');
+    if(counts.hasOwnProperty(parts[0])) counts[parts[0]]+=1;
+  });
+  var total=Object.keys(events).length;
+
+  var totalEl=document.getElementById('rs-score-total');
+  if(totalEl) totalEl.textContent=total;
+  var fillEl=document.getElementById('rs-pts-fill'); if(fillEl) fillEl.textContent=counts.fill;
+  var ontimeEl=document.getElementById('rs-pts-ontime'); if(ontimeEl) ontimeEl.textContent=counts.ontime;
+  var targetEl=document.getElementById('rs-pts-target'); if(targetEl) targetEl.textContent=counts.target;
+  var saveEl=document.getElementById('rs-pts-save'); if(saveEl) saveEl.textContent=counts.save;
+
+  // Hour-by-hour table: only show hours that have ever earned at least one
+  // point (i.e. have a logged actual), in chronological order.
+  var hours=[];
+  for(var h=0;h<27;h++){
+    if(events['fill:'+h]) hours.push(h);
+  }
+
+  var wrap=document.getElementById('rs-hour-table-wrap');
+  if(!wrap) return;
+  if(hours.length===0){
+    wrap.innerHTML='<div class="rs-empty">No hours logged yet this report. Enter actuals in the Hourly Lift Log to start earning points.</div>';
+    return;
+  }
+
+  function pill(earned){
+    return '<span class="rs-pt-pill '+(earned?'earned':'missed')+'">'+(earned?'\u2713':'\u2014')+'</span>';
+  }
+
+  var html='<table class="rs-hour-table"><thead><tr>'
+    +'<th>Hour</th><th>Actual Lifts</th><th>Logged</th><th>On Time</th><th>Met Target</th>'
+    +'</tr></thead><tbody>';
+  hours.forEach(function(h){
+    var entry=normalizeActualEntry(actuals[h]);
+    var label=hourClockStart(h)+'\u2013'+hourClockEnd(h);
+    html+='<tr>'
+      +'<td>'+label+'</td>'
+      +'<td>'+(entry.value!=null?entry.value:'\u2014')+'</td>'
+      +'<td>'+pill(!!events['fill:'+h])+'</td>'
+      +'<td>'+pill(!!events['ontime:'+h])+'</td>'
+      +'<td>'+pill(!!events['target:'+h])+'</td>'
+      +'</tr>';
+  });
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
+}
+
+// Display metadata for each XP category — label, description, and default
+// shown alongside the editable input on the Prestige page.
+var PRESTIGE_XP_META=[
+  {key:'fill', label:'Logged the hour', desc:'Entered an actual lift count for an hour for the first time.'},
+  {key:'ontime', label:'Logged on time', desc:'That hour was entered within 1 hour of its block ending.'},
+  {key:'target', label:'Met LPMH target', desc:'That hour\u2019s actual lifts/man-hour reached the LPMH goal.'},
+  {key:'win', label:'Beat forecast (W)', desc:'That hour\u2019s actual lifts beat the forecast for that hour.'},
+  {key:'save', label:'Saved the report', desc:'Used SAVE at least once this report.'},
+  {key:'ihosaOnTime', label:'IHOSA on time', desc:'IHOSA fully loaded before the 1700 deadline.'},
+  {key:'mhoasOnTime', label:'MHOAS on time', desc:'MHOAS fully loaded before the 0300 deadline.'},
+  {key:'lpmhCrossed', label:'LPMH crossed target', desc:'Live LPMH crossed the target for the first time this report.'},
+  {key:'comeback', label:'Comeback', desc:'Recovered from a meaningful LPMH shortfall to on-target.'}
+];
+
+// ── Prestige page ──
+// Renders the lifetime rank/prestige progress, XP bar, and the editable XP
+// value cards. The XP grid is built fresh each time so edits made on a
+// previous visit (and saved via savePrestigeXpValues) are reflected.
+function renderPrestigePage(){
+  var state=loadPrestige();
+  var rank=getRank(state.xp);
+  var xpIntoRank=state.xp - (rank-1)*XP_PER_RANK;
+  var xpForNextRank=XP_PER_RANK;
+  var atMaxRank=rank>=RANKS_PER_PRESTIGE;
+
+  var emblem=PRESTIGE_EMBLEMS[state.prestige % PRESTIGE_EMBLEMS.length];
+  var emblemBig=document.getElementById('pr-emblem-big');
+  if(emblemBig) emblemBig.textContent=emblem;
+
+  var titleEl=document.getElementById('pr-hero-title');
+  if(titleEl) titleEl.textContent='Prestige '+state.prestige+' \u00b7 Rank '+rank+(atMaxRank?' (MAX)':'');
+
+  var fillEl=document.getElementById('pr-progress-fill');
+  var pct=atMaxRank?100:Math.min(100,Math.round((xpIntoRank/xpForNextRank)*100));
+  if(fillEl) fillEl.style.width=pct+'%';
+
+  var progressTextEl=document.getElementById('pr-progress-text');
+  if(progressTextEl){
+    progressTextEl.textContent=atMaxRank
+      ? xpIntoRank+' / '+XP_PER_RANK+' XP (max rank \u2014 next award triggers Prestige '+(state.prestige+1)+')'
+      : xpIntoRank+' / '+xpForNextRank+' XP to Rank '+(rank+1);
+  }
+  var progressTotalEl=document.getElementById('pr-progress-total');
+  if(progressTotalEl) progressTotalEl.textContent=state.xp+' / '+XP_PER_PRESTIGE+' XP this prestige';
+
+  // Rank pip track: one pip per rank, filled up to current rank.
+  var trackEl=document.getElementById('pr-rank-track');
+  if(trackEl){
+    var pips='';
+    for(var i=1;i<=RANKS_PER_PRESTIGE;i++){
+      pips+='<div class="pr-rank-pip'+(i<=rank?' filled':'')+'" title="Rank '+i+'"></div>';
+    }
+    trackEl.innerHTML=pips;
+  }
+
+  // XP value cards (editable).
+  var gridEl=document.getElementById('pr-xp-grid');
+  if(gridEl){
+    var html='';
+    PRESTIGE_XP_META.forEach(function(meta){
+      var val=state.xpValues[meta.key]!=null?state.xpValues[meta.key]:DEFAULT_PRESTIGE_XP[meta.key];
+      html+='<div class="pr-xp-card">'
+        +'<div class="pr-xp-title">'+meta.label+'</div>'
+        +'<div class="pr-xp-desc">'+meta.desc+'</div>'
+        +'<div class="pr-xp-input-row"><input type="number" min="0" step="1" id="pr-xp-'+meta.key+'" value="'+val+'"><span>XP</span></div>'
+        +'</div>';
+    });
+    gridEl.innerHTML=html;
+  }
+}
+
+// Reads the editable XP inputs and persists them. Future XP awards use the
+// updated values; past awards already granted are unaffected.
+function savePrestigeXpValues(){
+  var state=loadPrestige();
+  PRESTIGE_XP_META.forEach(function(meta){
+    var el=document.getElementById('pr-xp-'+meta.key);
+    if(!el) return;
+    var n=parseInt(el.value,10);
+    state.xpValues[meta.key]=Number.isFinite(n)&&n>=0?n:DEFAULT_PRESTIGE_XP[meta.key];
+  });
+  savePrestige(state);
+  var note=document.getElementById('pr-saved-note');
+  if(note){
+    note.classList.add('show');
+    setTimeout(function(){ note.classList.remove('show'); }, 1800);
+  }
+}
+
+// ── Achievements panel ──
+// Clicking the topbar emblem opens a summary of lifetime progress: total
+// XP earned, prestige/rank, a per-category breakdown (count of times each
+// award has ever been earned + XP contributed at current point values), and
+// a gallery of every emblem unlocked so far. Pulls from the same
+// never-reset allEvents set used by awardPrestigeXP.
+function openAchievementsPanel(){
+  var state=loadPrestige();
+  var rank=getRank(state.xp);
+  var lifetimeXp=state.prestige*XP_PER_PRESTIGE + state.xp;
+
+  // Tally how many times each category has ever been earned.
+  var counts={};
+  PRESTIGE_XP_META.forEach(function(meta){ counts[meta.key]=0; });
+  Object.keys(state.allEvents).forEach(function(eventKey){
+    var category=eventKey.split(':')[0];
+    if(counts.hasOwnProperty(category)) counts[category]+=1;
+  });
+
+  var html='<div class="ach-summary">';
+  html+='<div class="ach-summary-stat"><div class="ach-summary-val">'+lifetimeXp.toLocaleString()+'</div><div class="ach-summary-label">Lifetime XP</div></div>';
+  html+='<div class="ach-summary-stat"><div class="ach-summary-val">'+state.prestige+'</div><div class="ach-summary-label">Prestige</div></div>';
+  html+='<div class="ach-summary-stat"><div class="ach-summary-val">'+rank+' / '+RANKS_PER_PRESTIGE+'</div><div class="ach-summary-label">Current Rank</div></div>';
+  html+='</div>';
+
+  html+='<div class="ach-section-title">Achievements earned</div>';
+  html+='<table class="ach-table"><thead><tr><th>Achievement</th><th>Times Earned</th><th>XP Each</th><th>Total XP</th></tr></thead><tbody>';
+  var totalCheck=0;
+  PRESTIGE_XP_META.forEach(function(meta){
+    var c=counts[meta.key]||0;
+    var xpEach=state.xpValues[meta.key]!=null?state.xpValues[meta.key]:DEFAULT_PRESTIGE_XP[meta.key];
+    var subtotal=c*xpEach;
+    totalCheck+=subtotal;
+    html+='<tr'+(c===0?' class="ach-row-empty"':'')+'>'
+      +'<td>'+meta.label+'</td>'
+      +'<td>'+c+'</td>'
+      +'<td class="ach-xp-each">'+xpEach+'</td>'
+      +'<td>'+subtotal.toLocaleString()+'</td>'
+      +'</tr>';
+  });
+  html+='</tbody></table>';
+  html+='<div class="ach-note">Totals reflect each award\u2019s <em>current</em> point value, so the column may not exactly match historical XP if values were changed on the Prestige page after some awards were earned.</div>';
+
+  html+='<div class="ach-section-title">Emblems unlocked</div>';
+  html+='<div class="ach-emblem-gallery">';
+  for(var p=0;p<=state.prestige;p++){
+    var emblem=PRESTIGE_EMBLEMS[p % PRESTIGE_EMBLEMS.length];
+    var isCurrent=p===state.prestige;
+    html+='<div class="ach-emblem'+(isCurrent?' current':'')+'" title="Prestige '+p+(isCurrent?' (current)':'')+'">'
+      +'<div class="ach-emblem-icon">'+emblem+'</div>'
+      +'<div class="ach-emblem-label">P'+p+'</div>'
+      +'</div>';
+  }
+  html+='</div>';
+  if(state.prestige<PRESTIGE_EMBLEMS.length-1){
+    html+='<div class="ach-note">Next emblem (Prestige '+(state.prestige+1)+') unlocks at Rank '+RANKS_PER_PRESTIGE+' with '+(XP_PER_PRESTIGE-state.xp)+' more XP.</div>';
+  }
+
+  openGradeInfoHtml('Achievements', html);
+}
+
 function renderTrendsPage(){
   var arr = loadReports();
   // Sync undo button
@@ -9843,8 +10333,35 @@ function clearActuals(){
 
 function showTrends(){
   renderTrendsPage();
-  goToScreen('trends-screen','trends-toggle-btn','&#x1F4C8; TRENDS','&#x2715; CLOSE TRENDS');
+  goToScreen('trends-screen','trends-toggle-btn','&#x1F4C8; TRENDS &#x25BE;','&#x2715; CLOSE');
 }
+function showReportScore(){
+  renderReportScorePage();
+  goToScreen('score-screen','trends-toggle-btn','&#x1F4C8; TRENDS &#x25BE;','&#x2715; CLOSE');
+}
+function showPrestige(){
+  renderPrestigePage();
+  goToScreen('prestige-screen','trends-toggle-btn','&#x1F4C8; TRENDS &#x25BE;','&#x2715; CLOSE');
+}
+function toggleTrendsDropdown(e){
+  e.stopPropagation();
+  var trendsActive=document.getElementById('trends-screen').classList.contains('active-screen');
+  var scoreActive=document.getElementById('score-screen').classList.contains('active-screen');
+  var prestigeActive=document.getElementById('prestige-screen').classList.contains('active-screen');
+  if(trendsActive || scoreActive || prestigeActive){
+    var activeId=trendsActive?'trends-screen':(scoreActive?'score-screen':'prestige-screen');
+    goToScreen(activeId,'trends-toggle-btn','&#x1F4C8; TRENDS &#x25BE;','&#x2715; CLOSE');
+    return;
+  }
+  document.getElementById('trends-dropdown').classList.toggle('open');
+}
+function closeTrendsDropdown(){
+  document.getElementById('trends-dropdown').classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  var dd=document.getElementById('trends-dropdown');
+  if(dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
 
 
 /* ═══════════════ PRINT REPORT GENERATOR ═══════════════ */
@@ -10307,7 +10824,7 @@ function printRampReport(){
         </div>
       </div>
       <div class="tr-hero-actions">
-        <button class="tr-undo-btn" id="tr-back-btn" onclick="goToScreen('main-dashboard','trends-toggle-btn','&#x1F4C8; TRENDS','&#x2715; CLOSE TRENDS')" title="Return to main dashboard">&#x2190; MAIN</button>
+        <button class="tr-undo-btn" id="tr-back-btn" onclick="goToScreen('main-dashboard','trends-toggle-btn','&#x1F4C8; TRENDS &#x25BE;','&#x2715; CLOSE')" title="Return to main dashboard">&#x2190; MAIN</button>
         <button class="tr-undo-btn" id="tr-undo-btn" onclick="undoTrends()" style="opacity:0.35;" disabled title="Nothing to undo">&#x21A9; UNDO</button>
         <button class="tr-clear-btn" onclick="clearAllReports()">&#x1F5D1; CLEAR ALL</button>
       </div>
@@ -10357,6 +10874,178 @@ function printRampReport(){
   <div id="tr-list" style="flex:1;overflow-y:auto;padding:0 18px 14px;"></div>
 
 </main>
+
+<!-- REPORT SCORE SCREEN -->
+<main class="main-content screen" id="score-screen" style="padding:0;flex-direction:column;overflow:hidden;height:100%;background:var(--bg);background-image:linear-gradient(rgba(245,158,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,0.03) 1px,transparent 1px);background-size:28px 28px;">
+
+<style>
+.rs-hero{
+  margin:12px 18px 10px;padding:18px 18px 16px;
+  border:1px solid rgba(245,158,11,0.16);border-radius:18px;
+  background:linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(255,255,255,0.02) 42%, rgba(16,185,129,0.03) 100%);
+  box-shadow:0 18px 48px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05);
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.rs-hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;}
+.rs-hero-kicker{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+.rs-hero-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.rs-hero-copy{font-size:12.5px;line-height:1.6;color:var(--text2);max-width:560px;}
+.rs-hero-score{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 28px;border-radius:14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.28);
+  min-width:140px;
+}
+.rs-hero-score-val{font-family:var(--mono);font-size:42px;font-weight:800;color:var(--green);line-height:1;}
+.rs-hero-score-label{font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);margin-top:4px;}
+.rs-body{flex:1;overflow-y:auto;padding:0 18px 18px;}
+.rs-section-title{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);margin:18px 0 10px;}
+.rs-rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+.rs-rule-card{
+  border:1px solid var(--border);border-radius:12px;background:var(--surface);
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+}
+.rs-rule-pts{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--amber);}
+.rs-rule-title{font-size:12px;font-weight:700;color:var(--text);}
+.rs-rule-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+.rs-hour-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+.rs-hour-table th{
+  text-align:left;font-family:var(--cond);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text3);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--border2);
+}
+.rs-hour-table th:not(:first-child),.rs-hour-table td:not(:first-child){text-align:center;}
+.rs-hour-table td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2);}
+.rs-pt-pill{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;font-size:11px;font-weight:700;}
+.rs-pt-pill.earned{background:rgba(16,185,129,0.16);color:var(--green);}
+.rs-pt-pill.missed{background:rgba(255,255,255,0.04);color:var(--text3);}
+.rs-empty{font-size:12px;color:var(--text3);padding:20px;text-align:center;}
+@media (max-width: 900px){
+  .rs-hero-row{flex-direction:column;}
+  .rs-hero-score{align-self:stretch;}
+}
+</style>
+
+  <div class="rs-hero">
+    <div class="rs-hero-row">
+      <div>
+        <div class="rs-hero-kicker">REPORT SCORE</div>
+        <div class="rs-hero-title">Every report starts at zero.</div>
+        <div class="rs-hero-copy">
+          Points are earned by working the Hourly Lift Log as the shift unfolds: logging actuals, keeping pace with the clock instead of catching up later, hitting the LPMH goal hour-by-hour, and saving your work. Each award can only be earned once per hour, so re-entering the same hour again won't inflate the score. Use <strong>RESET INPUTS</strong> to start a fresh report at 0.
+        </div>
+      </div>
+      <div class="rs-hero-score">
+        <div class="rs-hero-score-val" id="rs-score-total">0</div>
+        <div class="rs-hero-score-label">Total Points</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rs-body">
+    <div class="rs-section-title">How points are earned</div>
+    <div class="rs-rules-grid">
+      <div class="rs-rule-card">
+        <div class="rs-rule-pts" id="rs-pts-fill">0</div>
+        <div class="rs-rule-title">Logged the hour</div>
+        <div class="rs-rule-desc">+1 point the first time an hour gets an actual lift count entered in the Hourly Lift Log.</div>
+      </div>
+      <div class="rs-rule-card">
+        <div class="rs-rule-pts" id="rs-pts-ontime">0</div>
+        <div class="rs-rule-title">Logged on time</div>
+        <div class="rs-rule-desc">+1 point if that hour was entered within 1 hour of its block ending &mdash; not playing catch-up later.</div>
+      </div>
+      <div class="rs-rule-card">
+        <div class="rs-rule-pts" id="rs-pts-target">0</div>
+        <div class="rs-rule-title">Met LPMH target</div>
+        <div class="rs-rule-desc">+1 point for any logged hour whose actual lifts/man-hour reached the LPMH goal.</div>
+      </div>
+      <div class="rs-rule-card">
+        <div class="rs-rule-pts" id="rs-pts-save">0</div>
+        <div class="rs-rule-title">Saved the report</div>
+        <div class="rs-rule-desc">+1 point, once, the first time SAVE is used this report.</div>
+      </div>
+    </div>
+
+    <div class="rs-section-title">Hour-by-hour breakdown</div>
+    <div id="rs-hour-table-wrap"></div>
+  </div>
+
+</main>
+
+<!-- PRESTIGE SCREEN -->
+<main class="main-content screen" id="prestige-screen" style="padding:0;flex-direction:column;overflow:hidden;height:100%;background:var(--bg);background-image:linear-gradient(rgba(245,158,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,0.03) 1px,transparent 1px);background-size:28px 28px;">
+
+<style>
+.pr-hero{
+  margin:12px 18px 10px;padding:18px 18px 16px;
+  border:1px solid rgba(245,158,11,0.16);border-radius:18px;
+  background:linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(255,255,255,0.02) 42%, rgba(16,185,129,0.03) 100%);
+  box-shadow:0 18px 48px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05);
+  flex-shrink:0;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+}
+.pr-emblem-big{
+  width:84px;height:84px;border-radius:18px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:54px;
+  background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.28);
+}
+.pr-hero-info{flex:1;min-width:240px;}
+.pr-hero-kicker{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+.pr-hero-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.pr-progress-track{height:10px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden;margin-bottom:6px;}
+.pr-progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--amber),var(--green));transition:width .3s ease;}
+.pr-progress-label{font-family:var(--mono);font-size:11px;color:var(--text3);display:flex;justify-content:space-between;}
+.pr-body{flex:1;overflow-y:auto;padding:0 18px 18px;}
+.pr-section-title{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);margin:18px 0 10px;}
+.pr-xp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+.pr-xp-card{
+  border:1px solid var(--border);border-radius:12px;background:var(--surface);
+  padding:12px 14px;display:flex;flex-direction:column;gap:6px;
+}
+.pr-xp-title{font-size:12px;font-weight:700;color:var(--text);}
+.pr-xp-desc{font-size:11px;color:var(--text3);line-height:1.5;flex:1;}
+.pr-xp-input-row{display:flex;align-items:center;gap:8px;}
+.pr-xp-input-row input{
+  width:80px;font-family:var(--mono);font-size:14px;font-weight:700;color:var(--amber);
+  background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;text-align:right;
+}
+.pr-xp-input-row span{font-size:11px;color:var(--text3);}
+.pr-rank-track{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+.pr-rank-pip{
+  flex:1;min-width:22px;height:8px;border-radius:4px;background:rgba(255,255,255,0.06);
+}
+.pr-rank-pip.filled{background:linear-gradient(90deg,var(--amber),var(--green));}
+.pr-actions-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.pr-save-btn{border-radius:999px;padding:8px 18px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.08em;color:#07140f;background:var(--green);border:1px solid var(--green);cursor:pointer;}
+.pr-reset-btn{border-radius:999px;padding:8px 18px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.08em;color:var(--red);background:transparent;border:1px solid var(--red);cursor:pointer;}
+.pr-saved-note{font-size:11px;color:var(--green);font-family:var(--mono);align-self:center;opacity:0;transition:opacity .2s;}
+.pr-saved-note.show{opacity:1;}
+@media (max-width: 900px){
+  .pr-hero{flex-direction:column;align-items:flex-start;}
+  .pr-progress-label{flex-direction:column;gap:2px;}
+}
+</style>
+
+  <div class="pr-hero">
+    <div class="pr-emblem-big" id="pr-emblem-big">&#x1F682;</div>
+    <div class="pr-hero-info">
+      <div class="pr-hero-kicker">PRESTIGE</div>
+      <div class="pr-hero-title" id="pr-hero-title">Prestige 0 &middot; Rank 1</div>
+      <div class="pr-progress-track"><div class="pr-progress-fill" id="pr-progress-fill" style="width:0%;"></div></div>
+      <div class="pr-progress-label"><span id="pr-progress-text">0 / 200 XP to Rank 2</span><span id="pr-progress-total">0 / 2000 XP this prestige</span></div>
+      <div class="pr-rank-track" id="pr-rank-track"></div>
+    </div>
+  </div>
+
+  <div class="pr-body">
+    <div class="pr-section-title">How XP is earned (editable)</div>
+    <div class="pr-xp-grid" id="pr-xp-grid"></div>
+    <div class="pr-actions-row">
+      <button class="pr-save-btn" onclick="savePrestigeXpValues()">Save XP Values</button>
+      <span class="pr-saved-note" id="pr-saved-note">Saved</span>
+      <button class="pr-reset-btn" onclick="resetPrestigeAllTime()" style="margin-left:auto;">&#x1F5D1; Reset All-Time Progress</button>
+    </div>
+  </div>
+
+</main>
+
 
 <!-- TREND DETAIL MODAL -->
 <div id="tr-detail-overlay" class="tr-detail-overlay" onclick="closeTrDetailIfBg(event)">
