@@ -156,7 +156,7 @@ input[type=time]{border:none;background:transparent;color:var(--text);font-famil
 input[type=time]:focus{outline:none;}
 
 .tb-btn{
-  display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 14px;border-radius:5px;
   border:1px solid var(--border2);background:transparent;
   color:var(--text2);font-size:10px;font-family:var(--mono);font-weight:700;
   cursor:pointer;letter-spacing:0.08em;transition:all 0.15s;white-space:nowrap;
@@ -417,178 +417,6 @@ input[type=range]::-webkit-slider-thumb{
 
 .ok{color:var(--green);}.warn{color:var(--amber);}.bad{color:var(--red);}.neutral{color:var(--text);}
 
-/* ── TIMELINE POSITION CARDS ─────────────────────────────────── */
-.tblock-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-bottom:10px;
-}
-
-/* Base card */
-.tblock-card{
-  position:relative;
-  border-radius:10px;
-  padding:12px 13px 11px;
-  overflow:hidden;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:0;
-}
-
-/* Current — deep blue glow */
-#tblock-current{
-  background:linear-gradient(135deg, rgba(74,158,255,0.10) 0%, rgba(74,158,255,0.03) 60%, transparent 100%);
-  border:1px solid rgba(74,158,255,0.28);
-  box-shadow:0 0 28px rgba(74,158,255,0.08), inset 0 1px 0 rgba(74,158,255,0.18);
-}
-
-/* Next — amber warmth */
-#tblock-next{
-  background:linear-gradient(135deg, rgba(245,158,11,0.09) 0%, rgba(245,158,11,0.03) 60%, transparent 100%);
-  border:1px solid rgba(245,158,11,0.24);
-  box-shadow:0 0 24px rgba(245,158,11,0.06), inset 0 1px 0 rgba(245,158,11,0.14);
-}
-
-/* Decorative radial circle — top right */
-.tblock-card::after{
-  content:'';
-  position:absolute;
-  top:-40px;right:-40px;
-  width:130px;height:130px;
-  border-radius:50%;
-  pointer-events:none;
-}
-#tblock-current::after{ background:radial-gradient(circle, rgba(74,158,255,0.12) 0%, transparent 70%); }
-#tblock-next::after{    background:radial-gradient(circle, rgba(245,158,11,0.10) 0%, transparent 70%); }
-
-/* Pulse dot on current */
-@keyframes tblock-pulse{
-  0%,100%{ box-shadow:0 0 0 0 rgba(74,158,255,0.5); }
-  50%{     box-shadow:0 0 0 6px rgba(74,158,255,0); }
-}
-
-/* Header row */
-.tblock-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:8px;
-}
-.tblock-label{
-  display:flex;
-  align-items:center;
-  gap:5px;
-  font-family:var(--cond);
-  font-size:8px;
-  font-weight:700;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-}
-#tblock-current .tblock-label{ color:rgba(74,158,255,0.8); }
-#tblock-next    .tblock-label{ color:rgba(245,158,11,0.8); }
-.tblock-dot{
-  width:6px;height:6px;
-  border-radius:50%;
-  flex-shrink:0;
-}
-#tblock-current .tblock-dot{
-  background:#4A9EFF;
-  animation:tblock-pulse 2s ease-in-out infinite;
-}
-#tblock-next .tblock-dot{
-  background:var(--amber);
-}
-.tblock-countdown{
-  font-family:var(--mono);
-  font-size:9px;
-  font-weight:700;
-  color:var(--amber);
-  background:rgba(245,158,11,0.1);
-  border:1px solid rgba(245,158,11,0.22);
-  border-radius:5px;
-  padding:2px 7px;
-  white-space:nowrap;
-  letter-spacing:0.04em;
-}
-
-/* Big time */
-.tblock-time-display{
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-  margin-bottom:5px;
-}
-.tblock-time-val{
-  font-family:var(--mono);
-  font-size:24px;
-  font-weight:700;
-  line-height:1;
-  letter-spacing:-0.04em;
-}
-#tblock-current .tblock-time-val{ color:#4A9EFF; }
-#tblock-next    .tblock-time-val{ color:var(--amber); }
-.tblock-time-label{
-  font-family:var(--mono);
-  font-size:8px;
-  font-weight:700;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  padding-bottom:2px;
-}
-#tblock-current .tblock-time-label{ color:rgba(74,158,255,0.5); }
-#tblock-next    .tblock-time-label{ color:rgba(245,158,11,0.5); }
-
-/* Pill */
-.tblock-pill{
-  display:inline-flex;
-  align-items:center;
-  font-family:var(--mono);
-  font-size:8px;
-  font-weight:700;
-  letter-spacing:0.06em;
-  padding:2px 8px;
-  border-radius:4px;
-  margin-bottom:5px;
-  align-self:flex-start;
-}
-
-/* Title */
-.tblock-title{
-  font-family:var(--cond);
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:0.04em;
-  color:var(--text);
-  line-height:1.2;
-  margin-bottom:3px;
-}
-
-/* Meta */
-.tblock-meta{
-  font-size:10px;
-  color:var(--text3);
-  line-height:1.4;
-}
-
-/* Divider between time and content */
-.tblock-divider{
-  height:1px;
-  margin:6px 0 6px;
-}
-#tblock-current .tblock-divider{ background:linear-gradient(90deg,rgba(74,158,255,0.2),transparent); }
-#tblock-next    .tblock-divider{ background:linear-gradient(90deg,rgba(245,158,11,0.18),transparent); }
-
-.tblock-empty{
-  font-size:11.5px;
-  color:var(--text3);
-  font-style:italic;
-  margin-top:4px;
-  opacity:0.7;
-}
-
-
 /* ── LPMH GRID ───────────────────────────────────────────────────── */
 .lpmh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
 @media (max-width:980px){.lpmh-grid{display:flex;flex-direction:column;}}
@@ -639,28 +467,26 @@ input[type=range]::-webkit-slider-thumb{
   margin-bottom:8px;
 }
 .lpmh-label{
-  font-family:var(--cond);
-  font-size:8px;
-  font-weight:700;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:var(--text3);
-  display:flex;
-  align-items:center;
-  gap:5px;
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+  min-width:0;overflow:hidden;white-space:nowrap;
 }
-.lpmh-dot{
-  width:7px;height:7px;
-  border-radius:50%;
-  flex-shrink:0;
-  background:var(--border2);
+.lpmh-dot{display:none;}
+.lpmh-shift-icon{
+  display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:22px;height:22px;border-radius:50%;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,0.04);
 }
-.lpmh-card.lok .lpmh-dot{ background:#10B981; box-shadow:0 0 6px rgba(16,185,129,0.6); }
-.lpmh-card.lbad .lpmh-dot{ background:#EF4444; }
+.lpmh-shift-icon svg{width:12px;height:12px;}
+.lpmh-shift-name{
+  font-family:var(--cond);font-size:12px;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text);flex-shrink:0;
+}
+.lpmh-shift-range{
+  font-family:var(--mono);font-size:10px;font-weight:400;
+  color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 
 /* Target badge top-right */
 .lpmh-target-badge{
@@ -702,7 +528,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .lpmh-val{
   font-family:var(--mono);
-  font-size:26px;
+  font-size:48px;
   font-weight:700;
   line-height:1;
   letter-spacing:-0.04em;
@@ -713,14 +539,14 @@ input[type=range]::-webkit-slider-thumb{
 
 .lpmh-unit{
   font-family:var(--mono);
-  font-size:9px;
+  font-size:13px;
   font-weight:700;
   letter-spacing:0.06em;
   text-transform:uppercase;
-  padding-bottom:2px;
+  padding-bottom:6px;
 }
-.lpmh-card.lok  .lpmh-unit{ color:rgba(16,185,129,0.5); }
-.lpmh-card.lbad .lpmh-unit{ color:rgba(239,68,68,0.45); }
+.lpmh-card.lok  .lpmh-unit{ color:rgba(16,185,129,0.6); }
+.lpmh-card.lbad .lpmh-unit{ color:rgba(239,68,68,0.55); }
 .lpmh-card:not(.lok):not(.lbad) .lpmh-unit{ color:var(--text3); }
 
 /* Gradient divider */
@@ -775,11 +601,11 @@ input[type=range]::-webkit-slider-thumb{
 }
 .lpmh-statbox{
   display:flex;
-  flex:1 1 calc(50% - 3px);
+  flex:1 1 calc(33.333% - 4px);
   flex-direction:row;
   align-items:center;
-  gap:8px;
-  padding:8px 10px;
+  gap:7px;
+  padding:8px 9px;
   border-radius:7px;
   border:1px solid var(--border);
   background:rgba(255,255,255,0.02);
@@ -787,7 +613,7 @@ input[type=range]::-webkit-slider-thumb{
   box-sizing:border-box;
 }
 .lpmh-statbox-icon{
-  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   border:1px solid var(--border2);
   background:rgba(255,255,255,0.03);
@@ -796,10 +622,10 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-card.lbad .lpmh-statbox-icon{ color:#EF4444; border-color:rgba(239,68,68,0.35); background:rgba(239,68,68,0.08); }
 .lpmh-card:not(.lok):not(.lbad) .lpmh-statbox-icon{ color:var(--text3); }
 .lpmh-statbox-icon svg{width:13px;height:13px;}
-.lpmh-statbox-text{display:flex;flex-direction:row;align-items:baseline;gap:6px;min-width:0;overflow:hidden;}
+.lpmh-statbox-text{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;overflow:hidden;}
 .lpmh-stat-val{
   font-family:var(--mono);
-  font-size:18px;
+  font-size:16px;
   font-weight:700;
   color:#fff;
   line-height:1.2;
@@ -808,9 +634,10 @@ input[type=range]::-webkit-slider-thumb{
   text-overflow:ellipsis;
 }
 .lpmh-stat-label{
-  font-size:10px;
+  font-size:9px;
   font-family:var(--cond);
-  letter-spacing:0.08em;
+  font-weight:700;
+  letter-spacing:0.1em;
   text-transform:uppercase;
   color:var(--text3);
   white-space:nowrap;
@@ -904,39 +731,6 @@ input[type=range]::-webkit-slider-thumb{
 .lpmh-brow-downtime.delay .lpmh-brow-lifts{color:var(--text3);}
 .lpmh-brow-downtime.delay .lpmh-brow-icon{border-color:var(--border2);background:rgba(255,255,255,0.03);}
 .lpmh-brow-downtime.delay .lpmh-brow-label{color:var(--text2);font-weight:600;white-space:normal;overflow:visible;text-overflow:clip;}
-
-/* ── Shift total banner ── */
-.lpmh-total-banner{
-  margin-top:auto;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,0.03);
-  display:flex;align-items:center;gap:8px;
-  padding:7px 10px;
-  position:relative;
-  overflow:hidden;
-}
-.lpmh-card.lok .lpmh-total-banner{
-  border-color:rgba(16,185,129,0.4);
-  background:linear-gradient(90deg,rgba(16,185,129,0.05) 0%,rgba(16,185,129,0.05) 55%,rgba(16,185,129,0.35) 65%,rgba(16,185,129,0.35) 100%);
-}
-.lpmh-card.lbad .lpmh-total-banner{
-  border-color:rgba(239,68,68,0.4);
-  background:linear-gradient(90deg,rgba(239,68,68,0.05) 0%,rgba(239,68,68,0.05) 55%,rgba(239,68,68,0.35) 65%,rgba(239,68,68,0.35) 100%);
-}
-.lpmh-total-icon{
-  width:24px;height:24px;border-radius:6px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  border:1px solid var(--border2);background:rgba(255,255,255,0.04);
-  color:var(--text3);
-}
-.lpmh-card.lok .lpmh-total-icon{ color:#10B981; }
-.lpmh-card.lbad .lpmh-total-icon{ color:#EF4444; }
-.lpmh-total-icon svg{width:14px;height:14px;}
-.lpmh-total-label{font-size:10px;font-weight:700;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.lpmh-total-value{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);flex-shrink:0;}
-.lpmh-card.lok .lpmh-total-value{ color:#07140f; }
-.lpmh-card.lbad .lpmh-total-value{ color:#1a0707; }
 
 
 /* ── ALERTS ─────────────────────────────────────────────────────── */
@@ -1330,19 +1124,46 @@ body.trends-open #trends-screen #tr-list{
 .top-grade-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:10px;
+  gap:8px;
 }
 
 .top-grade-card{
   position:relative;
   overflow:hidden;
-  border-radius:14px;
-  padding:20px 20px 18px;
+  border-radius:10px;
+  padding:12px 14px 11px;
   border:1px solid var(--border);
   background:var(--surface);
   display:flex;
-  flex-direction:column;
+  flex-direction:row;
+  align-items:stretch;
+  gap:12px;
   transition:border-color 0.2s, box-shadow 0.2s;
+}
+/* Left column — label, big letter grade, subvalue, progress bar (~35% width) */
+.tg-left{
+  flex:0 0 35%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+/* Vertical divider between grade and stats */
+.tg-vdivider{
+  width:1px;flex-shrink:0;
+  align-self:stretch;
+}
+.top-grade-card.good .tg-vdivider{ background:linear-gradient(180deg,transparent,rgba(16,185,129,0.22),transparent); }
+.top-grade-card.warn .tg-vdivider{ background:linear-gradient(180deg,transparent,rgba(245,158,11,0.18),transparent); }
+.top-grade-card.bad  .tg-vdivider{ background:linear-gradient(180deg,transparent,rgba(239,68,68,0.2),transparent); }
+.top-grade-card:not(.good):not(.warn):not(.bad) .tg-vdivider{ background:linear-gradient(180deg,transparent,var(--border),transparent); }
+/* Right column — stacked stat rows (~65% width) */
+.tg-right{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 /* Radial glow top-right */
 .top-grade-card::after{
@@ -1377,12 +1198,13 @@ body.trends-open #trends-screen #tr-list{
 
 /* Label row */
 .top-grade-label{
-  display:flex;align-items:center;gap:7px;
-  font-size:9px;
+  display:flex;align-items:flex-start;gap:5px;
+  font-size:8px;
   font-family:var(--cond);
   text-transform:uppercase;
-  letter-spacing:0.18em;
-  margin-bottom:14px;
+  letter-spacing:0.08em;
+  line-height:1.3;
+  margin-bottom:6px;
 }
 .top-grade-card.good .top-grade-label{ color:rgba(16,185,129,0.75); }
 .top-grade-card.warn .top-grade-label{ color:rgba(245,158,11,0.75); }
@@ -1394,6 +1216,7 @@ body.trends-open #trends-screen #tr-list{
   content:'';
   display:inline-block;
   width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  margin-top:2px;
 }
 .top-grade-card.good .top-grade-label::before{ background:#10B981; box-shadow:0 0 6px rgba(16,185,129,0.6); }
 .top-grade-card.warn .top-grade-label::before{ background:#F59E0B; }
@@ -1402,19 +1225,17 @@ body.trends-open #trends-screen #tr-list{
 
 .top-grade-main{
   display:flex;
-  justify-content:space-between;
   align-items:flex-end;
-  gap:10px;
-  margin-bottom:10px;
+  margin-bottom:4px;
 }
 
 .top-grade-letter{
-  font-size:64px;
+  font-size:52px;
   line-height:1;
   font-family:var(--mono);
   font-weight:700;
   letter-spacing:-0.04em;
-  margin-bottom:8px;
+  margin-bottom:2px;
 }
 .top-grade-card.good .top-grade-letter{ color:#10B981; }
 .top-grade-card.warn .top-grade-letter{ color:#F59E0B; }
@@ -1431,9 +1252,9 @@ body.trends-open #trends-screen #tr-list{
   padding-bottom:4px;
 }
 
-/* Gradient divider */
+/* Gradient divider (horizontal, between stats and footer text in right column) */
 .top-grade-divider{
-  height:1px;margin:0 0 8px;
+  height:1px;margin:8px 0 6px;
 }
 .top-grade-card.good .top-grade-divider{ background:linear-gradient(90deg,rgba(16,185,129,0.22),transparent); }
 .top-grade-card.warn .top-grade-divider{ background:linear-gradient(90deg,rgba(245,158,11,0.18),transparent); }
@@ -1441,17 +1262,19 @@ body.trends-open #trends-screen #tr-list{
 .top-grade-card:not(.good):not(.warn):not(.bad) .top-grade-divider{ background:linear-gradient(90deg,var(--border),transparent); }
 
 .top-grade-sub{
-  font-size:11px;
-  line-height:1.5;
+  font-size:10px;
+  line-height:1.35;
   color:var(--text3);
+  margin-top:auto;
 }
 
 /* ── Refreshed top-grade card internals: secondary value + progress bar + stat row ── */
 .top-grade-subvalue{
   font-family:var(--mono);
-  font-size:16px;
+  font-size:12px;
   font-weight:700;
-  margin:2px 0 12px;
+  line-height:1.25;
+  margin:0 0 6px;
 }
 .top-grade-card.good .top-grade-subvalue{ color:#10B981; }
 .top-grade-card.warn .top-grade-subvalue{ color:#F59E0B; }
@@ -1463,11 +1286,11 @@ body.trends-open #trends-screen #tr-list{
 }
 
 .top-grade-bar-track{
-  height:7px;
+  height:5px;
   border-radius:999px;
   background:rgba(255,255,255,0.06);
   overflow:hidden;
-  margin-bottom:14px;
+  margin-bottom:10px;
 }
 .top-grade-bar-fill{
   height:100%;
@@ -1480,21 +1303,20 @@ body.trends-open #trends-screen #tr-list{
 .top-grade-card:not(.good):not(.warn):not(.bad) .top-grade-bar-fill{ background:var(--border2); }
 
 .top-grade-stats{
-  display:flex;align-items:stretch;
-  margin-top:auto;
+  display:flex;flex-direction:column;gap:8px;
 }
 .top-grade-stat{flex:1;min-width:0;}
-.top-grade-stat-sep{width:1px;background:var(--border);margin:0 14px;}
+.top-grade-stat-sep{height:1px;background:var(--border);}
 .top-grade-stat-label{
-  display:flex;align-items:center;gap:6px;
-  font-size:11px;font-family:var(--cond);letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:6px;
+  display:flex;align-items:center;gap:5px;
+  font-size:11px;font-family:var(--cond);letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:5px;
 }
 .top-grade-stat-label svg{flex-shrink:0;opacity:0.7;width:13px;height:13px;}
 .top-grade-stat-val{
-  font-family:var(--mono);font-size:19px;font-weight:700;color:var(--text);
+  font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text);
 }
-.top-grade-stat-val .unit{font-size:13px;font-weight:400;color:var(--text3);}
+.top-grade-stat-val .unit{font-size:14px;font-weight:400;color:var(--text3);}
 
 @media(max-width:900px){
   .topbar{
@@ -1949,7 +1771,6 @@ body.print-mode .time-lbl{
   #print-report .lpmh-statbox,
   #print-report .lpmh-breakdown-card,
   #print-report .lpmh-brow-icon,
-  #print-report .tblock-card,
   #print-report .tavg-grade-card,
   #print-report .tavg-hero,
   #print-report .tavg-quick,
@@ -1965,8 +1786,7 @@ body.print-mode .time-lbl{
   }
   #print-report .top-grade-card::after,
   #print-report .rtb-card::after,
-  #print-report .lpmh-card::after,
-  #print-report .tblock-card::after{display:none!important;}
+  #print-report .lpmh-card::after{display:none!important;}
   #print-report .top-grade-label,
   #print-report .rtb-label,
   #print-report .metric-label,
@@ -1975,7 +1795,6 @@ body.print-mode .time-lbl{
   #print-report .lpmh-bd-col-time,
   #print-report .lpmh-bd-col-lifts,
   #print-report .lpmh-target-badge,
-  #print-report .tblock-label,
   #print-report .tavg-grade-label,
   #print-report .tavg-section-title,
   #print-report .tavg-kicker{color:#333!important;}
@@ -1996,12 +1815,6 @@ body.print-mode .time-lbl{
   #print-report .lpmh-brow-label,
   #print-report .lpmh-brow-time,
   #print-report .lpmh-brow-lifts,
-  #print-report .lpmh-total-label,
-  #print-report .lpmh-total-value,
-  #print-report .tblock-time-val,
-  #print-report .tblock-time-label,
-  #print-report .tblock-title,
-  #print-report .tblock-meta,
   #print-report .tavg-hero-title,
   #print-report .tavg-hero-copy,
   #print-report .tavg-stat-val,
@@ -2046,12 +1859,6 @@ body.print-mode .time-lbl{
   #print-report .lpmh-bd-icon{display:none!important;}
   #print-report .lpmh-brow-icon{width:14px!important;height:14px!important;}
   #print-report .lpmh-brow-icon svg{width:8px!important;height:8px!important;}
-  #print-report .lpmh-total-banner{background:#eee!important;border:1px solid #bbb!important;}
-  #print-report .lpmh-total-icon{display:none!important;}
-
-  #print-report .tblock-row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:0!important;}
-  #print-report .tblock-card{padding:8px!important;min-height:0!important;border-radius:6px!important;}
-  #print-report .tblock-time-val{font-size:20px!important;}
 
   #print-report .alert{background:#fff!important;color:#111!important;border-color:#999!important;padding:6px 8px!important;margin-bottom:5px!important;}
   #print-report .alert-title,#print-report .alert-msg{color:#111!important;}
@@ -2314,7 +2121,6 @@ body:not(.print-mode) .metric-commit,
 body:not(.print-mode) .top-grade-card,
 body:not(.print-mode) .rtb-card,
 body:not(.print-mode) .lpmh-card,
-body:not(.print-mode) .tblock-card,
 body:not(.print-mode) .tavg-grade-card,
 body:not(.print-mode) .tavg-stat,
 body:not(.print-mode) .tavg-hero,
@@ -2743,18 +2549,6 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
     <div class="content-head" style="margin-top:20px;">LIFTS PER MAN-HOUR</div>
     <div class="lpmh-grid" id="lpmh-grid"></div>
 
-    <div class="content-head" style="margin-top:20px;">TIMELINE POSITION</div>
-    <div class="tblock-row" id="tblock-row">
-      <div class="tblock-card" id="tblock-current">
-        <div class="tblock-header"><div class="tblock-label"><div class="tblock-dot"></div>Current Block</div></div>
-        <div class="tblock-empty">Run simulation to populate</div>
-      </div>
-      <div class="tblock-card" id="tblock-next">
-        <div class="tblock-header"><div class="tblock-label"><div class="tblock-dot"></div>Next Block</div></div>
-        <div class="tblock-empty">Run simulation to populate</div>
-      </div>
-    </div>
-
     <div id="alert-wrap" class="alert-wrap"></div>
     <div id="ihosa-diagnosis"></div>
 
@@ -2766,38 +2560,22 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
       <div class="panel-body panel-content">
         <div id="liftlog-summary-bar"></div>
-        <div class="liftlog-grid">
-          <div class="liftlog-col">
-            <div class="liftlog-col-head">
-              <span class="liftlog-col-title liftlog-col-title-fcst">Forecast</span>
-              <span class="liftlog-col-sub">/ simulated</span>
-            </div>
-            <div class="liftlog-table-head liftlog-table-head-fcst">
-              <div class="liftlog-cell-time">Time Window</div>
-              <div class="liftlog-cell-count">Forecast Lifts</div>
-              <div class="liftlog-cell-rest">Work Types (Simulated)</div>
-            </div>
-            <div id="lift-log" class="liftlog-rows"></div>
-          </div>
-          <div class="liftlog-col">
-            <div class="liftlog-col-head">
-              <span class="liftlog-col-title liftlog-col-title-actual">Actual</span>
-              <span class="liftlog-col-sub">/ manual entry</span>
-              <span id="liftlog-deadline-banner" class="liftlog-deadline-banner"></span>
-              <span id="liftlog-pace-summary" class="liftlog-pace-summary"></span>
-              <button class="liftlog-import-btn" onclick="openImpModal()" title="Import actuals from Excel/CSV">&#x2191; Import</button>
-              <button class="liftlog-clear-btn" onclick="clearHourlyActuals(this)">Clear</button>
-            </div>
-            <div class="liftlog-table-head liftlog-table-head-actual">
-              <div class="liftlog-cell-time">Time Window</div>
-              <div class="liftlog-cell-count">Actual Lifts</div>
-              <div class="liftlog-cell-var">Var vs Fcst</div>
-              <div class="liftlog-cell-worktype">Work Type</div>
-              <div class="liftlog-cell-notes" title="Notes">Notes</div>
-            </div>
-            <div id="lift-log-actual" class="liftlog-rows"></div>
-          </div>
+        <div class="liftlog-col-head">
+          <span id="liftlog-deadline-banner" class="liftlog-deadline-banner"></span>
+          <span id="liftlog-pace-summary" class="liftlog-pace-summary"></span>
+          <button class="liftlog-import-btn" onclick="openImpModal()" title="Import actuals from Excel/CSV">&#x2191; Import</button>
+          <button class="liftlog-clear-btn" onclick="clearHourlyActuals(this)">Clear</button>
         </div>
+        <div class="liftlog-table-head">
+          <div class="liftlog-cell-time">Time</div>
+          <div class="liftlog-cell-count">Forecast Lifts</div>
+          <div class="liftlog-cell-rest">Work Plan (Simulated)</div>
+          <div class="liftlog-cell-count">Actual Lifts</div>
+          <div class="liftlog-cell-var">Variance</div>
+          <div class="liftlog-cell-worktype">Work Type (Manual Entry)</div>
+          <div class="liftlog-cell-notes" title="Notes">Notes</div>
+        </div>
+        <div id="lift-log" class="liftlog-rows"></div>
         <div id="lift-log-timemap" style="overflow-x:auto;"></div>
       </div>
     </div>
@@ -2960,43 +2738,52 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .collapsible-panel.collapsed .panel-content{max-height:0!important;opacity:0;padding-top:0!important;padding-bottom:0!important;}
 .collapsible-panel.collapsed .collapse-chevron{transform:rotate(180deg);}
 
-/* ── Hourly Lift Log: forecast vs actual ── */
-.liftlog-grid{display:flex;gap:0;}
-.liftlog-col{flex:1 1 50%;min-width:0;padding:0 18px;}
-.liftlog-col:first-child{padding-left:0;border-right:1px solid var(--border);}
-.liftlog-col:last-child{padding-right:0;}
-@media (max-width:860px){
-  .liftlog-grid{flex-direction:column;}
-  .liftlog-col:first-child{border-right:none;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:18px;}
-  .liftlog-col{padding:0;}
-}
+/* ── Hourly Lift Log: merged forecast + actual table ── */
 
 /* ── Summary bar ── */
-.liftlog-summary-bar{display:flex;align-items:center;gap:32px;flex-wrap:wrap;
+.liftlog-summary-bar{
+  display:flex;flex-direction:column;gap:14px;
   background:var(--bg3);border:1px solid var(--border);border-radius:10px;
-  padding:14px 20px;margin-bottom:16px;}
-.liftlog-summary-stat{display:flex;flex-direction:column;gap:4px;}
-.liftlog-summary-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
-.liftlog-summary-val{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--text);line-height:1;}
+  padding:16px 12px;margin-bottom:16px;
+}
+.liftlog-summary-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;
+}
+.liftlog-summary-stat{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:6px 14px;text-align:center;position:relative;
+}
+.liftlog-summary-stat:not(:last-child)::after{
+  content:'';position:absolute;right:0;top:10%;bottom:10%;width:1px;background:var(--border);
+}
+.liftlog-summary-stat.group-end::after{display:none;}
+.liftlog-summary-icon{
+  width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.04);color:var(--text3);flex-shrink:0;
+}
+.liftlog-summary-label-row{display:flex;align-items:center;gap:6px;justify-content:center;}
+.liftlog-summary-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+.liftlog-summary-val{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--text);line-height:1;}
 .liftlog-summary-val .unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:5px;}
 .liftlog-summary-val.is-pos{color:var(--green);}
 .liftlog-summary-val.is-neg{color:var(--red);}
-.liftlog-summary-completion{display:flex;align-items:center;gap:10px;}
-.liftlog-summary-ring{flex-shrink:0;}
-.liftlog-summary-banner{display:flex;align-items:center;gap:12px;margin-left:auto;
+@media (max-width:860px){
+  .liftlog-summary-grid{grid-template-columns:repeat(2,1fr);row-gap:18px;}
+  .liftlog-summary-stat:nth-child(2n)::after{display:none;}
+  .liftlog-summary-stat::after{top:auto;bottom:-9px;left:10%;right:10%;height:1px;width:auto;}
+  .liftlog-summary-stat:nth-last-child(-n+1)::after,
+  .liftlog-summary-stat:nth-last-child(-n+2)::after{display:none;}
+}
+.liftlog-summary-banner{display:flex;align-items:center;gap:12px;
   background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);
   border-radius:8px;padding:8px 16px;}
 .liftlog-summary-banner-icon{color:var(--red);flex-shrink:0;}
 .liftlog-summary-banner-title{font-size:12px;font-weight:700;color:var(--red);}
 .liftlog-summary-banner-sub{font-size:11px;color:var(--text3);}
 
-/* ── Column headers ── */
+/* ── Toolbar row (above table head) ── */
 .liftlog-col-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
-.liftlog-col-title{font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
-.liftlog-col-title-fcst{color:var(--green);}
-.liftlog-col-title-actual{color:var(--amber);}
-.liftlog-col-sub{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
-.liftlog-clear-btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s;flex-shrink:0;}
+.liftlog-clear-btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s;flex-shrink:0;margin-left:auto;}
 .liftlog-clear-btn:hover{color:var(--red);border-color:var(--red);}
 .liftlog-clear-btn.confirm-armed{color:var(--red);border-color:var(--red);background:rgba(239,68,68,0.1);}
 .liftlog-import-btn{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--amber);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.3);border-radius:5px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;}
@@ -3022,13 +2809,13 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 }
 .liftlog-rows{display:flex;flex-direction:column;font-family:var(--mono);font-size:12px;}
 
-/* ── Shared cell widths (kept identical across forecast/actual for alignment) ── */
+/* ── Shared cell widths ── */
 .liftlog-cell-time{width:78px;flex-shrink:0;}
-.liftlog-cell-count{width:64px;flex-shrink:0;}
+.liftlog-cell-count{width:64px;flex-shrink:0;text-align:center;}
 .liftlog-cell-var{width:56px;flex-shrink:0;}
-.liftlog-cell-worktype{flex:1;min-width:0;}
-.liftlog-cell-notes{width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.liftlog-cell-rest{flex:1;min-width:0;}
+.liftlog-cell-worktype{flex:1 1 220px;min-width:0;}
+.liftlog-cell-notes{width:60px;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:4px;}
+.liftlog-cell-rest{flex:1 1 200px;min-width:0;}
 
 /* ── Forecast rows ── */
 .liftlog-row{display:flex;align-items:center;gap:14px;padding:8px 6px;border-bottom:1px solid var(--border);height:44px;min-height:44px;max-height:44px;overflow:hidden;box-sizing:border-box;transition:background .12s;}
@@ -3041,13 +2828,11 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;letter-spacing:.01em;color:var(--text2);white-space:nowrap;flex-shrink:0;}
 .liftlog-chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 
-.liftlog-row.is-break{opacity:0.6;}
 .liftlog-row.is-break .liftlog-row-total{color:var(--text3);font-weight:600;}
 .liftlog-row.is-break .liftlog-row-detail{color:var(--text3);font-style:italic;font-size:11px;}
-/* Actual column rows stay fully interactive even during scheduled breaks —
-   only dim the per-row chrome that isn't an input/control. */
-#lift-log-actual .liftlog-row.is-break{opacity:1;}
-#lift-log-actual .liftlog-row.is-break .liftlog-forecast-ref{color:var(--text3);font-style:italic;}
+/* Actual-side cells stay fully interactive even during scheduled breaks —
+   only the forecast side (Work Plan / Forecast Lifts) is dimmed. */
+.liftlog-row.is-break .liftlog-forecast-ref{color:var(--text3);font-style:italic;}
 
 /* ── Actual (manual entry) rows ── */
 .liftlog-actual-input{width:54px;height:28px;line-height:26px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;padding:0 6px;text-align:center;transition:border-color .12s;box-sizing:border-box;display:block;vertical-align:middle;}
@@ -3089,10 +2874,20 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 .liftlog-fcst-ref-cell{color:var(--text3);font-size:10.5px;white-space:nowrap;}
 .liftlog-varcell{display:flex;flex-direction:column;gap:1px;align-items:flex-start;}
 
+
 /* ── Hourly Lift Time Map ── */
 .timemap-header{display:flex;align-items:center;gap:10px;margin:20px 0 16px;}
 .timemap-header svg{color:var(--blue);flex-shrink:0;}
 .timemap-title{font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text);}
+.timemap-fit-btn{
+  margin-left:auto;display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;
+  color:var(--text3);background:transparent;border:1px solid var(--border);
+  border-radius:5px;padding:4px 10px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+.timemap-fit-btn:hover{color:var(--text);border-color:var(--border2);}
+.timemap-fit-btn.is-active{color:var(--blue);border-color:rgba(74,158,255,0.35);background:rgba(74,158,255,0.08);}
+.timemap-fit-btn svg{flex-shrink:0;color:inherit;}
 
 .timemap-scroll{overflow-x:auto;padding-bottom:4px;}
 .timemap-timeline{display:flex;align-items:center;min-width:max-content;padding:0 4px;}
@@ -3106,6 +2901,24 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
 
 .timemap-cards{display:flex;min-width:max-content;gap:0;margin-top:10px;}
 .timemap-card{flex:1;min-width:160px;padding:0 12px;display:flex;flex-direction:column;gap:8px;}
+
+/* ── Fit-to-width mode: collapse min-width constraints so the whole
+   timeline shrinks to fit without horizontal scrolling. ── */
+.timemap-scroll.is-fit{overflow-x:hidden;width:100%;}
+.timemap-scroll.is-fit .timemap-timeline,
+.timemap-scroll.is-fit .timemap-cards{min-width:0;width:100%;}
+.timemap-scroll.is-fit .timemap-node-wrap{min-width:0;}
+.timemap-scroll.is-fit .timemap-node{width:20px;height:20px;}
+.timemap-scroll.is-fit .timemap-node svg{width:10px;height:10px;}
+.timemap-scroll.is-fit .timemap-card{min-width:0;width:0;padding:0 5px;gap:4px;overflow:hidden;}
+.timemap-scroll.is-fit .timemap-range{font-size:9px;padding:2px 5px;white-space:nowrap;}
+.timemap-scroll.is-fit .timemap-total{font-size:16px;padding-top:3px;padding-bottom:4px;gap:4px;white-space:nowrap;overflow:hidden;}
+.timemap-scroll.is-fit .timemap-total-unit{font-size:9px;}
+.timemap-scroll.is-fit .timemap-srcs{min-width:0;}
+.timemap-scroll.is-fit .timemap-src{font-size:9px;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.timemap-scroll.is-fit .timemap-src-dot{width:5px;height:5px;}
+.timemap-scroll.is-fit .timemap-gap-label{font-size:8.5px;white-space:nowrap;}
+
 .timemap-range{
   display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;
   border:1px solid;border-radius:5px;padding:3px 9px;align-self:flex-start;
@@ -3969,6 +3782,13 @@ body.print-mode .ho-header{background:#E4E8F4;}
 }
 .note-textarea:focus{outline:none;border-color:var(--amber);}
 .note-foot{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:var(--s2);flex-shrink:0;}
+
+/* ── Performance grade card info modal ── */
+.top-grade-card{cursor:pointer;}
+.gradeinfo-overlay{display:none;position:fixed;inset:0;z-index:1002;background:rgba(0,0,0,0.78);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;}
+.gradeinfo-overlay.open{display:flex;}
+.gradeinfo-modal{background:var(--surface);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:420px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.6);animation:ho-in 0.2s ease;}
+.gradeinfo-body{padding:18px 20px;font-size:13px;line-height:1.5;color:var(--text2);}
 </style>
 <script>
 function togglePanel(id){document.getElementById(id).classList.toggle('collapsed');}
@@ -4435,6 +4255,19 @@ var AUTOLOAD_KEY = 'settegast_autoload_v1';
 var TRENDS_KEY   = 'settegast_trends_v1';
 var HOURLY_ACTUALS_KEY = 'settegast_hourly_actuals_v1';
 
+// Whether the Hourly Lift Time Map is in "fit to width" mode (shrinks nodes/cards
+// to fit the panel width instead of horizontally scrolling). Persists across
+// simulate() re-renders since buildHourlyLiftTimeMap rebuilds the whole section,
+// but toggling itself is a pure class flip on the existing DOM — no resimulate.
+var timemapFitMode = false;
+function toggleTimemapFit(){
+  timemapFitMode = !timemapFitMode;
+  var scrollEl=document.querySelector('#lift-log-timemap .timemap-scroll');
+  var btnEl=document.querySelector('#lift-log-timemap .timemap-fit-btn');
+  if(scrollEl) scrollEl.classList.toggle('is-fit', timemapFitMode);
+  if(btnEl) btnEl.classList.toggle('is-active', timemapFitMode);
+}
+
 // Escape user-entered text before it is interpolated into innerHTML.
 // Use this for ANY string that originated in a text input (notes, names, times typed by users).
 function escHtml(v){
@@ -4614,77 +4447,87 @@ function renderTopGrades(data){
   function commitmentCard(label, dlLabel, isLate, g, loaded, units, pivot, short){
     const pct = units>0 ? Math.min(100, Math.round(loaded/units*100)) : 0;
     const subText = short>0 ? (short+' units short') : (units<=0 ? 'No commitment set' : (isLate ? 'Released late' : 'On time'));
+    const infoText = 'On-time = A+. Graded by % of commitment loaded.';
     return `
-      <div class="top-grade-card ${gradeToneClass(g.tone)}">
-        <div class="top-grade-label">${label} · ${dlLabel}${isLate ? ' <span style="color:#F59E0B;">(LATE)</span>' : ''}</div>
-        <div class="top-grade-main">
-          <div class="top-grade-letter">${g.grade}</div>
-        </div>
-        <div class="top-grade-subvalue">${subText}</div>
-        <div class="top-grade-bar-track"><div class="top-grade-bar-fill" style="width:${pct}%;"></div></div>
-        <div class="top-grade-stats">
-          <div class="top-grade-stat">
-            <div class="top-grade-stat-label">${ICONS.box} Loaded</div>
-            <div class="top-grade-stat-val">${loaded}<span class="unit"> / ${units}</span></div>
+      <div class="top-grade-card ${gradeToneClass(g.tone)}" onclick="openGradeInfo('${label} \u00b7 ${dlLabel}','${infoText}')">
+        <div class="tg-left">
+          <div class="top-grade-label">${label} · ${dlLabel}${isLate ? ' <span style="color:#F59E0B;">(LATE)</span>' : ''}</div>
+          <div class="top-grade-main">
+            <div class="top-grade-letter">${g.grade}</div>
           </div>
-          <div class="top-grade-stat-sep"></div>
-          <div class="top-grade-stat">
-            <div class="top-grade-stat-label">${ICONS.target} Pivot</div>
-            <div class="top-grade-stat-val" style="color:${pivot ? 'var(--amber)' : 'var(--text3)'};">${pivot ? fmtH(pivot) : '—'}</div>
+          <div class="top-grade-subvalue">${subText}</div>
+          <div class="top-grade-bar-track"><div class="top-grade-bar-fill" style="width:${pct}%;"></div></div>
+        </div>
+        <div class="tg-vdivider"></div>
+        <div class="tg-right">
+          <div class="top-grade-stats">
+            <div class="top-grade-stat">
+              <div class="top-grade-stat-label">${ICONS.box} Loaded</div>
+              <div class="top-grade-stat-val">${loaded}<span class="unit"> / ${units}</span></div>
+            </div>
+            <div class="top-grade-stat-sep"></div>
+            <div class="top-grade-stat">
+              <div class="top-grade-stat-label">${ICONS.target} Pivot</div>
+              <div class="top-grade-stat-val" style="color:${pivot ? 'var(--amber)' : 'var(--text3)'};">${pivot ? fmtH(pivot) : '—'}</div>
+            </div>
           </div>
         </div>
-        <div class="top-grade-divider" style="margin-top:10px;"></div>
-        <div class="top-grade-sub">On-time = A+. Graded by % of commitment loaded.</div>
       </div>`;
   }
 
   // Weighted Avg Inbound: big letter, dwell time as the subvalue (no bar — there's no
   // natural 0–100% denominator), then Wtd Avg / Simple Avg stat row.
   const avgCard = `
-      <div class="top-grade-card ${gradeToneClass(data.avg.tone)}">
-        <div class="top-grade-label">Weighted Avg Inbound</div>
-        <div class="top-grade-main">
-          <div class="top-grade-letter">${data.avg.grade}</div>
-        </div>
-        <div class="top-grade-subvalue">${data.avgTime}</div>
-        <div class="top-grade-stats">
-          <div class="top-grade-stat">
-            <div class="top-grade-stat-label">${ICONS.clock} Wtd Avg</div>
-            <div class="top-grade-stat-val">${data.avgTime}</div>
+      <div class="top-grade-card ${gradeToneClass(data.avg.tone)}" onclick="openGradeInfo('Weighted Avg Inbound','Actual unit-weighted dwell; A+ begins under 6 hours.')">
+        <div class="tg-left">
+          <div class="top-grade-label">Weighted Avg Inbound</div>
+          <div class="top-grade-main">
+            <div class="top-grade-letter">${data.avg.grade}</div>
           </div>
-          <div class="top-grade-stat-sep"></div>
-          <div class="top-grade-stat">
-            <div class="top-grade-stat-label">${ICONS.clock} Simple Avg</div>
-            <div class="top-grade-stat-val" style="color:var(--text2);">${data.simpleAvgTime}</div>
+          <div class="top-grade-subvalue">${data.avgTime}</div>
+        </div>
+        <div class="tg-vdivider"></div>
+        <div class="tg-right">
+          <div class="top-grade-stats">
+            <div class="top-grade-stat">
+              <div class="top-grade-stat-label">${ICONS.clock} Wtd Avg</div>
+              <div class="top-grade-stat-val">${data.avgTime}</div>
+            </div>
+            <div class="top-grade-stat-sep"></div>
+            <div class="top-grade-stat">
+              <div class="top-grade-stat-label">${ICONS.clock} Simple Avg</div>
+              <div class="top-grade-stat-val" style="color:var(--text2);">${data.simpleAvgTime}</div>
+            </div>
           </div>
         </div>
-        <div class="top-grade-divider" style="margin-top:10px;"></div>
-        <div class="top-grade-sub">Actual unit-weighted dwell; A+ begins under 6 hours.</div>
       </div>`;
 
   // LPMH Goal: big letter, ratio as the subvalue, progress bar vs target (capped at 100%).
   const lpmhPct = data.lpmhTargetRaw>0 ? Math.min(100, Math.round(data.actualLpmhRaw/data.lpmhTargetRaw*100)) : 0;
   const lpmhCard = `
-      <div class="top-grade-card ${gradeToneClass(data.lpmh.tone)}">
-        <div class="top-grade-label">LPMH Goal</div>
-        <div class="top-grade-main">
-          <div class="top-grade-letter">${data.lpmh.grade}</div>
-        </div>
-        <div class="top-grade-subvalue">${data.actualLpmhRaw.toFixed(2)}<span class="unit"> / ${data.lpmhTargetRaw.toFixed(2)}</span></div>
-        <div class="top-grade-bar-track"><div class="top-grade-bar-fill" style="width:${lpmhPct}%;"></div></div>
-        <div class="top-grade-stats">
-          <div class="top-grade-stat">
-            <div class="top-grade-stat-label">${ICONS.target} Actual LPMH</div>
-            <div class="top-grade-stat-val">${data.actualLpmhRaw.toFixed(2)}</div>
+      <div class="top-grade-card ${gradeToneClass(data.lpmh.tone)}" onclick="openGradeInfo('LPMH Goal','Ramp productivity vs target.')">
+        <div class="tg-left">
+          <div class="top-grade-label">LPMH Goal</div>
+          <div class="top-grade-main">
+            <div class="top-grade-letter">${data.lpmh.grade}</div>
           </div>
-          <div class="top-grade-stat-sep"></div>
-          <div class="top-grade-stat">
-            <div class="top-grade-stat-label">${ICONS.target} Target LPMH</div>
-            <div class="top-grade-stat-val" style="color:var(--text2);">${data.lpmhTargetRaw.toFixed(2)}</div>
+          <div class="top-grade-subvalue">${data.actualLpmhRaw.toFixed(2)}<span class="unit"> / ${data.lpmhTargetRaw.toFixed(2)}</span></div>
+          <div class="top-grade-bar-track"><div class="top-grade-bar-fill" style="width:${lpmhPct}%;"></div></div>
+        </div>
+        <div class="tg-vdivider"></div>
+        <div class="tg-right">
+          <div class="top-grade-stats">
+            <div class="top-grade-stat">
+              <div class="top-grade-stat-label">${ICONS.target} Actual LPMH</div>
+              <div class="top-grade-stat-val">${data.actualLpmhRaw.toFixed(2)}</div>
+            </div>
+            <div class="top-grade-stat-sep"></div>
+            <div class="top-grade-stat">
+              <div class="top-grade-stat-label">${ICONS.target} Target LPMH</div>
+              <div class="top-grade-stat-val" style="color:var(--text2);">${data.lpmhTargetRaw.toFixed(2)}</div>
+            </div>
           </div>
         </div>
-        <div class="top-grade-divider" style="margin-top:10px;"></div>
-        <div class="top-grade-sub">Ramp productivity vs target.</div>
       </div>`;
 
   el.innerHTML = `
@@ -5069,13 +4912,17 @@ function lpmhIcon(name){
       return '<svg '+s+'><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></svg>';
     case 'train':
       return '<svg '+s+'><rect x="4" y="3" width="16" height="13" rx="2"/><path d="M4 11h16"/><circle cx="8.5" cy="18.5" r="1.5"/><circle cx="15.5" cy="18.5" r="1.5"/><path d="M8 16l-2 3M16 16l2 3"/></svg>';
+    case 'sun':
+      return '<svg '+s+'><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>';
+    case 'moon':
+      return '<svg '+s+'><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     default:
       return '';
   }
 }
 function renderBreakdown(sources,manualItems,totalLabel,totalValue,downtimeItems,shiftWord){
   downtimeItems=downtimeItems||[];
-  if(sources.length===0&&manualItems.length===0&&downtimeItems.length===0)return {tableHtml:'',totalHtml:''};
+  if(sources.length===0&&manualItems.length===0&&downtimeItems.length===0)return {tableHtml:''};
   var html='<div class="lpmh-breakdown-card">';
   html+='<div class="lpmh-breakdown-head">';
   html+='<div class="lpmh-breakdown-title"><span class="lpmh-bd-icon">'+lpmhIcon('calendar')+'</span>'+(shiftWord||'')+' BREAKDOWN</div>';
@@ -5127,14 +4974,7 @@ function renderBreakdown(sources,manualItems,totalLabel,totalValue,downtimeItems
   });
   html+='</div>';
 
-  var totalHtml='';
-  if(totalLabel){
-    totalHtml='<div class="lpmh-total-banner"><div class="lpmh-total-icon">'+lpmhIcon('trophy')+'</div>'
-      +'<div class="lpmh-total-label">'+totalLabel+'</div>'
-      +'<div class="lpmh-total-value">'+totalValue+'</div></div>';
-  }
-
-  return {tableHtml:html,totalHtml:totalHtml};
+  return {tableHtml:html};
 }
 
 function runPhase(trains,clockIn,commitment,rate,outRem,outLoaded,carsIn,segs,events,activeKeys,segKey,
@@ -5392,9 +5232,8 @@ function liftSourceColor(k,trainLabelMap){
 }
 
 function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,paceCtx){
-  var rows=[];
   var buckets=[];
-  var renderedBuckets=[]; // only hours shown in either column — keeps left/right aligned
+  var renderedBuckets=[]; // only hours shown in the table
 
   for(var h=0;h<27;h++){
     var total=0;
@@ -5438,35 +5277,17 @@ function buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,paceCtx){
     buckets.push({hour:h,total:total,detail:detail,sources:sources});
 
     if(total>0){
-      var chips=sources.map(function(s){
-        return '<span class="liftlog-chip"><span class="liftlog-chip-dot" style="background:'+s.color+';"></span>'+escHtml(s.label)+': '+s.lifts+'</span>';
-      }).join('');
-      rows.push(
-        '<div class="liftlog-row">'+
-        '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-        '<div class="liftlog-row-total liftlog-cell-count">'+total+'</div>'+
-        '<div class="liftlog-row-detail liftlog-cell-rest">'+chips+'</div>'+
-        '</div>'
-      );
       renderedBuckets.push({hour:h,total:total,detail:detail,sources:sources,isBreak:false});
     } else {
       // No lift activity this hour — note why, if it's covered by a scheduled break.
       var breakOverlaps=getDelayIntervals(segs,h,h+1);
       if(breakOverlaps.length>0){
         var breakLabels=breakOverlaps.map(function(d){return d.label;}).join(' + ');
-        rows.push(
-          '<div class="liftlog-row is-break">'+
-          '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
-          '<div class="liftlog-row-total liftlog-cell-count">0</div>'+
-          '<div class="liftlog-row-detail liftlog-cell-rest">No activity \u2014 '+escHtml(breakLabels)+'</div>'+
-          '</div>'
-        );
         renderedBuckets.push({hour:h,total:0,detail:[],sources:[],isBreak:true,breakLabels:breakLabels});
       }
     }
   }
 
-  document.getElementById('lift-log').innerHTML=rows.length?rows.join(''):'<div style="color:var(--text3);padding:6px 2px;">No forecast activity yet \u2014 run the simulation.</div>';
   buildHourlyLiftLogActual(renderedBuckets,activeKeys,trainLabelMap,paceCtx);
   buildHourlyLiftTimeMap(buckets);
   return buckets;
@@ -5928,6 +5749,22 @@ function closeNoteModal(){
 function closeNoteModalIfBg(e){
   if(e.target===document.getElementById('note-overlay')) closeNoteModal();
 }
+
+// ── Performance grade card info modal ──
+// Clicking a Performance Grades card (IHOSA/MHOAS release, Weighted Avg
+// Inbound, LPMH Goal) shows the short "how this is graded" explanation that
+// used to be printed at the bottom of each card.
+function openGradeInfo(title, text){
+  document.getElementById('gradeinfo-title').textContent=title;
+  document.getElementById('gradeinfo-body').textContent=text;
+  document.getElementById('gradeinfo-overlay').classList.add('open');
+}
+function closeGradeInfo(){
+  document.getElementById('gradeinfo-overlay').classList.remove('open');
+}
+function closeGradeInfoIfBg(e){
+  if(e.target===document.getElementById('gradeinfo-overlay')) closeGradeInfo();
+}
 function saveNoteModal(){
   if(_noteModalHour==null) return;
   setHourlyActualNote(_noteModalHour, document.getElementById('note-textarea').value);
@@ -5949,6 +5786,34 @@ function liftSourceOptionList(activeKeys,trainLabelMap){
   return opts;
 }
 
+// Returns the crew size on shift during a given hourly bucket (0-26, where
+// 24-26 represent 0000-0259 the next day). Used to convert "actual lifts
+// logged so far" into a live LPMH figure. Falls back to 0 if the hour falls
+// in neither shift window (so it doesn't pollute the man-hours denominator).
+function hourCrewSize(hour, ctx){
+  if(!ctx) return 0;
+  var clockH=hour%24;
+
+  var s1Start=ctx.s1Start, s1End=ctx.s1End;
+  var s2Start=ctx.s2Start, s2End=ctx.s2End;
+  var dayCrew=ctx.dayCrew||0, nightCrew=ctx.nightCrew||0;
+
+  if(s1Start!=null && s1End!=null && s1End>s1Start){
+    if(clockH>=s1Start && clockH<s1End) return dayCrew;
+  }
+
+  if(s2Start!=null && s2End!=null){
+    var nightWraps=s2End<s2Start;
+    if(nightWraps){
+      if(clockH>=s2Start || clockH<s2End) return nightCrew;
+    } else if(s2End>s2Start){
+      if(clockH>=s2Start && clockH<s2End) return nightCrew;
+    }
+  }
+
+  return 0;
+}
+
 // Renders the top summary bar: Forecast Total / Actual Total / Variance /
 // Completion % (with a progress ring) and a deadline-passed banner if the
 // next open commitment's deadline has already gone by.
@@ -5958,51 +5823,49 @@ function renderLiftLogSummaryBar(buckets, ctx){
   if(!el) return;
 
   var actuals=loadHourlyActuals();
-  var forecastTotal=0, actualTotal=0;
+  var forecastTotal=0, actualTotal=0, manHours=0;
   buckets.forEach(function(b){
     if(b.isBreak) return;
     var entry=normalizeActualEntry(actuals[b.hour]);
     if(entry.value!=null && Number.isFinite(entry.value)){
       forecastTotal+=b.total;
       actualTotal+=entry.value;
+      manHours+=hourCrewSize(b.hour, ctx);
     }
   });
 
   var variance=actualTotal-forecastTotal;
   var completionPct=forecastTotal>0 ? Math.round((actualTotal/forecastTotal)*100) : 0;
-  var ringPct=Math.max(0,Math.min(100,completionPct));
-
-  var R=20, C=2*Math.PI*R;
-  var dash=(ringPct/100)*C;
-  var ringColor=completionPct>=100?'var(--green)':(completionPct>=70?'var(--blue)':'var(--amber)');
-  var ringSvg='<svg width="56" height="56" viewBox="0 0 56 56" class="liftlog-summary-ring">'
-    +'<circle cx="28" cy="28" r="'+R+'" fill="none" stroke="var(--border)" stroke-width="5"/>'
-    +'<circle cx="28" cy="28" r="'+R+'" fill="none" stroke="'+ringColor+'" stroke-width="5" '
-    +'stroke-dasharray="'+dash.toFixed(1)+' '+C.toFixed(1)+'" stroke-linecap="round" '
-    +'transform="rotate(-90 28 28)"/>'
-    +'</svg>';
 
   var varClass=variance>0?'is-pos':(variance<0?'is-neg':'');
   var varSign=variance>0?'+':'';
 
+  var liveLpmh=manHours>0 ? (actualTotal/manHours) : 0;
+  var lpmhTarget=(ctx && ctx.rate!=null) ? LPMH_TARGET : LPMH_TARGET;
+  var lpmhClass=manHours<=0?'':(liveLpmh>=lpmhTarget?'is-pos':'is-neg');
+  var lpmhDisplay=manHours>0?liveLpmh.toFixed(2):'\u2014';
+
   var html=''
-    +'<div class="liftlog-summary-stat" title="Forecast for the hours you\'ve entered an actual for">'
-    +'<div class="liftlog-summary-label">Forecast Total</div>'
+    +'<div class="liftlog-summary-grid">'
+    +'<div class="liftlog-summary-stat group-end" title="Forecast for the hours you\'ve entered an actual for">'
+    +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('down')+'</span><span class="liftlog-summary-label">Forecast Total</span></div>'
     +'<div class="liftlog-summary-val" style="color:var(--green);">'+forecastTotal+'<span class="unit">Lifts</span></div>'
     +'</div>'
     +'<div class="liftlog-summary-stat">'
-    +'<div class="liftlog-summary-label">Actual Total</div>'
+    +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('up')+'</span><span class="liftlog-summary-label">Actual Total</span></div>'
     +'<div class="liftlog-summary-val">'+actualTotal+'<span class="unit">Lifts</span></div>'
     +'</div>'
     +'<div class="liftlog-summary-stat">'
-    +'<div class="liftlog-summary-label">Variance</div>'
+    +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('trend')+'</span><span class="liftlog-summary-label">Variance</span></div>'
     +'<div class="liftlog-summary-val '+varClass+'">'+varSign+variance+'<span class="unit">Lifts</span></div>'
     +'</div>'
     +'<div class="liftlog-summary-stat">'
-    +'<div class="liftlog-summary-label">Completion</div>'
-    +'<div class="liftlog-summary-completion">'
+    +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('target')+'</span><span class="liftlog-summary-label">Completion</span></div>'
     +'<div class="liftlog-summary-val">'+completionPct+'%<span class="unit">of Forecast</span></div>'
-    +ringSvg
+    +'</div>'
+    +'<div class="liftlog-summary-stat" title="Actual lifts per man-hour for the hours you\'ve logged, vs target '+lpmhTarget.toFixed(2)+'">'
+    +'<div class="liftlog-summary-label-row"><span class="liftlog-summary-icon">'+lpmhIcon('gauge')+'</span><span class="liftlog-summary-label">Live LPMH</span></div>'
+    +'<div class="liftlog-summary-val '+lpmhClass+'">'+lpmhDisplay+'<span class="unit">/ '+lpmhTarget.toFixed(2)+'</span></div>'
     +'</div>'
     +'</div>';
 
@@ -6110,7 +5973,7 @@ function renderLiftLogPaceSummary(delta, anyActual, ctx){
 }
 
 function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
-  var el=document.getElementById('lift-log-actual');
+  var el=document.getElementById('lift-log');
   if(!el) return;
 
   var actuals=loadHourlyActuals();
@@ -6179,14 +6042,29 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
       deltaHtml='<span class="liftlog-delta '+dCls+'">'+dSign+delta+'</span>';
     }
     var fcstRefHtml='';
-    if(!hasActual){
+    if(!hasActual && b.total>0){
       var fcstLabel='fcst '+b.total;
-      if(b.isBreak && b.breakLabels) fcstLabel+=' \u2014 '+b.breakLabels;
       fcstRefHtml='<span class="liftlog-forecast-ref">'+escHtml(fcstLabel)+'</span>';
     }
+
+    // ── Work Plan (Simulated) cell — forecast chips, or "No activity — <break>" ──
+    var workPlanHtml;
+    if(b.total>0){
+      var chips=b.sources.map(function(s){
+        return '<span class="liftlog-chip"><span class="liftlog-chip-dot" style="background:'+s.color+';"></span>'+escHtml(s.label)+': '+s.lifts+'</span>';
+      }).join('');
+      workPlanHtml='<div class="liftlog-row-detail liftlog-cell-rest">'+chips+'</div>';
+    } else if(b.isBreak){
+      workPlanHtml='<div class="liftlog-row-detail liftlog-cell-rest">No activity \u2014 '+escHtml(b.breakLabels)+'</div>';
+    } else {
+      workPlanHtml='<div class="liftlog-row-detail liftlog-cell-rest"></div>';
+    }
+
     rows.push(
-      '<div class="liftlog-row is-actual'+(b.isBreak?' is-break':'')+'">'+
+      '<div class="liftlog-row'+(b.isBreak?' is-break':'')+'">'+
       '<div class="liftlog-row-time liftlog-cell-time">'+String(h).padStart(2,'0')+'00\u2013'+String(h).padStart(2,'0')+'59</div>'+
+      '<div class="liftlog-row-total liftlog-cell-count">'+(b.total>0?b.total:(b.isBreak?'0':'\u2014'))+'</div>'+
+      workPlanHtml+
       '<div class="liftlog-cell-count">'+
         '<input type="number" min="0" step="1" class="liftlog-actual-input" value="'+(hasActual?actualVal:'')+'" placeholder="\u2014" '+
         'onchange="setHourlyActual('+h+',this.value)">'+
@@ -6201,7 +6079,7 @@ function buildHourlyLiftLogActual(buckets,activeKeys,trainLabelMap,paceCtx){
   });
 
   if(!rows.length){
-    el.innerHTML='<div style="color:var(--text3);padding:6px 2px;">No forecast activity to compare yet.</div>';
+    el.innerHTML='<div style="color:var(--text3);padding:6px 2px;">No forecast activity yet \u2014 run the simulation.</div>';
     return;
   }
 
@@ -6324,9 +6202,15 @@ function buildHourlyLiftTimeMap(buckets){
   }).join('')
   + '<div class="timemap-legend-item"><span class="timemap-legend-dot" style="background:#4a9eff;"></span>Inbound train drops</div>';
 
+  var FIT_ICON='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var fitBtnActiveCls=timemapFitMode?' is-active':'';
+  var fitScrollCls=timemapFitMode?' is-fit':'';
+
   el.innerHTML=''
-    +'<div class="timemap-header">'+CLOCK_ICON+'<span class="timemap-title">Hourly Lift Time Map</span></div>'
-    +'<div class="timemap-scroll">'
+    +'<div class="timemap-header">'+CLOCK_ICON+'<span class="timemap-title">Hourly Lift Time Map</span>'
+    +'<button type="button" class="timemap-fit-btn'+fitBtnActiveCls+'" onclick="toggleTimemapFit()" title="Shrink the timeline to fit the page width">'+FIT_ICON+'<span>Fit to width</span></button>'
+    +'</div>'
+    +'<div class="timemap-scroll'+fitScrollCls+'">'
     +'<div class="timemap-timeline">'+nodes+'</div>'
     +'<div class="timemap-cards">'+cards+'</div>'
     +'</div>'
@@ -6920,7 +6804,9 @@ function simulate(){
     ihosaLoaded:ihosaLoaded,mhoasLoaded:mhoasLoaded,
     ihosaCommitment:ihosaCommitment,mhoasCommitment:mhoasCommitment,
     rate:rate,
-    lunchH:lunchH,shiftH:shiftH,upsH:upsH,lunch2H:lunch2H,shift0300H:shift0300H,zpbhoArr:zpbhoArr
+    lunchH:lunchH,shiftH:shiftH,upsH:upsH,lunch2H:lunch2H,shift0300H:shift0300H,zpbhoArr:zpbhoArr,
+    s1Start:s1Start,s1End:s1End,s2Start:s2Start,s2End:s2End,
+    dayCrew:crew1+(swingHours>0?1:0),nightCrew:crew2
   };
   var hourlyBuckets=buildHourlyLiftLog(segs,activeKeys,rate,trainLabelMap,liftLogPaceCtx);
 
@@ -6984,7 +6870,7 @@ function simulate(){
   var s1Manual=[];
   if(flips>0)s1Manual.push({label:'flips',lifts:flips});
 
-  function lpmhCard(cardClass, labelText, lpmhVal, target, lifts, manHours, crew, gaugeHtml, breakdown){
+  function lpmhCard(cardClass, shiftIcon, shiftIconColor, shortName, timeRange, lpmhVal, target, lifts, manHours, crew, gaugeHtml, breakdown){
     var hasData = lifts > 0;
     var pct = hasData ? Math.min(100, Math.round(lpmhVal / target * 100)) : 0;
     var targetPct = 100; // target line always at 100%
@@ -6996,7 +6882,11 @@ function simulate(){
     var h = '<div class="lpmh-card '+cardClass+'">';
     // Header
     h += '<div class="lpmh-header">';
-    h += '<div class="lpmh-label"><div class="lpmh-dot"></div>'+labelText+'</div>';
+    h += '<div class="lpmh-label">';
+    h += '<span class="lpmh-shift-icon" style="color:'+shiftIconColor+';border-color:'+shiftIconColor+'44;background:'+shiftIconColor+'14;">'+lpmhIcon(shiftIcon)+'</span>';
+    h += '<span class="lpmh-shift-name">'+shortName+'</span>';
+    h += '<span class="lpmh-shift-range">'+timeRange+'</span>';
+    h += '</div>';
     h += '<div class="lpmh-target-badge">'+(badgeIcon?'<span class="lpmh-bd-icon">'+badgeIcon+'</span>':'')+badgeText+'</div>';
     h += '</div>';
     // Big value
@@ -7012,37 +6902,35 @@ function simulate(){
     // Stat boxes
     if(hasData){
       h += '<div class="lpmh-stat-row">';
-      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('lifts')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+lifts+'</div><div class="lpmh-stat-label">Lifts</div></div></div>';
-      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('manhours')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+manHours.toFixed(1)+'</div><div class="lpmh-stat-label">Man-hrs</div></div></div>';
-      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('crew')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+crew+'</div><div class="lpmh-stat-label">Crew</div></div></div>';
-      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('target')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+target+'</div><div class="lpmh-stat-label">Target</div></div></div>';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('lifts')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+lifts+'</div><div class="lpmh-stat-label">LIFTS</div></div></div>';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('manhours')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+manHours.toFixed(1)+'</div><div class="lpmh-stat-label">MAN-HRS</div></div></div>';
+      h += '<div class="lpmh-statbox"><div class="lpmh-statbox-icon">'+lpmhIcon('crew')+'</div><div class="lpmh-statbox-text"><div class="lpmh-stat-val">'+crew+'</div><div class="lpmh-stat-label">CREW</div></div></div>';
       h += '</div>';
     } else {
       h += '<div class="lpmh-divider"></div>';
       h += '<div class="lpmh-sub">No lift data yet</div>';
     }
     if(breakdown && breakdown.tableHtml) h += breakdown.tableHtml;
-    if(breakdown && breakdown.totalHtml) h += breakdown.totalHtml;
     h += '</div>';
     return h;
   }
 
   var s1Html = lpmhCard(
     s1Lifts>0?lc(s1LPMH):'',
-    'Day LPMH &middot; '+s1Label,
+    'sun', '#F59E0B', 'DAY', s1Label,
     s1LPMH, LPMH_TARGET, s1Lifts, s1ManHours, crew1,
     null, renderBreakdown(s1Sources,s1Manual,'Day shift total',s1Lifts,s1Downtime,'DAY')
   );
 
   var s2Html = lpmhCard(
     s2Lifts>0?lc(s2LPMH):'',
-    'Night LPMH &middot; '+s2Label,
+    'moon', '#7F77DD', 'NIGHT', s2Label,
     s2LPMH, LPMH_TARGET, s2Lifts, s2ManHours, crew2,
     null, renderBreakdown(nightSources,s2Manual,'Night shift total',s2Lifts,nightDowntime,'NIGHT')
   );
   var dHtml = lpmhCard(
     (s1Lifts+s2Lifts)>0?lc(dailyLPMH):'',
-    'Daily LPMH &middot; avg',
+    'calendar', '#38BDF8', 'DAILY', 'All Day ('+s1Label+' / '+s2Label+')',
     dailyLPMH, LPMH_TARGET, s1Lifts+s2Lifts, s1ManHours+s2ManHours, crew1+'&thinsp;/&thinsp;'+crew2,
     null, null
   );
@@ -7109,106 +6997,6 @@ function simulate(){
     var nowEvent={time:currentTime,isNow:true,title:'Current time',meta:'Live operational position'};
     events.splice(nowIdx===-1?events.length:nowIdx,0,nowEvent);
   }
-
-  // ── TIMELINE POSITION CARDS ──
-  (function(){
-    var sortedEvts = events.filter(function(e){ return !e.isNow; });
-    // Current block = last event at or before currentTime
-    var curEvt = null, nextEvt = null;
-    for(var i = sortedEvts.length - 1; i >= 0; i--){
-      if(sortedEvts[i].time <= currentTime){ curEvt = sortedEvts[i]; break; }
-    }
-    for(var j = 0; j < sortedEvts.length; j++){
-      if(sortedEvts[j].time > currentTime){ nextEvt = sortedEvts[j]; break; }
-    }
-
-    // Time consumed between `from` and `to` by scheduled delay blocks (shift change,
-    // lunches, UPS window) that haven't already been marked done.
-    function pendingDelayHours(from, to){
-      var d=0;
-      if(to<=from) return 0;
-      if(lunchH>0 && from<11 && 11<to) d+=lunchH;
-      if(shiftH>0 && from<15 && 15<to) d+=shiftH;
-      if(upsH>0 && zpbhoArr>from && zpbhoArr<to) d+=upsH;
-      if(lunch2H>0 && from<21 && 21<to) d+=lunch2H;
-      if(shift0300H>0 && from<27 && 27<to) d+=shift0300H;
-      return d;
-    }
-
-    // Required LPH (lifts per man-hour... here: units/hour) to clear the next
-    // un-met outbound commitment exactly on time from currentTime.
-    function requiredRateFor(commitment, units, loaded){
-      var remaining=Math.max(0, units-Math.round(loaded));
-      if(remaining<=0 || units<=0) return null;
-      var hoursLeft=commitment-currentTime;
-      if(hoursLeft<=0) return {remaining:remaining,hoursLeft:0,usable:0,required:Infinity};
-      var usable=Math.max(0.01, hoursLeft-pendingDelayHours(currentTime,commitment));
-      return {remaining:remaining,hoursLeft:hoursLeft,usable:usable,required:remaining/usable};
-    }
-
-    // Pick whichever commitment is still open and due soonest — that's the one
-    // the current block's pace needs to be measured against.
-    function nextOpenCommitment(){
-      var cands=[];
-      if(ihosaUnits>0 && Math.round(ihosaLoaded)<ihosaUnits){
-        cands.push({label:'IHOSA',dl:ihosaCommitment,units:ihosaUnits,loaded:ihosaLoaded,color:'#f0a030'});
-      }
-      if(mhoasUnits>0 && Math.round(mhoasLoaded)<mhoasUnits){
-        cands.push({label:'MHOAS',dl:mhoasCommitment,units:mhoasUnits,loaded:mhoasLoaded,color:'#7F77DD'});
-      }
-      if(!cands.length) return null;
-      cands.sort(function(a,b){return a.dl-b.dl;});
-      return cands[0];
-    }
-
-    function requiredRateHtml(){
-      var target=nextOpenCommitment();
-      if(!target) return '';
-      var calc=requiredRateFor(target.dl,target.units,target.loaded);
-      if(!calc) return '';
-      if(!isFinite(calc.required)){
-        return '<div class="tblock-meta" style="margin-top:4px;color:var(--red);font-weight:600;">'
-          +'&#x26A0; '+target.label+' deadline ('+fmtH(target.dl)+') has passed with '+calc.remaining+' units remaining \u2014 commitment will be missed.'
-          +'</div>';
-      }
-      var ok=calc.required<=rate;
-      var color=ok?'var(--green)':'var(--red)';
-      return '<div class="tblock-meta" style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">'
-        +'<span style="color:var(--text3);">To make </span>'
-        +'<span style="color:'+target.color+';font-weight:700;">'+target.label+'</span>'
-        +'<span style="color:var(--text3);"> by '+fmtH(target.dl)+', need </span>'
-        +'<span style="font-family:var(--mono);font-weight:700;color:'+color+';">'+calc.required.toFixed(1)+' LPH</span>'
-        +'<span style="color:var(--text3);"> (current rate: '+rate+' LPH) \u2014 '+calc.remaining+' units in '+fmtDur(calc.usable)+' usable</span>'
-        +'</div>';
-    }
-
-    function cardHTML(evt, isCurrent){
-      if(!evt) return '<div class="tblock-header"><div class="tblock-label"><div class="tblock-dot"></div>'+(isCurrent?'Current Block':'Next Block')+'</div></div><div class="tblock-empty">Run simulation to populate.</div>'+(isCurrent?requiredRateHtml():'');
-      var timeUntil = isCurrent ? null : evt.time - currentTime;
-      var countdownHtml = (!isCurrent && timeUntil !== null)
-        ? '<div class="tblock-countdown">in '+fmtDur(timeUntil)+'</div>' : '';
-      var pillHtml = evt.pill
-        ? '<div class="tblock-pill" style="background:'+evt.pillBg+';color:'+evt.pillColor+';">'+evt.pill+'</div>' : '';
-      return '<div class="tblock-header">'
-        +'<div class="tblock-label"><div class="tblock-dot"></div>'+(isCurrent?'Current Block':'Next Block')+'</div>'
-        +countdownHtml
-        +'</div>'
-        +'<div class="tblock-time-display">'
-        +'<div class="tblock-time-val">'+fmtH(evt.time)+'</div>'
-        +'<div class="tblock-time-label">'+(isCurrent?'now':'upcoming')+'</div>'
-        +'</div>'
-        +'<div class="tblock-divider"></div>'
-        +pillHtml
-        +'<div class="tblock-title">'+evt.title+'</div>'
-        +'<div class="tblock-meta">'+evt.meta+'</div>'
-        +(isCurrent?requiredRateHtml():'');
-    }
-
-    var curEl = document.getElementById('tblock-current');
-    var nxtEl = document.getElementById('tblock-next');
-    if(curEl) curEl.innerHTML = cardHTML(curEvt, true);
-    if(nxtEl) nxtEl.innerHTML = cardHTML(nextEvt, false);
-  })();
 
   var seqHtml='';
   events.forEach(function(e,i){
@@ -9315,7 +9103,6 @@ function buildPrintReportHtml(){
   html+=prLiveSection('Performance Grades', '#top-grade-banner', 'No performance grades generated yet.');
   html+=prLiveSection('Top Metric Cards', '#metrics', 'No top metric cards generated yet.');
   html+=prLiveSection('Lifts Per Man-Hour', '#lpmh-grid', 'No LPMH cards generated yet.');
-  html+=prLiveSection('Timeline Position', '#tblock-row', 'No current/next timeline position generated yet.');
   html+=prLiveSection('Alerts / Downtime Flags', '#alert-wrap', 'No alerts or downtime flags shown on dashboard.');
   html+='</div>';
 
@@ -9833,6 +9620,17 @@ function printRampReport(){
       <button class="imp-btn imp-btn-cancel" onclick="closeNoteModal()">Cancel</button>
       <button class="imp-btn imp-btn-apply" onclick="saveNoteModal()">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- PERFORMANCE GRADE CARD INFO MODAL -->
+<div id="gradeinfo-overlay" class="gradeinfo-overlay" onclick="closeGradeInfoIfBg(event)">
+  <div class="gradeinfo-modal">
+    <div class="note-head">
+      <div class="note-title" id="gradeinfo-title">HOW THIS IS GRADED</div>
+      <button class="ho-close" onclick="closeGradeInfo()">&#x2715;</button>
+    </div>
+    <div class="gradeinfo-body" id="gradeinfo-body"></div>
   </div>
 </div>
 
