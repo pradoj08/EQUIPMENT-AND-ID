@@ -124,12 +124,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
   background-clip:text;
 }
 .brand-tagline{font-size:8px;color:var(--text3);font-family:var(--mono);letter-spacing:0.14em;text-transform:uppercase;margin-top:2px;}
-.prestige-rank-badge{
-  display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;
-  background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);
-  color:var(--amber);font-weight:700;letter-spacing:0.08em;
-}
-
 .tb-sep{width:1px;height:30px;background:var(--border2);flex-shrink:0;}
 
 .terminal-id{
@@ -207,7 +201,7 @@ input[type=time]:focus{outline:none;}
 
 
 /* ── SIDEBAR ─────────────────────────────────────────────────────── */
-.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;overflow-x:hidden;}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;overflow-x:hidden;zoom:1.25;}
 .sidebar::-webkit-scrollbar{width:3px;}
 .sidebar::-webkit-scrollbar-track{background:transparent;}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
@@ -228,7 +222,7 @@ input[type=time]:focus{outline:none;}
 }
 .section-label::before{
   content:'';display:block;width:3px;height:10px;
-  background:var(--amber);border-radius:1px;flex-shrink:0;
+  background:currentColor;border-radius:1px;flex-shrink:0;
 }
 
 .ctrl-group{margin-bottom:9px;}
@@ -304,6 +298,23 @@ input[type=range]::-webkit-slider-thumb{
 .sb-card-params .sb-size-wrap{width:100%;}
 .sb-card-params .sb-size-slider{flex:1;width:auto;}
 
+/* Color-coded accent borders for the simulation-parameter cards */
+.sb-card-throughput{border-left:3px solid var(--green);}
+.sb-card-throughput .section-label{color:var(--green);}
+.sb-card-coh{border-left:3px solid var(--blue);}
+.sb-card-coh .section-label{color:var(--blue);}
+.sb-card-delays{border-left:3px solid var(--red);}
+.sb-card-delays .section-label{color:var(--red);}
+.sb-card-crew{border-left:3px solid var(--pink);}
+.sb-card-crew .section-label{color:var(--pink);}
+.sb-card-trains{border-left:3px solid var(--amber);}
+.sb-card-trains .sb-card-title{color:var(--amber);}
+.sb-card-commit{border-left:3px solid var(--purple);}
+.sb-card-commit .sb-card-title{color:var(--purple);}
+.sb-card-shift{border-left:3px solid var(--blue);}
+.sb-card-shift .sw-head-title{color:var(--blue);}
+
+
 /* Shift Windows */
 .shift-block{margin-bottom:12px;}
 .shift-block:last-child{margin-bottom:0;}
@@ -355,7 +366,7 @@ input[type=range]::-webkit-slider-thumb{
 }
 .sw-time-box input[type=time]{
   border:none;background:transparent;color:var(--text);padding:0;
-  font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.02em;
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.02em;
   width:100%;min-width:0;
 }
 .sw-time-box input[type=time]:focus{outline:none;}
@@ -1807,198 +1818,6 @@ body.print-mode .time-lbl{
 
 
 
-/* ── PRINT REPORT BUTTON / DOCUMENT PRINT ───────────────────────── */
-.tb-print-report-btn{
-  border-color:rgba(16,185,129,0.28)!important;
-  color:var(--green)!important;
-  background:rgba(16,185,129,0.06)!important;
-}
-.tb-print-report-btn:hover{background:rgba(16,185,129,0.14)!important;}
-.print-report{display:none;}
-@media print{
-  @page{size:Letter landscape;margin:0.35in;}
-  html,body{height:auto!important;min-height:0!important;background:#fff!important;color:#111!important;overflow:visible!important;}
-  body *{visibility:hidden!important;}
-  #print-report,#print-report *{visibility:visible!important;}
-  #print-report{
-    display:block!important;
-    position:absolute!important;
-    inset:0 auto auto 0!important;
-    width:100%!important;
-    background:#fff!important;
-    color:#111!important;
-    font-family:Arial,Helvetica,sans-serif!important;
-    font-size:10px!important;
-    line-height:1.32!important;
-  }
-  .topbar,.app-body,.statusbar,.screen,.sidebar,.ho-overlay,.pm-overlay,.tr-detail-overlay,.ap-overlay{display:none!important;}
-  .pr-page{page-break-after:always;}
-  .pr-page:last-child{page-break-after:auto;}
-  .pr-head{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:10px;}
-  .pr-title{font-size:22px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;margin:0;}
-  .pr-sub{font-size:10px;color:#444;margin-top:3px;}
-  .pr-meta{text-align:right;font-size:10px;color:#333;line-height:1.5;}
-  .pr-section{margin:9px 0 10px;page-break-inside:avoid;}
-  .pr-section-title{font-size:11px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid #999;padding-bottom:3px;margin-bottom:6px;}
-  .pr-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
-  .pr-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
-  .pr-card{border:1px solid #777;border-radius:6px;padding:7px;page-break-inside:avoid;background:#fff;}
-  .pr-card-label{font-size:8px;text-transform:uppercase;letter-spacing:0.1em;color:#555;font-weight:800;margin-bottom:4px;}
-  .pr-card-main{font-size:18px;font-weight:900;line-height:1;margin-bottom:4px;}
-  .pr-card-sub{font-size:9px;color:#333;}
-  .pr-good{border-left:5px solid #0f7b4d;}.pr-warn{border-left:5px solid #c47a00;}.pr-bad{border-left:5px solid #b91c1c;}.pr-neutral{border-left:5px solid #555;}
-  .pr-table{width:100%;border-collapse:collapse;page-break-inside:auto;}
-  .pr-table th{background:#e9e9e9;border:1px solid #aaa;padding:5px;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:0.08em;}
-  .pr-table td{border:1px solid #bbb;padding:5px;vertical-align:top;font-size:9px;}
-  .pr-two-col{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-  .pr-pre{white-space:pre-wrap;font-family:Arial,Helvetica,sans-serif;font-size:9px;line-height:1.35;margin:0;}
-  .pr-timeline{max-height:none;}
-  .pr-note-box{min-height:55px;border:1px dashed #777;border-radius:6px;padding:7px;color:#333;background:#fafafa;}
-  .pr-small{font-size:8.5px;color:#555;}
-
-  /* Print report now mirrors the visible dashboard cards instead of rebuilding approximations */
-  .pr-live-section{margin:9px 0 11px;page-break-inside:avoid;}
-  .pr-live-title{font-size:11px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid #999;padding-bottom:3px;margin-bottom:6px;color:#111;}
-  .pr-live-grid{display:block;}
-  .pr-live-section .content-head{display:none!important;}
-
-  #print-report .top-grade-grid{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:7px!important;}
-  #print-report .top-grade-card,
-  #print-report .rtb-card,
-  #print-report .metric,
-  #print-report .lpmh-card,
-  #print-report .lpmh-statbox,
-  #print-report .lpmh-breakdown-card,
-  #print-report .lpmh-brow-icon,
-  #print-report .tavg-grade-card,
-  #print-report .tavg-hero,
-  #print-report .tavg-quick,
-  #print-report .tavg-drivers,
-  #print-report .tavg-note,
-  #print-report .tavg-stat{
-    background:#fff!important;
-    color:#111!important;
-    box-shadow:none!important;
-    text-shadow:none!important;
-    border-color:#777!important;
-    page-break-inside:avoid!important;
-  }
-  #print-report .top-grade-card::after,
-  #print-report .rtb-card::after,
-  #print-report .lpmh-card::after{display:none!important;}
-  #print-report .top-grade-label,
-  #print-report .rtb-label,
-  #print-report .metric-label,
-  #print-report .lpmh-label,
-  #print-report .lpmh-breakdown-title,
-  #print-report .lpmh-bd-col-time,
-  #print-report .lpmh-bd-col-lifts,
-  #print-report .lpmh-target-badge,
-  #print-report .tavg-grade-label,
-  #print-report .tavg-section-title,
-  #print-report .tavg-kicker{color:#333!important;}
-  #print-report .top-grade-letter,
-  #print-report .top-grade-value,
-  #print-report .top-grade-sub,
-  #print-report .rtb-name,
-  #print-report .rtb-status,
-  #print-report .rtb-big,
-  #print-report .rtb-stat-val,
-  #print-report .metric-val,
-  #print-report .metric-sub,
-  #print-report .lpmh-val,
-  #print-report .lpmh-unit,
-  #print-report .lpmh-stat-val,
-  #print-report .lpmh-stat-label,
-  #print-report .lpmh-sub,
-  #print-report .lpmh-brow-label,
-  #print-report .lpmh-brow-time,
-  #print-report .lpmh-brow-lifts,
-  #print-report .tavg-hero-title,
-  #print-report .tavg-hero-copy,
-  #print-report .tavg-stat-val,
-  #print-report .tavg-stat-sub,
-  #print-report .tavg-label,
-  #print-report .tavg-cost,
-  #print-report .tavg-why,
-  #print-report .tavg-note p{color:#111!important;}
-  #print-report .top-grade-letter,
-  #print-report .rtb-status,
-  #print-report .lpmh-val{font-size:24px!important;}
-  #print-report .top-grade-card{padding:8px!important;border-radius:6px!important;}
-  #print-report .top-grade-main{margin-bottom:4px!important;}
-  #print-report .top-grade-sub{font-size:8.5px!important;line-height:1.25!important;}
-
-  #print-report .rtb-wrap{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:0!important;}
-  #print-report .rtb-card{padding:8px!important;border-radius:6px!important;min-height:0!important;}
-  #print-report .rtb-stats,
-  #print-report .rtb-recovery-stats{display:flex!important;gap:8px!important;flex-wrap:wrap!important;}
-  #print-report .rtb-vdivider{display:none!important;}
-  #print-report .rtb-stat-label{color:#444!important;font-size:7.5px!important;}
-  #print-report .rtb-stat-val{font-size:12px!important;}
-
-  #print-report .metrics-row{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:7px!important;margin-bottom:0!important;}
-  #print-report .metric{padding:7px!important;border-radius:6px!important;}
-  #print-report .metric::before{display:none!important;}
-  #print-report .metric-val{font-size:16px!important;}
-
-  #print-report .lpmh-grid{display:flex!important;flex-direction:column!important;gap:7px!important;margin-bottom:0!important;}
-  #print-report .lpmh-card{padding:8px!important;border-radius:6px!important;min-height:0!important;}
-  #print-report .lpmh-header{margin-bottom:5px!important;}
-  #print-report .lpmh-val-display{margin-bottom:3px!important;}
-  #print-report .lpmh-divider{margin:5px 0!important;background:#bbb!important;}
-  #print-report .lpmh-bar-wrap{height:5px!important;background:#eee!important;border:1px solid #bbb!important;}
-  #print-report .lpmh-bar-fill{background:#777!important;}
-  #print-report .lpmh-breakdown-card{margin-top:5px!important;padding:5px!important;border:1px solid #bbb!important;}
-  #print-report .lpmh-breakdown-head{border-bottom:1px solid #bbb!important;}
-  #print-report .lpmh-brow{font-size:8.5px!important;padding:1px 0!important;border-bottom:none!important;}
-  #print-report .lpmh-stat-row{display:flex!important;gap:5px!important;margin-bottom:5px!important;}
-  #print-report .lpmh-statbox{padding:5px!important;border-radius:4px!important;}
-  #print-report .lpmh-statbox-icon{display:none!important;}
-  #print-report .lpmh-bd-icon{display:none!important;}
-  #print-report .lpmh-brow-icon{width:14px!important;height:14px!important;}
-  #print-report .lpmh-brow-icon svg{width:8px!important;height:8px!important;}
-
-  #print-report .alert{background:#fff!important;color:#111!important;border-color:#999!important;padding:6px 8px!important;margin-bottom:5px!important;}
-  #print-report .alert-title,#print-report .alert-msg{color:#111!important;}
-
-  #print-report .tavg-grade-grid{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:7px!important;}
-  #print-report .tavg-summary{display:grid!important;grid-template-columns:1.25fr 1fr!important;gap:7px!important;}
-  #print-report .tavg-body{padding:0!important;}
-  #print-report .tavg-hero,
-  #print-report .tavg-quick,
-  #print-report .tavg-drivers,
-  #print-report .tavg-note{padding:8px!important;border-radius:6px!important;}
-  #print-report .tavg-grade-card{padding:7px!important;border-radius:6px!important;}
-  #print-report .tavg-grade-letter{font-size:20px!important;color:#111!important;}
-  #print-report .tavg-grade-val{font-size:10px!important;color:#111!important;}
-  #print-report .tavg-grade-sub{font-size:8.5px!important;color:#111!important;}
-  #print-report .tavg-quick-grid{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:5px!important;}
-  #print-report .tavg-item{grid-template-columns:24px 1fr auto!important;gap:6px!important;padding:6px 0!important;border-top:1px solid #bbb!important;}
-  #print-report .tavg-rank{width:24px!important;height:24px!important;background:#eee!important;color:#111!important;border-color:#999!important;}
-  #print-report .tavg-bar-wrap{background:#eee!important;}
-  #print-report .tavg-bar{background:#777!important;}
-
-  #print-report .seq-merged{display:flex!important;flex-direction:column!important;gap:0!important;}
-  #print-report .seq-row{display:grid!important;grid-template-columns:1fr 40px 1fr!important;gap:6px!important;page-break-inside:avoid!important;}
-  #print-report .seq-row-fcst,#print-report .seq-row-actual{display:flex!important;flex-direction:column!important;gap:5px!important;padding-bottom:6px!important;}
-  #print-report .seq-row-empty{border-color:#ccc!important;color:#777!important;font-size:8.5px!important;padding:6px 8px!important;min-height:0!important;}
-  #print-report .seq-time{color:#111!important;font-size:8.5px!important;padding-top:8px!important;}
-  #print-report .seq-row-spine{padding-top:0!important;}
-  #print-report .seq-dot-col{padding-top:10px!important;}
-  #print-report .seq-dot{width:7px!important;height:7px!important;border-color:#555!important;background:#fff!important;}
-  #print-report .seq-line{background:#bbb!important;min-height:14px!important;}
-  #print-report .seq-block{background:#fff!important;border-color:#888!important;padding:6px 8px!important;border-radius:5px!important;}
-  #print-report .seq-headline{color:#111!important;font-size:9.5px!important;}
-  #print-report .seq-meta{color:#111!important;font-size:8.5px!important;}
-  #print-report .seq-pill,.now-pill,.badge{background:#eee!important;color:#111!important;border:1px solid #999!important;}
-  #print-report .seq-icon,#print-report .seq-now-graphic,#print-report .seq-now-arrow{display:none!important;}
-  #print-report .seq-elapsed{display:none!important;}
-  #print-report .seq-compare-heads{display:grid!important;grid-template-columns:1fr 40px 1fr!important;gap:6px!important;margin-bottom:6px!important;}
-  #print-report .seq-col-head-actual{grid-column:3!important;}
-  #print-report .seq-col-title{font-size:8.5px!important;}
-  #print-report .seq-col-title-fcst,#print-report .seq-col-title-actual{color:#111!important;}
-}
 
 
 /* ── TOPBAR SAFE STYLE MATCH — header-only, no dashboard layout impact ── */
@@ -2036,9 +1855,6 @@ body:not(.print-mode) > .topbar .brand-tagline{
   font-size:16px;
   letter-spacing:0.23em;
   color:rgba(255,255,255,0.46);
-}
-body:not(.print-mode) > .topbar .prestige-rank-badge{
-  font-size:11px;letter-spacing:0.06em;vertical-align:middle;
 }
 body:not(.print-mode) > .topbar .tb-sep{height:58px;background:rgba(255,255,255,0.10);}
 body:not(.print-mode) > .topbar .tb-time-wrap{
@@ -2080,11 +1896,6 @@ body:not(.print-mode) > .topbar .tb-handoff-btn{
   color:#FBBF24!important;
   background:rgba(245,158,11,0.045)!important;
 }
-body:not(.print-mode) > .topbar .tb-print-report-btn{
-  border-color:rgba(20,184,166,0.48)!important;
-  color:#2DD4BF!important;
-  background:rgba(20,184,166,0.035)!important;
-}
 body:not(.print-mode) > .topbar #ppe-toggle-btn,
 body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:92px;justify-content:center;}
 body:not(.print-mode) > .topbar .tb-controls{
@@ -2115,7 +1926,6 @@ body:not(.print-mode) > .topbar{
   gap:14px !important;
   flex-wrap:nowrap !important;
   align-items:center !important;
-  overflow:hidden !important;
   width:100% !important;
   box-sizing:border-box !important;
 }
@@ -2179,7 +1989,6 @@ body:not(.print-mode) > .topbar #sidebar-toggle-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar #manual-save-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar #reset-inputs-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar .tb-handoff-btn{min-width:0 !important;}
-body:not(.print-mode) > .topbar .tb-print-report-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar #ppe-toggle-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar #trends-toggle-btn{min-width:0 !important;}
 body:not(.print-mode) > .topbar .tb-controls{
@@ -2323,7 +2132,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
     <div class="brand-mark" id="prestige-emblem" onclick="openAchievementsPanel()" style="cursor:pointer;" title="Click to view your achievements">🚂</div>
     <div>
       <div class="brand-name">Settegast</div>
-      <div class="brand-tagline">Terminal Forecastor <span id="prestige-rank-badge" class="prestige-rank-badge">P0 &middot; R1</span></div>
+      <div class="brand-tagline">Terminal Forecastor</div>
     </div>
   </div>
   
@@ -2338,8 +2147,6 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   <button class="tb-btn tb-reset-btn" onclick="resetLeftInputs()" id="reset-inputs-btn" title="Reset left-side simulation inputs to defaults">&#x21BA; RESET INPUTS</button>
 
   <button class="tb-btn tb-handoff-btn" onclick="openHandoff()">&#x1F4CB; HANDOFF</button>
-
-  <button class="tb-btn tb-print-report-btn" onclick="printRampReport()">&#x1F5A8; PRINT</button>
 
   <button class="tb-btn" onclick="togglePPEScreen()" id="ppe-toggle-btn">PPE</button>
 
@@ -2362,27 +2169,13 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   </div>
 </div>
 
-<!-- PRINT-ONLY REPORT OUTPUT -->
-<section id="print-report" class="print-report" aria-hidden="true"></section>
-
 <!-- APP BODY -->
 <div class="app-body">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sb-card sb-card-params">
-      <div class="sb-card-head">
-        <span class="sb-card-icon">&#x2699;</span>
-        <span class="sb-card-title">Simulation Parameters</span>
-      </div>
-      <div class="sb-size-wrap">
-        <span class="sb-size-icon">A</span>
-        <input type="range" class="sb-size-slider" id="sb-font-slider" min="9" max="15" step="1" value="11" oninput="setSidebarSize(this.value)" title="Sidebar text size">
-        <span class="sb-size-icon" style="font-size:13px;">A</span>
-      </div>
-    </div>
 
-    <div class="sb-card sw-card">
+    <div class="sb-card sw-card sb-card-shift">
       <div class="sw-head">
         <span class="sw-head-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
         <span class="sw-head-title">Shift Windows</span>
@@ -2423,7 +2216,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
     </div>
 
-    <div class="sb-card">
+    <div class="sb-card sb-card-trains">
       <div class="sb-card-head">
         <span class="sb-card-icon">&#x1F686;</span>
         <span class="sb-card-title">Inbound Trains</span>
@@ -2436,8 +2229,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       <div id="train-controls"></div>
     </div>
 
-    <div class="sb-section">
-    <div class="sb-card">
+    <div class="sb-card sb-card-commit">
       <div class="sb-card-head">
         <span class="sb-card-icon">&#x1F3D7;</span>
         <span class="sb-card-title">Outbound Commitments</span>
@@ -2478,7 +2270,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
     </div>
 
-    <div class="sb-section">
+    <div class="sb-card sb-card-throughput">
       <div class="section-label">Throughput</div>
       <div class="ctrl-group">
         <div class="ctrl-header">
@@ -2489,7 +2281,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       </div>
     </div>
 
-    <div class="sb-section">
+    <div class="sb-card sb-card-coh">
       <div class="section-label">Cars on Hand &mdash; empty, ready to load</div>
       <div class="ctrl-group">
         <div class="ctrl-header">
@@ -2508,7 +2300,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       <div class="note">Empty &mdash; available for outbound loading from 0300. No prior unloading needed.</div>
     </div>
 
-    <div class="sb-section">
+    <div class="sb-card sb-card-delays">
       <div class="section-label">Delays &amp; Interruptions</div>
       <div class="ctrl-group">
         <div class="ctrl-header"><span class="ctrl-name">Shift change @ 1500</span><span class="ctrl-val" id="v-sc">0.0h</span></div>
@@ -2552,7 +2344,7 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
       <div class="total-delay" id="total-delay-note">Total delays: <span>1.0h</span></div>
     </div>
 
-    <div class="sb-section">
+    <div class="sb-card sb-card-crew">
       <div class="section-label">Crew &amp; Lifts</div>
       <div class="ctrl-group">
         <div class="ctrl-header">
@@ -2775,6 +2567,9 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
         <div class="ppe-metric-page-sub">Settegast Ramp · Live Audit</div>
       </div>
     </div>
+
+    <!-- Per-shift task summary -->
+    <div class="ppe-task-summary" id="ppe-task-summary"></div>
 
     <!-- Filter bar -->
     <div class="ppe-filter-bar">
@@ -3187,6 +2982,71 @@ body:not(.print-mode) > .topbar .hidden-current-time-input{display:block !import
   color:var(--text3);
   letter-spacing:0.06em;
   margin-top:5px;
+}
+
+/* Per-shift task summary */
+.ppe-task-summary{
+  flex-shrink:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 22px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.ppe-shift-card{
+  flex:1;
+  min-width:220px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  padding:12px 14px;
+}
+.ppe-shift-title{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.ppe-shift-name{
+  font-family:var(--cond);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--amber);
+}
+.ppe-shift-count{
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--text3);
+  letter-spacing:0.06em;
+}
+.ppe-shift-meta{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.ppe-shift-stat{
+  text-align:center;
+}
+.ppe-shift-stat-label{
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text3);
+  font-family:var(--cond);
+}
+.ppe-shift-stat-val{
+  font-family:var(--mono);
+  font-size:18px;
+  font-weight:700;
+  color:var(--text);
+  margin-top:3px;
 }
 
 /* Filter bar */
@@ -7715,7 +7575,7 @@ function renderInboundTrainStatus(trains, trainDropEnd, rate, segs, trainArrival
 }
 
 
-function simulate(){
+function simulate(skipPrestigeXP){
   updateCoh();
   var rate=parseInt(document.getElementById('rate').value);
   var ihosaUnits=parseInt(document.getElementById('ihosa-units').value);
@@ -8427,7 +8287,11 @@ checkMilestones({
 });
 
 // ── Prestige XP ──
-(function(){
+// Skipped when called right after Reset Inputs (skipPrestigeXP=true) so that
+// hardcoded default values can't instantly satisfy "inputs filled"/grade
+// conditions and farm XP with zero real work. The very next simulate() that
+// runs from actual user input will check normally.
+if(!skipPrestigeXP)(function(){
   var actuals=loadHourlyActuals();
   var loggedHours=Object.keys(actuals).map(Number).filter(function(h){
     var e=normalizeActualEntry(actuals[h]);
@@ -8604,7 +8468,7 @@ function resetLeftInputs(){
   buildTrains();
   updateStaticControlLabels();
   updateCoh();
-  simulate();
+  simulate(true);
 }
 
 
@@ -8649,23 +8513,6 @@ function setFontSize(size){
   var screens = document.querySelectorAll('.main-content, .screen');
   screens.forEach(function(el){ el.style.zoom = scale.toFixed(3); });
   document.getElementById('font-size-slider').title = 'Zoom: ' + Math.round(scale*100) + '%';
-}
-
-function setSidebarSize(size){
-  var scale = 0.75 + (size - 9) / (15 - 9) * 0.5;
-  var sb = document.querySelector('.sidebar');
-  if(sb) sb.style.zoom = scale.toFixed(3);
-}
-var _printMode=false;
-var _pdfRestoreMode=null;
-
-function togglePrintMode(){
-  _printMode=!_printMode;
-  document.body.classList.toggle('print-mode',_printMode);
-  var btn=document.getElementById('print-toggle');
-  btn.classList.toggle('active',_printMode);
-  btn.title=_printMode?'Switch to dark mode':'Switch to warm light mode';
-  btn.innerHTML=_printMode?'&#x1F319;':'&#x2600;';
 }
 
 /* ═══════════════ HANDOFF REPORT ═══════════════ */
@@ -10527,71 +10374,6 @@ document.addEventListener('click', function(e){
 });
 
 
-/* ═══════════════ PRINT REPORT GENERATOR ═══════════════ */
-function prEsc(v){
-  return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function prVal(id){
-  var el=document.getElementById(id);
-  return el ? (el.value || el.textContent || '').trim() : '';
-}
-function prCloneHtml(selector){
-  var el=document.querySelector(selector);
-  if(!el) return '';
-  var clone=el.cloneNode(true);
-  clone.querySelectorAll('[id]').forEach(function(n){ n.removeAttribute('id'); });
-  clone.querySelectorAll('[onclick],[oninput],[onchange]').forEach(function(n){
-    n.removeAttribute('onclick'); n.removeAttribute('oninput'); n.removeAttribute('onchange');
-  });
-  return clone.outerHTML;
-}
-function prLiveSection(title, selector, emptyText){
-  var html=prCloneHtml(selector);
-  if(!html || html.replace(/<[^>]*>/g,'').trim()==='') html='<div class="pr-note-box">'+prEsc(emptyText||'No data shown on dashboard.')+'</div>';
-  return '<div class="pr-live-section"><div class="pr-live-title">'+prEsc(title)+'</div><div class="pr-live-grid">'+html+'</div></div>';
-}
-function prTimelineSection(){
-  var heads=prCloneHtml('#panel-timeline .seq-compare-heads');
-  var merged=prCloneHtml('#seq-merged');
-  if(!merged || merged.replace(/<[^>]*>/g,'').trim()===''){
-    return '<div class="pr-live-section"><div class="pr-live-title">Timeline \u2014 same event sequence shown on page</div><div class="pr-note-box">No timeline events shown on dashboard.</div></div>';
-  }
-  return '<div class="pr-live-section"><div class="pr-live-title">Timeline \u2014 forecast vs actual, same comparison shown on page</div>'+(heads||'')+merged+'</div>';
-}
-function prNotesBox(){
-  var notes=(document.getElementById('field-notes-input')||{}).value||'';
-  return '<div class="pr-live-section"><div class="pr-live-title">Field / Manager Notes</div><div class="pr-note-box">'+(notes?prEsc(notes):'')+'</div></div>';
-}
-function buildPrintReportHtml(){
-  if(typeof simulate==='function') simulate();
-  var now=new Date();
-  var generated=now.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  var header='<div class="pr-head"><div><h1 class="pr-title">RampIQ Print Report</h1><div class="pr-sub">Matches the current dashboard values/cards at print time</div></div><div class="pr-meta"><strong>Generated:</strong> '+prEsc(generated)+'<br><strong>Current:</strong> '+prEsc(prVal('current-time'))+'<br><strong>Day:</strong> '+prEsc(prVal('s1-start'))+'-'+prEsc(prVal('s1-end'))+' &nbsp; <strong>Night:</strong> '+prEsc(prVal('s2-start'))+'-'+prEsc(prVal('s2-end'))+'</div></div>';
-  var html='<div class="pr-page">'+header;
-  html+=prLiveSection('Performance Grades', '#top-grade-banner', 'No performance grades generated yet.');
-  html+=prLiveSection('Top Metric Cards', '#metrics', 'No top metric cards generated yet.');
-  html+=prLiveSection('Lifts Per Man-Hour', '#lpmh-grid', 'No LPMH cards generated yet.');
-  html+=prLiveSection('Alerts / Downtime Flags', '#alert-wrap', 'No alerts or downtime flags shown on dashboard.');
-  html+='</div>';
-
-  html+='<div class="pr-page">'+header;
-  html+=prLiveSection('Weighted Average / Impact Snapshot', '#tavg-body', 'No weighted-average impact snapshot generated yet.');
-  html+=prNotesBox();
-  html+='</div>';
-
-  html+='<div class="pr-page">'+header;
-  html+=prTimelineSection();
-  html+=prLiveSection('Commitment Status', '#rate-target-banner', 'No commitment cards generated yet.');
-  html+='</div>';
-  return html;
-}
-function printRampReport(){
-  var target=document.getElementById('print-report');
-  if(!target) return;
-  target.innerHTML=buildPrintReportHtml();
-  target.setAttribute('aria-hidden','false');
-  setTimeout(function(){ window.print(); setTimeout(function(){ target.setAttribute('aria-hidden','true'); },250); },80);
-}
 
 </script>
 
